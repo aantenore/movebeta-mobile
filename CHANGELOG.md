@@ -81,3 +81,4 @@
 - Completed cue-validation worksheet CSV parser and dataset composer with row matching, 1-5 score validation, and
   compatibility with the production validation gate.
 - Sessions UI for pasting completed cue-validation worksheet CSV and preparing gate-compatible dataset JSON locally.
+- Versioned cue-validation dataset JSON contract required by the production validation gate.

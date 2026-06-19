@@ -48,8 +48,8 @@
   raw-artifact key rejection.
 - Vitest completed worksheet dataset tests for final dataset composition, validation-gate compatibility, missing
   reviewer rejection, seed mismatch rejection, and out-of-range score rejection.
-- Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
-  exclusion, and weak-score failures.
+- Vitest cue validation dataset tests for schema version, production thresholds, wall-angle coverage, reviewer coverage,
+  raw-artifact exclusion, and weak-score failures.
 - Vitest performance-budget tests for local analysis duration thresholds, frame-rate evidence, and over-budget status.
 - Vitest entitlement tests for Free, Pro, Coach capabilities, upgrade paths, and history limits.
 - Vitest plan catalog tests for current tier status, highlighted upgrade unlocks, coach tier capabilities, and

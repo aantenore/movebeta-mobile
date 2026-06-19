@@ -57,11 +57,11 @@ with their private training log, drill practice log, and coach-consent record fr
 - Airplane-mode readiness self-check for the local analysis workflow.
 - Store readiness manifest, privacy declarations, listing copy, and automated screenshot capture.
 - Cue validation scoring harness and rubric for consented coach review datasets.
-- Cue validation dataset gate for consented clip studies before production movement-quality claims.
+- Versioned cue validation dataset gate for consented clip studies before production movement-quality claims.
 - Local cue-validation study seed export from consented coach packets, with review tasks but no invented reviewer scores.
 - Local cue-validation review worksheet export with blank coach score rows and no reviewer identity defaults.
 - Privacy-safe cue-validation worksheet CSV export for spreadsheet-based coach review collection.
-- Completed worksheet CSV composer for building validation dataset JSON only after real coach scores are filled.
+- Completed worksheet CSV composer for building versioned validation dataset JSON only after real coach scores are filled.
 - Sessions dataset builder that accepts a completed worksheet CSV and prepares gate-compatible validation JSON locally.
 - Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
