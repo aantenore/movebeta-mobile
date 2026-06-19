@@ -60,7 +60,8 @@
   provider-agnostic recommendations.
 - Vitest launch-readiness and config tests for default blockers, all-ready evidence, partial evidence overrides, and
   Expo/env launch evidence parsing.
-- Vitest launch-readiness doctor tests for artifact detection, configured-evidence drift, and durable report writes.
+- Vitest launch-readiness doctor tests for artifact detection, content validation of native QA and cue-validation dataset
+  evidence, configured-evidence drift, and durable report writes.
 - Vitest MoveNet readiness report tests for ready/degraded budget checks without loading the model in unit tests.
 - Vitest MoveNet pose-mapper contract tests for required keypoint mapping, missing-keypoint errors, and mapped-frame
   analyzer compatibility.

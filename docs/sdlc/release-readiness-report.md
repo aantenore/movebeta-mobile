@@ -101,6 +101,8 @@ platforms are validated on physical climbing videos and devices.
   `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
+- Launch-readiness detection validates native QA evidence and cue-validation datasets with their production validators
+  before marking those artifacts verified.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
 - Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
@@ -108,13 +110,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 54 test files and 205 tests.
+- `npm test`: passed, 54 test files and 207 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3921ms load time, 332ms average inference, and 337ms max inference in the latest run.
+  CPU backend, 5184ms load time, 346ms average inference, and 347ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -165,7 +167,7 @@ platforms are validated on physical climbing videos and devices.
   evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, and launch evidence parsing
   from Expo/env configuration.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
-  durable launch readiness report writes, including missing model-readiness and native QA runbook evidence.
+  durable launch readiness report writes, including content validation for native QA evidence and cue-validation datasets.
 - `tests/nativeQaRunbook.test.ts`: passed and covers platform workflow instructions, generated evidence drafts, and the
   expected validator failure until real physical-device values are entered.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
