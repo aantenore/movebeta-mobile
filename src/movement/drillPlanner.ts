@@ -1,6 +1,8 @@
 import type { LocalAnalysisReport, MovementCue } from './contracts';
+import type { CueFeedback, ReportAnnotation } from './reportAnnotationRepository';
 
 export type DrillPlanPriority = 'high' | 'medium' | 'maintenance';
+export type DrillFeedbackStatus = 'reinforce' | 'variant' | 'untested';
 
 export type DrillPlanItem = {
   id: string;
@@ -10,6 +12,8 @@ export type DrillPlanItem = {
   drill: string;
   dosage: string;
   evidence: string;
+  feedbackEvidence: string;
+  feedbackStatus: DrillFeedbackStatus;
   priority: DrillPlanPriority;
   sourceReportId: string;
   sourceSessionTitle: string;
@@ -45,17 +49,69 @@ function sortReports(reports: LocalAnalysisReport[]) {
 
 function shouldReplace(existing: DrillPlanItem, candidate: DrillPlanItem) {
   const rankDelta = priorityRank[candidate.priority] - priorityRank[existing.priority];
-  return rankDelta > 0;
+  if (rankDelta !== 0) return rankDelta > 0;
+  return feedbackRank(candidate.feedbackStatus) > feedbackRank(existing.feedbackStatus);
 }
 
-function buildItem(report: LocalAnalysisReport, cue: MovementCue): DrillPlanItem {
+function feedbackRank(status: DrillFeedbackStatus) {
+  if (status === 'reinforce') return 3;
+  if (status === 'untested') return 2;
+  return 1;
+}
+
+function summarizeCueFeedback(feedback: CueFeedback[]): Pick<DrillPlanItem, 'feedbackEvidence' | 'feedbackStatus'> {
+  if (feedback.length === 0) {
+    return {
+      feedbackEvidence: 'No private feedback yet.',
+      feedbackStatus: 'untested',
+    };
+  }
+
+  const usefulCount = feedback.filter((item) => item.rating === 'useful').length;
+  const unclearCount = feedback.filter((item) => item.rating === 'unclear').length;
+  const notUsefulCount = feedback.filter((item) => item.rating === 'not-useful').length;
+  const reviewCount = unclearCount + notUsefulCount;
+  const total = feedback.length;
+
+  if (usefulCount > reviewCount) {
+    return {
+      feedbackEvidence: `${usefulCount}/${total} marked useful; repeat this cue before changing the drill.`,
+      feedbackStatus: 'reinforce',
+    };
+  }
+
+  return {
+    feedbackEvidence: `${reviewCount}/${total} need review; try a different constraint or ask a coach.`,
+    feedbackStatus: 'variant',
+  };
+}
+
+function buildFeedbackLookup(reports: LocalAnalysisReport[], annotations: ReportAnnotation[]) {
+  const reportIds = new Set(reports.map((report) => report.id));
+  const byCue = new Map<string, CueFeedback[]>();
+
+  for (const annotation of annotations) {
+    if (!reportIds.has(annotation.reportId)) continue;
+
+    for (const feedback of annotation.cueFeedback) {
+      byCue.set(feedback.cueId, [...(byCue.get(feedback.cueId) ?? []), feedback]);
+    }
+  }
+
+  return byCue;
+}
+
+function buildItem(report: LocalAnalysisReport, cue: MovementCue, feedback: CueFeedback[]): DrillPlanItem {
   const priority = cuePriority(cue);
+  const feedbackSummary = summarizeCueFeedback(feedback);
 
   return {
     cueId: cue.id,
     dosage: dosageForPriority(priority),
     drill: cue.drill,
     evidence: `${report.session.title} at ${(cue.timestampMs / 1000).toFixed(1)}s`,
+    feedbackEvidence: feedbackSummary.feedbackEvidence,
+    feedbackStatus: feedbackSummary.feedbackStatus,
     focus: cue.title,
     id: `${cue.id}-${report.id}`,
     priority,
@@ -65,13 +121,14 @@ function buildItem(report: LocalAnalysisReport, cue: MovementCue): DrillPlanItem
   };
 }
 
-export function buildDrillPlan(reports: LocalAnalysisReport[]): DrillPlan {
+export function buildDrillPlan(reports: LocalAnalysisReport[], annotations: ReportAnnotation[] = []): DrillPlan {
   const orderedReports = sortReports(reports);
+  const feedbackByCue = buildFeedbackLookup(orderedReports, annotations);
   const byCue = new Map<string, DrillPlanItem>();
 
   for (const report of orderedReports) {
     for (const cue of report.cues) {
-      const item = buildItem(report, cue);
+      const item = buildItem(report, cue, feedbackByCue.get(cue.id) ?? []);
       const existing = byCue.get(cue.id);
       if (!existing || shouldReplace(existing, item)) {
         byCue.set(cue.id, item);
@@ -92,10 +149,13 @@ export function buildDrillPlan(reports: LocalAnalysisReport[]): DrillPlan {
   }
 
   const highPriorityCount = items.filter((item) => item.priority === 'high').length;
-  const weeklyLoad =
+  const variantCount = items.filter((item) => item.feedbackStatus === 'variant').length;
+  const baseLoad =
     highPriorityCount > 0
       ? `${highPriorityCount} priority focus${highPriorityCount > 1 ? 'es' : ''}, 2 technique days`
       : 'Technique maintenance, 1 to 2 easy days';
+  const weeklyLoad =
+    variantCount > 0 ? `${baseLoad} · ${variantCount} cue${variantCount > 1 ? 's' : ''} need variants` : baseLoad;
 
   return {
     items,

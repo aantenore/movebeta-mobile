@@ -57,3 +57,4 @@
 - Next-session planning with target, duration, intensity cap, ordered phases, and local evidence.
 - Recurring cue pattern tracking for persistent, emerging, and cleared coach cues.
 - Cue usefulness insights from private feedback with useful rate, top cue, and review cue signals.
+- Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
