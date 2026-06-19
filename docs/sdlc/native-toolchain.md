@@ -40,6 +40,17 @@ Install Pods with:
 npm run native:ios:pods
 ```
 
+Generate the machine-readable iOS readiness report with:
+
+```bash
+npm run native:ios:doctor
+```
+
+The doctor writes `docs/sdlc/ios-toolchain-report.json` and `docs/sdlc/ios-toolchain-report.md`. It reports selected
+Developer directory, full Xcode availability, workspace presence, Pods state, and whether `xcodebuild` can load the
+MoveBeta workspace build settings. The command exits successfully even when the report status is `blocked`, so release
+automation can keep a durable blocker artifact.
+
 Full iOS compilation still requires Xcode, not just Command Line Tools. After Xcode is installed, run:
 
 ```bash

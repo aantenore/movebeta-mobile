@@ -64,6 +64,7 @@
     "native:android:manifest": "node scripts/check_android_manifest.mjs",
     "native:qa:validate": "node scripts/validate_native_qa_evidence.mjs",
     "native:qa:runbook": "node scripts/native_qa_packet.mjs --stable-date",
+    "native:ios:doctor": "node scripts/ios_toolchain_doctor.mjs",
     "model:movenet:smoke": "node scripts/smoke_movenet_model.mjs",
     "model:movenet:readiness": "node scripts/movenet_readiness_report.mjs",
     "model:analysis:replay": "tsx scripts/model_analysis_replay.ts",

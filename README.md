@@ -104,6 +104,7 @@ web build with `npm run store:screenshots`.
   validator command before internal beta or store submission.
 - In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
   local privacy boundary.
+- Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
 - In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
   evidence can satisfy release readiness.
 - Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native
@@ -128,6 +129,7 @@ npm run store:screenshots
 npm run toolchain:ios
 npm run native:android:debug
 npm run native:android:manifest
+npm run native:ios:doctor
 npm run native:qa:runbook
 npm run ci
 npm run release:eas:check
@@ -184,6 +186,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
 - Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
+- iOS toolchain report: `docs/sdlc/ios-toolchain-report.json`, `docs/sdlc/ios-toolchain-report.md`.
 - Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
@@ -204,6 +207,7 @@ The local release gate is:
 ```bash
 npm run release:check
 npm run model:analysis:replay
+npm run native:ios:doctor
 npm run release:readiness
 npm run release:archives
 npm run release:handoff
@@ -240,6 +244,7 @@ npx expo prebuild --no-install
 npm run toolchain:ios
 npm run native:android:debug
 npm run native:ios:pods
+npm run native:ios:doctor
 npm run release:eas:check
 npx eas-cli@latest build -p ios --profile production
 npx eas-cli@latest build -p android --profile production
@@ -248,4 +253,5 @@ npx eas-cli@latest build -p android --profile production
 Android debug build is verified locally with the bundled Temurin 17 JDK and local Android SDK under `.tools`. iOS source
 is implemented and `pod install` is verified with the local Ruby/CocoaPods toolchain under `.tools/ruby-3.3.11`. The
 Android build also validates the merged manifest for camera/import permissions, no audio permission, and disabled backup.
-iOS compilation still requires full Xcode, while this machine currently exposes only Command Line Tools.
+iOS compilation still requires full Xcode, while this machine currently exposes only Command Line Tools. Run
+`npm run native:ios:doctor` to refresh the current blocker report before iOS beta or store work.
