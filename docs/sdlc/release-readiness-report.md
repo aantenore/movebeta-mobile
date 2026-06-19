@@ -24,7 +24,8 @@ platforms are validated on physical climbing videos and devices.
 - Reports show analysis quality, frame coverage, landmark coverage, visibility, and weak-input warnings.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
-- Progress shows local history summary, best signal, next focus metric, attempt comparison, and trend deltas.
+- Progress shows local history summary, best signal, next focus metric, technique readiness, attempt comparison, and
+  trend deltas.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -63,7 +64,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 30 test files and 111 tests.
+- `npm test`: passed, 31 test files and 114 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -84,14 +85,16 @@ platforms are validated on physical climbing videos and devices.
   and privacy-safe deletion receipt copy.
 - `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, restore into empty repositories, orphan
   skipping, and URI-like artifact rejection.
+- `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, the Drills weekly plan, the Progress attempt comparison, the Progress history preview,
-  Plan access cards, Progress history filters, the Sessions review detail, the Sessions private training log, the
-  Progress project queue, the Sessions coach packet consent gate and export, the Sessions deletion receipt, the Privacy
-  diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
+  capture-readiness guidance, the Drills weekly plan, the Progress technique readiness panel, the Progress attempt
+  comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
+  Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
+  Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
+  airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.

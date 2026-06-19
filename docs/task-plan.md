@@ -52,3 +52,4 @@
 | T48 | Add privacy deletion bundle for reports, training logs, consent records, and deletion receipts | Done |
 | T49 | Create private GitHub repository and push main handoff snapshot | Done |
 | T50 | Add privacy-safe local data backup and restore for reports, training logs, and consent records | Done |
+| T51 | Add technique readiness scoring from trends, cues, project status, effort, confidence, and drills | Done |
