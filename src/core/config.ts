@@ -2,6 +2,7 @@ import Constants from 'expo-constants';
 import { z } from 'zod';
 
 import { PlanKeySchema } from './entitlements';
+import { LaunchReadinessEvidenceSchema, type LaunchReadinessEvidence } from './launchReadiness';
 
 const AnalysisProviderSchema = z.enum([
   'local-fixture',
@@ -20,12 +21,19 @@ const ConfigSchema = z.object({
   nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
   privacyMode: z.enum(['on-device', 'cloud-assisted']),
   officialApiBaseUrl: z.string().url().optional(),
+  launchReadinessEvidence: LaunchReadinessEvidenceSchema.optional(),
 });
 
 const expoExtra = Constants.expoConfig?.extra ?? {};
 const isNativeRuntime = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
 const configuredVideoProvider =
   isNativeRuntime ? expoExtra.nativeVideoAnalysisProvider ?? expoExtra.videoAnalysisProvider : expoExtra.videoAnalysisProvider;
+
+export function resolveLaunchReadinessEvidence(value: unknown): LaunchReadinessEvidence | undefined {
+  if (value === undefined || value === null || value === '') return undefined;
+  const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+  return LaunchReadinessEvidenceSchema.parse(parsed);
+}
 
 export const appConfig = ConfigSchema.parse({
   activePlan:
@@ -48,6 +56,9 @@ export const appConfig = ConfigSchema.parse({
     expoExtra.privacyMode ??
     'on-device',
   officialApiBaseUrl: process.env.EXPO_PUBLIC_MOVEBETA_API_BASE_URL,
+  launchReadinessEvidence: resolveLaunchReadinessEvidence(
+    process.env.EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE ?? expoExtra.launchReadinessEvidence,
+  ),
 });
 
 export type AppConfig = z.infer<typeof ConfigSchema>;
