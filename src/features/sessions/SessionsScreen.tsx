@@ -30,13 +30,16 @@ import {
   formatCoachLibraryExportSummary,
 } from '@/movement/coachLibraryExport';
 import {
+  assertCueValidationClipIntakeManifestIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
+  buildCueValidationClipIntakeManifest,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
+  formatCueValidationClipIntakeManifestSummary,
   formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
@@ -497,12 +500,14 @@ function TrainingLogPanel({
 function CoachLibraryPanel({
   library,
   onPrepareExport,
+  onPrepareValidationClipManifest,
   onPrepareValidationSeed,
   onPrepareValidationWorksheet,
   onPrepareValidationWorksheetCsv,
 }: {
   library: CoachLibrary;
   onPrepareExport?: () => void;
+  onPrepareValidationClipManifest?: () => void;
   onPrepareValidationSeed?: () => void;
   onPrepareValidationWorksheet?: () => void;
   onPrepareValidationWorksheetCsv?: () => void;
@@ -540,6 +545,16 @@ function CoachLibraryPanel({
             >
               <ShieldCheck color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Validation seed</Text>
+            </Pressable>
+          ) : null}
+          {onPrepareValidationClipManifest ? (
+            <Pressable
+              accessibilityLabel="Prepare cue validation clip manifest"
+              onPress={onPrepareValidationClipManifest}
+              style={styles.secondaryAction}
+            >
+              <Target color={theme.colors.brand} size={16} />
+              <Text style={styles.secondaryActionText}>Clip manifest</Text>
             </Pressable>
           ) : null}
           {onPrepareValidationWorksheet ? (
@@ -837,6 +852,18 @@ export function SessionsScreen() {
     });
   }
 
+  async function prepareCueValidationClipIntakeManifest() {
+    selectionFeedback();
+    const seed = await buildCurrentCueValidationStudySeed();
+    assertCueValidationStudySeedIsPrivacySafe(seed);
+    const manifest = buildCueValidationClipIntakeManifest(seed);
+    assertCueValidationClipIntakeManifestIsPrivacySafe(manifest);
+    setPreparedExport({
+      body: `${formatCueValidationClipIntakeManifestSummary(manifest)}\n\n${JSON.stringify(manifest, null, 2)}`,
+      title: 'Prepared cue validation clip manifest',
+    });
+  }
+
   async function prepareCueValidationReviewWorksheet() {
     selectionFeedback();
     const seed = await buildCurrentCueValidationStudySeed();
@@ -1022,6 +1049,7 @@ export function SessionsScreen() {
           <CoachLibraryPanel
             library={coachLibrary}
             onPrepareExport={prepareCoachLibraryExport}
+            onPrepareValidationClipManifest={() => void prepareCueValidationClipIntakeManifest()}
             onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
             onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}

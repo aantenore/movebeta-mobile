@@ -63,6 +63,51 @@ export const CueValidationStudySeedSchema = z.object({
   schemaVersion: z.literal('movebeta.cue-validation-study-seed.v1'),
 });
 
+export const cueValidationClipIntakeManifestSchemaVersion = 'movebeta.cue-validation-clip-intake-manifest.v1';
+
+export const CueValidationClipIntakeManifestClipSchema = z.object({
+  clipId: z.string(),
+  consentRecordId: z.string(),
+  cueCount: z.number().int().nonnegative(),
+  durationMs: z.number().positive(),
+  grade: z.string(),
+  gym: z.string(),
+  packetReportId: z.string(),
+  requiredCoachReviewRows: z.number().int().nonnegative(),
+  status: z.literal('ready-for-packet-review'),
+  title: z.string(),
+  wallAngle: z.enum(['slab', 'vertical', 'overhang']),
+});
+
+export const CueValidationClipIntakeManifestSchema = z.object({
+  acceptance: CueValidationStudyAcceptanceSchema,
+  clips: z.array(CueValidationClipIntakeManifestClipSchema),
+  generatedAt: z.string(),
+  instructions: z.array(z.string()),
+  privacy: z.object({
+    coachPacketsIncluded: z.literal(false),
+    keyFramesIncluded: z.literal(false),
+    landmarksIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawUrisIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reviewerScoresInvented: z.literal(false),
+    videoLeavesDevice: z.literal(false),
+  }),
+  schemaVersion: z.literal(cueValidationClipIntakeManifestSchemaVersion),
+  sourceSeedGeneratedAt: z.string(),
+  summary: z.object({
+    clipCount: z.number().int().nonnegative(),
+    cueCount: z.number().int().nonnegative(),
+    missingWallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+    requiredCoachReviewRows: z.number().int().nonnegative(),
+    status: z.enum(['needs-consent', 'needs-coverage', 'ready-for-review']),
+    targetClipCount: z.number().int().positive(),
+    targetWallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+    wallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+  }),
+});
+
 export const CueValidationReviewWorksheetRowSchema = z.object({
   clipId: z.string(),
   consentRecordId: z.string(),
@@ -133,6 +178,7 @@ export const CueValidationCompletedDatasetSchema = z.object({
 
 export type CueValidationStudyAcceptance = z.infer<typeof CueValidationStudyAcceptanceSchema>;
 export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema>;
+export type CueValidationClipIntakeManifest = z.infer<typeof CueValidationClipIntakeManifestSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
 export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
 
@@ -145,6 +191,11 @@ export type CueValidationStudySeedOptions = {
 };
 
 export type CueValidationReviewWorksheetOptions = {
+  generatedAt?: string;
+  reviewerCount?: number;
+};
+
+export type CueValidationClipIntakeManifestOptions = {
   generatedAt?: string;
   reviewerCount?: number;
 };
@@ -168,6 +219,10 @@ const forbiddenStudyKeyPattern =
   /"(?:fileUri|frames|keyFrame|landmarkFrames|landmarks|localUri|privateNote|rawVideo|rawVideoUri|uri|videoPath|videoUri)"\s*:/i;
 const forbiddenCsvArtifactPattern =
   /\b(?:fileUri|frames|keyFrame|landmarkFrames|landmarks|localUri|privateNote|rawVideo|rawVideoUri|videoPath|videoUri)\b|file:\/\//i;
+const forbiddenManifestValuePattern =
+  /(file:\/\/|content:\/\/|asset:\/\/|ph:\/\/|\/Users\/|\/private\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b|rawVideoUri|videoUri)/i;
+
+const wallAngleOrder = ['slab', 'vertical', 'overhang'] as const;
 
 const worksheetCsvHeaders = [
   'worksheetRowId',
@@ -286,6 +341,10 @@ function parseScore(value: string, rowId: string, field: string) {
     throw new Error(`Cue validation worksheet row ${rowId} requires a ${field} score from 1 to 5.`);
   }
   return score;
+}
+
+function sortWallAngles(values: Array<'slab' | 'vertical' | 'overhang'>) {
+  return [...values].sort((a, b) => wallAngleOrder.indexOf(a) - wallAngleOrder.indexOf(b));
 }
 
 function parseCompletedWorksheetCsv(csv: string) {
@@ -415,6 +474,94 @@ export function assertCueValidationStudySeedIsPrivacySafe(seed: CueValidationStu
 
   for (const clip of parsed.clips) {
     assertCoachPacketIsPrivacySafe(clip.packet);
+  }
+}
+
+export function buildCueValidationClipIntakeManifest(
+  seed: CueValidationStudySeed,
+  options: CueValidationClipIntakeManifestOptions = {},
+): CueValidationClipIntakeManifest {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const requiredReviewerCount = options.reviewerCount ?? parsedSeed.acceptance.minDistinctReviewersPerClip;
+  const wallAngles = sortWallAngles([
+    ...new Set(parsedSeed.clips.map((clip) => clip.packet.session.wallAngle)),
+  ] as Array<'slab' | 'vertical' | 'overhang'>);
+  const missingWallAngles = sortWallAngles(
+    parsedSeed.acceptance.requiredWallAngles.filter((wallAngle) => !wallAngles.includes(wallAngle)),
+  );
+  const clips = parsedSeed.clips.map((clip) => {
+    const requiredCoachReviewRows = clip.reviewTasks.length * requiredReviewerCount;
+
+    return CueValidationClipIntakeManifestClipSchema.parse({
+      clipId: clip.clipId,
+      consentRecordId: clip.consentRecordId,
+      cueCount: clip.reviewTasks.length,
+      durationMs: clip.packet.session.durationMs,
+      grade: clip.packet.session.grade,
+      gym: clip.packet.session.gym,
+      packetReportId: clip.packet.reportId,
+      requiredCoachReviewRows,
+      status: 'ready-for-packet-review',
+      title: clip.packet.session.title,
+      wallAngle: clip.packet.session.wallAngle,
+    });
+  });
+  const requiredCoachReviewRows = clips.reduce((sum, clip) => sum + clip.requiredCoachReviewRows, 0);
+  const status =
+    parsedSeed.clipCount === 0
+      ? 'needs-consent'
+      : parsedSeed.clipCount < parsedSeed.acceptance.minClips || missingWallAngles.length > 0
+        ? 'needs-coverage'
+        : 'ready-for-review';
+
+  return CueValidationClipIntakeManifestSchema.parse({
+    acceptance: parsedSeed.acceptance,
+    clips,
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+    instructions: [
+      'Use this manifest to verify consented local reports before coach worksheet collection.',
+      'Keep raw video, local file paths, frame data, landmarks, screenshots, and private notes outside this manifest.',
+      'Share packet-only review materials separately from the local device after consent is granted.',
+      'Collect real coach worksheet scores before composing the final validation dataset.',
+    ],
+    privacy: {
+      coachPacketsIncluded: false,
+      keyFramesIncluded: false,
+      landmarksIncluded: false,
+      privateNotesIncluded: false,
+      rawUrisIncluded: false,
+      rawVideoIncluded: false,
+      reviewerScoresInvented: false,
+      videoLeavesDevice: false,
+    },
+    schemaVersion: cueValidationClipIntakeManifestSchemaVersion,
+    sourceSeedGeneratedAt: parsedSeed.generatedAt,
+    summary: {
+      clipCount: parsedSeed.clipCount,
+      cueCount: parsedSeed.cueCount,
+      missingWallAngles,
+      requiredCoachReviewRows,
+      status,
+      targetClipCount: parsedSeed.acceptance.minClips,
+      targetWallAngles: parsedSeed.acceptance.requiredWallAngles,
+      wallAngles,
+    },
+  });
+}
+
+export function assertCueValidationClipIntakeManifestIsPrivacySafe(manifest: CueValidationClipIntakeManifest) {
+  const serialized = JSON.stringify(manifest);
+
+  if (forbiddenStudyKeyPattern.test(serialized) || forbiddenManifestValuePattern.test(serialized)) {
+    throw new Error('Cue validation clip intake manifest failed privacy validation: raw artifact text is present.');
+  }
+
+  const parsed = CueValidationClipIntakeManifestSchema.parse(manifest);
+  const privacyFlags = Object.values(parsed.privacy);
+
+  if (privacyFlags.some(Boolean)) {
+    throw new Error('Cue validation clip intake manifest failed privacy validation: a forbidden artifact flag is enabled.');
   }
 }
 
@@ -619,6 +766,18 @@ export function formatCueValidationStudySeedSummary(seed: CueValidationStudySeed
     `target ${parsed.acceptance.minClips} clips`,
     'raw video: no',
     'scores invented: no',
+  ].join(' · ');
+}
+
+export function formatCueValidationClipIntakeManifestSummary(manifest: CueValidationClipIntakeManifest) {
+  const parsed = CueValidationClipIntakeManifestSchema.parse(manifest);
+
+  return [
+    `${parsed.summary.clipCount}/${parsed.summary.targetClipCount} consented clips`,
+    `${parsed.summary.wallAngles.length}/${parsed.summary.targetWallAngles.length} wall angles`,
+    `${parsed.summary.requiredCoachReviewRows} coach review rows`,
+    `status ${parsed.summary.status}`,
+    'raw video: no',
   ].join(' · ');
 }
 

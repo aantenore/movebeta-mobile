@@ -69,7 +69,7 @@
     "height": 1920,
     "width": 1080
   },
-  "generatedAt": "2026-06-19T23:35:58.590Z",
+  "generatedAt": "2026-06-19T23:41:43.629Z",
   "limitations": [
     "Uses deterministic MoveNet-shaped fixture keypoints to verify app analysis integration.",
     "Does not replace physical-device validation with real climbing videos and coach-reviewed labels."
