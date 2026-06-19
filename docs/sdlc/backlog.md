@@ -10,6 +10,7 @@
 | MB-003C | Validation CSV | As a product team, I can export the review worksheet to a spreadsheet-friendly CSV | Done | Sessions exports stable CSV headers with blank reviewer/score cells, escaped values, and raw-artifact text rejection |
 | MB-003D | Completed validation dataset | As a product team, I can turn completed worksheet CSV into validation dataset JSON | Done | Domain composer accepts only real reviewer ids, 1-5 scores, expected rows, and seed-matching metadata before producing versioned gate-compatible JSON |
 | MB-003E | Validation dataset UI | As a product team, I can build the validation dataset from completed CSV inside Sessions | Done | Sessions accepts completed worksheet CSV, reports validation errors, and prepares versioned gate-compatible JSON locally |
+| MB-003F | Validation gate preview | As a product team, I can see whether a completed validation dataset is production-ready before sharing it | Done | Sessions runs a local gate preview and reports ready or needs-data checks without cloud calls |
 | MB-004 | Repeat comparison | As a climber, I can compare two attempts of the same move | Done | Latest-vs-baseline metrics, cue status, and recommendation in Progress |
 | MB-005 | Pro history | As a paying user, I can track long-term technique trends | Done | Active plan entitlements gate recent vs unlimited history; optional sync future |
 | MB-005A | Adaptive drills | As a climber, my drill plan reacts to which cues actually helped | Done | Private cue feedback marks drills as reinforce, variant, or untested without cloud sync |

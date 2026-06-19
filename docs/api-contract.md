@@ -106,6 +106,8 @@ type CueValidationDatasetBuilder = {
 The builder emits `schemaVersion: "movebeta.cue-validation-dataset.v1"` and accepts only completed worksheet rows that
 match the current study seed. Reviewer IDs must be present, all scores must be integers from 1 to 5, duplicate or
 unknown rows are rejected, and the resulting JSON is compatible with the `npm run validation:cue` production gate.
+The app can also run a local gate preview over the completed dataset and return ready status, aggregate counts, average
+score, wall-angle coverage, and failed checks without calling a remote API.
 
 ## Optional Future Sync API
 

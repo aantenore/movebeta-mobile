@@ -63,6 +63,7 @@ practice log, and coach-consent record from the Sessions tab.
 - Privacy-safe cue-validation worksheet CSV export for spreadsheet-based coach review collection.
 - Completed worksheet CSV composer for building versioned validation dataset JSON only after real coach scores are filled.
 - Sessions dataset builder that accepts a completed worksheet CSV and prepares gate-compatible validation JSON locally.
+- In-app cue-validation gate preview that reports whether the completed dataset is ready or which checks still need data.
 - Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
 - Report-level video analysis performance evidence with local duration, frame rate, and budget status.

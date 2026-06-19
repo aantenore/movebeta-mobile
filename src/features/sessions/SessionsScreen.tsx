@@ -20,6 +20,11 @@ import { deleteLocalAnalysisBundle, exportReport, formatAnalysisBundleDeletionRe
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { assertCoachPacketIsPrivacySafe, buildCoachReviewPacket } from '@/movement/coachReviewPacket';
 import {
+  formatCueValidationGateFailures,
+  formatCueValidationGateSummary,
+  validateCueValidationCompletedDataset,
+} from '@/movement/cueValidationDataset';
+import {
   assertCoachLibraryExportIsPrivacySafe,
   buildCoachLibraryExport,
   formatCoachLibraryExportSummary,
@@ -623,8 +628,15 @@ export function SessionsScreen() {
       const seed = await buildCurrentCueValidationStudySeed();
       assertCueValidationStudySeedIsPrivacySafe(seed);
       const dataset = buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedWorksheetCsv);
+      const gate = validateCueValidationCompletedDataset(dataset);
       setPreparedExport({
-        body: `${formatCueValidationCompletedDatasetSummary(dataset)}\n\n${JSON.stringify(dataset, null, 2)}`,
+        body: [
+          formatCueValidationCompletedDatasetSummary(dataset),
+          formatCueValidationGateSummary(gate),
+          formatCueValidationGateFailures(gate),
+          '',
+          JSON.stringify(dataset, null, 2),
+        ].join('\n'),
         title: 'Prepared cue validation dataset',
       });
     } catch (error) {
