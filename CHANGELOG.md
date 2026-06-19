@@ -110,6 +110,8 @@
 - Launch-readiness validation for the model-analysis replay report, so demo, beta, and store tracks expose model-shaped
   cue evidence as a first-class readiness check.
 - Configurable in-app model evidence panel that separates local technical readiness from real climbing-video validation.
+- Model evidence sync command that promotes the latest MoveNet readiness and model-analysis replay reports into app
+  configuration without changing real-world validation thresholds.
 - Configurable Safety language guard in the Plan tab for medical, injury-prevention, route-safety, and guaranteed-outcome
   copy risks.
 - Dependency audit hardening with a `uuid` 11.1.1 override for the Expo `xcode` tooling chain and a moderate-or-higher
