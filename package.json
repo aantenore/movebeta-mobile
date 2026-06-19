@@ -56,6 +56,7 @@
     "native:android:debug": "bash scripts/android-debug-build.sh",
     "native:android:manifest": "node scripts/check_android_manifest.mjs",
     "native:qa:validate": "node scripts/validate_native_qa_evidence.mjs",
+    "model:movenet:smoke": "node scripts/smoke_movenet_model.mjs",
     "validation:cue": "node scripts/validate_cue_validation_dataset.mjs",
     "native:ios:pods": "bash scripts/ios-pods.sh",
     "handoff:git": "bash scripts/git-handoff-check.sh",

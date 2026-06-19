@@ -19,6 +19,7 @@ import {
   createReportAnnotation,
   InMemoryReportAnnotationRepository,
   updateCueFeedback,
+  updateRepeatOutcome,
 } from '../src/movement/reportAnnotationRepository';
 import { InMemoryReportRepository } from '../src/movement/reportRepository';
 import { samplePoseFrames, sampleSession } from '../src/movement/sampleSession';
@@ -35,6 +36,7 @@ async function createPortabilityFixture() {
 
   await reports.saveReport(report);
   await annotations.saveAnnotation(
+    updateRepeatOutcome(
       updateCueFeedback(
         createReportAnnotation(report.id, {
           confidence: 5,
@@ -50,6 +52,13 @@ async function createPortabilityFixture() {
           updatedAt: '2026-06-19T15:05:00.000Z',
         },
       ),
+      {
+        attempts: 2,
+        resolvedCueIds: [report.cues[0].id],
+        status: 'improved',
+        updatedAt: '2026-06-19T15:08:00.000Z',
+      },
+    ),
   );
   await consents.saveConsent(
     createCoachReviewConsentRecord(report.id, {
@@ -93,6 +102,10 @@ describe('local data portability', () => {
     expect(backup.privacy.videoLeavesDevice).toBe(false);
     expect(backup.annotations[0].cueFeedback[0]).toMatchObject({
       rating: 'useful',
+    });
+    expect(backup.annotations[0].repeatOutcome).toMatchObject({
+      attempts: 2,
+      status: 'improved',
     });
     expect(backup.drillPractice[0]).toMatchObject({
       status: 'completed',
@@ -139,6 +152,10 @@ describe('local data portability', () => {
         }),
       ],
       privateNote: 'Backup this beta.',
+      repeatOutcome: expect.objectContaining({
+        resolvedCueIds: [source.report.cues[0].id],
+        status: 'improved',
+      }),
     });
     expect(await destinationConsents.getConsent(source.report.id)).toMatchObject({
       rawVideoIncluded: false,

@@ -8,7 +8,7 @@ import {
 import { PrivacyConsentSchema } from '../src/core/privacy';
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
-import { createReportAnnotation, updateCueFeedback } from '../src/movement/reportAnnotationRepository';
+import { createReportAnnotation, updateCueFeedback, updateRepeatOutcome } from '../src/movement/reportAnnotationRepository';
 import { samplePoseFrames, sampleSession } from '../src/movement/sampleSession';
 
 const coachConsent = PrivacyConsentSchema.parse({
@@ -62,20 +62,28 @@ describe('coach review packet', () => {
     const report = await buildReport();
     const primaryCue = report.cues[0];
     const secondaryCue = report.cues[1] ?? report.cues[0];
-    const annotation = updateCueFeedback(
-      createReportAnnotation(report.id, {
-        confidence: 5,
-        perceivedEffort: 4,
-        privateNote: 'Keep this private: left hip drift before the crux.',
-        projectStatus: 'repeat',
-        tags: ['board', 'crux'],
-        updatedAt: '2026-06-19T18:00:00.000Z',
-      }),
+    const annotation = updateRepeatOutcome(
+      updateCueFeedback(
+        createReportAnnotation(report.id, {
+          confidence: 5,
+          perceivedEffort: 4,
+          privateNote: 'Keep this private: left hip drift before the crux.',
+          projectStatus: 'repeat',
+          tags: ['board', 'crux'],
+          updatedAt: '2026-06-19T18:00:00.000Z',
+        }),
+        {
+          cueId: primaryCue.id,
+          note: 'This cue felt accurate but the note is private.',
+          rating: 'useful',
+          updatedAt: '2026-06-19T18:05:00.000Z',
+        },
+      ),
       {
-        cueId: primaryCue.id,
-        note: 'This cue felt accurate but the note is private.',
-        rating: 'useful',
-        updatedAt: '2026-06-19T18:05:00.000Z',
+        attempts: 2,
+        resolvedCueIds: [primaryCue.id, 'orphan-cue'],
+        status: 'improved',
+        updatedAt: '2026-06-19T18:08:00.000Z',
       },
     );
 
@@ -117,7 +125,7 @@ describe('coach review packet', () => {
       privateNoteIncluded: false,
       projectStatus: 'repeat',
       tags: ['board', 'crux'],
-      updatedAt: '2026-06-19T18:05:00.000Z',
+      updatedAt: '2026-06-19T18:08:00.000Z',
     });
     expect(packet.athleteContext.trainingLog.cueFeedback).toEqual([
       {
@@ -127,6 +135,12 @@ describe('coach review packet', () => {
         updatedAt: '2026-06-19T18:05:00.000Z',
       },
     ]);
+    expect(packet.athleteContext.trainingLog.repeatOutcome).toEqual({
+      attempts: 2,
+      resolvedCueIds: [primaryCue.id],
+      status: 'improved',
+      updatedAt: '2026-06-19T18:08:00.000Z',
+    });
     expect(packet.athleteContext.drillPractice).toMatchObject({
       completedCount: 1,
       latestStatus: 'completed',

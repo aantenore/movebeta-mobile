@@ -80,3 +80,6 @@
 | T76 | Add local beta replay plan from cue and metric evidence | Done |
 | T77 | Add movement phase breakdown from cue and timeline evidence | Done |
 | T78 | Add local cue trust scoring for Analyze and coach packet exports | Done |
+| T79 | Add private repeat-outcome logging and Progress insights | Done |
+| T80 | Add MoveNet model execution smoke for local inference verification | Done |
+| T81 | Add generated screenshot gallery to documentation | Done |
