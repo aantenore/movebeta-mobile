@@ -32,6 +32,7 @@ describe('launch readiness', () => {
       easProject: true,
       iosBuild: true,
       iosPods: true,
+      modelAnalysisReplay: true,
       modelReadiness: true,
       nativeDeviceQa: true,
       nativeQaRunbook: true,

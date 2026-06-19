@@ -64,6 +64,15 @@
       "status": "verified"
     },
     {
+      "action": "Run npm run model:analysis:replay and keep docs/sdlc/model-analysis-replay-report.json passing.",
+      "label": "Model-analysis replay",
+      "owner": "engineering",
+      "configured": false,
+      "detected": true,
+      "key": "modelAnalysisReplay",
+      "status": "verified"
+    },
+    {
       "action": "Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.",
       "label": "Native device QA evidence",
       "owner": "qa",
@@ -118,7 +127,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-19T19:57:02.980Z",
+  "generatedAt": "2026-06-19T20:06:01.077Z",
   "schemaVersion": "movebeta.launch-readiness-report.v1",
   "summary": {
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
@@ -132,27 +141,27 @@
       "key": "demo",
       "label": "Stakeholder demo",
       "missingChecks": 0,
-      "requiredChecks": 5,
+      "requiredChecks": 6,
       "status": "ready",
-      "verifiedChecks": 5
+      "verifiedChecks": 6
     },
     {
       "driftChecks": 0,
       "key": "internal",
       "label": "Internal native beta",
       "missingChecks": 1,
-      "requiredChecks": 7,
+      "requiredChecks": 8,
       "status": "blocked",
-      "verifiedChecks": 6
+      "verifiedChecks": 7
     },
     {
       "driftChecks": 0,
       "key": "store",
       "label": "Store submission",
       "missingChecks": 5,
-      "requiredChecks": 11,
+      "requiredChecks": 12,
       "status": "blocked",
-      "verifiedChecks": 6
+      "verifiedChecks": 7
     }
   ]
 }

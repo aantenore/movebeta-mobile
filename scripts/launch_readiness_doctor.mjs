@@ -41,6 +41,11 @@ export const CHECK_DEFINITIONS = {
     label: 'MoveNet model readiness',
     owner: 'engineering',
   },
+  modelAnalysisReplay: {
+    action: 'Run npm run model:analysis:replay and keep docs/sdlc/model-analysis-replay-report.json passing.',
+    label: 'Model-analysis replay',
+    owner: 'engineering',
+  },
   nativeDeviceQa: {
     action: 'Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.',
     label: 'Native device QA evidence',
@@ -74,14 +79,24 @@ export const CHECK_DEFINITIONS = {
 };
 
 export const TRACK_REQUIREMENTS = {
-  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeQaRunbook', 'nativeDeviceQa'],
+  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness', 'modelAnalysisReplay'],
+  internal: [
+    'releaseGate',
+    'webSmoke',
+    'androidDebugBuild',
+    'iosPods',
+    'modelReadiness',
+    'modelAnalysisReplay',
+    'nativeQaRunbook',
+    'nativeDeviceQa',
+  ],
   store: [
     'releaseGate',
     'webSmoke',
     'privacyManifest',
     'storeListing',
     'modelReadiness',
+    'modelAnalysisReplay',
     'iosBuild',
     'nativeQaRunbook',
     'nativeDeviceQa',
@@ -141,6 +156,18 @@ function hasAnyEnv(env, keys) {
   return keys.some((key) => typeof env[key] === 'string' && env[key].trim().length > 0);
 }
 
+function modelAnalysisReplayReady(report) {
+  return (
+    report.schemaVersion === 'movebeta.model-analysis-replay-report.v1' &&
+    report.status === 'pass' &&
+    Array.isArray(report.attempts) &&
+    report.attempts.length > 0 &&
+    report.attempts.every((attempt) => attempt?.passed === true && attempt?.privacySafe === true) &&
+    report.summary?.failedAttempts === 0 &&
+    report.summary?.passedAttempts === report.attempts.length
+  );
+}
+
 function getConfiguredEvidence(rootDir, env = process.env) {
   const appConfig = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
   const extraEvidence = appConfig.extra?.launchReadinessEvidence ?? {};
@@ -162,6 +189,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
   const releaseGateReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/release-gate-report.json')) ?? {};
   const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
+  const modelAnalysisReplayReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json')) ?? {};
   const nativeQaRunbook = readJsonIfExists(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json')) ?? {};
 
   return {
@@ -177,6 +205,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
     modelReadiness:
       moveNetReadinessReport.schemaVersion === 'movebeta.movenet-readiness-report.v1' &&
       moveNetReadinessReport.status === 'ready',
+    modelAnalysisReplay: modelAnalysisReplayReady(modelAnalysisReplayReport),
     nativeDeviceQa: validatedJsonFile(rootDir, 'docs/sdlc/native-qa-evidence.json', validateNativeQaEvidence),
     nativeQaRunbook: nativeQaRunbook.schemaVersion === 'movebeta.native-qa-runbook.v1',
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
@@ -184,7 +213,8 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       releaseGateReport.schemaVersion === 'movebeta.release-gate-report.v1' &&
       releaseGateReport.status === 'pass' &&
       Array.isArray(releaseGateReport.steps) &&
-      releaseGateReport.steps.length >= 6 &&
+      releaseGateReport.steps.length >= 7 &&
+      releaseGateReport.steps.some((step) => step.key === 'modelAnalysisReplay') &&
       releaseGateReport.steps.every((step) => step.status === 'pass'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),
     webSmoke: exists(rootDir, 'dist/index.html') && releaseReport.includes('Playwright exported-bundle smoke: passed'),

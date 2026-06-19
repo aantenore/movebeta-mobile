@@ -10,6 +10,7 @@ export const LaunchReadinessCheckKeySchema = z.enum([
   'androidDebugBuild',
   'iosPods',
   'modelReadiness',
+  'modelAnalysisReplay',
   'nativeQaRunbook',
   'iosBuild',
   'nativeDeviceQa',
@@ -26,6 +27,7 @@ export const LaunchReadinessEvidenceSchema = z.object({
   iosBuild: z.boolean().optional(),
   iosPods: z.boolean().optional(),
   modelReadiness: z.boolean().optional(),
+  modelAnalysisReplay: z.boolean().optional(),
   nativeQaRunbook: z.boolean().optional(),
   nativeDeviceQa: z.boolean().optional(),
   privacyManifest: z.boolean().optional(),
@@ -117,6 +119,12 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
     label: 'MoveNet model readiness',
     owner: 'engineering',
   },
+  modelAnalysisReplay: {
+    action: 'Run the model-analysis replay and keep model-shaped cue evidence passing.',
+    key: 'modelAnalysisReplay',
+    label: 'Model-analysis replay',
+    owner: 'engineering',
+  },
   nativeDeviceQa: {
     action: 'Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.',
     blockingForStore: true,
@@ -157,14 +165,24 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
 };
 
 const trackRequirements: Record<z.infer<typeof LaunchTrackSchema>, Array<z.infer<typeof LaunchReadinessCheckKeySchema>>> = {
-  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeQaRunbook', 'nativeDeviceQa'],
+  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness', 'modelAnalysisReplay'],
+  internal: [
+    'releaseGate',
+    'webSmoke',
+    'androidDebugBuild',
+    'iosPods',
+    'modelReadiness',
+    'modelAnalysisReplay',
+    'nativeQaRunbook',
+    'nativeDeviceQa',
+  ],
   store: [
     'releaseGate',
     'webSmoke',
     'privacyManifest',
     'storeListing',
     'modelReadiness',
+    'modelAnalysisReplay',
     'iosBuild',
     'nativeQaRunbook',
     'nativeDeviceQa',
@@ -188,6 +206,7 @@ export const defaultLaunchReadinessEvidence: LaunchReadinessEvidence = {
   iosBuild: false,
   iosPods: true,
   modelReadiness: true,
+  modelAnalysisReplay: true,
   nativeQaRunbook: true,
   nativeDeviceQa: false,
   privacyManifest: true,
