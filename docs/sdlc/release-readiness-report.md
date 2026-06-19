@@ -106,6 +106,8 @@ platforms are validated on physical climbing videos and devices.
   shared entitlement catalog.
 - Plan tab shows configurable model evidence for MoveNet execution, model-shaped replay, and remaining real-world
   validation, keeping local technical readiness separate from production movement-quality claims.
+- Plan tab prepares a share-safe native QA runbook packet with physical-device workflows, budgets, blocked draft
+  evidence, validator command, and explicit credential/local-path/raw-video exclusion flags.
 - Plan tab shows launch-readiness tracks for stakeholder demo, internal native beta, and store submission, keeping
   MoveNet model readiness, model-analysis replay evidence, full-Xcode, physical-device QA, real cue-validation data, and
   EAS/store credentials visible as explicit blockers.
@@ -135,14 +137,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 75 test files and 292 tests.
+- `npm test`: passed, 76 test files and 295 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3624ms load time, 325ms average inference, and 327ms max inference in the latest run.
+  CPU backend, 4433ms load time, 326ms average inference, and 331ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -222,6 +224,8 @@ platforms are validated on physical climbing videos and devices.
   expected validator failure until real physical-device values are entered.
 - `tests/nativeQaEvidenceKit.test.ts`: passed and covers Plan-tab native QA workflows, shared budgets, placeholder
   policy, validator command, and raw-artifact exclusion.
+- `tests/nativeQaRunbookPacket.test.ts`: passed and covers versioned packet generation from the native QA evidence kit,
+  blocked placeholder evidence, explicit privacy flags, and injected token-like value rejection before sharing.
 - `tests/nativeQaEvidenceValidation.test.ts`: passed and covers app/CLI parity for ready evidence, blocked draft
   evidence, run summaries, and raw local artifact rejection.
 - `tests/nativeQaEvidenceImport.test.ts`: passed and covers empty paste state, invalid JSON, ready native QA evidence
@@ -268,7 +272,7 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, native QA evidence kit, native QA
-  validator preview, native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, safety-language guard, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  runbook packet export, native QA validator preview, native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, safety-language guard, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.

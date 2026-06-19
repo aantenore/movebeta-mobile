@@ -11,6 +11,7 @@ import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/l
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import { buildNativeQaEvidenceImportPreview, type NativeQaEvidenceImportPreview } from '@/core/nativeQaEvidenceImport';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
+import { buildNativeQaRunbookPacket } from '@/core/nativeQaRunbookPacket';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
@@ -190,12 +191,14 @@ function NativeQaEvidenceKitCard({
   kit,
   onClearImport,
   onImportChange,
+  onPrepareRunbook,
 }: {
   importInput: string;
   importPreview: NativeQaEvidenceImportPreview;
   kit: ReturnType<typeof buildNativeQaEvidenceKit>;
   onClearImport: () => void;
   onImportChange: (value: string) => void;
+  onPrepareRunbook: () => void;
 }) {
   const latencyCopy = kit.budgets.maxLatencyByClipMs
     .map(
@@ -225,6 +228,12 @@ function NativeQaEvidenceKitCard({
       <Text style={styles.qaKitAction}>{kit.summary.action}</Text>
       <Text style={styles.qaKitText}>{kit.placeholderPolicy}</Text>
       <Text style={styles.qaKitText}>Latency budgets: {latencyCopy}</Text>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare native QA runbook" onPress={onPrepareRunbook} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>QA runbook</Text>
+        </Pressable>
+      </View>
       <View style={styles.qaValidation}>
         <View style={styles.qaValidationTop}>
           <View style={styles.launchTrackTitleGroup}>
@@ -568,6 +577,15 @@ export function PlanScreen() {
     });
   }
 
+  function prepareNativeQaRunbookPacket() {
+    selectionFeedback();
+    const packet = buildNativeQaRunbookPacket();
+    setPreparedPlanExport({
+      body: JSON.stringify(packet, null, 2),
+      title: 'Prepared native QA runbook',
+    });
+  }
+
   async function sharePreparedPlanExport() {
     if (!preparedPlanExport) return;
     selectionFeedback();
@@ -664,6 +682,7 @@ export function PlanScreen() {
           kit={nativeQaKit}
           onClearImport={() => setNativeQaEvidenceJson('')}
           onImportChange={setNativeQaEvidenceJson}
+          onPrepareRunbook={prepareNativeQaRunbookPacket}
         />
       </Section>
 
