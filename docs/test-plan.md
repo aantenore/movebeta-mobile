@@ -110,6 +110,8 @@
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
   raw local artifact rejection in the Plan-tab paste flow.
+- Vitest native QA evidence composer tests for structured Android/iOS run inputs, second-to-millisecond normalization,
+  incomplete workflow blocking, and raw artifact rejection through the shared validator.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, and raw-artifact exclusion.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
@@ -231,6 +233,8 @@
   validator command.
 - Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact
   exclusion.
+- Plan tab shows the native QA evidence composer for structured Android/iOS physical-run measurements and can reuse the
+  composed JSON in the local import preview.
 - Plan tab prepares a native QA runbook packet with raw video, credential values, and local paths excluded before
   sharing.
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, and owner targets.
