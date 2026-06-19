@@ -145,6 +145,8 @@
   backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
+- Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow
+  statuses are marked as passing.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

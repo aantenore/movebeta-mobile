@@ -108,13 +108,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 54 test files and 204 tests.
+- `npm test`: passed, 54 test files and 205 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3915ms load time, 338ms average inference, and 352ms max inference in the latest run.
+  CPU backend, 3921ms load time, 332ms average inference, and 337ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -202,7 +202,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run native:android:debug`: passed with local Temurin 17 JDK and Android SDK under `.tools`; the merged Android
   manifest check confirms `CAMERA` and `READ_MEDIA_VIDEO`, excludes `RECORD_AUDIO`, and keeps `allowBackup=false`.
 - `tests/nativeQaEvidence.test.ts`: passed and covers device evidence requirements for platform coverage, camera/import
-  workflows, muted recording, native metadata reads, airplane-mode analysis, latency, battery, and thermal budgets.
+  workflows, muted recording, native metadata reads, airplane-mode analysis, latency, battery, thermal budgets, and
+  placeholder evidence rejection.
 - `tests/cueValidationDataset.test.ts`: passed and covers dataset schema version, thresholds, wall-angle coverage,
   reviewer coverage, review modes, score quality, and raw-artifact exclusion.
 - `tests/cueValidationDatasetGate.test.ts`: passed and covers in-app gate-ready state, production evidence gaps, and
