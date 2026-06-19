@@ -90,6 +90,8 @@
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
 - Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
   commands, Markdown rendering, and durable JSON/Markdown writes.
+- Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
+  metadata, Markdown rendering, and durable JSON/Markdown writes.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -106,6 +108,8 @@
 - Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
 - Release handoff packet generation with `npm run release:handoff` after release readiness, screenshots, and archives are
   refreshed.
+- Release archive generation with `npm run release:archives` after `npm run export:web`; writes source/web zip files,
+  checksum manifests, and worktree-state evidence to the parent output directory.
 
 ## Browser Smoke
 

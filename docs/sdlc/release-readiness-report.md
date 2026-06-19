@@ -108,6 +108,8 @@ platforms are validated on physical climbing videos and devices.
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, native QA runbook, web export, EAS standard check, and high-severity audit.
+- `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
+  SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates native QA evidence and cue-validation datasets with their production validators
   before marking those artifacts verified.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
@@ -117,17 +119,19 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 60 test files and 228 tests.
+- `npm test`: passed, 61 test files and 232 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3308ms load time, 351ms average inference, and 353ms max inference in the latest run.
+  CPU backend, 3526ms load time, 337ms average inference, and 342ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
 - `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 6/6 release steps passing.
+- `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
+  `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
   and Google Play credentials that must be supplied outside the repository.
 - `tests/easReleaseChecks.test.ts`: passed and covers standard mode, strict mode, injected credential success, production
@@ -237,8 +241,8 @@ platforms are validated on physical climbing videos and devices.
   store submission blocked by missing full Xcode, physical-device QA, real cue-validation data, EAS project binding, and
   store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 7/7 screenshots, 5 external blockers, current artifacts, and verification
-  commands.
+  `docs/sdlc/release-handoff-packet.md` with 7/7 screenshots, 5 external blockers, release archive artifacts, current
+  artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.

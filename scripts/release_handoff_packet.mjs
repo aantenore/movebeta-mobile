@@ -118,6 +118,8 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release unblock screenshot', 'docs/store/screenshots/07-release-unblock.png'),
       artifact(rootDir, 'Source archive', '../movebeta-mobile-source.zip'),
       artifact(rootDir, 'Web dist archive', '../movebeta-mobile-web-dist.zip'),
+      artifact(rootDir, 'Release archives manifest', '../movebeta-mobile-release-archives.json'),
+      artifact(rootDir, 'Release archives summary', '../movebeta-mobile-release-archives.md'),
     ],
     blockers,
     commands: [

@@ -49,6 +49,16 @@
       "exists": true,
       "label": "Web dist archive",
       "path": "../movebeta-mobile-web-dist.zip"
+    },
+    {
+      "exists": true,
+      "label": "Release archives manifest",
+      "path": "../movebeta-mobile-release-archives.json"
+    },
+    {
+      "exists": true,
+      "label": "Release archives summary",
+      "path": "../movebeta-mobile-release-archives.md"
     }
   ],
   "blockers": [
@@ -160,7 +170,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-19T19:40:23.562Z",
+  "generatedAt": "2026-06-19T19:47:00.134Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -170,11 +180,28 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "9bf652fa55dc65fed4163778405b8e6601c1acf9",
-    "changedPaths": [],
-    "commitSha": "9bf652fa55dc65fed4163778405b8e6601c1acf9",
+    "baseCommitSha": "92bfe1e25675b0f1fc32c0208158db7c8160ea03",
+    "changedPaths": [
+      "M CHANGELOG.md",
+      "M README.md",
+      "M docs/requirements.md",
+      "M docs/sdlc/backlog.md",
+      "M docs/sdlc/launch-readiness-report.json",
+      "M docs/sdlc/mobile-release-process.md",
+      "M docs/sdlc/movenet-readiness-report.json",
+      "M docs/sdlc/release-checklist.md",
+      "M docs/sdlc/release-gate-report.json",
+      "M docs/sdlc/traceability-matrix.md",
+      "M docs/task-plan.md",
+      "M docs/test-plan.md",
+      "M package.json",
+      "M scripts/release_handoff_packet.mjs",
+      "?? scripts/release_archives.mjs",
+      "?? tests/releaseArchives.test.ts"
+    ],
+    "commitSha": "92bfe1e25675b0f1fc32c0208158db7c8160ea03",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
-    "worktreeDirty": false
+    "worktreeDirty": true
   },
   "schemaVersion": "movebeta.release-handoff-packet.v1",
   "screenshots": [
@@ -227,8 +254,8 @@
     "expectedScreenshots": 7,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 351,
-    "moveNetLoadMs": 3308,
+    "moveNetAverageInferenceMs": 337,
+    "moveNetLoadMs": 3526,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",

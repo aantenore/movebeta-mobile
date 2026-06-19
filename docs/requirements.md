@@ -102,6 +102,7 @@
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
+- Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 
 ## Non-Functional
 
@@ -171,6 +172,8 @@
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret
   values, and fail screenshot completeness when the manifest declares a missing screenshot.
+- Release archive manifests must include file size, SHA-256 digest, repository commit, branch, remote URL, and worktree
+  state for every generated delivery archive.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
