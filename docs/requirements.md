@@ -133,6 +133,8 @@
   Pods, and build-settings probe before marking iOS build evidence ready.
 - Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
   key presence, and Google Play credential key presence without exposing any secret values.
+- Generate a cue-validation dataset report that checks missing, malformed, ready, or failed real-review dataset evidence
+  without embedding dataset rows or reviewer identities.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
@@ -269,6 +271,8 @@
   replaceable option, and exclude private note text.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
   review coverage before production movement-quality claims.
+- Cue validation dataset reports must summarize validator status and failed checks without copying reviewer identities or
+  completed worksheet rows into SDLC evidence.
 - In-app cue-validation gate previews must use local dataset content only and must not upload or fetch validation data.
 - Real-world validation campaign tracking must derive seed, worksheet, dataset, gate, progress, and status export from
   existing cue-validation contracts, keep acceptance thresholds replaceable, avoid hidden IO, and exclude raw artifacts.
