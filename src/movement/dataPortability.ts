@@ -65,7 +65,15 @@ export type LocalDataRestorePreview = {
   annotationsToRestore: number;
   consentsToRestore: number;
   drillPracticeToRestore: number;
+  existingAnnotations: number;
+  existingConsents: number;
+  existingDrillPractice: number;
+  existingReports: number;
   generatedAt: string;
+  newAnnotations: number;
+  newConsents: number;
+  newDrillPractice: number;
+  newReports: number;
   reportsToRestore: number;
   skippedAnnotations: number;
   skippedConsents: number;
@@ -74,11 +82,11 @@ export type LocalDataRestorePreview = {
 };
 
 export type LocalDataPortabilityRepositories = {
-  annotations: Pick<ReportAnnotationRepository, 'listAnnotations' | 'saveAnnotation'>;
-  consents: Pick<CoachConsentRepository, 'listConsents' | 'saveConsent'>;
-  drillPractice: Pick<DrillPracticeRepository, 'listRecords' | 'saveRecord'>;
+  annotations: Pick<ReportAnnotationRepository, 'getAnnotation' | 'listAnnotations' | 'saveAnnotation'>;
+  consents: Pick<CoachConsentRepository, 'getConsent' | 'listConsents' | 'saveConsent'>;
+  drillPractice: Pick<DrillPracticeRepository, 'getRecord' | 'listRecords' | 'saveRecord'>;
   now?: () => string;
-  reports: Pick<ReportRepository, 'exportReport' | 'listReports' | 'saveReport'>;
+  reports: Pick<ReportRepository, 'exportReport' | 'getReport' | 'listReports' | 'saveReport'>;
 };
 
 const defaultRepositories: LocalDataPortabilityRepositories = {
@@ -153,20 +161,72 @@ function parseLocalDataBackupPayload(payload: string | LocalDataBackup) {
   };
 }
 
-export function previewLocalDataRestore(payload: string | LocalDataBackup): LocalDataRestorePreview {
-  const { annotations, backup, consents, drillPractice } = parseLocalDataBackupPayload(payload);
+type ParsedLocalDataBackupPayload = ReturnType<typeof parseLocalDataBackupPayload>;
+
+type RestorePreviewExistingCounts = Pick<
+  LocalDataRestorePreview,
+  'existingAnnotations' | 'existingConsents' | 'existingDrillPractice' | 'existingReports'
+>;
+
+function buildLocalDataRestorePreview(
+  { annotations, backup, consents, drillPractice }: ParsedLocalDataBackupPayload,
+  existing: RestorePreviewExistingCounts = {
+    existingAnnotations: 0,
+    existingConsents: 0,
+    existingDrillPractice: 0,
+    existingReports: 0,
+  },
+): LocalDataRestorePreview {
+  const reportsToRestore = backup.reports.length;
+  const annotationsToRestore = annotations.length;
+  const consentsToRestore = consents.length;
+  const drillPracticeToRestore = drillPractice.length;
 
   return {
-    annotationsToRestore: annotations.length,
-    consentsToRestore: consents.length,
-    drillPracticeToRestore: drillPractice.length,
+    annotationsToRestore,
+    consentsToRestore,
+    drillPracticeToRestore,
+    ...existing,
     generatedAt: backup.generatedAt,
-    reportsToRestore: backup.reports.length,
+    newAnnotations: annotationsToRestore - existing.existingAnnotations,
+    newConsents: consentsToRestore - existing.existingConsents,
+    newDrillPractice: drillPracticeToRestore - existing.existingDrillPractice,
+    newReports: reportsToRestore - existing.existingReports,
+    reportsToRestore,
     skippedAnnotations: backup.annotations.length - annotations.length,
     skippedConsents: backup.consents.length - consents.length,
     skippedDrillPractice: backup.drillPractice.length - drillPractice.length,
     status: 'ready-to-restore',
   };
+}
+
+async function countExistingRecords<T>(records: T[], getRecord: (record: T) => Promise<unknown | null>) {
+  const existing = await Promise.all(records.map((record) => getRecord(record)));
+  return existing.filter((record) => record !== null).length;
+}
+
+export function previewLocalDataRestore(payload: string | LocalDataBackup): LocalDataRestorePreview {
+  return buildLocalDataRestorePreview(parseLocalDataBackupPayload(payload));
+}
+
+export async function previewLocalDataRestoreAgainstRepositories(
+  payload: string | LocalDataBackup,
+  repositories: LocalDataPortabilityRepositories = defaultRepositories,
+): Promise<LocalDataRestorePreview> {
+  const parsed = parseLocalDataBackupPayload(payload);
+  const [existingReports, existingAnnotations, existingConsents, existingDrillPractice] = await Promise.all([
+    countExistingRecords(parsed.backup.reports, (report) => repositories.reports.getReport(report.id)),
+    countExistingRecords(parsed.annotations, (annotation) => repositories.annotations.getAnnotation(annotation.reportId)),
+    countExistingRecords(parsed.consents, (consent) => repositories.consents.getConsent(consent.reportId)),
+    countExistingRecords(parsed.drillPractice, (record) => repositories.drillPractice.getRecord(record.drillId)),
+  ]);
+
+  return buildLocalDataRestorePreview(parsed, {
+    existingAnnotations,
+    existingConsents,
+    existingDrillPractice,
+    existingReports,
+  });
 }
 
 export async function restoreLocalDataBackup(
@@ -209,9 +269,17 @@ export function formatLocalDataRestorePreview(preview: LocalDataRestorePreview) 
     `Status: ${preview.status}`,
     `Backup generated at: ${preview.generatedAt}`,
     `Reports ready: ${preview.reportsToRestore}`,
+    `New reports: ${preview.newReports}`,
+    `Existing reports: ${preview.existingReports}`,
     `Training logs ready: ${preview.annotationsToRestore}`,
+    `New training logs: ${preview.newAnnotations}`,
+    `Existing training logs: ${preview.existingAnnotations}`,
     `Coach consent records ready: ${preview.consentsToRestore}`,
+    `New coach consent records: ${preview.newConsents}`,
+    `Existing coach consent records: ${preview.existingConsents}`,
     `Drill practice records ready: ${preview.drillPracticeToRestore}`,
+    `New drill practice records: ${preview.newDrillPractice}`,
+    `Existing drill practice records: ${preview.existingDrillPractice}`,
     `Skipped training logs: ${preview.skippedAnnotations}`,
     `Skipped consent records: ${preview.skippedConsents}`,
     `Skipped drill practice records: ${preview.skippedDrillPractice}`,

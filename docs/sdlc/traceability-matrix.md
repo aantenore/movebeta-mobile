@@ -41,7 +41,7 @@
 | R37 training-log project queue | `docs/requirements.md` | `tests/projectQueue.test.ts`, browser smoke | Progress tab Project queue panel | Covered |
 | R38 progress history filters | `docs/requirements.md` | `tests/progressFilters.test.ts`, browser smoke | Progress tab History filters panel | Covered |
 | R39 privacy deletion bundle | `docs/requirements.md`, `docs/sdlc/privacy-threat-model.md` | `tests/privacyDeletion.test.ts`, browser smoke | Sessions tab Delete receipt | Covered |
-| R40 local data portability | `docs/requirements.md`, `docs/data-governance.md` | `tests/dataPortability.test.ts`, browser smoke | Privacy tab Data portability panel with restore preview | Covered |
+| R40 local data portability | `docs/requirements.md`, `docs/data-governance.md` | `tests/dataPortability.test.ts`, browser smoke | Privacy tab Data portability panel with conflict-aware restore preview | Covered |
 | R41 technique readiness | `docs/requirements.md` | `tests/techniqueReadiness.test.ts`, browser smoke | Progress tab Technique readiness panel | Covered |
 | R42 personal benchmarks | `docs/requirements.md` | `tests/personalBenchmarks.test.ts`, browser smoke | Progress tab Personal benchmarks panel | Covered |
 | R43 next-session planning | `docs/requirements.md` | `tests/sessionPlan.test.ts`, browser smoke | Progress tab Next session plan panel | Covered |

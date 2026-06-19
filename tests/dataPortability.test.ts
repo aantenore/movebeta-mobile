@@ -9,6 +9,7 @@ import {
   formatLocalDataRestorePreview,
   formatLocalDataRestoreResult,
   previewLocalDataRestore,
+  previewLocalDataRestoreAgainstRepositories,
   restoreLocalDataBackup,
   summarizeLocalDataBackup,
 } from '../src/movement/dataPortability';
@@ -185,7 +186,15 @@ describe('local data portability', () => {
       annotationsToRestore: 1,
       consentsToRestore: 1,
       drillPracticeToRestore: 1,
+      existingAnnotations: 0,
+      existingConsents: 0,
+      existingDrillPractice: 0,
+      existingReports: 0,
       generatedAt: '2026-06-19T15:30:00.000Z',
+      newAnnotations: 1,
+      newConsents: 1,
+      newDrillPractice: 1,
+      newReports: 1,
       reportsToRestore: 1,
       skippedAnnotations: 0,
       skippedConsents: 0,
@@ -194,6 +203,50 @@ describe('local data portability', () => {
     });
     expect(formatLocalDataRestorePreview(preview)).toContain('Reports ready: 1');
     expect(await destinationReports.listReports()).toEqual([]);
+  });
+
+  it('previews existing local records before restore without writing repositories', async () => {
+    const source = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations: source.annotations,
+      consents: source.consents,
+      drillPractice: source.drillPractice,
+      now: () => '2026-06-19T15:30:00.000Z',
+      reports: source.reports,
+    });
+    const destinationReports = new InMemoryReportRepository();
+    const destinationAnnotations = new InMemoryReportAnnotationRepository();
+    const destinationConsents = new InMemoryCoachConsentRepository();
+    const destinationDrillPractice = new InMemoryDrillPracticeRepository();
+
+    await destinationReports.saveReport(backup.reports[0]);
+    await destinationAnnotations.saveAnnotation(backup.annotations[0]);
+    await destinationConsents.saveConsent(backup.consents[0]);
+    await destinationDrillPractice.saveRecord(backup.drillPractice[0]);
+
+    const preview = await previewLocalDataRestoreAgainstRepositories(JSON.stringify(backup), {
+      annotations: destinationAnnotations,
+      consents: destinationConsents,
+      drillPractice: destinationDrillPractice,
+      reports: destinationReports,
+    });
+
+    expect(preview).toMatchObject({
+      existingAnnotations: 1,
+      existingConsents: 1,
+      existingDrillPractice: 1,
+      existingReports: 1,
+      newAnnotations: 0,
+      newConsents: 0,
+      newDrillPractice: 0,
+      newReports: 0,
+    });
+    expect(formatLocalDataRestorePreview(preview)).toContain('Existing reports: 1');
+    expect(formatLocalDataRestorePreview(preview)).toContain('New drill practice records: 0');
+    expect(await destinationReports.listReports()).toHaveLength(1);
+    expect(await destinationAnnotations.listAnnotations()).toHaveLength(1);
+    expect(await destinationConsents.listConsents()).toHaveLength(1);
+    expect(await destinationDrillPractice.listRecords()).toHaveLength(1);
   });
 
   it('skips orphan annotations and consent records during restore', async () => {
