@@ -17,6 +17,7 @@ import { theme } from '@/core/theme';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
+import { buildMovementPhaseBreakdown, type MovementPhaseBreakdown } from '@/movement/movementPhaseBreakdown';
 import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts } from '@/movement/repository';
 import {
   assessCaptureCalibration,
@@ -163,6 +164,34 @@ function BetaReplayPlanPanel({ plan }: { plan: BetaReplayPlan }) {
               <Text style={styles.betaStepTitle}>{step.title}</Text>
               <Text style={styles.betaStepAction}>{step.action}</Text>
               <Text style={styles.betaStepEvidence}>{step.evidence}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    </Section>
+  );
+}
+
+function MovementPhaseBreakdownPanel({ breakdown }: { breakdown: MovementPhaseBreakdown }) {
+  return (
+    <Section title="Movement phases" caption="Local phase scoring for where the attempt most needs rehearsal.">
+      <View style={styles.phaseBreakdown}>
+        <View style={styles.phaseSummary}>
+          <Text style={styles.phaseSummaryTitle}>{breakdown.summary}</Text>
+          <Text style={styles.phaseSummaryText}>Primary phase: {breakdown.primaryPhaseId}</Text>
+        </View>
+        <View style={styles.phaseList}>
+          {breakdown.phases.map((phase) => (
+            <View key={phase.id} style={styles.phaseCard}>
+              <View style={styles.phaseTop}>
+                <Text style={styles.phaseTitle}>{phase.title}</Text>
+                <Text style={[styles.phaseStatus, phase.status === 'reset' ? styles.phaseStatusReset : phase.status === 'smooth' ? styles.phaseStatusSmooth : null]}>
+                  {phase.status}
+                </Text>
+              </View>
+              <Text style={styles.phaseScore}>{phase.score}/100</Text>
+              <Text style={styles.phaseEvidence}>{phase.evidence}</Text>
+              <Text style={styles.phaseAction}>{phase.action}</Text>
             </View>
           ))}
         </View>
@@ -782,6 +811,7 @@ export function CoachScreen() {
           <AnalysisQualityPanel report={report} />
           <CaptureReadinessPanel report={report} />
           <BetaReplayPlanPanel plan={buildBetaReplayPlan(report)} />
+          <MovementPhaseBreakdownPanel breakdown={buildMovementPhaseBreakdown(report)} />
 
           <Section title="Movement metrics">
             {report.metrics.map((metric) => (
@@ -1024,6 +1054,86 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+  phaseAction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  phaseBreakdown: {
+    gap: theme.spacing.sm,
+  },
+  phaseCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: 6,
+    padding: theme.spacing.md,
+  },
+  phaseEvidence: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 16,
+  },
+  phaseList: {
+    gap: theme.spacing.sm,
+  },
+  phaseScore: {
+    color: theme.colors.brand,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  phaseStatus: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  phaseStatusReset: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  phaseStatusSmooth: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  phaseSummary: {
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    gap: 4,
+    padding: theme.spacing.md,
+  },
+  phaseSummaryText: {
+    color: '#DCECF3',
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  phaseSummaryTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+    lineHeight: 20,
+  },
+  phaseTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  phaseTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   previewCopy: {
     flex: 1,

@@ -89,3 +89,4 @@
 - Launch-readiness evidence configuration through Expo extra or `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`.
 - Machine-detected launch readiness doctor with a durable JSON report for release evidence drift.
 - Local beta replay plan in Analyze with setup, crux, and exit actions derived from cue and metric evidence.
+- Local movement phase breakdown for launch, crux, and finish rehearsal priorities.
