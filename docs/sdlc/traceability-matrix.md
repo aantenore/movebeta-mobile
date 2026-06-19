@@ -65,3 +65,4 @@
 | R61 in-app cue-validation gate preview | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDatasetGate.test.ts`, `tests/cueValidationGateParity.test.ts`, browser smoke | Sessions completed dataset gate preview | Covered |
 | R62 launch-readiness cockpit | `docs/requirements.md`, `docs/sdlc/release-readiness-report.md` | `tests/launchReadiness.test.ts`, browser smoke | Plan tab Launch readiness | Covered |
 | R63 machine-detected launch readiness | `docs/requirements.md`, `docs/sdlc/mobile-release-process.md` | `tests/launchReadinessDoctor.test.ts`, `npm run release:readiness` | `docs/sdlc/launch-readiness-report.json` | Covered |
+| R64 beta replay plan | `docs/requirements.md` | `tests/betaReplayPlan.test.ts`, browser smoke | Analyze tab Beta replay plan | Covered |

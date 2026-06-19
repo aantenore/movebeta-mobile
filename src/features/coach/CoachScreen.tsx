@@ -15,6 +15,7 @@ import { StateView } from '@/components/StateView';
 import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
 import type { LocalAnalysisReport } from '@/movement/contracts';
+import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
 import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts } from '@/movement/repository';
 import {
@@ -136,6 +137,37 @@ function CaptureReadinessPanel({ report }: { report: LocalAnalysisReport }) {
         ))}
       </View>
     </View>
+  );
+}
+
+function BetaReplayPlanPanel({ plan }: { plan: BetaReplayPlan }) {
+  return (
+    <Section title="Beta replay plan" caption="A local three-step repeat plan built from the current analysis evidence.">
+      <View style={styles.betaPlan}>
+        <View style={styles.betaPlanHeader}>
+          <View style={styles.betaPlanIcon}>
+            <RotateCcw color="#FFFFFF" size={18} />
+          </View>
+          <View style={styles.betaPlanCopy}>
+            <Text style={styles.betaPlanTitle}>{plan.primaryFocus}</Text>
+            <Text style={styles.betaPlanSummary}>{plan.summary}</Text>
+          </View>
+        </View>
+        <View style={styles.betaStepList}>
+          {plan.steps.map((step) => (
+            <View key={step.id} style={styles.betaStep}>
+              <View style={styles.betaStepTop}>
+                <Text style={styles.betaStepPhase}>{step.phase}</Text>
+                <Text style={styles.betaStepTime}>{(step.timestampMs / 1000).toFixed(1)}s</Text>
+              </View>
+              <Text style={styles.betaStepTitle}>{step.title}</Text>
+              <Text style={styles.betaStepAction}>{step.action}</Text>
+              <Text style={styles.betaStepEvidence}>{step.evidence}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    </Section>
   );
 }
 
@@ -749,6 +781,7 @@ export function CoachScreen() {
 
           <AnalysisQualityPanel report={report} />
           <CaptureReadinessPanel report={report} />
+          <BetaReplayPlanPanel plan={buildBetaReplayPlan(report)} />
 
           <Section title="Movement metrics">
             {report.metrics.map((metric) => (
@@ -829,6 +862,84 @@ const styles = StyleSheet.create({
   },
   attemptTitleSelected: {
     color: '#FFFFFF',
+  },
+  betaPlan: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  betaPlanCopy: {
+    flex: 1,
+    gap: 3,
+  },
+  betaPlanHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  betaPlanIcon: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
+  },
+  betaPlanSummary: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  betaPlanTitle: {
+    color: theme.colors.ink,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  betaStep: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.sm,
+  },
+  betaStepAction: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  betaStepEvidence: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 16,
+  },
+  betaStepList: {
+    gap: 7,
+  },
+  betaStepPhase: {
+    color: theme.colors.brandDark,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  betaStepTime: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  betaStepTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  betaStepTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   cameraView: {
     ...StyleSheet.absoluteFill,
