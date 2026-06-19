@@ -107,6 +107,8 @@
   budgets, privacy instructions, and a blocked draft evidence payload.
 - Show a native QA evidence kit in the Plan tab with required physical-device runs, workflows, budgets, placeholder
   policy, and validator command.
+- Prepare a share-safe native QA runbook packet from the Plan tab that packages physical-device workflows, budgets,
+  blocked draft evidence, validator command, and privacy flags without raw video, local paths, or credential values.
 - Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
   exclusion before physical-device evidence is collected.
 - Let release owners paste native QA evidence JSON in the Plan tab and preview ready runs, blocking checks, parse
@@ -216,6 +218,9 @@
   findings, and keep recommendations framed as educational movement feedback.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
+- Native QA runbook packets must be schema-versioned, generated from the same native QA evidence kit shown in the app,
+  include explicit negative flags for secrets, credential values, local paths, and raw video, and reject token-like or
+  local-path evidence before sharing.
 - Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow
   statuses are marked as passing.
 - Native QA evidence kit copy must stay parity-tested with the validator workflow and budget contract and must not include
