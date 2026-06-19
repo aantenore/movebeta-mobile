@@ -104,6 +104,8 @@ web build with `npm run store:screenshots`.
   validator command before internal beta or store submission.
 - In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
   evidence can satisfy release readiness.
+- Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native
+  device checks, and external evidence owners derived from release contracts.
 - Vitest for domain tests.
 
 ## Local Setup

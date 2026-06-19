@@ -96,6 +96,8 @@
   policy, and validator command.
 - Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
   exclusion before physical-device evidence is collected.
+- Show an evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows,
+  required wall-angle coverage, native device checks, and external evidence owners.
 
 ## Non-Functional
 
@@ -159,6 +161,8 @@
   raw video, video URI, or local file URI fields.
 - In-app native QA validation must stay parity-tested with the CLI release validator and reject raw local video
   references, URI fields, local paths, and secret-like keys.
+- Evidence collection planning must be derived from cue-validation acceptance thresholds and native QA budgets rather
+  than hard-coded in the UI.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
