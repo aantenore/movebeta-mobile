@@ -122,6 +122,8 @@
   cue generation, metrics, and privacy checks.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
   quality, cue generation, runtime budget, and privacy boundary without raw video artifacts.
+- Prepare a privacy-safe analysis evidence export from a local report for QA or stakeholder handoff, excluding raw video,
+  video URI, key frames, pose landmark payloads, local paths, and secrets.
 - Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
   real climbing-video validation evidence without claiming production accuracy early.
 - Sync in-app model evidence from the latest MoveNet readiness and model-analysis replay reports without overwriting
@@ -202,6 +204,8 @@
 - Analysis evidence timelines must be versioned, privacy-safe, legacy-report compatible, recomputed after runtime
   measurement, and must block or review weak signal, over-budget runtime, missing cues, upload-enabled reports, or raw
   artifact references.
+- Analysis evidence exports must be schema-versioned, derive from the report timeline, include explicit negative privacy
+  flags, reject URI/path/secret-like evidence, and use the same local prepared-export share flow as other Sessions exports.
 - In-app model evidence must be driven by replaceable configuration, keep local technical readiness distinct from
   real-world validation, and avoid raw video, URI, local-path, or secret-like evidence fields.
 - Model evidence sync must preserve existing real-world validation thresholds, support dry-run output, and update only
