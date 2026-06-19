@@ -56,6 +56,7 @@
         "webSmoke": true,
         "privacyManifest": true,
         "storeListing": true,
+        "modelReadiness": true,
         "androidDebugBuild": true,
         "iosPods": true,
         "iosBuild": false,

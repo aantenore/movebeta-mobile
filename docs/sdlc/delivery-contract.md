@@ -38,8 +38,8 @@ Out of scope:
 
 ## Acceptance Threshold
 
-The increment is acceptable when typecheck, domain tests, web export, browser smoke, and high-severity dependency audit
-pass; all P0/P1 risks are either closed or tracked with an owner; no default workflow uploads raw video.
+The increment is acceptable when typecheck, domain tests, MoveNet readiness, web export, browser smoke, and high-severity
+dependency audit pass; all P0/P1 risks are either closed or tracked with an owner; no default workflow uploads raw video.
 
 ## Requirements
 
@@ -65,6 +65,7 @@ interfaces.
 - Unit/domain: movement schemas, fixture frames, analyzer, provider selection, privacy flags, analysis quality.
 - Repository: report save/list/export/delete, local restore, corrupted storage handling.
 - Build: TypeScript and Expo web export.
+- Model: MoveNet readiness report with local load and inference budget checks.
 - Security: high-severity dependency audit.
 - Manual smoke: tab workflows, responsive layout, no console errors.
 - Native future: camera permission, frame processing latency, airplane-mode analysis, thermal behavior.

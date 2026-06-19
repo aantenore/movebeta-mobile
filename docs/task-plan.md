@@ -83,3 +83,4 @@
 | T79 | Add private repeat-outcome logging and Progress insights | Done |
 | T80 | Add MoveNet model execution smoke for local inference verification | Done |
 | T81 | Add generated screenshot gallery to documentation | Done |
+| T82 | Add MoveNet readiness report and launch-readiness gate | Done |

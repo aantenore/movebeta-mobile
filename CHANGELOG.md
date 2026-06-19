@@ -95,4 +95,6 @@
   next-repeat action.
 - MoveNet model execution smoke that loads TensorFlow.js MoveNet SinglePose Lightning and runs local inference on a
   synthetic frame.
+- MoveNet readiness report with load/inference budgets, memory evidence, launch-readiness detection, and release-gate
+  integration.
 - Documentation screenshot gallery generated from the exported web build.

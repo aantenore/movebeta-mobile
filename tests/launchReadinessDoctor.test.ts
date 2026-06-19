@@ -50,6 +50,10 @@ function makeProjectRoot() {
   writeText(path.join(root, 'docs/store/privacy-declarations.md'), '# Privacy');
   writeJson(path.join(root, 'docs/store/store-manifest.json'), { ok: true });
   writeText(path.join(root, 'docs/store/store-listing.md'), '# Store');
+  writeJson(path.join(root, 'docs/sdlc/movenet-readiness-report.json'), {
+    schemaVersion: 'movebeta.movenet-readiness-report.v1',
+    status: 'ready',
+  });
   for (const fileName of ['01-analyze.png', '02-drills.png', '03-progress.png', '04-sessions.png', '05-plan.png', '06-privacy.png']) {
     writeText(path.join(root, 'docs/store/screenshots', fileName), 'png');
   }
@@ -72,6 +76,7 @@ describe('launch readiness doctor', () => {
     expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' })).toMatchObject({
       androidDebugBuild: true,
       iosPods: true,
+      modelReadiness: true,
       privacyManifest: true,
       releaseGate: true,
       storeListing: true,
@@ -90,8 +95,23 @@ describe('launch readiness doctor', () => {
     expect(report.schemaVersion).toBe('movebeta.launch-readiness-report.v1');
     expect(report.checks.find((check) => check.key === 'androidDebugBuild')?.status).toBe('verified');
     expect(report.checks.find((check) => check.key === 'nativeDeviceQa')?.status).toBe('missing');
+    expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('verified');
     expect(report.summary.status).toBe('blocked');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('ready');
+  });
+
+  it('blocks demo readiness when the MoveNet model report is missing', () => {
+    const rootDir = makeProjectRoot();
+    fs.rmSync(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json'));
+
+    const report = buildLaunchReadinessDoctorReport({
+      env: { NODE_ENV: 'test' },
+      generatedAt: '2026-06-20T08:10:00.000Z',
+      rootDir,
+    });
+
+    expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('missing');
+    expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('blocked');
   });
 
   it('writes a durable launch readiness report', () => {
