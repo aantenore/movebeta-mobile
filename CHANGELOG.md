@@ -61,3 +61,4 @@
 - Cue usefulness insights from private feedback with useful rate, top cue, and review cue signals.
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
 - Private drill practice logging for completed or skipped suggested drills with backup, restore, and deletion coverage.
+- Practice consistency insights from private drill logs with completion rate, latest status, and skipped-cue review.
