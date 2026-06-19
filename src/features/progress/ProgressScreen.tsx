@@ -10,6 +10,7 @@ import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
 import type { LocalAnalysisReport } from '@/movement/contracts';
+import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
 import {
   activeProgressFilterCount,
   defaultProgressFilters,
@@ -74,6 +75,7 @@ export function ProgressScreen() {
   const summary = useMemo(() => summarizeProgress(filteredReports), [filteredReports]);
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
+  const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -240,6 +242,47 @@ export function ProgressScreen() {
             ]}
           />
         </View>
+      </Section>
+
+      <Section title="Personal benchmarks" caption="Best local attempts by style, grade, and gym after current filters.">
+        {personalBenchmarks.bestOverall ? (
+          <View style={styles.benchmarkCard}>
+            <View style={styles.benchmarkHero}>
+              <View>
+                <Text style={styles.benchmarkKicker}>Best overall</Text>
+                <Text style={styles.benchmarkTitle}>{personalBenchmarks.bestOverall.bestReport.session.title}</Text>
+                <Text style={styles.benchmarkMeta}>
+                  {personalBenchmarks.bestOverall.bestReport.session.gym} · {personalBenchmarks.bestOverall.bestReport.session.grade}
+                </Text>
+              </View>
+              <View style={styles.benchmarkScoreBox}>
+                <Text style={styles.benchmarkScore}>{personalBenchmarks.bestOverall.bestReport.analysisQuality.score}</Text>
+                <Text style={styles.benchmarkScoreLabel}>Best</Text>
+              </View>
+            </View>
+            <Text style={styles.benchmarkDelta}>
+              Latest {formatBenchmarkDelta(personalBenchmarks.bestOverall.latestVsBestDelta)} ·{' '}
+              {personalBenchmarks.bestOverall.reportCount} attempts
+            </Text>
+
+            <View style={styles.benchmarkGrid}>
+              {personalBenchmarks.benchmarks.map((benchmark) => (
+                <View key={`${benchmark.segment}-${benchmark.title}`} style={styles.benchmarkItem}>
+                  <Text style={styles.benchmarkItemLabel}>{benchmark.title}</Text>
+                  <Text style={styles.benchmarkItemValue}>{benchmark.bestReport.analysisQuality.score}/100</Text>
+                  <Text style={styles.benchmarkItemMeta}>
+                    {formatBenchmarkDelta(benchmark.latestVsBestDelta)} · avg {benchmark.averageQuality}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>No benchmark yet</Text>
+            <Text style={styles.previewText}>Run one local analysis to create the first personal benchmark.</Text>
+          </View>
+        )}
       </Section>
 
       <Section title="Project queue" caption="Private training-log status converted into the next local repeat.">
@@ -681,6 +724,93 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.spacing.md,
+  },
+  benchmarkCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  benchmarkDelta: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  benchmarkGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  benchmarkHero: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  benchmarkItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexGrow: 1,
+    gap: 3,
+    minWidth: 128,
+    padding: theme.spacing.sm,
+  },
+  benchmarkItemLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  benchmarkItemMeta: {
+    color: theme.colors.text,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  benchmarkItemValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  benchmarkKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  benchmarkMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  benchmarkScore: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  benchmarkScoreBox: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.moss,
+    borderRadius: theme.radius.md,
+    minWidth: 70,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  benchmarkScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  benchmarkTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 22,
   },
   projectQueueStats: {
     flexDirection: 'row',

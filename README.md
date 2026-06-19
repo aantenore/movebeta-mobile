@@ -55,6 +55,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Report-level video analysis performance evidence with local duration, frame rate, and budget status.
 - Local progress insights for best signal, next focus metric, and attempt-to-attempt trend deltas.
 - Local progress filters for wall angle, grade, and gym.
+- Personal benchmarks for best overall, wall angle, grade, and gym attempts after the active local filters.
 - Technique readiness scoring that turns local trends and private training logs into next-session guidance.
 - Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
 - Evidence-based weekly drill plans generated from local report cues.

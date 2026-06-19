@@ -19,6 +19,7 @@
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest technique readiness tests for baseline, repeat, and recovery next-session recommendations.
+- Vitest personal benchmark tests for best overall, wall-angle, grade, gym, latest-vs-best deltas, and empty state.
 - Vitest progress filter tests for wall-angle, grade, and gym option derivation, report filtering, and active filter count.
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
 - Vitest progress insights tests for report ordering, trend deltas, and empty-history handling.
@@ -75,6 +76,7 @@
 - Progress tab shows attempt comparison after at least two local reports.
 - Progress tab shows a project queue derived from private training logs after a Sessions log is saved.
 - Progress tab shows technique readiness with score, next action, warm-up, and risk.
+- Progress tab shows personal benchmarks for best overall and filtered style segments.
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Privacy tab confirms no-upload default behavior.

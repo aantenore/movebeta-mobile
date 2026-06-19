@@ -52,3 +52,4 @@
 - Privacy deletion bundle that removes report, private training log, and coach consent records together with a local receipt.
 - Privacy-safe local backup and restore JSON for reports, private training logs, and coach consent records.
 - Technique readiness score with next action, warm-up, risk, and drill evidence from local progress plus private logs.
+- Personal benchmarks for best overall, wall-angle, grade, and gym attempts with latest-vs-best deltas.

@@ -53,3 +53,4 @@
 | T49 | Create private GitHub repository and push main handoff snapshot | Done |
 | T50 | Add privacy-safe local data backup and restore for reports, training logs, and consent records | Done |
 | T51 | Add technique readiness scoring from trends, cues, project status, effort, confidence, and drills | Done |
+| T52 | Add personal benchmarks for best overall, wall angle, grade, and gym attempts | Done |
