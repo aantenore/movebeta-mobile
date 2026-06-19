@@ -29,6 +29,8 @@ The Plan tab turns the same entitlement contract into a catalog, upgrade path, a
 to a replaceable store-subscription or billing provider integration.
 The Sessions coach library gives the Coach tier a local-first review queue before any multi-account or cloud workspace is
 introduced.
+Local team templates turn consented review queues into reusable class and project workflows without introducing cloud
+sharing before privacy validation is complete.
 
 ## Differentiation
 

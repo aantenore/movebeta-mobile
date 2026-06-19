@@ -33,6 +33,7 @@ import {
   updateReportAnnotation,
   type ReportAnnotation,
 } from '@/movement/reportAnnotationRepository';
+import { buildCoachTeamTemplates } from '@/movement/coachTeamTemplates';
 
 const scoreOptions = [1, 2, 3, 4, 5] as const;
 
@@ -323,6 +324,8 @@ function TrainingLogPanel({
 }
 
 function CoachLibraryPanel({ library }: { library: CoachLibrary }) {
+  const templatePlan = buildCoachTeamTemplates(library);
+
   return (
     <Section title="Coach library" caption="Local review queue built only from reports with active coach consent.">
       <View style={styles.libraryStats}>
@@ -373,6 +376,26 @@ function CoachLibraryPanel({ library }: { library: CoachLibrary }) {
           <Text style={styles.emptyText}>Grant consent on a local report to add it to the coach library.</Text>
         </View>
       )}
+
+      {templatePlan.templates.length > 0 ? (
+        <View style={styles.templateShell}>
+          <Text style={styles.templateHeading}>Team templates</Text>
+          {templatePlan.templates.map((template) => (
+            <View key={template.id} style={styles.templateCard}>
+              <View style={styles.libraryTop}>
+                <View style={styles.libraryTitleGroup}>
+                  <Text style={styles.templateTitle}>{template.title}</Text>
+                  <Text style={styles.libraryMeta}>{template.audience}</Text>
+                </View>
+                <Text style={styles.libraryBadge}>{template.priority}</Text>
+              </View>
+              <Text style={styles.libraryFocus}>{template.focus}</Text>
+              <Text style={styles.templateFormat}>{template.sessionFormat}</Text>
+              <Text style={styles.libraryPrivacy}>{template.privacyNote}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
     </Section>
   );
 }
@@ -794,6 +817,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: theme.spacing.sm,
     justifyContent: 'space-between',
+  },
+  templateCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: '#BAD7C8',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  templateFormat: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  templateHeading: {
+    color: theme.colors.ink,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  templateShell: {
+    backgroundColor: '#E8F4EE',
+    borderColor: '#BAD7C8',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  templateTitle: {
+    color: theme.colors.ink,
+    fontSize: 15,
+    fontWeight: '900',
   },
   reviewBadge: {
     borderRadius: theme.radius.sm,

@@ -69,3 +69,5 @@
   provider coupling.
 - Local coach library queue in Sessions from active consented reports with review priority, signal status, feedback counts,
   practice counts, and no raw video artifacts.
+- Local coach team templates generated from consented review signals for high-priority review, follow-through, signal
+  retakes, and privacy-safe packet handoff.
