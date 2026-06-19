@@ -90,6 +90,15 @@
         "height": 844,
         "width": 390
       }
+    },
+    {
+      "fileName": "07-release-unblock.png",
+      "label": "Release unblock checklist",
+      "route": "plan",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
     }
   ],
   "version": "1.0.0"

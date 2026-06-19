@@ -11,6 +11,7 @@ import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
+import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 
 function statusLabel(status: PlanCatalogItem['status']) {
   if (status === 'current') return 'Current';
@@ -207,12 +208,62 @@ function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvi
   );
 }
 
+function ReleaseUnblockChecklistCard({ checklist }: { checklist: ReturnType<typeof buildReleaseUnblockChecklist> }) {
+  const isReady = checklist.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseUnblock}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{checklist.summary.blockedItems}</Text>
+          <Text style={styles.qaKitMetricLabel}>blockers</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{checklist.summary.ownerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>owners</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{checklist.summary.commandCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>commands</Text>
+        </View>
+      </View>
+      <Text style={styles.qaKitAction}>{checklist.summary.nextAction}</Text>
+      {isReady ? (
+        <View style={styles.releaseReadyRow}>
+          <CheckCircle2 color={theme.colors.success} size={15} />
+          <Text style={styles.qaWorkflowText}>All external release blockers are cleared.</Text>
+        </View>
+      ) : (
+        <View style={styles.releaseUnblockList}>
+          {checklist.items.map((item) => (
+            <View key={item.key} style={styles.releaseUnblockItem}>
+              <View style={styles.releaseUnblockTop}>
+                <View style={styles.launchTrackTitleGroup}>
+                  <Text style={styles.releaseUnblockTitle}>{item.label}</Text>
+                  <Text style={styles.releaseUnblockMeta}>
+                    {item.owner} · {item.tracks.join(', ')}
+                  </Text>
+                </View>
+                <Text style={[styles.launchStatus, styles.launchStatusBlocked]}>{item.status}</Text>
+              </View>
+              <Text style={styles.qaKitText}>{item.proof[0]}</Text>
+              <Text style={styles.qaPlatformMore}>{item.commands[0]}</Text>
+              {item.envKeys.length > 0 ? <Text style={styles.qaPlatformMore}>Keys: {item.envKeys.join(', ')}</Text> : null}
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
+  const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
   const groupedCapabilities = catalog
     .find((item) => item.key === 'coach')
     ?.capabilities.reduce<Record<string, PlanCatalogItem['capabilities']>>((groups, capability) => {
@@ -298,6 +349,10 @@ export function PlanScreen() {
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
         <EvidenceCollectionPlanCard plan={evidencePlan} />
+      </Section>
+
+      <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
+        <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} />
       </Section>
 
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
@@ -648,6 +703,49 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     fontWeight: '800',
+  },
+  releaseReadyRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  releaseUnblock: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  releaseUnblockHero: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  releaseUnblockItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 6,
+    padding: theme.spacing.sm,
+  },
+  releaseUnblockList: {
+    gap: theme.spacing.sm,
+  },
+  releaseUnblockMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  releaseUnblockTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  releaseUnblockTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   readiness: {
     backgroundColor: theme.colors.brandDark,

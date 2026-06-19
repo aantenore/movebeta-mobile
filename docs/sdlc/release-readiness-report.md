@@ -88,7 +88,8 @@ platforms are validated on physical climbing videos and devices.
   copy, and screenshot plan.
 - EAS release readiness validates remote app versioning, internal development/preview profiles, production app bundle
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
-- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, and Privacy.
+- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, Release Unblock, and
+  Privacy.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
 - Cue validation dataset contract, template, and CLI gate are versioned and ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
@@ -97,6 +98,8 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab shows launch-readiness tracks for stakeholder demo, internal native beta, and store submission, keeping
   MoveNet model readiness, full-Xcode, physical-device QA, real cue-validation data, and EAS/store credentials visible
   as explicit blockers.
+- Plan tab shows a release unblock checklist that derives external blockers from launch readiness and lists proof
+  artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
 - Launch-readiness evidence can come from Expo `extra.launchReadinessEvidence` or
   `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
@@ -112,13 +115,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 58 test files and 220 tests.
+- `npm test`: passed, 59 test files and 224 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3410ms load time, 342ms average inference, and 347ms max inference in the latest run.
+  CPU backend, 3887ms load time, 349ms average inference, and 361ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -180,6 +183,8 @@ platforms are validated on physical climbing videos and devices.
   evidence, run summaries, and raw local artifact rejection.
 - `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
   workflow checks, configurable acceptance thresholds, and privacy-safe collection planning.
+- `tests/releaseUnblockChecklist.test.ts`: passed and covers default external blockers, launch-readiness label/action
+  parity, credential key-name disclosure without secret values, and all-ready evidence state.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
@@ -194,7 +199,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated six 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated seven 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
@@ -206,7 +211,7 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, native QA validator
-  preview, evidence collection plan, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  preview, evidence collection plan, release unblock checklist, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.

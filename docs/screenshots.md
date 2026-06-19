@@ -22,6 +22,10 @@ These screenshots are generated from the exported web build with `npm run store:
 
 ![Plan tab showing freemium catalog, capability matrix, and launch readiness](store/screenshots/05-plan.png)
 
+## Release Unblock
+
+![Plan tab release unblock checklist showing external blockers, commands, proof artifacts, and credential key names](store/screenshots/07-release-unblock.png)
+
 ## Privacy
 
 ![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)
