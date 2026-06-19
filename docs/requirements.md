@@ -92,6 +92,8 @@
 - Generate a machine-detected launch-readiness report that separates configured evidence from detected evidence.
 - Generate a native QA runbook for physical iOS and Android validation, including required workflows, performance
   budgets, privacy instructions, and a blocked draft evidence payload.
+- Show a native QA evidence kit in the Plan tab with required physical-device runs, workflows, budgets, placeholder
+  policy, and validator command.
 
 ## Non-Functional
 
@@ -151,6 +153,8 @@
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow
   statuses are marked as passing.
+- Native QA evidence kit copy must stay parity-tested with the validator workflow and budget contract and must not include
+  raw video, video URI, or local file URI fields.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

@@ -6,6 +6,7 @@ import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
+import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 
@@ -84,10 +85,58 @@ function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
   );
 }
 
+function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQaEvidenceKit> }) {
+  const latencyCopy = kit.budgets.maxLatencyByClipMs
+    .map(
+      (budget) =>
+        `${Math.round(budget.maxClipDurationMs / 1000)}s clip: ${Math.round(budget.maxAnalysisMs / 1000)}s analysis`,
+    )
+    .join(' · ');
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{kit.summary.requiredRuns}</Text>
+          <Text style={styles.qaKitMetricLabel}>device runs</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{kit.summary.workflowCountPerPlatform}</Text>
+          <Text style={styles.qaKitMetricLabel}>workflows</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{kit.budgets.maxBatteryDropPct}%</Text>
+          <Text style={styles.qaKitMetricLabel}>battery max</Text>
+        </View>
+      </View>
+      <Text style={styles.qaKitAction}>{kit.summary.action}</Text>
+      <Text style={styles.qaKitText}>{kit.placeholderPolicy}</Text>
+      <Text style={styles.qaKitText}>Latency budgets: {latencyCopy}</Text>
+      <View style={styles.qaPlatformList}>
+        {kit.platforms.map((platform) => (
+          <View key={platform.key} style={styles.qaPlatform}>
+            <Text style={styles.qaPlatformTitle}>{platform.label}</Text>
+            {platform.requiredWorkflows.slice(0, 4).map((workflow) => (
+              <View key={workflow.key} style={styles.qaWorkflowRow}>
+                <CheckCircle2 color={theme.colors.success} size={14} />
+                <Text style={styles.qaWorkflowText}>{workflow.label}</Text>
+              </View>
+            ))}
+            <Text style={styles.qaPlatformMore}>
+              +{Math.max(0, platform.requiredWorkflows.length - 4)} more · {kit.validationCommand}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
+  const nativeQaKit = buildNativeQaEvidenceKit();
   const groupedCapabilities = catalog
     .find((item) => item.key === 'coach')
     ?.capabilities.reduce<Record<string, PlanCatalogItem['capabilities']>>((groups, capability) => {
@@ -165,6 +214,10 @@ export function PlanScreen() {
             ))}
           </View>
         </View>
+      </Section>
+
+      <Section title="Native QA evidence kit" caption="Physical-device evidence checklist for internal beta and store readiness.">
+        <NativeQaEvidenceKitCard kit={nativeQaKit} />
       </Section>
 
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
@@ -387,6 +440,78 @@ const styles = StyleSheet.create({
   },
   planUpgrade: {
     borderColor: theme.colors.brand,
+  },
+  qaKit: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  qaKitAction: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  qaKitHero: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  qaKitMetric: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  qaKitMetricLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  qaKitMetricValue: {
+    color: theme.colors.brand,
+    fontSize: 19,
+    fontWeight: '900',
+  },
+  qaKitText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  qaPlatform: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 7,
+    padding: theme.spacing.sm,
+  },
+  qaPlatformList: {
+    gap: theme.spacing.sm,
+  },
+  qaPlatformMore: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  qaPlatformTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  qaWorkflowRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  qaWorkflowText: {
+    color: theme.colors.text,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '800',
   },
   readiness: {
     backgroundColor: theme.colors.brandDark,
