@@ -111,6 +111,8 @@ web build with `npm run store:screenshots`.
   device checks, and external evidence owners derived from release contracts.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
+- Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
+  evidence into one share-safe JSON handoff.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - Vitest for domain tests.
