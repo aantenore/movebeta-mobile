@@ -23,6 +23,8 @@
   coverage, review mode, score quality, and raw-artifact exclusion.
 - Prepare a local cue-validation study seed from active consented coach packets with packet-only review tasks, target
   thresholds, and no invented reviewer scores.
+- Prepare a local cue-validation clip intake manifest from the study seed with consented clip coverage, wall-angle gaps,
+  required coach review rows, and no packet payloads or raw artifacts.
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
@@ -282,6 +284,8 @@
   existing cue-validation contracts, keep acceptance thresholds replaceable, avoid hidden IO, and exclude raw artifacts.
 - Cue validation study seeds must not include raw video, URI, pose frames, key frames, landmarks, private notes, drill
   notes, or generated reviewer scores.
+- Cue validation clip intake manifests must be schema-versioned, derive clip/review-row/coverage status from the study
+  seed, exclude coach packet payloads, and reject raw video URI/path text.
 - Cue validation review worksheets must keep reviewer identities and score fields empty until real coach review is entered.
 - Cue validation worksheet CSV exports must reject raw artifact references and keep reviewer/score cells blank.
 - Completed worksheet CSV imports must reject missing reviewer identities, missing scores, out-of-range scores, duplicate

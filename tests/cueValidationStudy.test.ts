@@ -3,16 +3,21 @@ import { describe, expect, it } from 'vitest';
 import { createCoachReviewConsentRecord } from '../src/movement/coachConsentRepository';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import {
+  assertCueValidationClipIntakeManifestIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
+  buildCueValidationClipIntakeManifest,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationStudySeed,
+  cueValidationClipIntakeManifestSchemaVersion,
+  formatCueValidationClipIntakeManifestSummary,
   formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
+  type CueValidationClipIntakeManifest,
   type CueValidationReviewWorksheet,
 } from '../src/movement/cueValidationStudy';
 import { validateCueValidationDataset } from '../scripts/cue_validation_dataset_checks.mjs';
@@ -174,6 +179,90 @@ describe('cue validation study seed', () => {
       generatedAt: '2026-06-20T00:05:00.000Z',
       readyForValidation: false,
     });
+  });
+
+  it('builds a privacy-safe clip intake manifest from consented reports', async () => {
+    const report = await buildReport('clip-intake-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:07:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        generatedAt: '2026-06-20T00:08:00.000Z',
+      },
+    );
+
+    const manifest = buildCueValidationClipIntakeManifest(seed, {
+      generatedAt: '2026-06-20T00:09:00.000Z',
+      reviewerCount: 2,
+    });
+    const serialized = JSON.stringify(manifest);
+
+    expect(() => assertCueValidationClipIntakeManifestIsPrivacySafe(manifest)).not.toThrow();
+    expect(manifest).toMatchObject({
+      generatedAt: '2026-06-20T00:09:00.000Z',
+      privacy: {
+        coachPacketsIncluded: false,
+        keyFramesIncluded: false,
+        landmarksIncluded: false,
+        privateNotesIncluded: false,
+        rawUrisIncluded: false,
+        rawVideoIncluded: false,
+        reviewerScoresInvented: false,
+        videoLeavesDevice: false,
+      },
+      schemaVersion: cueValidationClipIntakeManifestSchemaVersion,
+      sourceSeedGeneratedAt: seed.generatedAt,
+      summary: {
+        clipCount: 1,
+        missingWallAngles: [],
+        requiredCoachReviewRows: seed.cueCount * 2,
+        status: 'ready-for-review',
+        targetClipCount: 1,
+        wallAngles: [report.session.wallAngle],
+      },
+    });
+    expect(manifest.clips[0]).toMatchObject({
+      clipId: report.id,
+      consentRecordId: `${report.id}:2026-06-20T00:07:00.000Z`,
+      cueCount: report.cues.length,
+      packetReportId: report.id,
+      requiredCoachReviewRows: report.cues.length * 2,
+      status: 'ready-for-packet-review',
+      wallAngle: report.session.wallAngle,
+    });
+    expect(formatCueValidationClipIntakeManifestSummary(manifest)).toBe(
+      `1/1 consented clips · 1/1 wall angles · ${report.cues.length * 2} coach review rows · status ready-for-review · raw video: no`,
+    );
+    expect(serialized).not.toMatch(/(?:file:\/\/|content:\/\/|"(?:privateNote|rawVideoUri|videoUri|landmarks|keyFrame)"\s*:)/i);
+  });
+
+  it('rejects clip intake manifests with raw artifact text', async () => {
+    const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:11:00.000Z' });
+    const manifest = buildCueValidationClipIntakeManifest(seed, { generatedAt: '2026-06-20T00:12:00.000Z' });
+    const unsafeManifest = {
+      ...manifest,
+      clips: [
+        {
+          clipId: 'file:///private/raw-video.mov',
+          consentRecordId: 'consent',
+          cueCount: 1,
+          durationMs: 1000,
+          grade: '6b',
+          gym: 'Local gym',
+          packetReportId: 'packet',
+          requiredCoachReviewRows: 2,
+          status: 'ready-for-packet-review',
+          title: 'Unsafe clip',
+          wallAngle: 'vertical',
+        },
+      ],
+    } as unknown as CueValidationClipIntakeManifest;
+
+    expect(() => assertCueValidationClipIntakeManifestIsPrivacySafe(unsafeManifest)).toThrow(/raw artifact text/i);
   });
 
   it('builds a blank review worksheet without inventing coach identities or scores', async () => {
