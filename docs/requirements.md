@@ -103,6 +103,8 @@
 - Show a configurable Plan tab with current plan, upgrade path, capability matrix, and billing-provider readiness.
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
+- Generate a share-safe store submission packet with listing metadata, privacy declarations, screenshot plan, copy-risk
+  scan, commands, and no credential values or raw artifacts.
 - Expose provider, active plan, privacy mode, and launch-readiness evidence in configuration.
 - Generate a machine-detected launch-readiness report that separates configured evidence from detected evidence.
 - Generate a native QA runbook for physical iOS and Android validation, including required workflows, performance
@@ -208,6 +210,8 @@
   and the build-settings probe are ready.
 - Store credential evidence must come from a generated report that includes key names and readiness state only, never
   credential values, token-like strings, private keys, or local credential paths.
+- Store submission packets must be schema-versioned, generated from the store readiness manifest, include safety-language
+  review status, list submission commands, expose negative privacy flags, and reject token-like, local-path, or raw-artifact text.
 - Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
 - Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Launch-readiness detection must validate native QA evidence and cue-validation dataset content before marking either

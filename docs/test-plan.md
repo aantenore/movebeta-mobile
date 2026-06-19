@@ -93,6 +93,8 @@
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
 - Vitest store-readiness tests for bundle/package identifiers, permission copy, privacy declaration, listing copy, and
   screenshot plan.
+- Vitest store-submission packet tests for versioned metadata packets, safety-language review state, submission commands,
+  negative privacy flags, and token/path/raw-artifact rejection.
 - Vitest Android manifest checks for camera/import permissions, audio exclusion, and disabled Android backup.
 - Vitest native QA evidence tests for platform coverage, muted recording, metadata reads, workflow pass/fail state,
   latency budgets, battery budget, thermal state, and placeholder evidence rejection.
@@ -249,6 +251,8 @@
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
+- Plan tab prepares a store submission packet with metadata, privacy declarations, screenshots, copy checks, and
+  submission commands while excluding credentials and raw artifacts.
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.

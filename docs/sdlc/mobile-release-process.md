@@ -67,6 +67,7 @@ Store submission is prepared by the store readiness kit, but production submissi
 Before submitting:
 
 - Regenerate `docs/store/store-manifest.json` with `npm run store:manifest`.
+- Regenerate `docs/store/store-submission-packet.json` with `npm run store:submission`.
 - Capture current screenshots with `npm run store:screenshots`.
 - Refresh `docs/sdlc/launch-readiness-report.json` with `npm run release:readiness`.
 - Refresh `docs/sdlc/native-qa-runbook.json` with `npm run native:qa:runbook`.

@@ -102,7 +102,7 @@
     },
     {
       "fileName": "08-data-portability.png",
-      "label": "Checksum-aware local backup restore preview",
+      "label": "Local backup restore preview",
       "route": "privacy",
       "viewport": {
         "height": 844,

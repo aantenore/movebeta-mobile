@@ -1,0 +1,250 @@
+{
+  "commands": [
+    {
+      "command": "npm run store:manifest",
+      "key": "store-manifest",
+      "label": "Store manifest",
+      "owner": "product",
+      "purpose": "Regenerate listing, privacy declarations, permission copy, identifiers, and screenshot plan from release config."
+    },
+    {
+      "command": "npm run store:screenshots",
+      "key": "store-screenshots",
+      "label": "Store screenshots",
+      "owner": "product",
+      "purpose": "Refresh current mobile screenshots before App Store or Play submission."
+    },
+    {
+      "command": "npm run store:submission",
+      "key": "store-submission-packet",
+      "label": "Store submission packet",
+      "owner": "release",
+      "purpose": "Regenerate this share-safe metadata packet after manifest or screenshots change."
+    },
+    {
+      "command": "npm run release:credentials:doctor",
+      "key": "store-credentials-doctor",
+      "label": "Store credentials doctor",
+      "owner": "release",
+      "purpose": "Verify account-bound Expo, Apple, and Google credential key presence without exposing values."
+    },
+    {
+      "command": "npm run release:eas:strict",
+      "key": "eas-strict",
+      "label": "Strict EAS submission gate",
+      "owner": "release",
+      "purpose": "Block native store submission until Expo, Apple, and Google credentials are present."
+    },
+    {
+      "command": "npm run native:qa:validate",
+      "key": "native-qa-validate",
+      "label": "Native QA validator",
+      "owner": "engineering",
+      "purpose": "Verify physical-device evidence before claiming native release readiness."
+    }
+  ],
+  "generatedAt": "2026-06-19T23:53:16.493Z",
+  "manifest": {
+    "androidPackage": "com.movebeta.mobile",
+    "androidPermissions": [
+      "CAMERA",
+      "READ_MEDIA_VIDEO"
+    ],
+    "iosBundleIdentifier": "com.movebeta.mobile",
+    "iosUsageDescriptions": {
+      "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
+      "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
+      "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+    },
+    "listing": {
+      "appName": "MoveBeta",
+      "category": "Sports",
+      "fullDescription": "MoveBeta helps indoor climbers review short attempts without sending raw video to a cloud service. Calibrate capture setup, record or import a clip, run local pose analysis, review movement quality, and turn cues into drills. The app focuses on flow, pause time, bent-arm load, hip drift, and likely foot cuts while keeping reports, metrics, and diagnostics privacy-safe by default.",
+      "keywords": [
+        "climbing",
+        "bouldering",
+        "training",
+        "movement",
+        "technique",
+        "video",
+        "coach",
+        "on-device"
+      ],
+      "promotionalText": "Review climbing movement locally with pose-based cues, drills, and privacy-safe reports.",
+      "shortDescription": "On-device climbing video coach for local technique review.",
+      "subtitle": "Local climbing coach"
+    },
+    "privacy": {
+      "cloudSyncDefault": false,
+      "dataLinkedToUser": false,
+      "diagnosticsContainRawVideo": false,
+      "medicalClaims": false,
+      "rawVideoUploadDefault": false,
+      "tracking": false
+    },
+    "screenshots": [
+      {
+        "fileName": "01-analyze.png",
+        "label": "On-device video analysis and capture setup",
+        "route": "analyze",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "02-drills.png",
+        "label": "Evidence-based drills",
+        "route": "drills",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "03-progress.png",
+        "label": "Technique progress trends",
+        "route": "progress",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "04-sessions.png",
+        "label": "Local report history",
+        "route": "sessions",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "05-plan.png",
+        "label": "Freemium plan catalog",
+        "route": "plan",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "06-privacy.png",
+        "label": "Privacy and offline readiness",
+        "route": "privacy",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "07-release-unblock.png",
+        "label": "Release unblock checklist",
+        "route": "plan",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
+        "fileName": "08-data-portability.png",
+        "label": "Local backup restore preview",
+        "route": "privacy",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      }
+    ],
+    "version": "1.0.0"
+  },
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretsIncluded": false,
+    "trackingEnabled": false
+  },
+  "readiness": {
+    "checks": [
+      {
+        "detail": "com.movebeta.mobile",
+        "id": "ios-bundle",
+        "label": "iOS bundle identifier",
+        "status": "pass"
+      },
+      {
+        "detail": "com.movebeta.mobile",
+        "id": "android-package",
+        "label": "Android package",
+        "status": "pass"
+      },
+      {
+        "detail": "CAMERA, READ_MEDIA_VIDEO",
+        "id": "android-permissions",
+        "label": "Android video permissions",
+        "status": "pass"
+      },
+      {
+        "detail": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
+        "id": "ios-camera-copy",
+        "label": "iOS camera privacy copy",
+        "status": "pass"
+      },
+      {
+        "detail": "MoveBeta can import a climbing video you select for on-device movement analysis.",
+        "id": "ios-library-copy",
+        "label": "iOS photo library privacy copy",
+        "status": "pass"
+      },
+      {
+        "detail": "No microphone usage description is declared for the muted movement workflow.",
+        "id": "ios-microphone-absent",
+        "label": "iOS microphone permission",
+        "status": "pass"
+      },
+      {
+        "detail": "Raw video upload, cloud sync, tracking, and raw-video diagnostics are off by default.",
+        "id": "privacy-declaration",
+        "label": "Store privacy declaration",
+        "status": "pass"
+      },
+      {
+        "detail": "MoveBeta · Local climbing coach",
+        "id": "listing-copy",
+        "label": "Store listing copy",
+        "status": "pass"
+      },
+      {
+        "detail": "8 screenshots across Analyze, Drills, Progress, Sessions, Plan, and Privacy.",
+        "id": "screenshots",
+        "label": "Store screenshot plan",
+        "status": "pass"
+      }
+    ],
+    "ready": true
+  },
+  "safetyLanguage": {
+    "blockerCount": 0,
+    "clearSourceCount": 4,
+    "issueCount": 0,
+    "issues": [],
+    "recommendation": "Current checked copy avoids medical, injury-prevention, and route-safety guarantees.",
+    "scannedSourceCount": 4,
+    "status": "clear",
+    "warningCount": 0
+  },
+  "schemaVersion": "movebeta.store-submission-packet.v1",
+  "summary": {
+    "androidPackage": "com.movebeta.mobile",
+    "blockerCount": 0,
+    "checkCount": 9,
+    "checksPassed": 9,
+    "copyIssueCount": 0,
+    "iosBundleIdentifier": "com.movebeta.mobile",
+    "nextAction": "Store metadata packet is ready for account-bound credential and native QA gates.",
+    "screenshotCount": 8,
+    "status": "metadata-ready"
+  }
+}
