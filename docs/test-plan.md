@@ -62,6 +62,8 @@
   Expo/env launch evidence parsing.
 - Vitest launch-readiness doctor tests for artifact detection, configured-evidence drift, and durable report writes.
 - Vitest MoveNet readiness report tests for ready/degraded budget checks without loading the model in unit tests.
+- Vitest MoveNet pose-mapper contract tests for required keypoint mapping, missing-keypoint errors, and mapped-frame
+  analyzer compatibility.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest beta replay plan tests for setup/crux/exit action generation, timestamp ordering, and no-cue metric fallback.
 - Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.

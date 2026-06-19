@@ -38,6 +38,7 @@ web build with `npm run store:screenshots`.
 - Capture setup calibration for privacy, framing, angle, distance, lighting, wall contrast, and phone stability before
   recording.
 - TensorFlow.js MoveNet for browser-side pose extraction from local video sources.
+- Reusable MoveNet keypoint mapper that converts model output into the normalized `PoseFrame` analysis contract.
 - Local Expo native module for Apple Vision and Android ML Kit pose extraction.
 - Zod contracts for movement data and report validation.
 - Local rule engine for coaching cues.
@@ -94,6 +95,7 @@ web build with `npm run store:screenshots`.
 - Practice-aware next-session planning that lowers intensity when suggested drills are repeatedly skipped.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
 - MoveNet model execution smoke for verifying that the local TensorFlow.js model loads and runs inference.
+- MoveNet pose contract tests that replay model-shaped keypoints through the local movement analyzer.
 - MoveNet readiness report with load-time, inference-time, backend, memory, budget checks, and explicit real-video
   validation limitations.
 - Generated native QA runbook for physical iOS and Android validation, including workflow steps, performance budgets,

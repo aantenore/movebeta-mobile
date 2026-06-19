@@ -1,28 +1,11 @@
 import { videoAnalysisConfig } from '@/video/videoConfig';
 
-import type { LandmarkName, PoseFrame, PoseLandmark, VideoAsset } from './contracts';
+import type { PoseFrame, VideoAsset } from './contracts';
+import { tryMapMoveNetPoseToFrame } from './movenetPoseMapper';
 import type { AnalysisProvider, PoseEstimator } from './onDevicePipeline';
 
 type PoseDetectionModule = typeof import('@tensorflow-models/pose-detection');
 type PoseDetector = import('@tensorflow-models/pose-detection').PoseDetector;
-type Pose = import('@tensorflow-models/pose-detection').Pose;
-type Keypoint = import('@tensorflow-models/pose-detection').Keypoint;
-
-const requiredKeypoints: Record<LandmarkName, string> = {
-  leftAnkle: 'left_ankle',
-  leftElbow: 'left_elbow',
-  leftHip: 'left_hip',
-  leftKnee: 'left_knee',
-  leftShoulder: 'left_shoulder',
-  leftWrist: 'left_wrist',
-  nose: 'nose',
-  rightAnkle: 'right_ankle',
-  rightElbow: 'right_elbow',
-  rightHip: 'right_hip',
-  rightKnee: 'right_knee',
-  rightShoulder: 'right_shoulder',
-  rightWrist: 'right_wrist',
-};
 
 const detectorLoadTimeoutMs = 25_000;
 const videoEventTimeoutMs = 12_000;
@@ -30,10 +13,6 @@ let detectorPromise: Promise<PoseDetector> | null = null;
 
 function hasBrowserVideoRuntime() {
   return typeof document !== 'undefined' && typeof HTMLVideoElement !== 'undefined';
-}
-
-function clamp(value: number) {
-  return Math.max(0, Math.min(1, value));
 }
 
 function waitForVideoEvent(element: HTMLVideoElement, eventName: string, timeoutMs = videoEventTimeoutMs) {
@@ -129,44 +108,10 @@ async function seekVideo(element: HTMLVideoElement, timestampMs: number) {
   await waitForVideoEvent(element, 'seeked');
 }
 
-function indexKeypoints(keypoints: Keypoint[]) {
-  return new Map(keypoints.filter((keypoint) => keypoint.name).map((keypoint) => [keypoint.name, keypoint]));
-}
-
-function mapKeypoint(name: LandmarkName, keypoint: Keypoint | undefined, width: number, height: number): PoseLandmark {
-  if (!keypoint || !Number.isFinite(keypoint.x) || !Number.isFinite(keypoint.y)) {
-    throw new Error(`MoveNet did not return the required ${name} keypoint.`);
-  }
-
-  return {
-    name,
-    visibility: clamp(keypoint.score ?? 1),
-    x: clamp(keypoint.x / width),
-    y: clamp(keypoint.y / height),
-    z: keypoint.z,
-  };
-}
-
-function mapPoseToFrame(pose: Pose, element: HTMLVideoElement, timestampMs: number): PoseFrame {
-  const keypoints = indexKeypoints(pose.keypoints);
+function getVideoDimensions(element: HTMLVideoElement) {
   const width = element.videoWidth || element.width || 1;
   const height = element.videoHeight || element.height || 1;
-  const landmarks = Object.entries(requiredKeypoints).map(([name, keypointName]) =>
-    mapKeypoint(name as LandmarkName, keypoints.get(keypointName), width, height),
-  );
-
-  return {
-    landmarks,
-    timestampMs,
-  };
-}
-
-function tryMapPoseToFrame(pose: Pose, element: HTMLVideoElement, timestampMs: number) {
-  try {
-    return mapPoseToFrame(pose, element, timestampMs);
-  } catch {
-    return null;
-  }
+  return { height, width };
 }
 
 function getFrameTimestamps(video: VideoAsset) {
@@ -204,7 +149,7 @@ export class WebTfjsMoveNetPoseEstimator implements PoseEstimator {
         await seekVideo(element, timestampMs);
         const poses = await detector.estimatePoses(element, { maxPoses: 1 }, timestampMs);
         if (poses[0]) {
-          const frame = tryMapPoseToFrame(poses[0], element, timestampMs);
+          const frame = tryMapMoveNetPoseToFrame(poses[0], getVideoDimensions(element), timestampMs);
           if (frame) frames.push(frame);
         }
       }

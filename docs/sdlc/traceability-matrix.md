@@ -73,3 +73,4 @@
 | R69 screenshot documentation | `docs/screenshots.md`, `docs/store/screenshot-plan.md` | `npm run store:screenshots` | Documentation gallery review | Covered |
 | R70 MoveNet readiness report | `docs/requirements.md` | `tests/movenetReadinessReport.test.ts`, `tests/launchReadinessDoctor.test.ts`, `npm run model:movenet:readiness` | Real climbing-video QA with consented clips | Model budget covered; video validation needed |
 | R71 native QA runbook | `docs/requirements.md`, `docs/sdlc/native-qa-matrix.md` | `tests/nativeQaRunbook.test.ts`, `tests/launchReadinessDoctor.test.ts`, `npm run native:qa:runbook` | Physical iOS and Android device runs | Runbook covered; device evidence needed |
+| R72 MoveNet pose-frame contract | `docs/requirements.md`, `docs/adr/0002-web-movenet-video-provider.md` | `tests/movenetPoseMapper.test.ts` | Real climbing-video QA with consented clips | Contract covered; video validation needed |
