@@ -115,6 +115,8 @@
   required wall-angle coverage, native device checks, and external evidence owners.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
+- Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
+  expectations, owners, affected tracks, acceptance criteria, and env key names without credential values.
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
@@ -226,6 +228,9 @@
   than hard-coded in the UI.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
+- Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit
+  negative flags for credential values, local paths, and raw artifacts, and reject token-like or local-path evidence before
+  sharing.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret
   values, and fail screenshot completeness when the manifest declares a missing screenshot.
 - Release archive manifests must include file size, SHA-256 digest, repository commit, branch, remote URL, and worktree

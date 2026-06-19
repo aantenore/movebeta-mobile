@@ -106,6 +106,8 @@
   configurable acceptance thresholds, and raw-artifact exclusion.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
+- Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
+  token/local-path rejection before sharing.
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
@@ -217,6 +219,7 @@
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, and owner targets.
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
+- Plan tab prepares a release unblock packet with credential values excluded before sharing.
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.
