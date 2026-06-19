@@ -87,6 +87,8 @@
 - Sessions UI for pasting completed cue-validation worksheet CSV and preparing gate-compatible dataset JSON locally.
 - Versioned cue-validation dataset JSON contract required by the production validation gate.
 - Native share action for prepared Sessions exports.
+- File-based native sharing for prepared Sessions exports, writing `.json`, `.csv`, or `.txt` payloads to cache when file
+  sharing is available and falling back to text sharing otherwise.
 - In-app cue-validation gate preview for completed validation datasets.
 - Automated parity coverage between the in-app cue-validation gate preview and the CLI production gate.
 - Configurable Plan launch-readiness cockpit for demo, internal beta, and store-submission tracks.

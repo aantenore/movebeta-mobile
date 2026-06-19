@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Target, Trash2, UserCheck } from 'lucide-react-native';
 
@@ -42,6 +42,7 @@ import {
   formatCueValidationStudySeedSummary,
 } from '@/movement/cueValidationStudy';
 import { theme } from '@/core/theme';
+import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
@@ -829,8 +830,8 @@ export function SessionsScreen() {
     if (!preparedExport) return;
     selectionFeedback();
     try {
-      await Share.share({
-        message: `${preparedExport.title}\n\n${preparedExport.body}`,
+      await sharePreparedExportFile({
+        body: preparedExport.body,
         title: preparedExport.title,
       });
     } catch (error) {
