@@ -58,6 +58,7 @@
   provider-agnostic recommendations.
 - Vitest launch-readiness and config tests for default blockers, all-ready evidence, partial evidence overrides, and
   Expo/env launch evidence parsing.
+- Vitest launch-readiness doctor tests for artifact detection, configured-evidence drift, and durable report writes.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
@@ -74,6 +75,7 @@
 - Native QA evidence validation with `npm run native:qa:validate` after real device runs are captured.
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.
+- Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
 
 ## Browser Smoke
 
