@@ -20,6 +20,19 @@ import {
 } from './reportAnnotationRepository';
 import { reportRepository, type ReportRepository } from './reportRepository';
 
+export const LocalDataBackupRecordCountsSchema = z.object({
+  annotations: z.number().int().min(0),
+  consents: z.number().int().min(0),
+  drillPractice: z.number().int().min(0),
+  reports: z.number().int().min(0),
+});
+
+export const LocalDataBackupIntegritySchema = z.object({
+  algorithm: z.literal('fnv1a-32'),
+  checksum: z.string().regex(/^[a-f0-9]{8}$/),
+  recordCounts: LocalDataBackupRecordCountsSchema,
+});
+
 export const LocalDataBackupSchema = z.object({
   app: z.object({
     activePlan: z.string(),
@@ -30,6 +43,7 @@ export const LocalDataBackupSchema = z.object({
   consents: z.array(CoachReviewConsentRecordSchema),
   drillPractice: z.array(DrillPracticeRecordSchema).default([]),
   generatedAt: z.string(),
+  integrity: LocalDataBackupIntegritySchema.optional(),
   privacy: z.object({
     excludedArtifacts: z.array(z.string()),
     rawVideoIncluded: z.literal(false),
@@ -40,12 +54,16 @@ export const LocalDataBackupSchema = z.object({
 });
 
 export type LocalDataBackup = z.infer<typeof LocalDataBackupSchema>;
+export type LocalDataBackupIntegrity = z.infer<typeof LocalDataBackupIntegritySchema>;
+export type LocalDataBackupRecordCounts = z.infer<typeof LocalDataBackupRecordCountsSchema>;
 
 export type LocalDataBackupSummary = {
   annotations: number;
+  checksum: string | null;
   consents: number;
   drillPractice: number;
   generatedAt: string;
+  integrityVerified: boolean;
   reports: number;
 };
 
@@ -70,6 +88,8 @@ export type LocalDataRestorePreview = {
   existingDrillPractice: number;
   existingReports: number;
   generatedAt: string;
+  integrityChecksum: string | null;
+  integrityVerified: boolean;
   newAnnotations: number;
   newConsents: number;
   newDrillPractice: number;
@@ -107,9 +127,68 @@ function assertNoRawVideoArtifacts(serialized: string) {
   }
 }
 
+function stableStringify(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+  }
+  if (value && typeof value === 'object') {
+    return `{${Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => `${JSON.stringify(key)}:${stableStringify(item)}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function fnv1a32(value: string) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function backupContentForIntegrity(backup: LocalDataBackup) {
+  const { integrity: _integrity, ...content } = backup;
+  return content;
+}
+
+function countLocalDataBackupRecords(backup: Pick<LocalDataBackup, 'annotations' | 'consents' | 'drillPractice' | 'reports'>): LocalDataBackupRecordCounts {
+  return {
+    annotations: backup.annotations.length,
+    consents: backup.consents.length,
+    drillPractice: backup.drillPractice.length,
+    reports: backup.reports.length,
+  };
+}
+
+export function createLocalDataBackupIntegrity(backup: LocalDataBackup): LocalDataBackupIntegrity {
+  const parsed = LocalDataBackupSchema.omit({ integrity: true }).parse(backupContentForIntegrity(backup));
+  return {
+    algorithm: 'fnv1a-32',
+    checksum: fnv1a32(stableStringify(parsed)),
+    recordCounts: countLocalDataBackupRecords(parsed),
+  };
+}
+
+export function verifyLocalDataBackupIntegrity(backup: LocalDataBackup) {
+  if (!backup.integrity) return false;
+  const expected = createLocalDataBackupIntegrity(backup);
+  const matchesChecksum = backup.integrity.checksum === expected.checksum;
+  const matchesCounts = JSON.stringify(backup.integrity.recordCounts) === JSON.stringify(expected.recordCounts);
+
+  if (!matchesChecksum || !matchesCounts) {
+    throw new Error('Local data backup integrity check failed.');
+  }
+
+  return true;
+}
+
 export function assertLocalDataBackupIsPrivacySafe(backup: LocalDataBackup) {
   const parsed = LocalDataBackupSchema.parse(backup);
   assertNoRawVideoArtifacts(JSON.stringify(parsed));
+  verifyLocalDataBackupIntegrity(parsed);
   return parsed;
 }
 
@@ -125,7 +204,7 @@ export async function createLocalDataBackup(
   const consents = (await repositories.consents.listConsents()).filter((consent) => reportIds.has(consent.reportId));
   const drillPractice = (await repositories.drillPractice.listRecords()).filter((record) => reportIds.has(record.reportId));
 
-  return assertLocalDataBackupIsPrivacySafe({
+  const backup = LocalDataBackupSchema.omit({ integrity: true }).parse({
     app: {
       activePlan: appConfig.activePlan,
       privacyMode: appConfig.privacyMode,
@@ -142,6 +221,11 @@ export async function createLocalDataBackup(
     },
     reports: exportedReports,
     schemaVersion: 1,
+  });
+
+  return assertLocalDataBackupIsPrivacySafe({
+    ...backup,
+    integrity: createLocalDataBackupIntegrity(backup),
   });
 }
 
@@ -188,6 +272,8 @@ function buildLocalDataRestorePreview(
     drillPracticeToRestore,
     ...existing,
     generatedAt: backup.generatedAt,
+    integrityChecksum: backup.integrity?.checksum ?? null,
+    integrityVerified: verifyLocalDataBackupIntegrity(backup),
     newAnnotations: annotationsToRestore - existing.existingAnnotations,
     newConsents: consentsToRestore - existing.existingConsents,
     newDrillPractice: drillPracticeToRestore - existing.existingDrillPractice,
@@ -255,11 +341,14 @@ export async function restoreLocalDataBackup(
 
 export function summarizeLocalDataBackup(backup: LocalDataBackup): LocalDataBackupSummary {
   const parsed = assertLocalDataBackupIsPrivacySafe(backup);
+  const integrityVerified = verifyLocalDataBackupIntegrity(parsed);
   return {
     annotations: parsed.annotations.length,
+    checksum: parsed.integrity?.checksum ?? null,
     consents: parsed.consents.length,
     drillPractice: parsed.drillPractice.length,
     generatedAt: parsed.generatedAt,
+    integrityVerified,
     reports: parsed.reports.length,
   };
 }
@@ -268,6 +357,8 @@ export function formatLocalDataRestorePreview(preview: LocalDataRestorePreview) 
   return [
     `Status: ${preview.status}`,
     `Backup generated at: ${preview.generatedAt}`,
+    `Integrity verified: ${preview.integrityVerified ? 'yes' : 'legacy backup without checksum'}`,
+    `Content checksum: ${preview.integrityChecksum ?? 'not available'}`,
     `Reports ready: ${preview.reportsToRestore}`,
     `New reports: ${preview.newReports}`,
     `Existing reports: ${preview.existingReports}`,

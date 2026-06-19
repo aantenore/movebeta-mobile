@@ -122,14 +122,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 64 test files and 245 tests.
+- `npm test`: passed, 64 test files and 247 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 5095ms load time, 328ms average inference, and 336ms max inference in the latest run.
+  CPU backend, 3341ms load time, 329ms average inference, and 335ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -231,7 +231,8 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, native QA validator
   preview, evidence collection plan, release unblock checklist, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
-  packet, Privacy data portability backup/restore conflict preview, and the Privacy airplane-mode readiness self-check.
+  packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
+  self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.

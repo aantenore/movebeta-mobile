@@ -11,7 +11,7 @@
   coach consent record, without uploading or exporting raw video.
 - Users must be able to create, preview, and restore a local backup of reports, private notes, drill practice records, and
   consent records without raw video, video URI, audio, account identifiers, or secrets. Restore preview must show new,
-  existing, and skipped record counts before writing local storage.
+  existing, skipped, and checksum verification state before writing local storage.
 - Coach library batch exports must use consented queue metadata and team templates only, with no raw video, URI, private
   notes, drill notes, pose frames, key frames, or landmarks.
 - Cue-validation study seeds must include review tasks and thresholds only; reviewer scores must come from real reviewers
