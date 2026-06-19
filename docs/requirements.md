@@ -80,6 +80,7 @@
 - Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
 - Show a configurable Plan tab with current plan, upgrade path, capability matrix, and billing-provider readiness.
+- Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
 - Expose provider, active plan, and privacy mode in configuration.
 
@@ -116,6 +117,7 @@
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
+- Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

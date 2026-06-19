@@ -75,3 +75,4 @@
 | T71 | Add native share action for prepared Sessions exports | Done |
 | T72 | Add in-app cue-validation gate preview for completed datasets | Done |
 | T73 | Add parity coverage between the in-app and CLI cue-validation gates | Done |
+| T74 | Add configurable launch-readiness cockpit for demo, beta, and store tracks | Done |

@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { ArrowUpRight, CheckCircle2, Circle, ShieldCheck } from 'lucide-react-native';
+import { ArrowUpRight, CheckCircle2, Circle, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
+import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 
@@ -45,9 +46,48 @@ function PlanCard({ item }: { item: PlanCatalogItem }) {
   );
 }
 
+function readinessStatusLabel(status: LaunchReadinessTrack['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'blocked') return 'Blocked';
+  return 'Action';
+}
+
+function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
+  const isReady = track.status === 'ready';
+  const isBlocked = track.status === 'blocked';
+
+  return (
+    <View style={[styles.launchTrack, isReady ? styles.launchTrackReady : isBlocked ? styles.launchTrackBlocked : null]}>
+      <View style={styles.launchTrackTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.launchTrackTitle}>{track.label}</Text>
+          <Text style={styles.launchTrackSummary}>{track.summary}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {readinessStatusLabel(track.status)}
+        </Text>
+      </View>
+      <Text style={styles.launchAction}>{track.action}</Text>
+      <View style={styles.launchChecks}>
+        {track.checks.map((check) => (
+          <View key={check.key} style={styles.launchCheckRow}>
+            {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={15} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={15} />
+            )}
+            <Text style={styles.launchCheckText}>{check.label}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
+  const launchReadiness = buildLaunchReadinessSummary();
   const groupedCapabilities = catalog
     .find((item) => item.key === 'coach')
     ?.capabilities.reduce<Record<string, PlanCatalogItem['capabilities']>>((groups, capability) => {
@@ -102,6 +142,31 @@ export function PlanScreen() {
         </View>
       </Section>
 
+      <Section title="Launch readiness" caption="A configurable release cockpit for demo, internal beta, and store submission gates.">
+        <View style={styles.launchOverview}>
+          <View style={styles.launchHero}>
+            <View style={styles.launchHeroIcon}>
+              {launchReadiness.status === 'ready' ? (
+                <ShieldCheck color="#FFFFFF" size={22} />
+              ) : (
+                <TriangleAlert color="#FFFFFF" size={22} />
+              )}
+            </View>
+            <View style={styles.launchHeroCopy}>
+              <Text style={styles.launchHeroTitle}>
+                {launchReadiness.readyTracks}/{launchReadiness.tracks.length} launch tracks ready
+              </Text>
+              <Text style={styles.launchHeroText}>{launchReadiness.nextAction}</Text>
+            </View>
+          </View>
+          <View style={styles.launchTrackList}>
+            {launchReadiness.tracks.map((track) => (
+              <LaunchTrackCard key={track.key} track={track} />
+            ))}
+          </View>
+        </View>
+      </Section>
+
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
         <View style={styles.readiness}>
           <Text style={styles.readinessTitle}>Provider status</Text>
@@ -117,6 +182,117 @@ export function PlanScreen() {
 }
 
 const styles = StyleSheet.create({
+  launchAction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  launchCheckRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 7,
+  },
+  launchChecks: {
+    gap: 6,
+  },
+  launchCheckText: {
+    color: theme.colors.text,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  launchHero: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  launchHeroCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  launchHeroIcon: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    height: 44,
+    justifyContent: 'center',
+    width: 44,
+  },
+  launchHeroText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  launchHeroTitle: {
+    color: theme.colors.ink,
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  launchOverview: {
+    gap: theme.spacing.sm,
+  },
+  launchStatus: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFF5E7',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  launchStatusBlocked: {
+    backgroundColor: '#FBE7E1',
+    color: theme.colors.coral,
+  },
+  launchStatusReady: {
+    backgroundColor: '#E6F3EC',
+    color: theme.colors.success,
+  },
+  launchTrack: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  launchTrackBlocked: {
+    borderColor: theme.colors.coral,
+  },
+  launchTrackList: {
+    gap: theme.spacing.sm,
+  },
+  launchTrackReady: {
+    borderColor: theme.colors.success,
+  },
+  launchTrackSummary: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  launchTrackTitle: {
+    color: theme.colors.ink,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  launchTrackTitleGroup: {
+    flex: 1,
+    gap: 3,
+  },
+  launchTrackTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
   matrix: {
     gap: theme.spacing.md,
   },

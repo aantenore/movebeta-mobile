@@ -82,6 +82,8 @@ platforms are validated on physical climbing videos and devices.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
 - Plan tab shows the configured current tier, upgrade path, capability matrix, and billing-provider readiness from the
   shared entitlement catalog.
+- Plan tab shows launch-readiness tracks for stakeholder demo, internal native beta, and store submission, keeping
+  full-Xcode, physical-device QA, real cue-validation data, and EAS/store credentials visible as explicit blockers.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
 - Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
@@ -89,7 +91,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 44 test files and 172 tests.
+- `npm test`: passed, 45 test files and 175 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -133,6 +135,8 @@ platforms are validated on physical climbing videos and devices.
   CSV escaping, completed dataset composition, validation-gate compatibility, and injected raw-artifact key rejection.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
+- `tests/launchReadiness.test.ts`: passed and covers default blocker status, all-ready evidence, and partial evidence
+  overrides.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
@@ -147,8 +151,9 @@ platforms are validated on physical climbing videos and devices.
   coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, and export, the
-  Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
-  diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
+  Plan tab catalog, upgrade path, capability matrix, launch readiness, and provider readiness, the Sessions deletion
+  receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode
+  readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
