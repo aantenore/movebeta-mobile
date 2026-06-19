@@ -34,6 +34,7 @@
 - [ ] `npm run release:eas:strict` passes before TestFlight, internal Play, or production submission.
 - [ ] Thermal and battery behavior are measured within the native QA evidence budget.
 - [x] Store screenshots and privacy declarations are consistent with product behavior and generated from the exported app.
+- [x] Release source/web archives and SHA-256 manifest are generated with `npm run release:archives`.
 - [x] Release handoff packet is generated with `npm run release:handoff`.
 
 ## Rollback

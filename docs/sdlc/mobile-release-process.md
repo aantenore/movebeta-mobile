@@ -16,8 +16,9 @@
 6. Run `npm run native:qa:runbook` before collecting physical-device evidence.
 7. Run browser smoke.
 8. For native releases, run EAS preview build.
-9. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
-10. Complete privacy and permission review.
+9. Run `npm run release:archives` after web export to refresh delivery zips and checksum manifests.
+10. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
+11. Complete privacy and permission review.
 
 ## EAS Readiness
 
@@ -86,11 +87,16 @@ npx eas-cli@latest build -p android --profile production --submit
 
 ## Handoff Packet
 
-Generate the current release handoff packet before sharing the project with buyers, stakeholders, or external QA:
+Generate the current release archives and handoff packet before sharing the project with buyers, stakeholders, or external QA:
 
 ```bash
+npm run release:archives
 npm run release:handoff
 ```
+
+`npm run release:archives` writes `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
+`../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md` with byte sizes and SHA-256
+checksums plus repository and worktree-state evidence.
 
 The command writes `docs/sdlc/release-handoff-packet.json` and `docs/sdlc/release-handoff-packet.md` from the current
 machine-readable reports, store screenshot manifest, repository commit, and launch blockers.

@@ -113,4 +113,6 @@
   tracks, and credential key names for beta and store release.
 - Release handoff packet generator that writes stakeholder-ready JSON and Markdown from release gates, launch readiness,
   screenshots, commit metadata, artifacts, commands, and remaining external blockers.
+- Release source and web-dist archive generator with byte-size, SHA-256, commit, remote, branch, and worktree-state
+  manifests for verifiable handoff packages.
 - Documentation screenshot gallery generated from the exported web build.
