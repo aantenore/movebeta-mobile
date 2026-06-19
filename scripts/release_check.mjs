@@ -14,6 +14,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'native:ios:doctor'], key: 'iosToolchainDoctor', label: 'iOS toolchain doctor' },
   { command: ['npm', 'run', 'validation:cue:doctor'], key: 'cueValidationDatasetDoctor', label: 'Cue validation dataset doctor' },
   { command: ['npm', 'run', 'release:credentials:doctor'], key: 'storeCredentialsDoctor', label: 'Store credentials doctor' },
+  { command: ['npm', 'run', 'store:submission'], key: 'storeSubmissionPacket', label: 'Store submission packet' },
   { command: ['npm', 'run', 'export:web'], key: 'webExport', label: 'Expo web export' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },
   { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },
