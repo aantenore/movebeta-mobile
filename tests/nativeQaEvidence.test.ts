@@ -116,4 +116,28 @@ describe('native QA evidence', () => {
       'run-2-clip',
     ]);
   });
+
+  it('rejects raw local video references and secret-like evidence fields', () => {
+    const validation = validateNativeQaEvidence({
+      appVersion: '1.0.0',
+      generatedAt: '2026-06-19T00:00:00.000Z',
+      runs: [
+        {
+          ...baseRun,
+          clip: {
+            ...baseRun.clip,
+            id: 'file:///var/mobile/Containers/Data/Application/climb.mp4',
+          },
+          platform: 'android',
+          videoUri: 'content://media/external/video/42',
+        },
+        { ...baseRun, clip: { ...baseRun.clip, id: 'qa-clip-002' }, platform: 'ios' },
+      ],
+    });
+
+    expect(validation.ready).toBe(false);
+    expect(validation.checks.find((check) => check.id === 'privacy-artifacts')).toMatchObject({
+      status: 'fail',
+    });
+  });
 });

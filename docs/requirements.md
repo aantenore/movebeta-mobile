@@ -94,6 +94,8 @@
   budgets, privacy instructions, and a blocked draft evidence payload.
 - Show a native QA evidence kit in the Plan tab with required physical-device runs, workflows, budgets, placeholder
   policy, and validator command.
+- Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
+  exclusion before physical-device evidence is collected.
 
 ## Non-Functional
 
@@ -155,6 +157,8 @@
   statuses are marked as passing.
 - Native QA evidence kit copy must stay parity-tested with the validator workflow and budget contract and must not include
   raw video, video URI, or local file URI fields.
+- In-app native QA validation must stay parity-tested with the CLI release validator and reject raw local video
+  references, URI fields, local paths, and secret-like keys.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

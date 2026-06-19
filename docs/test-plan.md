@@ -81,6 +81,8 @@
   evidence drafts before real device values are entered.
 - Vitest native QA evidence kit tests for Plan-tab workflow coverage, shared budgets, validator command, placeholder
   policy, and raw-artifact exclusion.
+- Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
+  raw local artifact rejection.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -153,6 +155,8 @@
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Plan tab shows the native QA evidence kit for Android/iOS physical-device runs, workflow count, placeholder policy, and
   validator command.
+- Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact
+  exclusion.
 - Privacy tab confirms no-upload default behavior.
 
 Command used for local smoke:
