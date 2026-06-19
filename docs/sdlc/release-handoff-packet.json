@@ -1,0 +1,234 @@
+{
+  "artifacts": [
+    {
+      "exists": true,
+      "label": "Release readiness report",
+      "path": "docs/sdlc/release-readiness-report.md"
+    },
+    {
+      "exists": true,
+      "label": "Release gate report",
+      "path": "docs/sdlc/release-gate-report.json"
+    },
+    {
+      "exists": true,
+      "label": "Launch readiness report",
+      "path": "docs/sdlc/launch-readiness-report.json"
+    },
+    {
+      "exists": true,
+      "label": "MoveNet readiness report",
+      "path": "docs/sdlc/movenet-readiness-report.json"
+    },
+    {
+      "exists": true,
+      "label": "Native QA runbook",
+      "path": "docs/sdlc/native-qa-runbook.json"
+    },
+    {
+      "exists": true,
+      "label": "Store manifest",
+      "path": "docs/store/store-manifest.json"
+    },
+    {
+      "exists": true,
+      "label": "Screenshot gallery",
+      "path": "docs/screenshots.md"
+    },
+    {
+      "exists": true,
+      "label": "Release unblock screenshot",
+      "path": "docs/store/screenshots/07-release-unblock.png"
+    },
+    {
+      "exists": true,
+      "label": "Source archive",
+      "path": "../movebeta-mobile-source.zip"
+    },
+    {
+      "exists": true,
+      "label": "Web dist archive",
+      "path": "../movebeta-mobile-web-dist.zip"
+    }
+  ],
+  "blockers": [
+    {
+      "action": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+      "key": "cueValidationDataset",
+      "label": "Real cue-validation dataset",
+      "owner": "product",
+      "status": "missing",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "action": "Set Expo, App Store Connect, and Google Play submission credentials outside the repository.",
+      "key": "easCredentials",
+      "label": "Store submission credentials",
+      "owner": "release",
+      "status": "missing",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "action": "Run npx eas-cli@latest init and store extra.eas.projectId in app.json.",
+      "key": "easProject",
+      "label": "EAS project binding",
+      "owner": "release",
+      "status": "missing",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "action": "Install full Xcode and verify an iOS simulator or device build.",
+      "key": "iosBuild",
+      "label": "iOS build verification",
+      "owner": "engineering",
+      "status": "missing",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "action": "Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.",
+      "key": "nativeDeviceQa",
+      "label": "Native device QA evidence",
+      "owner": "qa",
+      "status": "missing",
+      "tracks": [
+        "internal",
+        "store"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run release:full",
+      "key": "release-full",
+      "label": "Full local release gate",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
+      "command": "MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py",
+      "key": "web-smoke",
+      "label": "Exported web smoke",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
+      "command": "MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots",
+      "key": "store-screenshots",
+      "label": "Store screenshot capture",
+      "requiredFor": [
+        "demo",
+        "store"
+      ]
+    },
+    {
+      "command": "npm run native:qa:validate",
+      "key": "native-qa",
+      "label": "Physical-device QA validator",
+      "requiredFor": [
+        "internal",
+        "store"
+      ]
+    },
+    {
+      "command": "npm run validation:cue",
+      "key": "cue-validation",
+      "label": "Coach cue-validation gate",
+      "requiredFor": [
+        "store"
+      ]
+    },
+    {
+      "command": "npm run release:eas:strict",
+      "key": "eas-strict",
+      "label": "Strict EAS store gate",
+      "requiredFor": [
+        "store"
+      ]
+    }
+  ],
+  "generatedAt": "2026-06-19T19:35:56.427Z",
+  "product": {
+    "androidPackage": "com.movebeta.mobile",
+    "appName": "MoveBeta",
+    "iosBundleIdentifier": "com.movebeta.mobile",
+    "slug": "movebeta-mobile",
+    "version": "1.0.0"
+  },
+  "repository": {
+    "branch": "main",
+    "commitSha": "8460d06f7d0c64995d572c114998bc8e749981f7",
+    "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git"
+  },
+  "schemaVersion": "movebeta.release-handoff-packet.v1",
+  "screenshots": [
+    {
+      "exists": true,
+      "fileName": "01-analyze.png",
+      "label": "On-device video analysis and capture setup",
+      "path": "docs/store/screenshots/01-analyze.png"
+    },
+    {
+      "exists": true,
+      "fileName": "02-drills.png",
+      "label": "Evidence-based drills",
+      "path": "docs/store/screenshots/02-drills.png"
+    },
+    {
+      "exists": true,
+      "fileName": "03-progress.png",
+      "label": "Technique progress trends",
+      "path": "docs/store/screenshots/03-progress.png"
+    },
+    {
+      "exists": true,
+      "fileName": "04-sessions.png",
+      "label": "Local report history",
+      "path": "docs/store/screenshots/04-sessions.png"
+    },
+    {
+      "exists": true,
+      "fileName": "05-plan.png",
+      "label": "Freemium plan catalog",
+      "path": "docs/store/screenshots/05-plan.png"
+    },
+    {
+      "exists": true,
+      "fileName": "06-privacy.png",
+      "label": "Privacy and offline readiness",
+      "path": "docs/store/screenshots/06-privacy.png"
+    },
+    {
+      "exists": true,
+      "fileName": "07-release-unblock.png",
+      "label": "Release unblock checklist",
+      "path": "docs/store/screenshots/07-release-unblock.png"
+    }
+  ],
+  "summary": {
+    "blockerCount": 5,
+    "existingScreenshots": 7,
+    "expectedScreenshots": 7,
+    "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+    "launchStatus": "blocked",
+    "moveNetAverageInferenceMs": 351,
+    "moveNetLoadMs": 3308,
+    "moveNetStatus": "ready",
+    "readyTracks": 1,
+    "releaseGateStatus": "pass",
+    "totalTracks": 3
+  }
+}

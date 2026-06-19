@@ -193,6 +193,23 @@ describe('launch readiness doctor', () => {
     });
   });
 
+  it('requires every screenshot declared by the store manifest', () => {
+    const rootDir = makeProjectRoot();
+    writeJson(path.join(rootDir, 'docs/store/store-manifest.json'), {
+      screenshots: [
+        { fileName: '01-analyze.png' },
+        { fileName: '02-drills.png' },
+        { fileName: '07-release-unblock.png' },
+      ],
+    });
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).storeListing).toBe(false);
+
+    writeText(path.join(rootDir, 'docs/store/screenshots/07-release-unblock.png'), 'png');
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).storeListing).toBe(true);
+  });
+
   it('validates native QA evidence content instead of only checking file presence', () => {
     const rootDir = makeProjectRoot();
     writeJson(path.join(rootDir, 'docs/sdlc/native-qa-evidence.json'), {
