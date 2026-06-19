@@ -9,6 +9,11 @@ import { appConfig } from '@/core/config';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
+import {
+  buildNativeQaEvidenceComposerPreview,
+  type NativeQaEvidenceComposerPreview,
+  type NativeQaEvidenceComposerRun,
+} from '@/core/nativeQaEvidenceComposer';
 import { buildNativeQaEvidenceImportPreview, type NativeQaEvidenceImportPreview } from '@/core/nativeQaEvidenceImport';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { buildNativeQaRunbookPacket } from '@/core/nativeQaRunbookPacket';
@@ -71,6 +76,33 @@ function providerStatusLabel(status: ProviderReadinessStatus) {
   if (status === 'blocked') return 'Blocked';
   return 'Review';
 }
+
+const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
+  {
+    allWorkflowsPassed: false,
+    analysisSeconds: '',
+    batteryDropPct: '',
+    buildId: '',
+    clipDurationSeconds: '10',
+    clipId: '',
+    deviceName: '',
+    osVersion: '',
+    platform: 'android',
+    thermalState: 'nominal',
+  },
+  {
+    allWorkflowsPassed: false,
+    analysisSeconds: '',
+    batteryDropPct: '',
+    buildId: '',
+    clipDurationSeconds: '10',
+    clipId: '',
+    deviceName: '',
+    osVersion: '',
+    platform: 'ios',
+    thermalState: 'nominal',
+  },
+];
 
 function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
   const isReady = track.status === 'ready';
@@ -193,20 +225,180 @@ function NativeQaEvidenceImportPanel({
   );
 }
 
+function NativeQaComposerInput({
+  label,
+  onChange,
+  placeholder,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.composerField}>
+      <Text style={styles.composerLabel}>{label}</Text>
+      <TextInput
+        onChangeText={onChange}
+        placeholder={placeholder}
+        placeholderTextColor={theme.colors.muted}
+        style={styles.composerInput}
+        value={value}
+      />
+    </View>
+  );
+}
+
+function NativeQaComposerRunCard({
+  onChange,
+  run,
+}: {
+  onChange: (platform: NativeQaEvidenceComposerRun['platform'], patch: Partial<NativeQaEvidenceComposerRun>) => void;
+  run: NativeQaEvidenceComposerRun;
+}) {
+  const label = run.platform === 'android' ? 'Android physical run' : 'iOS physical run';
+
+  return (
+    <View style={styles.composerRun}>
+      <View style={styles.qaValidationTop}>
+        <Text style={styles.qaPlatformTitle}>{label}</Text>
+        <Pressable
+          accessibilityLabel={`Toggle ${run.platform} workflow pass state`}
+          onPress={() => onChange(run.platform, { allWorkflowsPassed: !run.allWorkflowsPassed })}
+          style={[styles.composerToggle, run.allWorkflowsPassed ? styles.composerToggleReady : null]}
+        >
+          <Text style={[styles.composerToggleText, run.allWorkflowsPassed ? styles.composerToggleTextReady : null]}>
+            {run.allWorkflowsPassed ? 'Workflows pass' : 'Mark pass'}
+          </Text>
+        </Pressable>
+      </View>
+      <View style={styles.composerGrid}>
+        <NativeQaComposerInput
+          label="Device"
+          onChange={(value) => onChange(run.platform, { deviceName: value })}
+          placeholder={run.platform === 'android' ? 'Pixel 9' : 'iPhone 16'}
+          value={String(run.deviceName ?? '')}
+        />
+        <NativeQaComposerInput
+          label="OS"
+          onChange={(value) => onChange(run.platform, { osVersion: value })}
+          placeholder={run.platform === 'android' ? 'Android 16' : 'iOS 20'}
+          value={String(run.osVersion ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Build"
+          onChange={(value) => onChange(run.platform, { buildId: value })}
+          placeholder="1.0.0-internal-42"
+          value={String(run.buildId ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Clip id"
+          onChange={(value) => onChange(run.platform, { clipId: value })}
+          placeholder={`${run.platform}-qa-clip-001`}
+          value={String(run.clipId ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Clip seconds"
+          onChange={(value) => onChange(run.platform, { clipDurationSeconds: value })}
+          placeholder="10"
+          value={String(run.clipDurationSeconds ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Analysis seconds"
+          onChange={(value) => onChange(run.platform, { analysisSeconds: value })}
+          placeholder="7"
+          value={String(run.analysisSeconds ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Battery %"
+          onChange={(value) => onChange(run.platform, { batteryDropPct: value })}
+          placeholder="2"
+          value={String(run.batteryDropPct ?? '')}
+        />
+        <NativeQaComposerInput
+          label="Thermal"
+          onChange={(value) => onChange(run.platform, { thermalState: value })}
+          placeholder="nominal"
+          value={String(run.thermalState ?? '')}
+        />
+      </View>
+    </View>
+  );
+}
+
+function NativeQaEvidenceComposerPanel({
+  onRunChange,
+  onUseComposedJson,
+  preview,
+  runs,
+}: {
+  onRunChange: (platform: NativeQaEvidenceComposerRun['platform'], patch: Partial<NativeQaEvidenceComposerRun>) => void;
+  onUseComposedJson: () => void;
+  preview: NativeQaEvidenceComposerPreview;
+  runs: NativeQaEvidenceComposerRun[];
+}) {
+  const isReady = preview.status === 'ready';
+
+  return (
+    <View style={styles.nativeEvidenceComposer}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Native QA evidence composer</Text>
+          <Text style={styles.qaKitText}>Build validator-ready evidence from real device measurements without pasting raw file paths.</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {preview.badge}
+        </Text>
+      </View>
+      <View style={styles.qaValidationStats}>
+        <Text style={styles.qaValidationStat}>
+          {preview.readyRuns}/{preview.totalRuns} ready runs
+        </Text>
+        <Text style={styles.qaValidationStat}>{preview.blockingChecks} blocking checks</Text>
+        <Text style={styles.qaValidationStat}>Local only</Text>
+      </View>
+      <Text style={styles.qaKitAction}>{preview.action}</Text>
+      <View style={styles.composerRuns}>
+        {runs.map((run) => (
+          <NativeQaComposerRunCard key={run.platform} onChange={onRunChange} run={run} />
+        ))}
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Use composed native QA evidence JSON" onPress={onUseComposedJson} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Use composed JSON</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function NativeQaEvidenceKitCard({
+  composerPreview,
+  composerRuns,
   importInput,
   importPreview,
   kit,
   onClearImport,
+  onComposerRunChange,
   onImportChange,
   onPrepareRunbook,
+  onUseComposedEvidence,
 }: {
+  composerPreview: NativeQaEvidenceComposerPreview;
+  composerRuns: NativeQaEvidenceComposerRun[];
   importInput: string;
   importPreview: NativeQaEvidenceImportPreview;
   kit: ReturnType<typeof buildNativeQaEvidenceKit>;
   onClearImport: () => void;
+  onComposerRunChange: (
+    platform: NativeQaEvidenceComposerRun['platform'],
+    patch: Partial<NativeQaEvidenceComposerRun>,
+  ) => void;
   onImportChange: (value: string) => void;
   onPrepareRunbook: () => void;
+  onUseComposedEvidence: () => void;
 }) {
   const latencyCopy = kit.budgets.maxLatencyByClipMs
     .map(
@@ -280,6 +472,12 @@ function NativeQaEvidenceKitCard({
           </View>
         ))}
       </View>
+      <NativeQaEvidenceComposerPanel
+        onRunChange={onComposerRunChange}
+        onUseComposedJson={onUseComposedEvidence}
+        preview={composerPreview}
+        runs={composerRuns}
+      />
       <NativeQaEvidenceImportPanel
         input={importInput}
         onChange={onImportChange}
@@ -655,6 +853,10 @@ function buildPlanSafetySources({
 }
 
 export function PlanScreen() {
+  const [nativeQaComposerGeneratedAt] = useState(() => new Date().toISOString());
+  const [nativeQaComposerRuns, setNativeQaComposerRuns] = useState<NativeQaEvidenceComposerRun[]>(
+    defaultNativeQaComposerRuns,
+  );
   const [nativeQaEvidenceJson, setNativeQaEvidenceJson] = useState('');
   const [preparedPlanExport, setPreparedPlanExport] = useState<{ body: string; title: string } | null>(null);
   const catalog = buildPlanCatalog(appConfig.activePlan);
@@ -663,6 +865,11 @@ export function PlanScreen() {
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
+  const nativeQaComposerPreview = buildNativeQaEvidenceComposerPreview({
+    appVersion: '1.0.0',
+    generatedAt: nativeQaComposerGeneratedAt,
+    runs: nativeQaComposerRuns,
+  });
   const nativeQaImportPreview = buildNativeQaEvidenceImportPreview(nativeQaEvidenceJson);
   const providerReadiness = buildProviderReadinessSummary(appConfig);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
@@ -716,6 +923,18 @@ export function PlanScreen() {
       body: JSON.stringify(releaseEvidencePacket, null, 2),
       title: 'Prepared release evidence packet',
     });
+  }
+
+  function updateNativeQaComposerRun(
+    platform: NativeQaEvidenceComposerRun['platform'],
+    patch: Partial<NativeQaEvidenceComposerRun>,
+  ) {
+    setNativeQaComposerRuns((runs) => runs.map((run) => (run.platform === platform ? { ...run, ...patch } : run)));
+  }
+
+  function useComposedNativeQaEvidence() {
+    selectionFeedback();
+    setNativeQaEvidenceJson(nativeQaComposerPreview.payloadJson);
   }
 
   async function sharePreparedPlanExport() {
@@ -813,12 +1032,16 @@ export function PlanScreen() {
 
       <Section title="Native QA evidence kit" caption="Physical-device evidence checklist for internal beta and store readiness.">
         <NativeQaEvidenceKitCard
+          composerPreview={nativeQaComposerPreview}
+          composerRuns={nativeQaComposerRuns}
           importInput={nativeQaEvidenceJson}
           importPreview={nativeQaImportPreview}
           kit={nativeQaKit}
           onClearImport={() => setNativeQaEvidenceJson('')}
+          onComposerRunChange={updateNativeQaComposerRun}
           onImportChange={setNativeQaEvidenceJson}
           onPrepareRunbook={prepareNativeQaRunbookPacket}
+          onUseComposedEvidence={useComposedNativeQaEvidence}
         />
       </Section>
 
@@ -894,6 +1117,63 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
     fontSize: 13,
     fontWeight: '900',
+  },
+  composerField: {
+    flex: 1,
+    gap: 4,
+    minWidth: 118,
+  },
+  composerGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  composerInput: {
+    backgroundColor: '#FFFFFF',
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontWeight: '800',
+    minHeight: 38,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 8,
+  },
+  composerLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  composerRun: {
+    backgroundColor: '#FFFFFF',
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  composerRuns: {
+    gap: theme.spacing.sm,
+  },
+  composerToggle: {
+    backgroundColor: '#FFF5E7',
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+  },
+  composerToggleReady: {
+    backgroundColor: '#E6F3EC',
+  },
+  composerToggleText: {
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  composerToggleTextReady: {
+    color: theme.colors.success,
   },
   launchAction: {
     color: theme.colors.text,
@@ -1163,6 +1443,14 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
   nativeEvidenceImport: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  nativeEvidenceComposer: {
     backgroundColor: theme.colors.surfaceAlt,
     borderColor: theme.colors.line,
     borderRadius: theme.radius.sm,
