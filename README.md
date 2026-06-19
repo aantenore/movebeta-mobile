@@ -56,7 +56,7 @@ web build with `npm run store:screenshots`.
 - Privacy deletion receipts that remove the local report, private training log, drill practice log, and coach consent
   record together.
 - Privacy-safe local backup and restore JSON for reports, training logs, drill practice logs, and coach consent records
-  without raw video.
+  without raw video, with an offline content checksum for restore verification.
 - Explicitly consented coach review packets that include privacy-safe athlete context from local training logs, cue
   feedback, and drill practice while excluding raw video, video URI, key-frame landmarks, private notes, drill notes, and
   medical claims.

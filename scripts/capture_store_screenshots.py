@@ -74,6 +74,7 @@ def main() -> None:
                 expect(page.get_by_label("Local backup JSON")).not_to_have_value("")
                 page.get_by_text("Preview restore", exact=True).click()
                 expect(page.get_by_text("Status: ready-to-restore")).to_be_visible()
+                expect(page.get_by_text("Integrity verified: yes")).to_be_visible()
                 expect(page.get_by_text("Existing reports:")).to_be_visible()
             expect(page.get_by_text(expected_text).first).to_be_visible()
             if file_name in {"07-release-unblock.png", "08-data-portability.png"}:
