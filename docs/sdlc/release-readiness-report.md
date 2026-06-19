@@ -66,6 +66,8 @@ platforms are validated on physical climbing videos and devices.
   raw-artifact text rejection.
 - Sessions can compose validation dataset JSON from completed worksheet CSV only after real reviewer IDs and 1-5 scores
   are present and rows still match the original study seed.
+- Sessions can preview cue-validation production readiness locally, and automated parity tests keep that preview aligned
+  with the CLI gate used for release validation.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -87,7 +89,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 43 test files and 169 tests.
+- `npm test`: passed, 44 test files and 172 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -158,6 +160,8 @@ platforms are validated on physical climbing videos and devices.
   reviewer coverage, review modes, score quality, and raw-artifact exclusion.
 - `tests/cueValidationDatasetGate.test.ts`: passed and covers in-app gate-ready state, production evidence gaps, and
   raw-artifact rejection.
+- `tests/cueValidationGateParity.test.ts`: passed and covers app/CLI parity for ready datasets, production evidence
+  gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
