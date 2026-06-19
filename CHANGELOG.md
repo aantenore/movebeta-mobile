@@ -105,4 +105,6 @@
 - Native QA evidence validator now rejects placeholder device/build/clip values instead of accepting filled-out templates.
 - In-app Native QA evidence kit in the Plan tab with physical-device runs, workflow coverage, shared budgets,
   placeholder policy, and validator command.
+- In-app Native QA evidence validator preview with app/CLI parity coverage, blocking-check summaries, and raw local
+  artifact rejection.
 - Documentation screenshot gallery generated from the exported web build.

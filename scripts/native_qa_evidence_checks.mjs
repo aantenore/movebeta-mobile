@@ -26,6 +26,27 @@ function fail(id, label, detail) {
   return { detail, id, label, status: 'fail' };
 }
 
+function forbiddenArtifactMatches(value, path = []) {
+  if (value == null) return [];
+  if (typeof value === 'string') {
+    return /(file|content|asset|ph):\/\/|\/Users\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b/i.test(value)
+      ? [`${path.join('.') || 'value'} contains a raw local artifact reference.`]
+      : [];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => forbiddenArtifactMatches(item, [...path, String(index)]));
+  }
+  if (typeof value === 'object') {
+    return Object.entries(value).flatMap(([key, item]) => {
+      const keyIssue = /rawVideo|raw_video|videoUri|video_uri|fileUri|file_uri|localPath|local_path|secret|token|apiKey|password/i.test(key)
+        ? [`${[...path, key].join('.')} is not allowed in native QA evidence.`]
+        : [];
+      return [...keyIssue, ...forbiddenArtifactMatches(item, [...path, key])];
+    });
+  }
+  return [];
+}
+
 function latencyBudget(durationMs) {
   return (
     nativeQaBudgets.maxLatencyByClipMs.find((budget) => durationMs <= budget.maxClipDurationMs) ??
@@ -112,6 +133,13 @@ export function validateNativeQaEvidence(evidence) {
     hasText(evidence?.appVersion) && hasText(evidence?.generatedAt)
       ? pass('evidence-header', 'Evidence header', `${evidence.appVersion} · ${evidence.generatedAt}`)
       : fail('evidence-header', 'Evidence header', 'appVersion and generatedAt are required.'),
+  );
+
+  const forbiddenArtifacts = forbiddenArtifactMatches(evidence);
+  checks.push(
+    forbiddenArtifacts.length === 0
+      ? pass('privacy-artifacts', 'Raw artifact exclusion', 'No raw video, URI, path, or secret-like fields detected.')
+      : fail('privacy-artifacts', 'Raw artifact exclusion', forbiddenArtifacts[0]),
   );
 
   for (const platform of nativeQaBudgets.requiredPlatforms) {

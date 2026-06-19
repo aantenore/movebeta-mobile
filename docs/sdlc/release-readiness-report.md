@@ -112,13 +112,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 56 test files and 213 tests.
+- `npm test`: passed, 57 test files and 217 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4423ms load time, 351ms average inference, and 367ms max inference in the latest run.
+  CPU backend, 3817ms load time, 341ms average inference, and 348ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -176,6 +176,8 @@ platforms are validated on physical climbing videos and devices.
   expected validator failure until real physical-device values are entered.
 - `tests/nativeQaEvidenceKit.test.ts`: passed and covers Plan-tab native QA workflows, shared budgets, placeholder
   policy, validator command, and raw-artifact exclusion.
+- `tests/nativeQaEvidenceValidation.test.ts`: passed and covers app/CLI parity for ready evidence, blocked draft
+  evidence, run summaries, and raw local artifact rejection.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
@@ -201,9 +203,9 @@ platforms are validated on physical climbing videos and devices.
   coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
-  Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, and provider readiness,
-  the Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the
-  Privacy airplane-mode readiness self-check.
+  Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, native QA validator
+  preview, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics packet, Privacy data
+  portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
@@ -211,7 +213,7 @@ platforms are validated on physical climbing videos and devices.
   manifest check confirms `CAMERA` and `READ_MEDIA_VIDEO`, excludes `RECORD_AUDIO`, and keeps `allowBackup=false`.
 - `tests/nativeQaEvidence.test.ts`: passed and covers device evidence requirements for platform coverage, camera/import
   workflows, muted recording, native metadata reads, airplane-mode analysis, latency, battery, thermal budgets, and
-  placeholder evidence rejection.
+  placeholder plus raw local artifact rejection.
 - `tests/cueValidationDataset.test.ts`: passed and covers dataset schema version, thresholds, wall-angle coverage,
   reviewer coverage, review modes, score quality, and raw-artifact exclusion.
 - `tests/cueValidationDatasetGate.test.ts`: passed and covers in-app gate-ready state, production evidence gaps, and
