@@ -102,3 +102,4 @@
 | T98 | Add configurable in-app model evidence for local readiness and real-video validation gaps | Done |
 | T99 | Add configurable safety-language guard for product and release copy | Done |
 | T100 | Add model evidence sync command from machine-readable model reports | Done |
+| T101 | Add native QA evidence JSON import preview to the Plan tab | Done |

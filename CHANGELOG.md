@@ -127,6 +127,8 @@
   placeholder policy, and validator command.
 - In-app Native QA evidence validator preview with app/CLI parity coverage, blocking-check summaries, and raw local
   artifact rejection.
+- In-app Native QA evidence import preview in the Plan tab for pasted physical-device evidence JSON, ready-run counts,
+  blocking checks, and local-only validation feedback.
 - Evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows, wall-angle
   coverage, native device checks, and external evidence owners derived from release contracts.
 - Release unblock checklist in the Plan tab with launch-derived blockers, proof artifacts, commands, owners, affected

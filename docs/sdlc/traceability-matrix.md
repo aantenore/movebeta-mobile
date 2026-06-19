@@ -88,3 +88,4 @@
 | R82 in-app model evidence | `docs/requirements.md`, `app.json` | `tests/modelEvidence.test.ts`, `tests/config.test.ts`, browser smoke | Real climbing-video validation dataset | Technical evidence covered; production accuracy still needs real clips |
 | R83 safety language guard | `docs/requirements.md` | `tests/safetyLanguage.test.ts`, browser smoke | Plan tab Safety language guard | Covered; human review still required for final store/legal copy |
 | R84 model evidence sync | `docs/requirements.md`, `scripts/sync_model_evidence.mjs` | `tests/modelEvidenceSync.test.ts`, `npm run model:evidence:sync` | Commit synced app config after new model reports | Covered |
+| R85 native QA evidence import preview | `docs/requirements.md`, `src/core/nativeQaEvidenceImport.ts` | `tests/nativeQaEvidenceImport.test.ts`, browser smoke | Plan tab pasted native QA evidence JSON | Covered; physical device evidence still needed |
