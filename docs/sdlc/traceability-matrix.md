@@ -71,3 +71,4 @@
 | R67 repeat outcome loop | `docs/requirements.md` | `tests/reportAnnotationRepository.test.ts`, `tests/repeatOutcomeInsights.test.ts`, `tests/sessionPlan.test.ts`, browser smoke | Sessions repeat outcome controls and Progress repeat outcome panel | Covered |
 | R68 MoveNet model execution smoke | `docs/requirements.md` | `npm run model:movenet:smoke` | Real climbing-video QA with consented clips | Execution covered; video validation needed |
 | R69 screenshot documentation | `docs/screenshots.md`, `docs/store/screenshot-plan.md` | `npm run store:screenshots` | Documentation gallery review | Covered |
+| R70 MoveNet readiness report | `docs/requirements.md` | `tests/movenetReadinessReport.test.ts`, `tests/launchReadinessDoctor.test.ts`, `npm run model:movenet:readiness` | Real climbing-video QA with consented clips | Model budget covered; video validation needed |

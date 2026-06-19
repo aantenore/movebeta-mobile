@@ -32,6 +32,7 @@ describe('launch readiness', () => {
       easProject: true,
       iosBuild: true,
       iosPods: true,
+      modelReadiness: true,
       nativeDeviceQa: true,
       privacyManifest: true,
       releaseGate: true,

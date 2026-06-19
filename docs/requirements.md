@@ -137,6 +137,8 @@
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.
 - The TensorFlow.js MoveNet provider must have an automated model-execution smoke that loads the model and runs local
   inference without a camera or cloud runtime.
+- MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
+  backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

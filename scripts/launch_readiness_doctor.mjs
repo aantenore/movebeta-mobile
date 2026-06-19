@@ -33,6 +33,11 @@ export const CHECK_DEFINITIONS = {
     label: 'iOS pods install',
     owner: 'engineering',
   },
+  modelReadiness: {
+    action: 'Run npm run model:movenet:readiness and keep docs/sdlc/movenet-readiness-report.json ready.',
+    label: 'MoveNet model readiness',
+    owner: 'engineering',
+  },
   nativeDeviceQa: {
     action: 'Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.',
     label: 'Native device QA evidence',
@@ -61,13 +66,14 @@ export const CHECK_DEFINITIONS = {
 };
 
 export const TRACK_REQUIREMENTS = {
-  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'nativeDeviceQa'],
+  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
+  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeDeviceQa'],
   store: [
     'releaseGate',
     'webSmoke',
     'privacyManifest',
     'storeListing',
+    'modelReadiness',
     'iosBuild',
     'nativeDeviceQa',
     'cueValidationDataset',
@@ -126,6 +132,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const appConfig = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
   const packageJson = readJsonIfExists(path.join(rootDir, 'package.json')) ?? {};
   const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
+  const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
 
   return {
     androidDebugBuild: exists(rootDir, 'android/app/build/outputs/apk/debug/app-debug.apk'),
@@ -137,6 +144,9 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
     easProject: typeof appConfig.extra?.eas?.projectId === 'string' && appConfig.extra.eas.projectId.trim().length > 0,
     iosBuild: exists(rootDir, '/Applications/Xcode.app') || fs.existsSync('/Applications/Xcode.app'),
     iosPods: exists(rootDir, 'ios/Pods/Manifest.lock') && exists(rootDir, 'ios/Pods/Local Podspecs/MoveBetaPose.podspec.json'),
+    modelReadiness:
+      moveNetReadinessReport.schemaVersion === 'movebeta.movenet-readiness-report.v1' &&
+      moveNetReadinessReport.status === 'ready',
     nativeDeviceQa: exists(rootDir, 'docs/sdlc/native-qa-evidence.json'),
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
     releaseGate: typeof packageJson.scripts?.['release:check'] === 'string' && releaseReport.includes('`npm run release:check`: passed'),

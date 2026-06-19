@@ -94,6 +94,8 @@ web build with `npm run store:screenshots`.
 - Practice-aware next-session planning that lowers intensity when suggested drills are repeatedly skipped.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
 - MoveNet model execution smoke for verifying that the local TensorFlow.js model loads and runs inference.
+- MoveNet readiness report with load-time, inference-time, backend, memory, budget checks, and explicit real-video
+  validation limitations.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -102,6 +104,7 @@ web build with `npm run store:screenshots`.
 npm install
 npm run quality
 npm run model:movenet:smoke
+npm run model:movenet:readiness
 npm run export:web
 npm run preview:web
 npm run store:manifest
@@ -122,7 +125,7 @@ EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
-EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
+EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
 
 `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` accepts the same JSON shape as Expo `extra.launchReadinessEvidence`,
@@ -162,6 +165,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release checklist and operational runbook: `docs/sdlc/release-checklist.md`, `docs/sdlc/runbook.md`.
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
+- MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
 - Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.

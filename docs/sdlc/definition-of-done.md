@@ -13,6 +13,7 @@ An increment is done only when these checks are satisfied or an explicit residua
 - TypeScript strict mode passes.
 - Movement and privacy logic has focused tests.
 - Provider-specific behavior is isolated behind contracts.
+- Local model readiness evidence is refreshed when pose-provider or release-gate behavior changes.
 - Configuration is documented in `.env.example`.
 
 ## UX
