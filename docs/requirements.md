@@ -107,6 +107,9 @@
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
+- Provide a GitHub Actions quality workflow template for pushes to `main` and pull requests, using lockfile-based
+  dependency installation, the shared local release gate, and downloadable machine-readable release evidence after
+  activation.
 
 ## Non-Functional
 
@@ -184,6 +187,8 @@
   values, and fail screenshot completeness when the manifest declares a missing screenshot.
 - Release archive manifests must include file size, SHA-256 digest, repository commit, branch, remote URL, and worktree
   state for every generated delivery archive.
+- CI workflow template configuration must use the repository `ci` script, derive the Node version from `package.json`,
+  target `main` and pull requests, and upload release evidence without committing CI-generated outputs.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
