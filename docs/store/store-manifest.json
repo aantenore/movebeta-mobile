@@ -102,7 +102,7 @@
     },
     {
       "fileName": "08-data-portability.png",
-      "label": "Local backup restore preview",
+      "label": "Conflict-aware local backup restore preview",
       "route": "privacy",
       "viewport": {
         "height": 844,

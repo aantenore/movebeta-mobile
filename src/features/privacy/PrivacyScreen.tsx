@@ -25,7 +25,7 @@ import {
   createLocalDataBackup,
   formatLocalDataRestorePreview,
   formatLocalDataRestoreResult,
-  previewLocalDataRestore,
+  previewLocalDataRestoreAgainstRepositories,
   restoreLocalDataBackup,
   summarizeLocalDataBackup,
   type LocalDataBackup,
@@ -132,9 +132,9 @@ export function PrivacyScreen() {
     setRestoreMessage('');
   }
 
-  function previewBackup() {
+  async function previewBackup() {
     try {
-      const preview: LocalDataRestorePreview = previewLocalDataRestore(restoreInput);
+      const preview: LocalDataRestorePreview = await previewLocalDataRestoreAgainstRepositories(restoreInput);
       setRestorePreviewMessage(formatLocalDataRestorePreview(preview));
       setRestoreMessage('');
     } catch (error) {
@@ -308,7 +308,7 @@ export function PrivacyScreen() {
             value={restoreInput}
           />
           <View style={styles.restoreActions}>
-            <Pressable onPress={previewBackup} style={styles.restoreActionSecondary}>
+            <Pressable onPress={() => void previewBackup()} style={styles.restoreActionSecondary}>
               <Text style={styles.restoreActionText}>Preview restore</Text>
             </Pressable>
             <Pressable onPress={() => void restoreBackup()} style={styles.restoreAction}>
