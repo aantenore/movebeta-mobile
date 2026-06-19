@@ -50,3 +50,6 @@ coach scores must be added to the final dataset before `npm run validation:cue` 
 The Sessions tab can also prepare a `movebeta.cue-validation-review-worksheet.v1` export. It expands each review task
 into the required coach-review rows, but reviewer identity and score fields remain `null` until a real coach completes
 the worksheet.
+
+For spreadsheet workflows, Sessions can export the same worksheet as CSV. Reviewer identity and score cells stay blank,
+values are CSV-escaped, and raw artifact references are rejected before the CSV is prepared.

@@ -77,3 +77,4 @@
   no-invented-score privacy metadata.
 - Local cue-validation review worksheet export with blank coach score rows, null reviewer identities, and privacy
   guardrails against raw artifacts or invented evidence.
+- Privacy-safe cue-validation worksheet CSV export with stable headers, blank reviewer/score cells, and CSV escaping.

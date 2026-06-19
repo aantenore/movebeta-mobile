@@ -26,8 +26,10 @@ import {
 } from '@/movement/coachLibraryExport';
 import {
   assertCueValidationReviewWorksheetIsPrivacySafe,
+  assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationReviewWorksheet,
+  buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
@@ -341,11 +343,13 @@ function CoachLibraryPanel({
   onPrepareExport,
   onPrepareValidationSeed,
   onPrepareValidationWorksheet,
+  onPrepareValidationWorksheetCsv,
 }: {
   library: CoachLibrary;
   onPrepareExport?: () => void;
   onPrepareValidationSeed?: () => void;
   onPrepareValidationWorksheet?: () => void;
+  onPrepareValidationWorksheetCsv?: () => void;
 }) {
   const templatePlan = buildCoachTeamTemplates(library);
 
@@ -390,6 +394,16 @@ function CoachLibraryPanel({
             >
               <NotebookPen color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Review worksheet</Text>
+            </Pressable>
+          ) : null}
+          {onPrepareValidationWorksheetCsv ? (
+            <Pressable
+              accessibilityLabel="Prepare cue validation worksheet CSV"
+              onPress={onPrepareValidationWorksheetCsv}
+              style={styles.secondaryAction}
+            >
+              <Download color={theme.colors.brand} size={16} />
+              <Text style={styles.secondaryActionText}>Worksheet CSV</Text>
             </Pressable>
           ) : null}
         </View>
@@ -555,13 +569,17 @@ export function SessionsScreen() {
     });
   }
 
-  async function prepareCueValidationStudySeed() {
-    selectionFeedback();
+  async function buildCurrentCueValidationStudySeed() {
     const drillPractice = await drillPracticeRepository.listRecords();
-    const seed = buildCueValidationStudySeed(reports, Object.values(coachConsentByReport), {
+    return buildCueValidationStudySeed(reports, Object.values(coachConsentByReport), {
       annotations: Object.values(annotationByReport),
       drillPractice,
     });
+  }
+
+  async function prepareCueValidationStudySeed() {
+    selectionFeedback();
+    const seed = await buildCurrentCueValidationStudySeed();
     assertCueValidationStudySeedIsPrivacySafe(seed);
     setPreparedExport({
       body: `${formatCueValidationStudySeedSummary(seed)}\n\n${JSON.stringify(seed, null, 2)}`,
@@ -571,17 +589,27 @@ export function SessionsScreen() {
 
   async function prepareCueValidationReviewWorksheet() {
     selectionFeedback();
-    const drillPractice = await drillPracticeRepository.listRecords();
-    const seed = buildCueValidationStudySeed(reports, Object.values(coachConsentByReport), {
-      annotations: Object.values(annotationByReport),
-      drillPractice,
-    });
+    const seed = await buildCurrentCueValidationStudySeed();
     assertCueValidationStudySeedIsPrivacySafe(seed);
     const worksheet = buildCueValidationReviewWorksheet(seed);
     assertCueValidationReviewWorksheetIsPrivacySafe(worksheet);
     setPreparedExport({
       body: `${formatCueValidationReviewWorksheetSummary(worksheet)}\n\n${JSON.stringify(worksheet, null, 2)}`,
       title: 'Prepared cue validation worksheet',
+    });
+  }
+
+  async function prepareCueValidationReviewWorksheetCsv() {
+    selectionFeedback();
+    const seed = await buildCurrentCueValidationStudySeed();
+    assertCueValidationStudySeedIsPrivacySafe(seed);
+    const worksheet = buildCueValidationReviewWorksheet(seed);
+    assertCueValidationReviewWorksheetIsPrivacySafe(worksheet);
+    const csv = buildCueValidationReviewWorksheetCsv(worksheet);
+    assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv);
+    setPreparedExport({
+      body: `${formatCueValidationReviewWorksheetSummary(worksheet)}\n\n${csv}`,
+      title: 'Prepared cue validation worksheet CSV',
     });
   }
 
@@ -687,6 +715,7 @@ export function SessionsScreen() {
             onPrepareExport={prepareCoachLibraryExport}
             onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
+            onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}
           />
 
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
