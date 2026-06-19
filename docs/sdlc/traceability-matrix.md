@@ -47,3 +47,4 @@
 | R43 next-session planning | `docs/requirements.md` | `tests/sessionPlan.test.ts`, browser smoke | Progress tab Next session plan panel | Covered |
 | R44 recurring cue patterns | `docs/requirements.md` | `tests/cuePatterns.test.ts`, browser smoke | Progress tab Cue patterns panel | Covered |
 | R45 private cue usefulness feedback | `docs/requirements.md` | `tests/reportAnnotationRepository.test.ts`, `tests/dataPortability.test.ts`, browser smoke | Sessions tab Cue feedback controls | Covered |
+| R46 cue usefulness insights | `docs/requirements.md` | `tests/cueFeedbackInsights.test.ts`, browser smoke | Progress tab Cue usefulness panel | Covered |

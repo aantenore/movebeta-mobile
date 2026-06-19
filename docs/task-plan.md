@@ -57,3 +57,4 @@
 | T53 | Add next-session planning from readiness, benchmarks, drills, and private project notes | Done |
 | T54 | Add recurring cue pattern tracking for persistent, emerging, and cleared technique issues | Done |
 | T55 | Add private per-cue usefulness feedback inside local training logs | Done |
+| T56 | Add cue usefulness insights from private cue feedback | Done |
