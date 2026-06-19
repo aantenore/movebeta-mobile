@@ -280,6 +280,10 @@ export function PrivacyScreen() {
                 <Text style={styles.portabilityValue}>{backupSummary.drillPractice}</Text>
                 <Text style={styles.portabilityLabel}>Drills</Text>
               </View>
+              <View style={styles.portabilityStat}>
+                <Text style={styles.portabilityValue}>{backupSummary.integrityVerified ? 'OK' : 'Legacy'}</Text>
+                <Text style={styles.portabilityLabel}>{backupSummary.checksum ?? 'Checksum'}</Text>
+              </View>
             </View>
           ) : null}
           {backup ? (

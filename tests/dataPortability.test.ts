@@ -6,8 +6,10 @@ import {
 } from '../src/movement/coachConsentRepository';
 import {
   createLocalDataBackup,
+  createLocalDataBackupIntegrity,
   formatLocalDataRestorePreview,
   formatLocalDataRestoreResult,
+  type LocalDataBackup,
   previewLocalDataRestore,
   previewLocalDataRestoreAgainstRepositories,
   restoreLocalDataBackup,
@@ -81,6 +83,13 @@ async function createPortabilityFixture() {
   return { annotations, consents, drillPractice, report, reports };
 }
 
+function withCurrentIntegrity(backup: LocalDataBackup): LocalDataBackup {
+  return {
+    ...backup,
+    integrity: createLocalDataBackupIntegrity(backup),
+  };
+}
+
 describe('local data portability', () => {
   it('creates a privacy-safe local backup with reports, annotations, and consent records', async () => {
     const { annotations, consents, drillPractice, reports } = await createPortabilityFixture();
@@ -96,10 +105,22 @@ describe('local data portability', () => {
 
     expect(summarizeLocalDataBackup(backup)).toEqual({
       annotations: 1,
+      checksum: backup.integrity?.checksum,
       consents: 1,
       drillPractice: 1,
       generatedAt: '2026-06-19T15:30:00.000Z',
+      integrityVerified: true,
       reports: 1,
+    });
+    expect(backup.integrity).toEqual({
+      algorithm: 'fnv1a-32',
+      checksum: expect.stringMatching(/^[a-f0-9]{8}$/),
+      recordCounts: {
+        annotations: 1,
+        consents: 1,
+        drillPractice: 1,
+        reports: 1,
+      },
     });
     expect(backup.privacy.rawVideoIncluded).toBe(false);
     expect(backup.privacy.videoLeavesDevice).toBe(false);
@@ -191,6 +212,8 @@ describe('local data portability', () => {
       existingDrillPractice: 0,
       existingReports: 0,
       generatedAt: '2026-06-19T15:30:00.000Z',
+      integrityChecksum: backup.integrity?.checksum,
+      integrityVerified: true,
       newAnnotations: 1,
       newConsents: 1,
       newDrillPractice: 1,
@@ -202,6 +225,7 @@ describe('local data portability', () => {
       status: 'ready-to-restore',
     });
     expect(formatLocalDataRestorePreview(preview)).toContain('Reports ready: 1');
+    expect(formatLocalDataRestorePreview(preview)).toContain('Integrity verified: yes');
     expect(await destinationReports.listReports()).toEqual([]);
   });
 
@@ -249,6 +273,52 @@ describe('local data portability', () => {
     expect(await destinationDrillPractice.listRecords()).toHaveLength(1);
   });
 
+  it('accepts legacy v1 backups without an integrity checksum', async () => {
+    const source = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations: source.annotations,
+      consents: source.consents,
+      drillPractice: source.drillPractice,
+      now: () => '2026-06-19T15:30:00.000Z',
+      reports: source.reports,
+    });
+    const legacyBackup = { ...backup, integrity: undefined };
+
+    const preview = previewLocalDataRestore(JSON.stringify(legacyBackup));
+
+    expect(preview.integrityChecksum).toBeNull();
+    expect(preview.integrityVerified).toBe(false);
+    expect(formatLocalDataRestorePreview(preview)).toContain('Integrity verified: legacy backup without checksum');
+  });
+
+  it('rejects backups whose content no longer matches the integrity checksum', async () => {
+    const source = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations: source.annotations,
+      consents: source.consents,
+      drillPractice: source.drillPractice,
+      now: () => '2026-06-19T15:30:00.000Z',
+      reports: source.reports,
+    });
+    const tamperedBackup = {
+      ...backup,
+      app: {
+        ...backup.app,
+        release: '9.9.9',
+      },
+    };
+
+    expect(() => previewLocalDataRestore(tamperedBackup)).toThrow('integrity check failed');
+    await expect(
+      restoreLocalDataBackup(tamperedBackup, {
+        annotations: new InMemoryReportAnnotationRepository(),
+        consents: new InMemoryCoachConsentRepository(),
+        drillPractice: new InMemoryDrillPracticeRepository(),
+        reports: new InMemoryReportRepository(),
+      }),
+    ).rejects.toThrow('integrity check failed');
+  });
+
   it('skips orphan annotations and consent records during restore', async () => {
     const { annotations, consents, drillPractice, reports } = await createPortabilityFixture();
     const backup = await createLocalDataBackup({
@@ -259,21 +329,23 @@ describe('local data portability', () => {
       reports,
     });
 
+    const backupWithOrphans = withCurrentIntegrity({
+      ...backup,
+      annotations: [...backup.annotations, createReportAnnotation('missing-report')],
+      consents: [...backup.consents, createCoachReviewConsentRecord('missing-report')],
+      drillPractice: [
+        ...backup.drillPractice,
+        createDrillPracticeRecord({
+          cueId: 'cue-missing',
+          drillId: 'cue-missing-missing-report',
+          reportId: 'missing-report',
+          status: 'completed',
+        }),
+      ],
+    });
+
     const result = await restoreLocalDataBackup(
-      {
-        ...backup,
-        annotations: [...backup.annotations, createReportAnnotation('missing-report')],
-        consents: [...backup.consents, createCoachReviewConsentRecord('missing-report')],
-        drillPractice: [
-          ...backup.drillPractice,
-          createDrillPracticeRecord({
-            cueId: 'cue-missing',
-            drillId: 'cue-missing-missing-report',
-            reportId: 'missing-report',
-            status: 'completed',
-          }),
-        ],
-      },
+      backupWithOrphans,
       {
         annotations: new InMemoryReportAnnotationRepository(),
         consents: new InMemoryCoachConsentRepository(),
@@ -298,7 +370,7 @@ describe('local data portability', () => {
       reports,
     });
 
-    const preview = previewLocalDataRestore({
+    const backupWithOrphans = withCurrentIntegrity({
       ...backup,
       annotations: [...backup.annotations, createReportAnnotation('missing-report')],
       consents: [...backup.consents, createCoachReviewConsentRecord('missing-report')],
@@ -312,6 +384,8 @@ describe('local data portability', () => {
         }),
       ],
     });
+
+    const preview = previewLocalDataRestore(backupWithOrphans);
 
     expect(preview).toMatchObject({
       annotationsToRestore: 1,
