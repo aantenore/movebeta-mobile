@@ -122,13 +122,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 63 test files and 242 tests.
+- `npm test`: passed, 64 test files and 245 tests.
 - `npm ci`: passed from `package-lock.json`.
+- `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3786ms load time, 341ms average inference, and 348ms max inference in the latest run.
+  CPU backend, 5095ms load time, 328ms average inference, and 336ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -185,6 +186,9 @@ platforms are validated on physical climbing videos and devices.
   evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, and launch evidence parsing
   from Expo/env configuration.
 - `tests/releaseGateReport.test.ts`: passed and covers release gate pass/fail aggregation plus ordered gate step evidence.
+- `tests/ciWorkflow.test.ts`: passed and covers GitHub Actions template trigger coverage, deferred active-workflow
+  activation, Node version sourcing from `package.json`, lockfile installs, shared `npm run ci` execution, and release
+  evidence artifact upload.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
   durable launch readiness report writes, including machine release-gate report detection and content validation for native
   QA evidence and cue-validation datasets.

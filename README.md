@@ -108,6 +108,8 @@ web build with `npm run store:screenshots`.
   device checks, and external evidence owners derived from release contracts.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
+- GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
+  shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -125,6 +127,7 @@ npm run toolchain:ios
 npm run native:android:debug
 npm run native:android:manifest
 npm run native:qa:runbook
+npm run ci
 npm run release:eas:check
 npm run release:readiness
 ```
@@ -191,7 +194,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
 - Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
-- CI workflow: `.github/workflows/quality.yml`.
+- CI workflow template: `docs/sdlc/ci-templates/github-actions-quality.yml`; move it to
+  `.github/workflows/quality.yml` after the GitHub token has `workflow` scope.
 
 The local release gate is:
 
