@@ -21,6 +21,7 @@ import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/re
 import { summarizeProgress } from '@/movement/progressInsights';
 import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
+import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
 import { theme } from '@/core/theme';
 
 type FilterChipProps = {
@@ -72,6 +73,7 @@ export function ProgressScreen() {
   const filteredReports = useMemo(() => filterProgressReports(visibleReports, filters), [visibleReports, filters]);
   const summary = useMemo(() => summarizeProgress(filteredReports), [filteredReports]);
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
+  const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -129,6 +131,49 @@ export function ProgressScreen() {
           </View>
         </View>
       ) : null}
+
+      <Section
+        title="Technique readiness"
+        caption="Local reports and private training logs converted into the next-session decision."
+      >
+        <View style={styles.readinessCard}>
+          <View style={styles.readinessTop}>
+            <View style={styles.readinessScoreBox}>
+              <Text style={styles.readinessScore}>{readiness.score}</Text>
+              <Text style={styles.readinessScoreLabel}>Ready</Text>
+            </View>
+            <View style={styles.readinessCopy}>
+              <View style={styles.readinessTitleRow}>
+                <Text style={styles.readinessTitle}>{readiness.headline}</Text>
+                <Text
+                  style={[
+                    styles.readinessBadge,
+                    readiness.status === 'recover' ? styles.readinessBadgeRecover : null,
+                    readiness.status === 'ready' ? styles.readinessBadgeReady : null,
+                    readiness.status === 'baseline' ? styles.readinessBadgeBaseline : null,
+                  ]}
+                >
+                  {readiness.status}
+                </Text>
+              </View>
+              <Text style={styles.readinessMeta}>Focus: {readiness.focus}</Text>
+            </View>
+          </View>
+
+          <View style={styles.readinessBlock}>
+            <Text style={styles.readinessBlockLabel}>Next action</Text>
+            <Text style={styles.readinessBlockText}>{readiness.nextAction}</Text>
+          </View>
+          <View style={styles.readinessBlock}>
+            <Text style={styles.readinessBlockLabel}>Warm-up</Text>
+            <Text style={styles.readinessBlockText}>{readiness.warmup}</Text>
+          </View>
+          <View style={styles.readinessBlock}>
+            <Text style={styles.readinessBlockLabel}>Risk</Text>
+            <Text style={styles.readinessBlockText}>{readiness.risk}</Text>
+          </View>
+        </View>
+      </Section>
 
       <Section
         title="History filters"
@@ -542,6 +587,100 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: theme.spacing.md,
     padding: theme.spacing.md,
+  },
+  readinessBadge: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  readinessBadgeBaseline: {
+    backgroundColor: theme.colors.surfaceAlt,
+    color: theme.colors.muted,
+  },
+  readinessBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  readinessBadgeRecover: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  readinessBlock: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 4,
+    padding: theme.spacing.sm,
+  },
+  readinessBlockLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  readinessBlockText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  readinessCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  readinessCopy: {
+    flex: 1,
+    gap: 5,
+  },
+  readinessMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  readinessScore: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  readinessScoreBox: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    minWidth: 74,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  readinessScoreLabel: {
+    color: '#DCECF3',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  readinessTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 22,
+  },
+  readinessTitleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  readinessTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
   },
   projectQueueStats: {
     flexDirection: 'row',

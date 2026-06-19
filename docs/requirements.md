@@ -45,6 +45,8 @@
 - Show an airplane-mode readiness self-check for local analysis, local storage, cloud sync, raw export, and report history.
 - Summarize local report history into attempt count, average quality, best signal, next focus, and metric trends.
 - Filter local progress history and project queue by wall angle, grade, and gym.
+- Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,
+  and drill evidence.
 - Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
@@ -62,6 +64,7 @@
 - Local deletion must clean orphaned training-log and consent records even when the report record is already missing.
 - Backup restore must validate schema version, reject URI-like raw-video artifacts, and skip orphan training-log or
   consent records whose reports are not present in the backup.
+- Technique readiness must degrade to a baseline recommendation when no local reports exist.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

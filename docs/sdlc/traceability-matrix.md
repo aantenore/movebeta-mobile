@@ -42,3 +42,4 @@
 | R38 progress history filters | `docs/requirements.md` | `tests/progressFilters.test.ts`, browser smoke | Progress tab History filters panel | Covered |
 | R39 privacy deletion bundle | `docs/requirements.md`, `docs/sdlc/privacy-threat-model.md` | `tests/privacyDeletion.test.ts`, browser smoke | Sessions tab Delete receipt | Covered |
 | R40 local data portability | `docs/requirements.md`, `docs/data-governance.md` | `tests/dataPortability.test.ts`, browser smoke | Privacy tab Data portability panel | Covered |
+| R41 technique readiness | `docs/requirements.md` | `tests/techniqueReadiness.test.ts`, browser smoke | Progress tab Technique readiness panel | Covered |
