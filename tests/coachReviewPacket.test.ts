@@ -33,7 +33,7 @@ describe('coach review packet', () => {
     });
 
     expect(CoachReviewPacketSchema.parse(packet)).toEqual(packet);
-    expect(packet.schemaVersion).toBe('movebeta.coach-review.v1');
+    expect(packet.schemaVersion).toBe('movebeta.coach-review.v2');
     expect(packet.reportId).toBe(report.id);
     expect(packet.consent.granted).toBe(true);
     expect(packet.consent.grantedAt).toBe('2026-06-19T11:55:00+02:00');
@@ -41,6 +41,9 @@ describe('coach review packet', () => {
     expect(packet.consent.videoLeavesDevice).toBe(false);
     expect(packet.analysis.performance.budgetStatus).toBe('not-measured');
     expect(packet.analysis.metrics.length).toBeGreaterThan(0);
+    expect(packet.analysis.cueTrust.schemaVersion).toBe('movebeta.cue-trust.v1');
+    expect(packet.analysis.cueTrust.signals).toHaveLength(report.cues.length);
+    expect(packet.analysis.cueTrust.validationStatus).toBe('pending');
     expect(packet.athleteContext.trainingLog.privateNoteIncluded).toBe(false);
     expect(packet.athleteContext.drillPractice.totalCount).toBe(0);
     expect(packet.reviewRubric.map((item) => item.id)).toEqual([

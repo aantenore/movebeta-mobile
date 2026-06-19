@@ -105,6 +105,8 @@
 - Technique readiness must degrade to a baseline recommendation when no local reports exist.
 - Beta replay plans must degrade to weakest-metric guidance when no cue crosses a coaching threshold.
 - Movement phase breakdowns must degrade to smooth phase guidance when no disruptive cue or timeline event is present.
+- Cue trust scoring must downgrade cue confidence when pose quality, timing evidence, runtime budget, or validation
+  readiness is weak.
 - Personal benchmarks must return an empty state when no local reports exist and keep at least one top benchmark per
   supported segment when reports are present.
 - Session planning must degrade to a baseline block when no reports exist and must avoid max-intensity guidance during
@@ -117,6 +119,8 @@
 - Drill practice summaries must ignore orphan practice records and return an empty state before practice is logged.
 - Coach review packets must ignore orphan training logs or drill records and must never include private note text or
   drill-practice notes.
+- Coach review packets must include cue trust summaries without exposing raw video, key frames, landmarks, private notes,
+  or drill-practice notes.
 - Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.

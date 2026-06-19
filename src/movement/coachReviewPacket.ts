@@ -10,6 +10,7 @@ import {
   TimelineEventSchema,
   type LocalAnalysisReport,
 } from './contracts';
+import { buildCueTrustReport, CueTrustReportSchema } from './cueTrust';
 import { drillPracticeStatuses, type DrillPracticeRecord } from './drillPracticeRepository';
 import { cueFeedbackRatings, reportProjectStatuses, type ReportAnnotation } from './reportAnnotationRepository';
 
@@ -50,6 +51,7 @@ export const CoachAthleteContextSchema = z.object({
 export const CoachReviewPacketSchema = z.object({
   analysis: z.object({
     cues: z.array(MovementCueSchema),
+    cueTrust: CueTrustReportSchema,
     engine: z.object({
       model: z.string(),
       processedFrames: z.number().int().nonnegative(),
@@ -80,7 +82,7 @@ export const CoachReviewPacketSchema = z.object({
   reportId: z.string(),
   reviewRubric: z.array(CoachReviewRubricItemSchema),
   safetyNotes: z.array(z.string()),
-  schemaVersion: z.literal('movebeta.coach-review.v1'),
+  schemaVersion: z.literal('movebeta.coach-review.v2'),
   session: ClimbSessionSchema.omit({ id: true }),
 });
 
@@ -179,6 +181,7 @@ export function buildCoachReviewPacket(
   return CoachReviewPacketSchema.parse({
     analysis: {
       cues: report.cues,
+      cueTrust: buildCueTrustReport(report, { generatedAt: createdAt }),
       engine: {
         model: report.engine.model,
         processedFrames: report.engine.processedFrames,
@@ -210,10 +213,11 @@ export function buildCoachReviewPacket(
     reviewRubric,
     safetyNotes: [
       'This packet contains movement education signals only.',
+      'Cue trust summarizes local signal quality and validation readiness; it is not a guarantee of coaching correctness.',
       'It does not include raw video, video URI, key-frame pose coordinates, or medical assessment.',
       'Coach review should be shared only after explicit athlete consent.',
     ],
-    schemaVersion: 'movebeta.coach-review.v1',
+    schemaVersion: 'movebeta.coach-review.v2',
     session: {
       createdAt: report.session.createdAt,
       durationMs: report.session.durationMs,

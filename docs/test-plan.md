@@ -62,6 +62,7 @@
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest beta replay plan tests for setup/crux/exit action generation, timestamp ordering, and no-cue metric fallback.
 - Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.
+- Vitest cue trust tests for signal-factor scoring, low-quality degradation, and real validation evidence downgrade.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
 - Vitest store-readiness tests for bundle/package identifiers, permission copy, privacy declaration, listing copy, and
@@ -91,6 +92,7 @@
 - Capture-readiness guidance renders before coaching cues and recommends whether to trust or retake the clip.
 - Beta replay plan renders before movement metrics with setup, crux, and exit actions.
 - Movement phase breakdown renders before movement metrics with the primary phase and phase scores.
+- Cue trust renders before movement metrics with validation-readiness status and per-cue confidence scores.
 - Selecting each bundled local attempt runs analysis and updates pose overlay, metrics, cues, and timeline.
 - Sessions tab refreshes on focus and shows the latest local attempts.
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
@@ -108,7 +110,7 @@
 - Sessions tab builds a cue-validation dataset JSON from a completed worksheet CSV after reviewer IDs and scores are filled.
 - Sessions tab shows the local cue-validation gate preview after dataset composition.
 - Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
-  and without raw video or private-note artifacts.
+  cue trust, and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
 - Privacy data portability prepares a backup JSON and restores it locally without raw video leaving the device.
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.

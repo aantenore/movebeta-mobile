@@ -17,6 +17,7 @@ import { theme } from '@/core/theme';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
+import { buildCueTrustReport, type CueTrustReport, type CueTrustSignal } from '@/movement/cueTrust';
 import { buildMovementPhaseBreakdown, type MovementPhaseBreakdown } from '@/movement/movementPhaseBreakdown';
 import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts } from '@/movement/repository';
 import {
@@ -195,6 +196,57 @@ function MovementPhaseBreakdownPanel({ breakdown }: { breakdown: MovementPhaseBr
             </View>
           ))}
         </View>
+      </View>
+    </Section>
+  );
+}
+
+function trustColor(level: CueTrustSignal['level']) {
+  if (level === 'high') return theme.colors.success;
+  if (level === 'medium') return theme.colors.brand;
+  if (level === 'low') return theme.colors.amber;
+  return theme.colors.coral;
+}
+
+function CueTrustPanel({ cueTrust }: { cueTrust: CueTrustReport }) {
+  const validated = cueTrust.validationStatus === 'validated' && cueTrust.reviewCueIds.length === 0;
+
+  return (
+    <Section title="Cue trust" caption="Confidence scoring for each local coaching cue before it is treated as production evidence.">
+      <View style={styles.trustSummary}>
+        <View style={styles.trustSummaryTop}>
+          <View style={styles.trustSummaryTitleRow}>
+            <ShieldCheck color={validated ? theme.colors.success : theme.colors.amber} size={18} />
+            <Text style={styles.trustSummaryTitle}>Trust average</Text>
+          </View>
+          <Text style={styles.trustSummaryScore}>{cueTrust.averageScore}/100</Text>
+        </View>
+        <Text style={styles.trustSummaryText}>{cueTrust.summary}</Text>
+        <Text style={styles.trustValidation}>Validation: {cueTrust.validationStatus}</Text>
+      </View>
+
+      <View style={styles.trustList}>
+        {cueTrust.signals.map((signal) => (
+          <View key={signal.cueId} style={styles.trustCard}>
+            <View style={styles.trustCardTop}>
+              <Text style={styles.trustCardTitle}>{signal.title}</Text>
+              <Text style={[styles.trustBadge, { color: trustColor(signal.level) }]}>{signal.label}</Text>
+            </View>
+            <Text style={styles.trustCardScore}>{signal.score}/100</Text>
+            <Text style={styles.trustExplanation}>{signal.explanation}</Text>
+            <View style={styles.trustFactors}>
+              {signal.factors.map((factor) => (
+                <View key={`${signal.cueId}-${factor.id}`} style={styles.trustFactor}>
+                  <Text style={styles.trustFactorLabel}>{factor.label}</Text>
+                  <Text style={styles.trustFactorScore}>{factor.score}</Text>
+                  <Text style={[styles.trustFactorStatus, factor.status === 'weak' ? styles.trustFactorWeak : null]}>
+                    {factor.status}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ))}
       </View>
     </Section>
   );
@@ -490,6 +542,8 @@ export function CoachScreen() {
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const intakeSource = activeSource ?? getDemoVideoSource(selectedAttemptId);
   const captureSetupAssessment = assessCaptureCalibration(captureCalibration);
+  const cueTrust = report ? buildCueTrustReport(report) : null;
+  const cueTrustById = new Map(cueTrust?.signals.map((signal) => [signal.cueId, signal]) ?? []);
 
   function updateSessionMetadata(nextMetadata: typeof defaultEditableSession) {
     setSessionMetadata(nextMetadata);
@@ -812,6 +866,7 @@ export function CoachScreen() {
           <CaptureReadinessPanel report={report} />
           <BetaReplayPlanPanel plan={buildBetaReplayPlan(report)} />
           <MovementPhaseBreakdownPanel breakdown={buildMovementPhaseBreakdown(report)} />
+          {cueTrust ? <CueTrustPanel cueTrust={cueTrust} /> : null}
 
           <Section title="Movement metrics">
             {report.metrics.map((metric) => (
@@ -821,7 +876,7 @@ export function CoachScreen() {
 
           <Section title="Coach cues">
             {report.cues.map((cue) => (
-              <MovementCueCard key={cue.id} cue={cue} />
+              <MovementCueCard key={cue.id} cue={cue} trustSignal={cueTrustById.get(cue.id)} />
             ))}
           </Section>
 
@@ -1134,6 +1189,124 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: theme.spacing.sm,
     justifyContent: 'space-between',
+  },
+  trustBadge: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  trustCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: 6,
+    padding: theme.spacing.md,
+  },
+  trustCardScore: {
+    color: theme.colors.brand,
+    fontSize: 18,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  trustCardTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  trustCardTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  trustExplanation: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  trustFactor: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  trustFactorLabel: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  trustFactorScore: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  trustFactors: {
+    gap: 6,
+  },
+  trustFactorStatus: {
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  trustFactorWeak: {
+    color: theme.colors.coral,
+  },
+  trustList: {
+    gap: theme.spacing.sm,
+  },
+  trustSummary: {
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    gap: 5,
+    padding: theme.spacing.md,
+  },
+  trustSummaryScore: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  trustSummaryText: {
+    color: '#DCECF3',
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  trustSummaryTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  trustSummaryTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  trustSummaryTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  trustValidation: {
+    color: '#DCECF3',
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
   },
   previewCopy: {
     flex: 1,
