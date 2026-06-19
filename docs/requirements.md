@@ -132,6 +132,8 @@
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
+- Release gate execution must produce a machine-readable JSON report with ordered step results before launch-readiness
+  detection can mark the release gate verified.
 - Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
 - Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Launch-readiness detection must validate native QA evidence and cue-validation dataset content before marking either
