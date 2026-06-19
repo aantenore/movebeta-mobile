@@ -90,6 +90,8 @@
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
 - Expose provider, active plan, privacy mode, and launch-readiness evidence in configuration.
 - Generate a machine-detected launch-readiness report that separates configured evidence from detected evidence.
+- Generate a native QA runbook for physical iOS and Android validation, including required workflows, performance
+  budgets, privacy instructions, and a blocked draft evidence payload.
 
 ## Non-Functional
 
@@ -139,6 +141,8 @@
   inference without a camera or cloud runtime.
 - MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
   backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
+- Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
+  generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

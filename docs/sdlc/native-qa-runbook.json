@@ -1,0 +1,286 @@
+{
+  "acceptanceBudgets": {
+    "maxBatteryDropPct": 4,
+    "maxLatencyByClipMs": [
+      {
+        "maxAnalysisMs": 8000,
+        "maxClipDurationMs": 10000
+      },
+      {
+        "maxAnalysisMs": 25000,
+        "maxClipDurationMs": 45000
+      },
+      {
+        "maxAnalysisMs": 35000,
+        "maxClipDurationMs": 60000
+      }
+    ],
+    "passingThermalStates": [
+      "nominal",
+      "fair"
+    ],
+    "requiredPlatforms": [
+      "android",
+      "ios"
+    ],
+    "requiredWorkflows": [
+      "cameraPermission",
+      "recordVideo",
+      "mutedRecording",
+      "metadataRead",
+      "importVideo",
+      "airplaneModeAnalysis",
+      "deleteReport"
+    ]
+  },
+  "appVersion": "1.0.0",
+  "evidenceDraft": {
+    "appVersion": "1.0.0",
+    "generatedAt": "2026-06-19T00:00:00.000Z",
+    "runs": [
+      {
+        "buildId": "replace-with-internal-build-id",
+        "clip": {
+          "durationMs": 10000,
+          "id": "android-real-climbing-clip-id",
+          "source": "camera"
+        },
+        "deviceName": "replace-with-android-device-name",
+        "osVersion": "replace-with-android-os-version",
+        "performance": {
+          "analysisMs": null,
+          "batteryDropPct": null,
+          "thermalState": null
+        },
+        "platform": "android",
+        "provider": "native-platform-pose",
+        "recordedAt": "2026-06-19T00:00:00.000Z",
+        "workflows": {
+          "cameraPermission": "pending",
+          "recordVideo": "pending",
+          "mutedRecording": "pending",
+          "metadataRead": "pending",
+          "importVideo": "pending",
+          "airplaneModeAnalysis": "pending",
+          "deleteReport": "pending"
+        },
+        "notes": "Fill with real physical-device evidence. Do not paste raw video paths, faces, account ids, or secrets."
+      },
+      {
+        "buildId": "replace-with-internal-build-id",
+        "clip": {
+          "durationMs": 10000,
+          "id": "ios-real-climbing-clip-id",
+          "source": "camera"
+        },
+        "deviceName": "replace-with-ios-device-name",
+        "osVersion": "replace-with-ios-os-version",
+        "performance": {
+          "analysisMs": null,
+          "batteryDropPct": null,
+          "thermalState": null
+        },
+        "platform": "ios",
+        "provider": "native-platform-pose",
+        "recordedAt": "2026-06-19T00:00:00.000Z",
+        "workflows": {
+          "cameraPermission": "pending",
+          "recordVideo": "pending",
+          "mutedRecording": "pending",
+          "metadataRead": "pending",
+          "importVideo": "pending",
+          "airplaneModeAnalysis": "pending",
+          "deleteReport": "pending"
+        },
+        "notes": "Fill with real physical-device evidence. Do not paste raw video paths, faces, account ids, or secrets."
+      }
+    ]
+  },
+  "generatedAt": "2026-06-19T00:00:00.000Z",
+  "instructions": [
+    "Copy evidenceDraft into docs/sdlc/native-qa-evidence.json after replacing every pending/null value with real device results.",
+    "Run npm run native:qa:validate and keep the generated evidence local until it contains no raw video identifiers or secrets.",
+    "Store submission remains blocked until both android and ios runs pass the validator."
+  ],
+  "runbooks": [
+    {
+      "acceptance": {
+        "evidenceFile": "docs/sdlc/native-qa-evidence.json",
+        "validator": "npm run native:qa:validate"
+      },
+      "label": "Android physical device",
+      "performance": {
+        "batteryBudgetPct": 4,
+        "clipLatencyBudgets": [
+          {
+            "maxAnalysisMs": 8000,
+            "maxClipDurationMs": 10000
+          },
+          {
+            "maxAnalysisMs": 25000,
+            "maxClipDurationMs": 45000
+          },
+          {
+            "maxAnalysisMs": 35000,
+            "maxClipDurationMs": 60000
+          }
+        ],
+        "id": "android-performance",
+        "label": "Repeated-analysis performance budget",
+        "requiredThermalStates": [
+          "nominal",
+          "fair"
+        ],
+        "sampleSize": "Run at least one camera clip and one imported clip; repeat five analyses when preparing store evidence."
+      },
+      "platform": "android",
+      "setup": [
+        "Install a custom native build, not Expo Go.",
+        "Use a real climbing clip with consent and no visible bystanders.",
+        "Enable airplane mode before the offline-analysis workflow.",
+        "Record only pass/fail evidence and aggregate timing; do not store raw video paths in committed docs."
+      ],
+      "workflows": [
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "android-cameraPermission",
+          "label": "Camera permission flow",
+          "order": 1,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "android-recordVideo",
+          "label": "Record video",
+          "order": 2,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Recording completes without microphone permission and without audio capture.",
+          "id": "android-mutedRecording",
+          "label": "Muted recording profile",
+          "order": 3,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Report or QA notes include native duration and dimensions for camera and import clips.",
+          "id": "android-metadataRead",
+          "label": "Native video metadata read",
+          "order": 4,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "android-importVideo",
+          "label": "Video import",
+          "order": 5,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "A local camera/import clip produces a report while airplane mode is enabled.",
+          "id": "android-airplaneModeAnalysis",
+          "label": "Airplane-mode local analysis",
+          "order": 6,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "android-deleteReport",
+          "label": "Report deletion",
+          "order": 7,
+          "requiredStatus": "pass"
+        }
+      ]
+    },
+    {
+      "acceptance": {
+        "evidenceFile": "docs/sdlc/native-qa-evidence.json",
+        "validator": "npm run native:qa:validate"
+      },
+      "label": "iOS physical device",
+      "performance": {
+        "batteryBudgetPct": 4,
+        "clipLatencyBudgets": [
+          {
+            "maxAnalysisMs": 8000,
+            "maxClipDurationMs": 10000
+          },
+          {
+            "maxAnalysisMs": 25000,
+            "maxClipDurationMs": 45000
+          },
+          {
+            "maxAnalysisMs": 35000,
+            "maxClipDurationMs": 60000
+          }
+        ],
+        "id": "ios-performance",
+        "label": "Repeated-analysis performance budget",
+        "requiredThermalStates": [
+          "nominal",
+          "fair"
+        ],
+        "sampleSize": "Run at least one camera clip and one imported clip; repeat five analyses when preparing store evidence."
+      },
+      "platform": "ios",
+      "setup": [
+        "Install a custom native build, not Expo Go.",
+        "Use a real climbing clip with consent and no visible bystanders.",
+        "Enable airplane mode before the offline-analysis workflow.",
+        "Record only pass/fail evidence and aggregate timing; do not store raw video paths in committed docs."
+      ],
+      "workflows": [
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "ios-cameraPermission",
+          "label": "Camera permission flow",
+          "order": 1,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "ios-recordVideo",
+          "label": "Record video",
+          "order": 2,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Recording completes without microphone permission and without audio capture.",
+          "id": "ios-mutedRecording",
+          "label": "Muted recording profile",
+          "order": 3,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Report or QA notes include native duration and dimensions for camera and import clips.",
+          "id": "ios-metadataRead",
+          "label": "Native video metadata read",
+          "order": 4,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "ios-importVideo",
+          "label": "Video import",
+          "order": 5,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "A local camera/import clip produces a report while airplane mode is enabled.",
+          "id": "ios-airplaneModeAnalysis",
+          "label": "Airplane-mode local analysis",
+          "order": 6,
+          "requiredStatus": "pass"
+        },
+        {
+          "expectedEvidence": "Tester marks pass only after the workflow succeeds on the physical device.",
+          "id": "ios-deleteReport",
+          "label": "Report deletion",
+          "order": 7,
+          "requiredStatus": "pass"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": "movebeta.native-qa-runbook.v1"
+}

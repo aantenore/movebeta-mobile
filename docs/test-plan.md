@@ -73,6 +73,8 @@
 - Vitest Android manifest checks for camera/import permissions, audio exclusion, and disabled Android backup.
 - Vitest native QA evidence tests for platform coverage, muted recording, metadata reads, workflow pass/fail state,
   latency budgets, battery budget, and thermal state.
+- Vitest native QA runbook tests for platform workflows, budget reuse, privacy-safe setup instructions, and blocked
+  evidence drafts before real device values are entered.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -82,6 +84,7 @@
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.
 - iOS Pods install with `npm run native:ios:pods`.
+- Native QA runbook generation with `npm run native:qa:runbook`.
 - Native QA evidence validation with `npm run native:qa:validate` after real device runs are captured.
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.

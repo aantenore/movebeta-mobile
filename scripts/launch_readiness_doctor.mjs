@@ -43,6 +43,11 @@ export const CHECK_DEFINITIONS = {
     label: 'Native device QA evidence',
     owner: 'qa',
   },
+  nativeQaRunbook: {
+    action: 'Run npm run native:qa:runbook and keep docs/sdlc/native-qa-runbook.json current.',
+    label: 'Native QA runbook',
+    owner: 'qa',
+  },
   privacyManifest: {
     action: 'Generate docs/store/store-manifest.json and keep privacy declarations current.',
     label: 'Privacy declarations',
@@ -67,7 +72,7 @@ export const CHECK_DEFINITIONS = {
 
 export const TRACK_REQUIREMENTS = {
   demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeDeviceQa'],
+  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeQaRunbook', 'nativeDeviceQa'],
   store: [
     'releaseGate',
     'webSmoke',
@@ -75,6 +80,7 @@ export const TRACK_REQUIREMENTS = {
     'storeListing',
     'modelReadiness',
     'iosBuild',
+    'nativeQaRunbook',
     'nativeDeviceQa',
     'cueValidationDataset',
     'easProject',
@@ -133,6 +139,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const packageJson = readJsonIfExists(path.join(rootDir, 'package.json')) ?? {};
   const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
   const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
+  const nativeQaRunbook = readJsonIfExists(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json')) ?? {};
 
   return {
     androidDebugBuild: exists(rootDir, 'android/app/build/outputs/apk/debug/app-debug.apk'),
@@ -148,6 +155,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       moveNetReadinessReport.schemaVersion === 'movebeta.movenet-readiness-report.v1' &&
       moveNetReadinessReport.status === 'ready',
     nativeDeviceQa: exists(rootDir, 'docs/sdlc/native-qa-evidence.json'),
+    nativeQaRunbook: nativeQaRunbook.schemaVersion === 'movebeta.native-qa-runbook.v1',
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
     releaseGate: typeof packageJson.scripts?.['release:check'] === 'string' && releaseReport.includes('`npm run release:check`: passed'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),

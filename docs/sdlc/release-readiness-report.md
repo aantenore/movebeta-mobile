@@ -37,6 +37,8 @@ platforms are validated on physical climbing videos and devices.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
 - MoveNet model readiness writes a durable local report with CPU backend, model load time, average and max inference
   time, memory evidence, and explicit synthetic-frame limitations.
+- Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
+  budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
 - iOS native source includes Apple Vision pose extraction, local video metadata reads, and local Photos asset resolution
   behind the same provider contract.
@@ -105,13 +107,15 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 52 test files and 198 tests.
+- `npm test`: passed, 53 test files and 201 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4084ms load time, 359ms average inference, and 361ms max inference in the latest run.
+  CPU backend, 4060ms load time, 338ms average inference, and 351ms max inference in the latest run.
+- `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
+  setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
 - `npm run release:check`: passed.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
@@ -157,9 +161,12 @@ platforms are validated on physical climbing videos and devices.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
 - `tests/launchReadiness.test.ts` and `tests/config.test.ts`: passed and cover default blocker status, all-ready
-  evidence, partial evidence overrides, MoveNet readiness evidence, and launch evidence parsing from Expo/env configuration.
+  evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, and launch evidence parsing
+  from Expo/env configuration.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
-  durable launch readiness report writes, including missing model-readiness evidence.
+  durable launch readiness report writes, including missing model-readiness and native QA runbook evidence.
+- `tests/nativeQaRunbook.test.ts`: passed and covers platform workflow instructions, generated evidence drafts, and the
+  expected validator failure until real physical-device values are entered.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/betaReplayPlan.test.ts`: passed and covers setup/crux/exit action generation, timestamp ordering, and weakest
@@ -201,8 +208,9 @@ platforms are validated on physical climbing videos and devices.
   gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
 - `npm run release:readiness`: passed and generated `docs/sdlc/launch-readiness-report.json` with stakeholder demo ready,
-  model readiness verified, internal native beta blocked by missing physical-device QA evidence, and store submission
-  blocked by missing full Xcode, physical-device QA, real cue-validation data, EAS project binding, and store credentials.
+  model readiness and native QA runbook verified, internal native beta blocked by missing physical-device QA evidence, and
+  store submission blocked by missing full Xcode, physical-device QA, real cue-validation data, EAS project binding, and
+  store credentials.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
@@ -212,7 +220,8 @@ platforms are validated on physical climbing videos and devices.
 - iOS build verification is blocked on this machine because full Xcode is not installed. CocoaPods is now verified with a
   local modern Ruby toolchain.
 - Native release requires custom Expo development build validation on physical iOS and Android devices with real climbing
-  clips. The validator and template now exist, but `docs/sdlc/native-qa-evidence.json` must be filled from real devices.
+  clips. The validator, template, and runbook now exist, but `docs/sdlc/native-qa-evidence.json` must be filled from real
+  devices.
 - The MoveNet smoke and readiness report verify model load and inference execution on synthetic local frames only. Real
   climbing-video model validation still requires physical-device QA plus consented climbing clips.
 - Store-bound EAS submission requires `npx eas-cli@latest init` on the target Expo account, `extra.eas.projectId`,

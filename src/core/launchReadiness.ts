@@ -10,6 +10,7 @@ export const LaunchReadinessCheckKeySchema = z.enum([
   'androidDebugBuild',
   'iosPods',
   'modelReadiness',
+  'nativeQaRunbook',
   'iosBuild',
   'nativeDeviceQa',
   'cueValidationDataset',
@@ -25,6 +26,7 @@ export const LaunchReadinessEvidenceSchema = z.object({
   iosBuild: z.boolean().optional(),
   iosPods: z.boolean().optional(),
   modelReadiness: z.boolean().optional(),
+  nativeQaRunbook: z.boolean().optional(),
   nativeDeviceQa: z.boolean().optional(),
   privacyManifest: z.boolean().optional(),
   releaseGate: z.boolean().optional(),
@@ -122,6 +124,12 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
     label: 'Native device QA evidence',
     owner: 'qa',
   },
+  nativeQaRunbook: {
+    action: 'Keep the generated native QA runbook ready for physical iOS and Android validation.',
+    key: 'nativeQaRunbook',
+    label: 'Native QA runbook',
+    owner: 'qa',
+  },
   privacyManifest: {
     action: 'Keep privacy declarations aligned with local-only analysis and export behavior.',
     key: 'privacyManifest',
@@ -150,7 +158,7 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
 
 const trackRequirements: Record<z.infer<typeof LaunchTrackSchema>, Array<z.infer<typeof LaunchReadinessCheckKeySchema>>> = {
   demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeDeviceQa'],
+  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeQaRunbook', 'nativeDeviceQa'],
   store: [
     'releaseGate',
     'webSmoke',
@@ -158,6 +166,7 @@ const trackRequirements: Record<z.infer<typeof LaunchTrackSchema>, Array<z.infer
     'storeListing',
     'modelReadiness',
     'iosBuild',
+    'nativeQaRunbook',
     'nativeDeviceQa',
     'cueValidationDataset',
     'easProject',
@@ -179,6 +188,7 @@ export const defaultLaunchReadinessEvidence: LaunchReadinessEvidence = {
   iosBuild: false,
   iosPods: true,
   modelReadiness: true,
+  nativeQaRunbook: true,
   nativeDeviceQa: false,
   privacyManifest: true,
   releaseGate: true,

@@ -13,12 +13,14 @@ describe('app config', () => {
         androidDebugBuild: true,
         modelReadiness: true,
         nativeDeviceQa: false,
+        nativeQaRunbook: true,
         releaseGate: true,
       }),
     ).toEqual({
       androidDebugBuild: true,
       modelReadiness: true,
       nativeDeviceQa: false,
+      nativeQaRunbook: true,
       releaseGate: true,
     });
   });

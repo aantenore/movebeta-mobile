@@ -12,9 +12,10 @@
 2. Run `npm run release:check`.
 3. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
 4. Run `npm run release:eas:check`.
-5. Run browser smoke.
-6. For native releases, run EAS preview build.
-7. Complete privacy and permission review.
+5. Run `npm run native:qa:runbook` before collecting physical-device evidence.
+6. Run browser smoke.
+7. For native releases, run EAS preview build.
+8. Complete privacy and permission review.
 
 ## EAS Readiness
 
@@ -62,6 +63,7 @@ Before submitting:
 - Regenerate `docs/store/store-manifest.json` with `npm run store:manifest`.
 - Capture current screenshots with `npm run store:screenshots`.
 - Refresh `docs/sdlc/launch-readiness-report.json` with `npm run release:readiness`.
+- Refresh `docs/sdlc/native-qa-runbook.json` with `npm run native:qa:runbook`.
 - Replace placeholder bundle/package identifiers if needed.
 - Confirm Apple/Google account ownership.
 - Prepare privacy labels and data safety forms.
