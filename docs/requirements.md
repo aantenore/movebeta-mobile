@@ -53,6 +53,8 @@
   practice counts, and no raw video artifacts.
 - Generate reusable local coach team templates from consented review signals for high-priority review, follow-through,
   signal retake, and privacy-safe packet review workflows.
+- Prepare a versioned local coach library export from consented queue metadata and team templates without raw video,
+  video URI, private notes, drill notes, pose frames, key frames, or landmarks.
 - Prepare a local diagnostics support packet without raw video, video URI, key frames, pose landmarks, account identifiers, or secrets.
 - Show an airplane-mode readiness self-check for local analysis, local storage, cloud sync, raw export, and report history.
 - Summarize local report history into attempt count, average quality, best signal, next focus, and metric trends.
@@ -101,6 +103,7 @@
   drill-practice notes.
 - Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
+- Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.

@@ -31,6 +31,8 @@ The Sessions coach library gives the Coach tier a local-first review queue befor
 introduced.
 Local team templates turn consented review queues into reusable class and project workflows without introducing cloud
 sharing before privacy validation is complete.
+The versioned coach library export gives the Coach tier a concrete batch handoff artifact for clinics or remote review
+while keeping raw video, pose artifacts, and private notes outside the bundle.
 
 ## Differentiation
 

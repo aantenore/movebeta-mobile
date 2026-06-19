@@ -23,6 +23,7 @@
 | Landmark data treated as harmless telemetry | Biometric-adjacent leakage | Minimize artifacts, redact diagnostics, document retention |
 | Diagnostics include private file URIs or frame data | Privacy leakage | `sanitizeDiagnostics` redacts sensitive keys |
 | Coach packet prepared without athlete consent | Trust and policy risk | Explicit per-report coach review and cue validation consent gate |
+| Coach library batch export leaks raw artifacts | Privacy leakage | Export is derived from privacy-safe view models and rejects forbidden raw artifact keys |
 | Gym bystanders captured | Consent and policy risk | Capture setup blockers, capture reminders, and export controls |
 | Deletion does not remove all local report-adjacent data | Trust and compliance risk | Privacy deletion bundle removes reports, private training logs, and coach consent records together |
 | Backup reintroduces raw video references | Privacy leakage | Versioned backup schema rejects URI-like artifacts and excludes raw video by contract |
