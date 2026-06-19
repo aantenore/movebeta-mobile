@@ -37,6 +37,8 @@ The cue-validation study seed shortens the path from local coach review to produ
 packet-only tasks later without the app inventing validation results.
 The review worksheet makes that evidence loop operational by giving each required coach slot a blank row while keeping
 validation score entry outside automated generation.
+The worksheet CSV makes the same loop usable with spreadsheet-based review collection before a dedicated coach portal is
+worth building.
 
 ## Differentiation
 

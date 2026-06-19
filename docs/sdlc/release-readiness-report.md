@@ -61,6 +61,8 @@ platforms are validated on physical climbing videos and devices.
   invented reviewer scores.
 - Sessions prepares a cue-validation review worksheet from the study seed with null reviewer identities and null score
   fields for real coach completion.
+- Sessions prepares a cue-validation worksheet CSV with stable headers, escaped values, blank reviewer/score cells, and
+  raw-artifact text rejection.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -82,7 +84,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 42 test files and 158 tests.
+- `npm test`: passed, 42 test files and 161 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -122,8 +124,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/coachLibraryExport.test.ts`: passed and covers versioned batch export, zero-count exports, privacy flags,
   summary copy, private-note exclusion, and injected raw-artifact key rejection.
 - `tests/cueValidationStudy.test.ts`: passed and covers active cue-validation consent filtering, packet-only review
-  tasks, privacy flags, private-note exclusion, no-invented-score metadata, blank review worksheets, and injected
-  raw-artifact key rejection.
+  tasks, privacy flags, private-note exclusion, no-invented-score metadata, blank review worksheets, worksheet CSV export,
+  CSV escaping, and injected raw-artifact key rejection.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
@@ -137,7 +139,7 @@ platforms are validated on physical climbing videos and devices.
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
-  coach library export, cue-validation study seed, cue-validation review worksheet, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
+  coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
   Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
   diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.

@@ -16,6 +16,7 @@
 - Cue-validation study seeds must include review tasks and thresholds only; reviewer scores must come from real reviewers
   and raw artifacts must stay out of the seed.
 - Cue-validation review worksheets must keep reviewer identity and score fields blank until a real coach fills them.
+- Cue-validation worksheet CSV exports must keep reviewer identity and score cells blank until a real coach fills them.
 
 ## Consent
 
@@ -26,6 +27,7 @@ behavior alongside report history.
 Batch coach-library exports must remain local until the user explicitly shares them.
 Cue-validation study seeds must remain local until the user explicitly shares them with reviewers.
 Cue-validation review worksheets must remain local until the user explicitly shares them with reviewers.
+Cue-validation worksheet CSV exports must remain local until the user explicitly shares them with reviewers.
 
 ## Sensitive Data
 

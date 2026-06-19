@@ -134,6 +134,26 @@ export const defaultCueValidationStudyAcceptance: CueValidationStudyAcceptance =
 
 const forbiddenStudyKeyPattern =
   /"(?:fileUri|frames|keyFrame|landmarkFrames|landmarks|localUri|privateNote|rawVideo|rawVideoUri|uri|videoPath|videoUri)"\s*:/i;
+const forbiddenCsvArtifactPattern =
+  /\b(?:fileUri|frames|keyFrame|landmarkFrames|landmarks|localUri|privateNote|rawVideo|rawVideoUri|videoPath|videoUri)\b|file:\/\//i;
+
+const worksheetCsvHeaders = [
+  'worksheetRowId',
+  'clipId',
+  'packetReportId',
+  'consentRecordId',
+  'cueId',
+  'cueTitle',
+  'reviewerSlot',
+  'reviewerId',
+  'reviewerRole',
+  'reviewMode',
+  'relevance',
+  'timingAccuracy',
+  'drillFit',
+  'safetyLanguage',
+  'status',
+] as const;
 
 function byReportId<T extends { reportId: string }>(records: T[]) {
   const grouped = new Map<string, T[]>();
@@ -159,6 +179,13 @@ function buildReviewTasks(packet: CoachReviewPacket) {
       status: 'needs-review',
     }),
   );
+}
+
+function csvCell(value: string | number | null) {
+  if (value === null) return '';
+  const text = String(value);
+  if (!/[",\n\r]/.test(text)) return text;
+  return `"${text.replaceAll('"', '""')}"`;
 }
 
 export function buildCueValidationStudySeed(
@@ -330,6 +357,44 @@ export function assertCueValidationReviewWorksheetIsPrivacySafe(worksheet: CueVa
     throw new Error('Cue validation review worksheet failed privacy validation: a forbidden artifact flag is enabled.');
   }
 
+}
+
+export function buildCueValidationReviewWorksheetCsv(worksheet: CueValidationReviewWorksheet) {
+  assertCueValidationReviewWorksheetIsPrivacySafe(worksheet);
+  const parsed = CueValidationReviewWorksheetSchema.parse(worksheet);
+  const lines = [
+    worksheetCsvHeaders.join(','),
+    ...parsed.rows.map((row) =>
+      [
+        row.id,
+        row.clipId,
+        row.packetReportId,
+        row.consentRecordId,
+        row.cueId,
+        row.cueTitle,
+        row.reviewerSlot,
+        row.reviewerId,
+        row.reviewerRole,
+        row.reviewMode,
+        row.scores.relevance,
+        row.scores.timingAccuracy,
+        row.scores.drillFit,
+        row.scores.safetyLanguage,
+        row.status,
+      ]
+        .map(csvCell)
+        .join(','),
+    ),
+  ];
+  const csv = `${lines.join('\n')}\n`;
+  assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv);
+  return csv;
+}
+
+export function assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv: string) {
+  if (forbiddenCsvArtifactPattern.test(csv)) {
+    throw new Error('Cue validation review worksheet CSV failed privacy validation: forbidden raw artifact text is present.');
+  }
 }
 
 export function formatCueValidationStudySeedSummary(seed: CueValidationStudySeed) {

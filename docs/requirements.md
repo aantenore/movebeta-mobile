@@ -25,6 +25,7 @@
   thresholds, and no invented reviewer scores.
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
+- Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
 - Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
   for variants.
@@ -117,6 +118,7 @@
 - Cue validation study seeds must not include raw video, URI, pose frames, key frames, landmarks, private notes, drill
   notes, or generated reviewer scores.
 - Cue validation review worksheets must keep reviewer identities and score fields empty until real coach review is entered.
+- Cue validation worksheet CSV exports must reject raw artifact references and keep reviewer/score cells blank.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.
