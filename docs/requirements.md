@@ -120,6 +120,8 @@
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
+- Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
+  quality, cue generation, runtime budget, and privacy boundary without raw video artifacts.
 - Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
   real climbing-video validation evidence without claiming production accuracy early.
 - Sync in-app model evidence from the latest MoveNet readiness and model-analysis replay reports without overwriting
@@ -197,6 +199,9 @@
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.
+- Analysis evidence timelines must be versioned, privacy-safe, legacy-report compatible, recomputed after runtime
+  measurement, and must block or review weak signal, over-budget runtime, missing cues, upload-enabled reports, or raw
+  artifact references.
 - In-app model evidence must be driven by replaceable configuration, keep local technical readiness distinct from
   real-world validation, and avoid raw video, URI, local-path, or secret-like evidence fields.
 - Model evidence sync must preserve existing real-world validation thresholds, support dry-run output, and update only

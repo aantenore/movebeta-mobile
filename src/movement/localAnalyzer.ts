@@ -13,6 +13,7 @@ import {
   type PrivacyMode,
   type TimelineEvent,
 } from './contracts';
+import { attachAnalysisEvidence } from './analysisEvidence';
 
 const defaultThresholds: AnalyzerThresholds = {
   footCutVelocity: 0.12,
@@ -246,7 +247,7 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       });
     }
 
-    return LocalAnalysisReportSchema.parse({
+    const report = LocalAnalysisReportSchema.parse({
       analysisQuality,
       cues,
       engine: {
@@ -267,6 +268,8 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       session: input.session,
       timeline: timeline.sort((a, b) => a.timestampMs - b.timestampMs),
     });
+
+    return attachAnalysisEvidence(report, { generatedAt: input.session.createdAt });
   }
 }
 

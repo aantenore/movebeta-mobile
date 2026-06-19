@@ -10,6 +10,7 @@ import {
   type PoseFrame,
   type VideoAsset,
 } from './contracts';
+import { attachAnalysisEvidence } from './analysisEvidence';
 import { localMovementAnalyzer } from './localAnalyzer';
 import { NativePlatformPoseEstimator } from './nativePlatformPoseEstimator';
 import { sampleAttempts, samplePoseFrames } from './sampleSession';
@@ -72,7 +73,7 @@ export class OnDeviceMovementPipeline {
     });
     const completedAt = Date.now();
 
-    return LocalAnalysisReportSchema.parse({
+    const finalReport = LocalAnalysisReportSchema.parse({
       ...report,
       engine: {
         ...report.engine,
@@ -92,6 +93,8 @@ export class OnDeviceMovementPipeline {
         videoLeavesDevice: false,
       },
     });
+
+    return attachAnalysisEvidence(finalReport, { generatedAt: finalReport.performance.measuredAt });
   }
 }
 

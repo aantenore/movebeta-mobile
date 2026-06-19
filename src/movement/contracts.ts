@@ -103,6 +103,23 @@ export const AnalysisPerformanceSchema = z.object({
   measuredAt: z.string(),
 });
 
+export const analysisEvidenceSchemaVersion = 'movebeta.analysis-evidence.v1';
+
+export const AnalysisEvidenceStepSchema = z.object({
+  category: z.enum(['input', 'pose', 'quality', 'metrics', 'performance', 'privacy']),
+  detail: z.string(),
+  evidence: z.string(),
+  id: z.string(),
+  label: z.string(),
+  status: z.enum(['pass', 'review', 'blocked']),
+});
+
+export const AnalysisEvidenceTimelineSchema = z.object({
+  generatedAt: z.string(),
+  schemaVersion: z.literal(analysisEvidenceSchemaVersion),
+  steps: z.array(AnalysisEvidenceStepSchema),
+});
+
 export const LocalAnalysisReportSchema = z.object({
   id: z.string(),
   session: ClimbSessionSchema,
@@ -119,6 +136,11 @@ export const LocalAnalysisReportSchema = z.object({
     budgetStatus: 'not-measured',
     framesPerSecond: 0,
     measuredAt: '1970-01-01T00:00:00.000Z',
+  }),
+  analysisEvidence: AnalysisEvidenceTimelineSchema.default({
+    generatedAt: '1970-01-01T00:00:00.000Z',
+    schemaVersion: analysisEvidenceSchemaVersion,
+    steps: [],
   }),
   metrics: z.array(MovementMetricSchema),
   cues: z.array(MovementCueSchema),
@@ -144,6 +166,8 @@ export type MovementCue = z.infer<typeof MovementCueSchema>;
 export type TimelineEvent = z.infer<typeof TimelineEventSchema>;
 export type AnalysisQuality = z.infer<typeof AnalysisQualitySchema>;
 export type AnalysisPerformance = z.infer<typeof AnalysisPerformanceSchema>;
+export type AnalysisEvidenceStep = z.infer<typeof AnalysisEvidenceStepSchema>;
+export type AnalysisEvidenceTimeline = z.infer<typeof AnalysisEvidenceTimelineSchema>;
 export type LocalAnalysisReport = z.infer<typeof LocalAnalysisReportSchema>;
 
 export type AnalyzerThresholds = {
