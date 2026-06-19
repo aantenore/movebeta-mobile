@@ -19,6 +19,11 @@ import { buildCoachLibrary, type CoachLibrary } from '@/movement/coachLibrary';
 import { deleteLocalAnalysisBundle, exportReport, formatAnalysisBundleDeletionReceipt, listReports } from '@/movement/repository';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { assertCoachPacketIsPrivacySafe, buildCoachReviewPacket } from '@/movement/coachReviewPacket';
+import {
+  assertCoachLibraryExportIsPrivacySafe,
+  buildCoachLibraryExport,
+  formatCoachLibraryExportSummary,
+} from '@/movement/coachLibraryExport';
 import { theme } from '@/core/theme';
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
@@ -323,7 +328,7 @@ function TrainingLogPanel({
   );
 }
 
-function CoachLibraryPanel({ library }: { library: CoachLibrary }) {
+function CoachLibraryPanel({ library, onPrepareExport }: { library: CoachLibrary; onPrepareExport?: () => void }) {
   const templatePlan = buildCoachTeamTemplates(library);
 
   return (
@@ -342,6 +347,15 @@ function CoachLibraryPanel({ library }: { library: CoachLibrary }) {
           <Text style={styles.libraryStatLabel}>High priority</Text>
         </View>
       </View>
+
+      {library.entries.length > 0 && onPrepareExport ? (
+        <View style={styles.libraryActionRow}>
+          <Pressable accessibilityLabel="Export coach library" onPress={onPrepareExport} style={styles.secondaryAction}>
+            <Download color={theme.colors.brand} size={16} />
+            <Text style={styles.secondaryActionText}>Export library</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       {library.entries.length > 0 ? (
         <View style={styles.libraryList}>
@@ -492,6 +506,17 @@ export function SessionsScreen() {
     setPreparedExport({ body: JSON.stringify(packet, null, 2), title: 'Prepared coach packet' });
   }
 
+  function prepareCoachLibraryExport() {
+    selectionFeedback();
+    const templatePlan = buildCoachTeamTemplates(coachLibrary);
+    const exportBundle = buildCoachLibraryExport(coachLibrary, { templatePlan });
+    assertCoachLibraryExportIsPrivacySafe(exportBundle);
+    setPreparedExport({
+      body: `${formatCoachLibraryExportSummary(exportBundle)}\n\n${JSON.stringify(exportBundle, null, 2)}`,
+      title: 'Prepared coach library export',
+    });
+  }
+
   async function saveTrainingLog(annotation: ReportAnnotation) {
     selectionFeedback();
     const saved = await reportAnnotationRepository.saveAnnotation(updateReportAnnotation(annotation, {}));
@@ -589,7 +614,7 @@ export function SessionsScreen() {
             </View>
           ))}
 
-          <CoachLibraryPanel library={coachLibrary} />
+          <CoachLibraryPanel library={coachLibrary} onPrepareExport={prepareCoachLibraryExport} />
 
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
 
@@ -743,6 +768,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: theme.spacing.sm,
     padding: theme.spacing.md,
+  },
+  libraryActionRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
   },
   libraryEvidence: {
     backgroundColor: theme.colors.surfaceAlt,

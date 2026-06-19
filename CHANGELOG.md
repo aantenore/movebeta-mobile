@@ -71,3 +71,5 @@
   practice counts, and no raw video artifacts.
 - Local coach team templates generated from consented review signals for high-priority review, follow-through, signal
   retakes, and privacy-safe packet handoff.
+- Versioned local coach library export from consented queue metadata and team templates, with guardrails against private
+  notes, drill notes, raw video URIs, frames, key frames, and landmarks.

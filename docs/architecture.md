@@ -97,3 +97,5 @@ MoveBeta provides educational technique feedback. It must not claim medical diag
 Coach packet export requires explicit per-report athlete consent and still excludes raw video, URI, key-frame, and
 landmark artifacts. Any future coach/team workspace needs durable consent records because filming in gyms can capture
 other people.
+Coach library export is derived from the privacy-safe library and team-template view models, then validated before handoff
+so private notes, drill notes, frames, URIs, key frames, and landmarks do not enter the batch artifact.

@@ -11,6 +11,8 @@
   coach consent record, without uploading or exporting raw video.
 - Users must be able to create and restore a local backup of reports, private notes, drill practice records, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
+- Coach library batch exports must use consented queue metadata and team templates only, with no raw video, URI, private
+  notes, drill notes, pose frames, key frames, or landmarks.
 
 ## Consent
 
@@ -18,6 +20,7 @@ Indoor climbing videos can include other people. The app should include capture 
 features, and provide clear export controls before any sharing workflow. Coach packets require explicit per-report
 athlete consent for coach review and cue validation. Consent records are stored locally with grant, revoke, and delete
 behavior alongside report history.
+Batch coach-library exports must remain local until the user explicitly shares them.
 
 ## Sensitive Data
 
