@@ -82,7 +82,7 @@
 - Show a configurable Plan tab with current plan, upgrade path, capability matrix, and billing-provider readiness.
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
-- Expose provider, active plan, and privacy mode in configuration.
+- Expose provider, active plan, privacy mode, and launch-readiness evidence in configuration.
 
 ## Non-Functional
 

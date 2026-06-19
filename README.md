@@ -42,6 +42,7 @@ practice log, and coach-consent record from the Sessions tab.
 - Progress project queue generated from private training logs with next-repeat prioritization.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
 - Plan catalog tab with current tier, upgrade path, capability matrix, and billing-provider readiness.
+- Launch readiness cockpit driven by replaceable evidence for demo, internal beta, and store-submission tracks.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
 - Local coach library queue from active consented reports with review priority, signal status, and privacy-safe context counts.
 - Local coach team templates for high-priority reviews, follow-through reviews, signal retakes, and privacy-safe packet handoff.
@@ -107,7 +108,11 @@ EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
+EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
+
+`EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` accepts the same JSON shape as Expo `extra.launchReadinessEvidence`,
+so CI, EAS profiles, or release managers can update launch evidence without changing application code.
 
 Supported local provider keys:
 

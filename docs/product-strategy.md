@@ -27,6 +27,9 @@ The app now models these tiers as replaceable entitlements. `EXPO_PUBLIC_MOVEBET
 selects the current plan; product surfaces read capabilities instead of hard-coding prices or payment providers.
 The Plan tab turns the same entitlement contract into a catalog, upgrade path, and capability matrix while leaving checkout
 to a replaceable store-subscription or billing provider integration.
+The launch-readiness cockpit reads `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` or Expo
+`extra.launchReadinessEvidence`, letting release evidence advance from CI, EAS, or a release manager without changing UI
+code.
 The Sessions coach library gives the Coach tier a local-first review queue before any multi-account or cloud workspace is
 introduced.
 Local team templates turn consented review queues into reusable class and project workflows without introducing cloud
