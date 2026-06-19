@@ -98,6 +98,8 @@
   evidence drafts before real device values are entered.
 - Vitest native QA evidence kit tests for Plan-tab workflow coverage, shared budgets, validator command, placeholder
   policy, and raw-artifact exclusion.
+- Vitest native QA runbook packet tests for versioned share-safe packet generation, blocked placeholder evidence, and
+  token-like value rejection before sharing.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
@@ -216,6 +218,8 @@
   validator command.
 - Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact
   exclusion.
+- Plan tab prepares a native QA runbook packet with raw video, credential values, and local paths excluded before
+  sharing.
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, and owner targets.
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.

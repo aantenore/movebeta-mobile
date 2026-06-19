@@ -63,7 +63,7 @@ export type ModelEvidenceSummary = {
 
 export const defaultModelEvidenceConfig: ModelEvidenceConfig = {
   analysisReplay: {
-    generatedAt: '2026-06-19T22:32:32.883Z',
+    generatedAt: '2026-06-19T22:38:50.982Z',
     minimumQualityScore: 100,
     passedAttempts: 3,
     privacySafe: true,
@@ -74,16 +74,16 @@ export const defaultModelEvidenceConfig: ModelEvidenceConfig = {
   modelName: 'MoveNet SinglePose Lightning',
   provider: 'web-tfjs-movenet',
   readiness: {
-    averageInferenceMs: 325,
+    averageInferenceMs: 326,
     backend: 'cpu',
     budget: {
       averageInferenceMs: 1500,
       loadMs: 25000,
       maxInferenceMs: 3000,
     },
-    generatedAt: '2026-06-19T22:32:27.677Z',
-    loadMs: 3624,
-    maxInferenceMs: 327,
+    generatedAt: '2026-06-19T22:38:44.955Z',
+    loadMs: 4433,
+    maxInferenceMs: 331,
     status: 'ready',
   },
   realWorldValidation: {
