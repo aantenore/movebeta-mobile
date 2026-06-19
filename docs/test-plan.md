@@ -91,6 +91,8 @@
   policy, and raw-artifact exclusion.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
+- Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
+  raw local artifact rejection in the Plan-tab paste flow.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, and raw-artifact exclusion.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key

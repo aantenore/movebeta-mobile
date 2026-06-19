@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ArrowUpRight, CheckCircle2, Circle, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
@@ -8,6 +9,7 @@ import { appConfig } from '@/core/config';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
+import { buildNativeQaEvidenceImportPreview, type NativeQaEvidenceImportPreview } from '@/core/nativeQaEvidenceImport';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
@@ -90,7 +92,108 @@ function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
   );
 }
 
-function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQaEvidenceKit> }) {
+function NativeQaEvidenceImportPanel({
+  input,
+  onChange,
+  onClear,
+  preview,
+}: {
+  input: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
+  preview: NativeQaEvidenceImportPreview;
+}) {
+  const isReady = preview.status === 'ready';
+  const isEmpty = preview.status === 'empty';
+  const isInvalid = preview.status === 'invalid-json';
+
+  return (
+    <View style={styles.nativeEvidenceImport}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Physical-device evidence import</Text>
+          <Text style={styles.qaKitText}>Paste the local runbook JSON to preview the same checks before committing proof.</Text>
+        </View>
+        <Text
+          style={[
+            styles.launchStatus,
+            isReady ? styles.launchStatusReady : isEmpty ? null : styles.launchStatusBlocked,
+          ]}
+        >
+          {preview.badge}
+        </Text>
+      </View>
+      <TextInput
+        accessibilityLabel="Paste native QA evidence JSON"
+        multiline
+        onChangeText={onChange}
+        placeholder='{"appVersion":"1.0.0","generatedAt":"...","runs":[...]}'
+        placeholderTextColor={theme.colors.muted}
+        style={styles.nativeEvidenceInput}
+        value={input}
+      />
+      <View style={styles.nativeEvidenceStats}>
+        <Text style={styles.qaValidationStat}>
+          {preview.readyRuns}/{preview.totalRuns} ready runs
+        </Text>
+        <Text style={styles.qaValidationStat}>{preview.blockingChecks} blocking checks</Text>
+        <Text style={styles.qaValidationStat}>Local only</Text>
+      </View>
+      <Text style={styles.qaKitAction}>{preview.action}</Text>
+      {isInvalid && preview.parseError ? <Text style={styles.nativeEvidenceError}>{preview.parseError}</Text> : null}
+      {preview.failedChecks.length > 0 ? (
+        <View style={styles.qaPlatformList}>
+          {preview.failedChecks.map((check) => (
+            <View key={check.id} style={styles.qaWorkflowRow}>
+              <TriangleAlert color={theme.colors.coral} size={14} />
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.qaWorkflowText}>{check.label}</Text>
+                <Text style={styles.qaPlatformMore}>{check.detail}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      {preview.runSummaries.length > 0 ? (
+        <View style={styles.nativeRunList}>
+          {preview.runSummaries.map((run) => (
+            <View key={`${run.platform}-${run.totalChecks}`} style={styles.nativeRunRow}>
+              {run.status === 'pass' ? (
+                <CheckCircle2 color={theme.colors.success} size={14} />
+              ) : (
+                <TriangleAlert color={theme.colors.coral} size={14} />
+              )}
+              <Text style={styles.nativeRunLabel}>
+                {run.platform}: {run.passedChecks}/{run.totalChecks} checks
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      {input.trim().length > 0 ? (
+        <View style={styles.nativeEvidenceActions}>
+          <Pressable accessibilityLabel="Clear native QA evidence JSON" onPress={onClear} style={styles.nativeEvidenceButton}>
+            <Text style={styles.nativeEvidenceButtonText}>Clear</Text>
+          </Pressable>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function NativeQaEvidenceKitCard({
+  importInput,
+  importPreview,
+  kit,
+  onClearImport,
+  onImportChange,
+}: {
+  importInput: string;
+  importPreview: NativeQaEvidenceImportPreview;
+  kit: ReturnType<typeof buildNativeQaEvidenceKit>;
+  onClearImport: () => void;
+  onImportChange: (value: string) => void;
+}) {
   const latencyCopy = kit.budgets.maxLatencyByClipMs
     .map(
       (budget) =>
@@ -157,6 +260,12 @@ function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQa
           </View>
         ))}
       </View>
+      <NativeQaEvidenceImportPanel
+        input={importInput}
+        onChange={onImportChange}
+        onClear={onClearImport}
+        preview={importPreview}
+      />
     </View>
   );
 }
@@ -407,12 +516,14 @@ function buildPlanSafetySources({
 }
 
 export function PlanScreen() {
+  const [nativeQaEvidenceJson, setNativeQaEvidenceJson] = useState('');
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
+  const nativeQaImportPreview = buildNativeQaEvidenceImportPreview(nativeQaEvidenceJson);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
@@ -507,7 +618,13 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Native QA evidence kit" caption="Physical-device evidence checklist for internal beta and store readiness.">
-        <NativeQaEvidenceKitCard kit={nativeQaKit} />
+        <NativeQaEvidenceKitCard
+          importInput={nativeQaEvidenceJson}
+          importPreview={nativeQaImportPreview}
+          kit={nativeQaKit}
+          onClearImport={() => setNativeQaEvidenceJson('')}
+          onImportChange={setNativeQaEvidenceJson}
+        />
       </Section>
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
@@ -768,6 +885,64 @@ const styles = StyleSheet.create({
   },
   planUpgrade: {
     borderColor: theme.colors.brand,
+  },
+  nativeEvidenceActions: {
+    alignItems: 'flex-start',
+  },
+  nativeEvidenceButton: {
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 9,
+  },
+  nativeEvidenceButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  nativeEvidenceError: {
+    color: theme.colors.coral,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  nativeEvidenceImport: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  nativeEvidenceInput: {
+    backgroundColor: '#FFFFFF',
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    color: theme.colors.ink,
+    fontFamily: 'Courier',
+    fontSize: 12,
+    minHeight: 96,
+    padding: theme.spacing.sm,
+    textAlignVertical: 'top',
+  },
+  nativeEvidenceStats: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  nativeRunLabel: {
+    color: theme.colors.text,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  nativeRunList: {
+    gap: 6,
+  },
+  nativeRunRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
   },
   qaKit: {
     backgroundColor: theme.colors.surface,

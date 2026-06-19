@@ -103,6 +103,8 @@
   policy, and validator command.
 - Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
   exclusion before physical-device evidence is collected.
+- Let release owners paste native QA evidence JSON in the Plan tab and preview ready runs, blocking checks, parse
+  errors, and raw-artifact rejection locally before committing proof artifacts.
 - Show an evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows,
   required wall-angle coverage, native device checks, and external evidence owners.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
@@ -199,6 +201,8 @@
   raw video, video URI, or local file URI fields.
 - In-app native QA validation must stay parity-tested with the CLI release validator and reject raw local video
   references, URI fields, local paths, and secret-like keys.
+- Native QA evidence import previews must parse untrusted JSON without crashing, reuse the app validator, keep evidence
+  local, surface invalid JSON separately from failed checks, and avoid accepting raw artifact or secret-like fields.
 - Evidence collection planning must be derived from cue-validation acceptance thresholds and native QA budgets rather
   than hard-coded in the UI.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
