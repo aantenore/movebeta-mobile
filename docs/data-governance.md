@@ -13,6 +13,8 @@
   records without raw video, video URI, audio, account identifiers, or secrets.
 - Coach library batch exports must use consented queue metadata and team templates only, with no raw video, URI, private
   notes, drill notes, pose frames, key frames, or landmarks.
+- Cue-validation study seeds must include review tasks and thresholds only; reviewer scores must come from real reviewers
+  and raw artifacts must stay out of the seed.
 
 ## Consent
 
@@ -21,6 +23,7 @@ features, and provide clear export controls before any sharing workflow. Coach p
 athlete consent for coach review and cue validation. Consent records are stored locally with grant, revoke, and delete
 behavior alongside report history.
 Batch coach-library exports must remain local until the user explicitly shares them.
+Cue-validation study seeds must remain local until the user explicitly shares them with reviewers.
 
 ## Sensitive Data
 

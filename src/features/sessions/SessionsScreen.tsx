@@ -24,6 +24,11 @@ import {
   buildCoachLibraryExport,
   formatCoachLibraryExportSummary,
 } from '@/movement/coachLibraryExport';
+import {
+  assertCueValidationStudySeedIsPrivacySafe,
+  buildCueValidationStudySeed,
+  formatCueValidationStudySeedSummary,
+} from '@/movement/cueValidationStudy';
 import { theme } from '@/core/theme';
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
@@ -328,7 +333,15 @@ function TrainingLogPanel({
   );
 }
 
-function CoachLibraryPanel({ library, onPrepareExport }: { library: CoachLibrary; onPrepareExport?: () => void }) {
+function CoachLibraryPanel({
+  library,
+  onPrepareExport,
+  onPrepareValidationSeed,
+}: {
+  library: CoachLibrary;
+  onPrepareExport?: () => void;
+  onPrepareValidationSeed?: () => void;
+}) {
   const templatePlan = buildCoachTeamTemplates(library);
 
   return (
@@ -354,6 +367,16 @@ function CoachLibraryPanel({ library, onPrepareExport }: { library: CoachLibrary
             <Download color={theme.colors.brand} size={16} />
             <Text style={styles.secondaryActionText}>Export library</Text>
           </Pressable>
+          {onPrepareValidationSeed ? (
+            <Pressable
+              accessibilityLabel="Prepare cue validation seed"
+              onPress={onPrepareValidationSeed}
+              style={styles.secondaryAction}
+            >
+              <ShieldCheck color={theme.colors.brand} size={16} />
+              <Text style={styles.secondaryActionText}>Validation seed</Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 
@@ -517,6 +540,20 @@ export function SessionsScreen() {
     });
   }
 
+  async function prepareCueValidationStudySeed() {
+    selectionFeedback();
+    const drillPractice = await drillPracticeRepository.listRecords();
+    const seed = buildCueValidationStudySeed(reports, Object.values(coachConsentByReport), {
+      annotations: Object.values(annotationByReport),
+      drillPractice,
+    });
+    assertCueValidationStudySeedIsPrivacySafe(seed);
+    setPreparedExport({
+      body: `${formatCueValidationStudySeedSummary(seed)}\n\n${JSON.stringify(seed, null, 2)}`,
+      title: 'Prepared cue validation seed',
+    });
+  }
+
   async function saveTrainingLog(annotation: ReportAnnotation) {
     selectionFeedback();
     const saved = await reportAnnotationRepository.saveAnnotation(updateReportAnnotation(annotation, {}));
@@ -614,7 +651,11 @@ export function SessionsScreen() {
             </View>
           ))}
 
-          <CoachLibraryPanel library={coachLibrary} onPrepareExport={prepareCoachLibraryExport} />
+          <CoachLibraryPanel
+            library={coachLibrary}
+            onPrepareExport={prepareCoachLibraryExport}
+            onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
+          />
 
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
 

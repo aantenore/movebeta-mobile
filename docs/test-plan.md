@@ -43,6 +43,8 @@
 - Vitest coach library export tests for versioned batch handoff, zero-count exports, privacy flags, summary copy, and
   injected raw-artifact key rejection.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
+- Vitest cue validation study seed tests for active cue-validation consent filtering, packet-only review tasks, privacy
+  flags, private-note exclusion, no-invented-score metadata, and raw-artifact key rejection.
 - Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
   exclusion, and weak-score failures.
 - Vitest performance-budget tests for local analysis duration thresholds, frame-rate evidence, and over-budget status.
@@ -86,6 +88,7 @@
   no-raw-video evidence.
 - Sessions tab shows local team templates generated from consented coach library signals.
 - Sessions tab prepares a versioned coach library export with privacy flags and team templates after consent.
+- Sessions tab prepares a cue-validation study seed with packet-only review tasks and no invented scores after consent.
 - Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
   and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
