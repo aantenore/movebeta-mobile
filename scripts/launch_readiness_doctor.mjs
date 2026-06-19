@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { validateCueValidationDataset } from './cue_validation_dataset_checks.mjs';
+import { validateNativeQaEvidence } from './native_qa_evidence_checks.mjs';
+
 export const CHECK_DEFINITIONS = {
   androidDebugBuild: {
     action: 'Build or refresh android/app/build/outputs/apk/debug/app-debug.apk.',
@@ -108,6 +111,17 @@ function exists(rootDir, relativePath) {
   return fs.existsSync(path.join(rootDir, relativePath));
 }
 
+function validatedJsonFile(rootDir, relativePath, validator) {
+  const filePath = path.join(rootDir, relativePath);
+  if (!fs.existsSync(filePath)) return false;
+
+  try {
+    return validator(JSON.parse(fs.readFileSync(filePath, 'utf8'))).ready === true;
+  } catch {
+    return false;
+  }
+}
+
 function hasAllScreenshots(rootDir) {
   return ['01-analyze.png', '02-drills.png', '03-progress.png', '04-sessions.png', '05-plan.png', '06-privacy.png'].every(
     (fileName) => exists(rootDir, path.join('docs/store/screenshots', fileName)),
@@ -143,7 +157,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
 
   return {
     androidDebugBuild: exists(rootDir, 'android/app/build/outputs/apk/debug/app-debug.apk'),
-    cueValidationDataset: exists(rootDir, 'docs/validation/cue-validation-dataset.json'),
+    cueValidationDataset: validatedJsonFile(rootDir, 'docs/validation/cue-validation-dataset.json', validateCueValidationDataset),
     easCredentials:
       hasAnyEnv(env, ['EXPO_TOKEN']) &&
       hasAnyEnv(env, ['MOVEBETA_ASC_APP_ID', 'ASC_API_KEY_ID']) &&
@@ -154,7 +168,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
     modelReadiness:
       moveNetReadinessReport.schemaVersion === 'movebeta.movenet-readiness-report.v1' &&
       moveNetReadinessReport.status === 'ready',
-    nativeDeviceQa: exists(rootDir, 'docs/sdlc/native-qa-evidence.json'),
+    nativeDeviceQa: validatedJsonFile(rootDir, 'docs/sdlc/native-qa-evidence.json', validateNativeQaEvidence),
     nativeQaRunbook: nativeQaRunbook.schemaVersion === 'movebeta.native-qa-runbook.v1',
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
     releaseGate: typeof packageJson.scripts?.['release:check'] === 'string' && releaseReport.includes('`npm run release:check`: passed'),

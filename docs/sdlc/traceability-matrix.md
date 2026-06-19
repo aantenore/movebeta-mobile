@@ -64,7 +64,7 @@
 | R60 native prepared export share | `docs/requirements.md`, `docs/data-governance.md` | browser smoke | Sessions prepared export share action | Covered |
 | R61 in-app cue-validation gate preview | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDatasetGate.test.ts`, `tests/cueValidationGateParity.test.ts`, browser smoke | Sessions completed dataset gate preview | Covered |
 | R62 launch-readiness cockpit | `docs/requirements.md`, `docs/sdlc/release-readiness-report.md` | `tests/launchReadiness.test.ts`, browser smoke | Plan tab Launch readiness | Covered |
-| R63 machine-detected launch readiness | `docs/requirements.md`, `docs/sdlc/mobile-release-process.md` | `tests/launchReadinessDoctor.test.ts`, `npm run release:readiness` | `docs/sdlc/launch-readiness-report.json` | Covered |
+| R63 machine-detected launch readiness | `docs/requirements.md`, `docs/sdlc/mobile-release-process.md` | `tests/launchReadinessDoctor.test.ts`, `npm run release:readiness` | `docs/sdlc/launch-readiness-report.json` | Covered with content validation for native QA and cue-validation evidence |
 | R64 beta replay plan | `docs/requirements.md` | `tests/betaReplayPlan.test.ts`, browser smoke | Analyze tab Beta replay plan | Covered |
 | R65 movement phase breakdown | `docs/requirements.md` | `tests/movementPhaseBreakdown.test.ts`, browser smoke | Analyze tab Movement phases | Covered |
 | R66 cue trust scoring | `docs/requirements.md` | `tests/cueTrust.test.ts`, `tests/coachReviewPacket.test.ts`, browser smoke | Analyze tab Cue trust and Sessions coach packet JSON | Covered |

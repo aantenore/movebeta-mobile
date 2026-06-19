@@ -87,3 +87,4 @@
 | T83 | Add native QA runbook generator and launch-readiness gate | Done |
 | T84 | Extract and test MoveNet keypoint mapping into the movement report contract | Done |
 | T85 | Reject placeholder native QA evidence in the release validator | Done |
+| T86 | Validate native QA and cue-validation dataset content inside launch-readiness detection | Done |
