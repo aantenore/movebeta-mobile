@@ -1,13 +1,14 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-19T19:35:56.427Z
+Generated: 2026-06-19T19:40:23.562Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Commit: 8460d06f7d0c64995d572c114998bc8e749981f7
+- Base commit at generation: 9bf652fa55dc65fed4163778405b8e6601c1acf9
+- Worktree dirty at generation: no
 
 ## Summary
 
