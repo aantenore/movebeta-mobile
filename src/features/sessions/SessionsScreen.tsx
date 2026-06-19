@@ -24,8 +24,10 @@ import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/perform
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
 import {
   createReportAnnotation,
+  cueFeedbackRatings,
   reportAnnotationRepository,
   reportProjectStatuses,
+  updateCueFeedback,
   updateReportAnnotation,
   type ReportAnnotation,
 } from '@/movement/reportAnnotationRepository';
@@ -37,6 +39,12 @@ const projectStatusLabels: Record<ReportAnnotation['projectStatus'], string> = {
   project: 'Project',
   repeat: 'Repeat',
   sent: 'Sent',
+};
+
+const cueFeedbackLabels: Record<ReportAnnotation['cueFeedback'][number]['rating'], string> = {
+  'not-useful': 'Not useful',
+  unclear: 'Unclear',
+  useful: 'Useful',
 };
 
 function statusStyles(status: SessionReviewDetail['status']) {
@@ -178,10 +186,12 @@ function TrainingLogPanel({
   annotation,
   onChange,
   onSave,
+  report,
 }: {
   annotation: ReportAnnotation;
   onChange: (annotation: ReportAnnotation) => void;
   onSave: () => void;
+  report: LocalAnalysisReport;
 }) {
   return (
     <Section
@@ -233,6 +243,51 @@ function TrainingLogPanel({
             value={annotation.confidence}
           />
         </View>
+
+        {report.cues.length > 0 ? (
+          <View style={styles.logGroup}>
+            <Text style={styles.logLabel}>Cue feedback</Text>
+            <View style={styles.cueFeedbackList}>
+              {report.cues.map((cue) => {
+                const selectedFeedback = annotation.cueFeedback.find((feedback) => feedback.cueId === cue.id);
+                return (
+                  <View key={cue.id} style={styles.cueFeedbackItem}>
+                    <Text style={styles.cueFeedbackTitle}>{cue.title}</Text>
+                    <View style={styles.logOptions}>
+                      {cueFeedbackRatings.map((rating) => {
+                        const selected = selectedFeedback?.rating === rating;
+                        return (
+                          <Pressable
+                            accessibilityLabel={`Cue feedback ${cue.id} ${cueFeedbackLabels[rating]}`}
+                            key={`${cue.id}-${rating}`}
+                            onPress={() =>
+                              onChange(
+                                updateCueFeedback(annotation, {
+                                  cueId: cue.id,
+                                  rating,
+                                }),
+                              )
+                            }
+                            style={[styles.cueFeedbackChip, selected ? styles.cueFeedbackChipSelected : null]}
+                          >
+                            <Text
+                              style={[
+                                styles.cueFeedbackChipText,
+                                selected ? styles.cueFeedbackChipTextSelected : null,
+                              ]}
+                            >
+                              {cueFeedbackLabels[rating]}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        ) : null}
 
         <View style={styles.logGroup}>
           <Text style={styles.logLabel}>Private note</Text>
@@ -450,11 +505,12 @@ export function SessionsScreen() {
 
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
 
-          {draftAnnotation ? (
+          {draftAnnotation && selectedReport ? (
             <TrainingLogPanel
               annotation={draftAnnotation}
               onChange={setDraftAnnotation}
               onSave={() => void saveTrainingLog(draftAnnotation)}
+              report={selectedReport}
             />
           ) : null}
 
@@ -789,6 +845,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.md,
+  },
+  cueFeedbackChip: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  cueFeedbackChipSelected: {
+    backgroundColor: theme.colors.brandDark,
+    borderColor: theme.colors.brandDark,
+  },
+  cueFeedbackChipText: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  cueFeedbackChipTextSelected: {
+    color: '#FFFFFF',
+  },
+  cueFeedbackItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 8,
+    padding: theme.spacing.sm,
+  },
+  cueFeedbackList: {
+    gap: theme.spacing.sm,
+  },
+  cueFeedbackTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 17,
   },
   scoreChip: {
     alignItems: 'center',

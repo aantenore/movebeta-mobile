@@ -11,11 +11,11 @@
 - Vitest coach consent repository tests for local persistence, SQLite storage, revocation, deletion, and corrupted storage.
 - Vitest session detail tests for focus metric selection, primary cue selection, quality/performance/privacy facts,
   normalized timeline markers, and weak-report risk status.
-- Vitest report annotation tests for private training-log defaults, updates, tag normalization, local persistence, SQLite
-  persistence, delete behavior, and corrupted-storage tolerance.
+- Vitest report annotation tests for private training-log defaults, cue usefulness feedback, legacy migration, updates,
+  tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage tolerance.
 - Vitest privacy deletion tests for report, private training-log, coach-consent cleanup, orphan cleanup, and receipt copy.
-- Vitest data portability tests for privacy-safe backup JSON, restore into empty repositories, orphan skipping, and
-  URI-like artifact rejection.
+- Vitest data portability tests for privacy-safe backup JSON, cue feedback backup/restore, restore into empty repositories,
+  orphan skipping, and URI-like artifact rejection.
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest technique readiness tests for baseline, repeat, and recovery next-session recommendations.
@@ -63,7 +63,7 @@
 - Selecting each bundled local attempt runs analysis and updates pose overlay, metrics, cues, and timeline.
 - Sessions tab refreshes on focus and shows the latest local attempts.
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
-- Sessions tab shows a private training log and allows project status, effort, confidence, tags, and notes to be edited.
+- Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, and coach consent record
   from local storage with a deletion receipt.
 - Coach packet export requires persisted explicit consent and then renders review JSON without raw video artifacts.

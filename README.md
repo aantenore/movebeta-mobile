@@ -38,7 +38,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Local rule engine for coaching cues.
 - Local report repository with native SQLite storage and browser/mobile-safe persistence fallback.
 - Selectable local session review with quality, performance, focus metric, primary cue, timeline, and privacy evidence.
-- Private per-report training log with project status, effort, confidence, notes, tags, and local persistence.
+- Private per-report training log with project status, cue usefulness feedback, effort, confidence, notes, tags, and local persistence.
 - Progress project queue generated from private training logs with next-repeat prioritization.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.

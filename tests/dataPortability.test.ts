@@ -14,6 +14,7 @@ import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import {
   createReportAnnotation,
   InMemoryReportAnnotationRepository,
+  updateCueFeedback,
 } from '../src/movement/reportAnnotationRepository';
 import { InMemoryReportRepository } from '../src/movement/reportRepository';
 import { samplePoseFrames, sampleSession } from '../src/movement/sampleSession';
@@ -29,14 +30,21 @@ async function createPortabilityFixture() {
 
   await reports.saveReport(report);
   await annotations.saveAnnotation(
-    createReportAnnotation(report.id, {
-      confidence: 5,
-      perceivedEffort: 4,
-      privateNote: 'Backup this beta.',
-      projectStatus: 'repeat',
-      tags: ['board'],
-      updatedAt: '2026-06-19T15:00:00.000Z',
-    }),
+      updateCueFeedback(
+        createReportAnnotation(report.id, {
+          confidence: 5,
+          perceivedEffort: 4,
+          privateNote: 'Backup this beta.',
+          projectStatus: 'repeat',
+          tags: ['board'],
+          updatedAt: '2026-06-19T15:00:00.000Z',
+        }),
+        {
+          cueId: report.cues[0].id,
+          rating: 'useful',
+          updatedAt: '2026-06-19T15:05:00.000Z',
+        },
+      ),
   );
   await consents.saveConsent(
     createCoachReviewConsentRecord(report.id, {
@@ -67,6 +75,9 @@ describe('local data portability', () => {
     });
     expect(backup.privacy.rawVideoIncluded).toBe(false);
     expect(backup.privacy.videoLeavesDevice).toBe(false);
+    expect(backup.annotations[0].cueFeedback[0]).toMatchObject({
+      rating: 'useful',
+    });
     expect(serialized).not.toMatch(/file:\/\/|content:\/\/|ph:\/\/|videoUri|videoPath|assetUri/i);
   });
 
@@ -98,6 +109,11 @@ describe('local data portability', () => {
     });
     expect(await destinationReports.getReport(source.report.id)).toEqual(source.report);
     expect(await destinationAnnotations.getAnnotation(source.report.id)).toMatchObject({
+      cueFeedback: [
+        expect.objectContaining({
+          rating: 'useful',
+        }),
+      ],
       privateNote: 'Backup this beta.',
     });
     expect(await destinationConsents.getConsent(source.report.id)).toMatchObject({

@@ -36,6 +36,7 @@
 - Show a selectable session review for local reports with quality, performance, focus metric, primary cue, timeline, and
   privacy evidence.
 - Let users keep private per-report training notes with project status, perceived effort, confidence, and local tags.
+- Let users mark local coach cues as useful, unclear, or not useful inside the private per-report training log.
 - Summarize private training logs into a local project queue with active projects, repeat count, sent count, effort, and
   next repeat action.
 - Persist configured session metadata in reports, exports, trends, drills, and coach review packets.
@@ -64,6 +65,7 @@
 - Corrupted local report storage must not block app startup.
 - Corrupted local consent storage must not block app startup or session history.
 - Corrupted local training-log storage must not block app startup or session history.
+- Legacy training logs without cue feedback must remain readable and default to an empty feedback list.
 - Local deletion must clean orphaned training-log and consent records even when the report record is already missing.
 - Backup restore must validate schema version, reject URI-like raw-video artifacts, and skip orphan training-log or
   consent records whose reports are not present in the backup.
