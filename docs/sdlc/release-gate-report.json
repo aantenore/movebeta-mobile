@@ -1,67 +1,67 @@
 {
-  "completedAt": "2026-06-19T19:16:46.315Z",
+  "completedAt": "2026-06-19T19:25:11.115Z",
   "schemaVersion": "movebeta.release-gate-report.v1",
-  "startedAt": "2026-06-19T19:16:33.213Z",
+  "startedAt": "2026-06-19T19:24:55.890Z",
   "status": "pass",
   "steps": [
     {
       "command": "npm run quality",
-      "completedAt": "2026-06-19T19:16:37.636Z",
-      "durationMs": 4422,
+      "completedAt": "2026-06-19T19:25:00.672Z",
+      "durationMs": 4781,
       "exitCode": 0,
       "key": "quality",
       "label": "TypeScript and Vitest quality gate",
-      "startedAt": "2026-06-19T19:16:33.214Z",
+      "startedAt": "2026-06-19T19:24:55.891Z",
       "status": "pass"
     },
     {
       "command": "npm run model:movenet:readiness",
-      "completedAt": "2026-06-19T19:16:42.648Z",
-      "durationMs": 5013,
+      "completedAt": "2026-06-19T19:25:06.181Z",
+      "durationMs": 5509,
       "exitCode": 0,
       "key": "modelReadiness",
       "label": "MoveNet readiness report",
-      "startedAt": "2026-06-19T19:16:37.636Z",
+      "startedAt": "2026-06-19T19:25:00.672Z",
       "status": "pass"
     },
     {
       "command": "npm run native:qa:runbook",
-      "completedAt": "2026-06-19T19:16:42.780Z",
-      "durationMs": 132,
+      "completedAt": "2026-06-19T19:25:06.309Z",
+      "durationMs": 128,
       "exitCode": 0,
       "key": "nativeQaRunbook",
       "label": "Native QA runbook generation",
-      "startedAt": "2026-06-19T19:16:42.648Z",
+      "startedAt": "2026-06-19T19:25:06.181Z",
       "status": "pass"
     },
     {
       "command": "npm run export:web",
-      "completedAt": "2026-06-19T19:16:45.022Z",
-      "durationMs": 2241,
+      "completedAt": "2026-06-19T19:25:08.553Z",
+      "durationMs": 2244,
       "exitCode": 0,
       "key": "webExport",
       "label": "Expo web export",
-      "startedAt": "2026-06-19T19:16:42.780Z",
+      "startedAt": "2026-06-19T19:25:06.309Z",
       "status": "pass"
     },
     {
       "command": "npm run release:eas:check",
-      "completedAt": "2026-06-19T19:16:45.132Z",
-      "durationMs": 111,
+      "completedAt": "2026-06-19T19:25:08.704Z",
+      "durationMs": 151,
       "exitCode": 0,
       "key": "easStandard",
       "label": "EAS standard release check",
-      "startedAt": "2026-06-19T19:16:45.022Z",
+      "startedAt": "2026-06-19T19:25:08.553Z",
       "status": "pass"
     },
     {
       "command": "npm run security:audit",
-      "completedAt": "2026-06-19T19:16:46.315Z",
-      "durationMs": 1182,
+      "completedAt": "2026-06-19T19:25:11.115Z",
+      "durationMs": 2411,
       "exitCode": 0,
       "key": "securityAudit",
       "label": "High-severity dependency audit",
-      "startedAt": "2026-06-19T19:16:45.132Z",
+      "startedAt": "2026-06-19T19:25:08.704Z",
       "status": "pass"
     }
   ]

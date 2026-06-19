@@ -85,6 +85,8 @@
   raw local artifact rejection.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, and raw-artifact exclusion.
+- Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
+  name disclosure without secret values, and all-ready evidence state.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -160,6 +162,8 @@
 - Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact
   exclusion.
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, and owner targets.
+- Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
+  credential key names for external store blockers.
 - Privacy tab confirms no-upload default behavior.
 
 Command used for local smoke:

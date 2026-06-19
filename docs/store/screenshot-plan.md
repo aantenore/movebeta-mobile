@@ -20,6 +20,7 @@ MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots
 | `docs/store/screenshots/04-sessions.png` | Sessions | Shows local report history and coach packet action. |
 | `docs/store/screenshots/05-plan.png` | Plan | Shows freemium tier catalog, upgrade path, and capability matrix. |
 | `docs/store/screenshots/06-privacy.png` | Privacy | Shows no-upload default, offline readiness, and diagnostics controls. |
+| `docs/store/screenshots/07-release-unblock.png` | Plan | Shows release blockers, proof artifacts, commands, owners, and credential key names. |
 
 ## Review Rules
 
