@@ -34,6 +34,7 @@ describe('launch readiness', () => {
       iosPods: true,
       modelReadiness: true,
       nativeDeviceQa: true,
+      nativeQaRunbook: true,
       privacyManifest: true,
       releaseGate: true,
       storeListing: true,
@@ -49,6 +50,7 @@ describe('launch readiness', () => {
     const summary = buildLaunchReadinessSummary({
       ...defaultLaunchReadinessEvidence,
       nativeDeviceQa: true,
+      nativeQaRunbook: true,
     });
     const internal = summary.tracks.find((track) => track.key === 'internal');
 

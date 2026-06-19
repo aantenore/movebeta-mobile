@@ -96,6 +96,8 @@ web build with `npm run store:screenshots`.
 - MoveNet model execution smoke for verifying that the local TensorFlow.js model loads and runs inference.
 - MoveNet readiness report with load-time, inference-time, backend, memory, budget checks, and explicit real-video
   validation limitations.
+- Generated native QA runbook for physical iOS and Android validation, including workflow steps, performance budgets,
+  and a draft evidence payload that remains blocked until real device values are entered.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -112,6 +114,7 @@ npm run store:screenshots
 npm run toolchain:ios
 npm run native:android:debug
 npm run native:android:manifest
+npm run native:qa:runbook
 npm run release:eas:check
 npm run release:readiness
 ```
@@ -125,7 +128,7 @@ EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
-EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
+EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"nativeQaRunbook":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
 
 `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` accepts the same JSON shape as Expo `extra.launchReadinessEvidence`,
@@ -166,6 +169,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
+- Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
+  `docs/sdlc/native-qa-evidence.template.json`.
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
 - Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
@@ -192,8 +197,10 @@ npm run release:eas:strict
 and Google prerequisites as warnings. `release:eas:strict` must pass before submitting to TestFlight, Play internal
 testing, or production, and expects the project id plus store credentials to be injected from environment or CI secrets.
 
-Native store validation uses `docs/sdlc/native-qa-evidence.template.json` as the run template. Copy it to
-`docs/sdlc/native-qa-evidence.json`, fill real iOS and Android device runs, then execute `npm run native:qa:validate`.
+Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
+`docs/sdlc/native-qa-evidence.template.json` as the run template. Generate the current runbook with
+`npm run native:qa:runbook`, copy the runbook evidence draft or template to `docs/sdlc/native-qa-evidence.json`, fill
+real iOS and Android device runs, then execute `npm run native:qa:validate`.
 Cue-quality validation uses `docs/validation/cue-validation-dataset.template.json` as the study template. Copy it to
 `docs/validation/cue-validation-dataset.json`, fill consented coach review packets and reviews, then execute
 `npm run validation:cue`.

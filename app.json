@@ -57,6 +57,7 @@
         "privacyManifest": true,
         "storeListing": true,
         "modelReadiness": true,
+        "nativeQaRunbook": true,
         "androidDebugBuild": true,
         "iosPods": true,
         "iosBuild": false,
