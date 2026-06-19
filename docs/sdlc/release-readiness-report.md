@@ -129,16 +129,18 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 68 test files and 267 tests.
+- `npm test`: passed, 69 test files and 270 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3451ms load time, 327ms average inference, and 335ms max inference in the latest run.
+  CPU backend, 3632ms load time, 348ms average inference, and 359ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
+- `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
+  model-analysis replay reports while preserving real-world validation targets.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
@@ -219,6 +221,8 @@ platforms are validated on physical climbing videos and devices.
   the model in unit tests.
 - `tests/modelEvidence.test.ts`: passed and covers technical-ready, validated, degraded, missing, environment JSON, and
   privacy-safe model evidence states.
+- `tests/modelEvidenceSync.test.ts`: passed and covers report-to-app-config mapping, real-world validation preservation,
+  and dry-run mode.
 - `tests/safetyLanguage.test.ts`: passed and covers clear copy, risky claim detection, negated policy/disclaimer copy,
   replaceable rules, and visible issue limits.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
