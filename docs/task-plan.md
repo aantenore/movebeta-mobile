@@ -108,3 +108,4 @@
 | T104 | Add file-based native sharing for prepared Sessions exports | Done |
 | T105 | Add versioned analysis evidence timeline to local reports | Done |
 | T106 | Add privacy-safe analysis evidence-only export | Done |
+| T107 | Add share-safe release unblock packet from Plan | Done |
