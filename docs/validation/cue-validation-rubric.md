@@ -42,3 +42,7 @@ npm run validation:cue
 The default production threshold requires 20 consented clips, slab/vertical/overhang coverage, at least two distinct
 reviewers per clip, packet-only review evidence, average cue score of 4 or higher, safety-language scores of 4 or higher,
 and no raw video URI, key-frame, or pose landmark artifacts in the dataset.
+
+The Sessions tab can prepare a local `movebeta.cue-validation-study-seed.v1` export from active cue-validation consent.
+That seed contains packet-only review tasks and target thresholds, but it deliberately contains no reviewer scores. Real
+coach scores must be added to the final dataset before `npm run validation:cue` can pass for production claims.

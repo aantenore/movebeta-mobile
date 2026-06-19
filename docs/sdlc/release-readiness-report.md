@@ -57,6 +57,8 @@ platforms are validated on physical climbing videos and devices.
   review, signal retakes, and privacy-safe packet handoff.
 - Sessions prepares a versioned coach library export from consented queue metadata and team templates without raw video,
   URI, private notes, drill notes, frames, key frames, or landmarks.
+- Sessions prepares a cue-validation study seed from active consented coach packets with packet-only review tasks and no
+  invented reviewer scores.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -78,7 +80,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 41 test files and 153 tests.
+- `npm test`: passed, 42 test files and 156 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -117,6 +119,8 @@ platforms are validated on physical climbing videos and devices.
   packet templates, and private/raw artifact exclusion.
 - `tests/coachLibraryExport.test.ts`: passed and covers versioned batch export, zero-count exports, privacy flags,
   summary copy, private-note exclusion, and injected raw-artifact key rejection.
+- `tests/cueValidationStudy.test.ts`: passed and covers active cue-validation consent filtering, packet-only review
+  tasks, privacy flags, private-note exclusion, no-invented-score metadata, and injected raw-artifact key rejection.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
@@ -130,7 +134,7 @@ platforms are validated on physical climbing videos and devices.
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
-  coach library export, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
+  coach library export, cue-validation study seed, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
   Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
   diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
@@ -156,8 +160,8 @@ platforms are validated on physical climbing videos and devices.
 - Store-bound EAS submission requires `npx eas-cli@latest init` on the target Expo account, `extra.eas.projectId`,
   `EXPO_TOKEN`, App Store Connect credentials, and Google Play service account credentials before
   `npm run release:eas:strict` can pass.
-- Production movement-quality claims require `docs/validation/cue-validation-dataset.json` to be filled with real
-  consented coach review packets and pass `npm run validation:cue`.
+- Production movement-quality claims require the cue-validation study seed to be filled with real reviewer scores in
+  `docs/validation/cue-validation-dataset.json` and pass `npm run validation:cue`.
 - `npm audit` reports moderate vulnerabilities in the Expo config chain through `uuid`/`xcode`; the current suggested forced fix is breaking and is not applied in this release.
 - GitHub Actions workflow activation is deferred because the available GitHub OAuth token lacks the `workflow` scope.
   The quality workflow is committed as `docs/sdlc/ci-templates/github-actions-quality.yml` and can be moved into

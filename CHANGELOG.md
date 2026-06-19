@@ -73,3 +73,5 @@
   retakes, and privacy-safe packet handoff.
 - Versioned local coach library export from consented queue metadata and team templates, with guardrails against private
   notes, drill notes, raw video URIs, frames, key frames, and landmarks.
+- Local cue-validation study seed export for consented coach packets, including packet-only review tasks and explicit
+  no-invented-score privacy metadata.

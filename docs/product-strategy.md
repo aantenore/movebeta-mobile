@@ -33,6 +33,8 @@ Local team templates turn consented review queues into reusable class and projec
 sharing before privacy validation is complete.
 The versioned coach library export gives the Coach tier a concrete batch handoff artifact for clinics or remote review
 while keeping raw video, pose artifacts, and private notes outside the bundle.
+The cue-validation study seed shortens the path from local coach review to product evidence: coaches can score
+packet-only tasks later without the app inventing validation results.
 
 ## Differentiation
 

@@ -21,6 +21,8 @@
 - Score coach cue validation reviews with a repeatable rubric for consented clip evaluation.
 - Validate consented cue-review datasets with configurable thresholds for clip count, wall-angle coverage, reviewer
   coverage, review mode, score quality, and raw-artifact exclusion.
+- Prepare a local cue-validation study seed from active consented coach packets with packet-only review tasks, target
+  thresholds, and no invented reviewer scores.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
 - Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
   for variants.
@@ -110,6 +112,8 @@
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.
 - Cue validation datasets must reject raw video URIs, key frames, pose landmarks, and incomplete review coverage before
   production movement-quality claims.
+- Cue validation study seeds must not include raw video, URI, pose frames, key frames, landmarks, private notes, drill
+  notes, or generated reviewer scores.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.
