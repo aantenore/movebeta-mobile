@@ -82,6 +82,8 @@
 - Generate a next-session plan from technique readiness, personal benchmarks, drill evidence, and private project notes.
 - Adjust next-session plans from private drill practice consistency by lowering intensity and prescribing easier variants
   when skipped drills exceed completed drills.
+- Show a local pre-send guard that combines analysis quality, technique readiness, open fix cues, practice
+  follow-through, repeat outcomes, and training load before recommending reset, controlled repeat, or hard-try windows.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.
 - Summarize private cue usefulness feedback into useful rate, top useful cue, and review cue signals.
 - Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,
@@ -138,6 +140,8 @@
   supported segment when reports are present.
 - Session planning must degrade to a baseline block when no reports exist and must avoid max-intensity guidance during
   recovery states.
+- Pre-send guard thresholds must be replaceable, degrade to baseline before local reports exist, and avoid medical or
+  safety guarantees while keeping hard-try recommendations dependent on local evidence.
 - Cue pattern summaries must return an empty state without local cues and must keep cleared counts independent of UI
   display limits.
 - Cue usefulness summaries must ignore orphan training logs and return an empty state before feedback exists.

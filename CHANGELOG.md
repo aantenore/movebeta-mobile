@@ -59,6 +59,8 @@
 - Technique readiness score with next action, warm-up, risk, and drill evidence from local progress plus private logs.
 - Personal benchmarks for best overall, wall-angle, grade, and gym attempts with latest-vs-best deltas.
 - Next-session planning with target, duration, intensity cap, ordered phases, and local evidence.
+- Local pre-send guard in Progress that combines signal quality, technique readiness, open fix cues, practice
+  follow-through, and repeat outcomes before suggesting hard tries.
 - Recurring cue pattern tracking for persistent, emerging, and cleared coach cues.
 - Cue usefulness insights from private feedback with useful rate, top cue, and review cue signals.
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.

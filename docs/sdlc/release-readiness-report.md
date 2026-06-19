@@ -28,8 +28,8 @@ platforms are validated on physical climbing videos and devices.
   metrics.
 - Analyze scores launch, crux, and finish phases from local cue and timeline evidence before movement metrics.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
-  personal benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt comparison, and
-  trend deltas.
+  pre-send guard, personal benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt
+  comparison, and trend deltas.
 - Progress lowers the next-session plan to a practice reset when private drill logs show skipped drills exceeding
   completed drills.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
@@ -123,14 +123,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 64 test files and 247 tests.
+- `npm test`: passed, 65 test files and 253 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3607ms load time, 350ms average inference, and 359ms max inference in the latest run.
+  CPU backend, 3710ms load time, 347ms average inference, and 350ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -169,6 +169,8 @@ platforms are validated on physical climbing videos and devices.
   and empty local history behavior.
 - `tests/sessionPlan.test.ts`: passed and covers baseline blocks, recovery intensity caps, repeat-project planning, and
   practice-reset planning from skipped drill logs.
+- `tests/preSendGuard.test.ts`: passed and covers baseline, controlled-repeat, reset-first, hard-try window, blocked
+  practice, and replaceable threshold behavior.
 - `tests/coachReviewPacket.test.ts`: passed and covers `movebeta.coach-review.v2`, consent metadata, review rubric,
   cue trust export, privacy-safe athlete context, private-note exclusion, drill-note exclusion, and raw video/landmark
   exclusion.
