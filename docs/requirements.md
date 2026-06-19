@@ -117,6 +117,8 @@
   errors, and raw-artifact rejection locally before committing proof artifacts.
 - Let QA leads compose native QA evidence JSON in the Plan tab from structured Android/iOS physical-run measurements,
   normalize duration/performance values, and preview the same validator result before committing proof artifacts.
+- Let QA leads prepare a share-safe native QA evidence export from composed measurements in the Plan tab before moving
+  the JSON into release evidence.
 - Show an evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows,
   required wall-angle coverage, native device checks, and external evidence owners.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
@@ -252,6 +254,8 @@
   local, surface invalid JSON separately from failed checks, and avoid accepting raw artifact or secret-like fields.
 - Native QA evidence composition must reuse the shared native QA workflow/budget contract, keep incomplete workflow
   evidence blocked, normalize seconds to milliseconds, and reject raw local artifact references through the validator.
+- Native QA evidence composer exports must be schema-versioned and reject raw video URIs, local paths, credential
+  values, and token-like strings before sharing.
 - Evidence collection planning must be derived from cue-validation acceptance thresholds and native QA budgets rather
   than hard-coded in the UI.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
