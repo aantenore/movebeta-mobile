@@ -180,7 +180,7 @@ def main() -> None:
         completed_csv_input.fill(complete_validation_csv(completed_csv_input.input_value()))
         page.get_by_text("Build dataset", exact=True).click()
         expect(page.get_by_text("Prepared cue validation dataset")).to_be_visible()
-        expect(page.get_by_text('"acceptance"')).to_be_visible()
+        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-dataset.v1"')).to_be_visible()
         expect(page.get_by_text('"reviewerId": "coach-1"')).to_be_visible()
         page.get_by_text("Coach packet", exact=True).nth(0).click()
         expect(page.get_by_text("Prepared coach packet")).to_be_visible()

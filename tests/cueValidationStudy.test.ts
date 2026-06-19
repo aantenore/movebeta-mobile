@@ -307,6 +307,7 @@ describe('cue validation study seed', () => {
     expect(dataset).toMatchObject({
       appVersion: '1.0.0-test',
       generatedAt: '2026-06-20T01:25:00.000Z',
+      schemaVersion: 'movebeta.cue-validation-dataset.v1',
     });
     expect(dataset.clips[0].reviews).toHaveLength(seed.cueCount * 2);
     expect(dataset.clips[0].reviews[0]).toMatchObject({

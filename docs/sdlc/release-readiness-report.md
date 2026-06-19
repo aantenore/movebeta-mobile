@@ -75,7 +75,7 @@ platforms are validated on physical climbing videos and devices.
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
 - Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, and Privacy.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
-- Cue validation dataset contract, template, and CLI gate are ready for real consented coach review studies.
+- Cue validation dataset contract, template, and CLI gate are versioned and ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
 - Plan tab shows the configured current tier, upgrade path, capability matrix, and billing-provider readiness from the
   shared entitlement catalog.
@@ -86,7 +86,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 42 test files and 165 tests.
+- `npm test`: passed, 42 test files and 166 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -152,8 +152,8 @@ platforms are validated on physical climbing videos and devices.
   manifest check confirms `CAMERA` and `READ_MEDIA_VIDEO`, excludes `RECORD_AUDIO`, and keeps `allowBackup=false`.
 - `tests/nativeQaEvidence.test.ts`: passed and covers device evidence requirements for platform coverage, camera/import
   workflows, muted recording, native metadata reads, airplane-mode analysis, latency, battery, and thermal budgets.
-- `tests/cueValidationDataset.test.ts`: passed and covers dataset thresholds, wall-angle coverage, reviewer coverage,
-  review modes, score quality, and raw-artifact exclusion.
+- `tests/cueValidationDataset.test.ts`: passed and covers dataset schema version, thresholds, wall-angle coverage,
+  reviewer coverage, review modes, score quality, and raw-artifact exclusion.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.

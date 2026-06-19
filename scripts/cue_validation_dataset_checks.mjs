@@ -208,9 +208,13 @@ export function validateCueValidationDataset(dataset) {
   const datasetAverageScore = Number(average(clipResults.flatMap((result) => (result.reviewCount > 0 ? [result.averageScore] : []))).toFixed(2));
 
   checks.push(
-    hasText(dataset?.appVersion) && hasText(dataset?.generatedAt)
-      ? pass('dataset-header', 'Dataset header', `${dataset.appVersion} · ${dataset.generatedAt}`)
-      : fail('dataset-header', 'Dataset header', 'appVersion and generatedAt are required.'),
+    dataset?.schemaVersion === 'movebeta.cue-validation-dataset.v1' && hasText(dataset?.appVersion) && hasText(dataset?.generatedAt)
+      ? pass('dataset-header', 'Dataset header', `${dataset.schemaVersion} · ${dataset.appVersion} · ${dataset.generatedAt}`)
+      : fail(
+          'dataset-header',
+          'Dataset header',
+          'schemaVersion=movebeta.cue-validation-dataset.v1, appVersion, and generatedAt are required.',
+        ),
   );
 
   checks.push(
