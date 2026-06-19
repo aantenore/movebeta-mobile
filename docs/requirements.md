@@ -124,6 +124,8 @@
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
+- Generate an iOS toolchain report that checks the selected Developer directory, full Xcode availability, workspace,
+  Pods, and build-settings probe before marking iOS build evidence ready.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
@@ -189,6 +191,8 @@
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Release gate execution must produce a machine-readable JSON report with ordered step results before launch-readiness
   detection can mark the release gate verified.
+- iOS build evidence must come from the generated toolchain report and remain blocked unless full Xcode, workspace, Pods,
+  and the build-settings probe are ready.
 - Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
 - Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Launch-readiness detection must validate native QA evidence and cue-validation dataset content before marking either

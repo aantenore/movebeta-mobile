@@ -32,6 +32,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toEqual(
       releaseGateSteps.map((item: { key: string }) => item.key),
     );
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('iosToolchainDoctor');
   });
 
   it('marks the release gate fail when any executed step fails', () => {

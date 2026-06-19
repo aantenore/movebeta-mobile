@@ -52,7 +52,16 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.release-gate-report.v1',
     startedAt: '2026-06-20T07:59:00.000Z',
     status: 'pass',
-    steps: ['quality', 'modelReadiness', 'modelAnalysisReplay', 'nativeQaRunbook', 'webExport', 'easStandard', 'securityAudit'].map((key) => ({
+    steps: [
+      'quality',
+      'modelReadiness',
+      'modelAnalysisReplay',
+      'nativeQaRunbook',
+      'iosToolchainDoctor',
+      'webExport',
+      'easStandard',
+      'securityAudit',
+    ].map((key) => ({
       command: `npm run ${key}`,
       completedAt: '2026-06-20T08:00:00.000Z',
       durationMs: 100,
@@ -62,6 +71,10 @@ function makeProjectRoot() {
       startedAt: '2026-06-20T07:59:00.000Z',
       status: 'pass',
     })),
+  });
+  writeJson(path.join(root, 'docs/sdlc/ios-toolchain-report.json'), {
+    schemaVersion: 'movebeta.ios-toolchain-report.v1',
+    status: 'blocked',
   });
   writeText(path.join(root, 'dist/index.html'), '<!doctype html>');
   writeText(path.join(root, 'docs/store/privacy-declarations.md'), '# Privacy');
@@ -208,6 +221,7 @@ describe('launch readiness doctor', () => {
 
     expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' })).toMatchObject({
       androidDebugBuild: true,
+      iosBuild: false,
       iosPods: true,
       modelAnalysisReplay: true,
       modelReadiness: true,
@@ -234,6 +248,19 @@ describe('launch readiness doctor', () => {
     writeText(path.join(rootDir, 'docs/store/screenshots/07-release-unblock.png'), 'png');
 
     expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).storeListing).toBe(true);
+  });
+
+  it('uses the iOS toolchain report status for iOS build evidence', () => {
+    const rootDir = makeProjectRoot();
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).iosBuild).toBe(false);
+
+    writeJson(path.join(rootDir, 'docs/sdlc/ios-toolchain-report.json'), {
+      schemaVersion: 'movebeta.ios-toolchain-report.v1',
+      status: 'ready',
+    });
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).iosBuild).toBe(true);
   });
 
   it('validates native QA evidence content instead of only checking file presence', () => {
