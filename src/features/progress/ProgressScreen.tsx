@@ -15,6 +15,7 @@ import { summarizeCuePatterns } from '@/movement/cuePatterns';
 import { summarizeDrillPracticeInsights } from '@/movement/drillPracticeInsights';
 import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
+import { buildPreSendGuard } from '@/movement/preSendGuard';
 import {
   activeProgressFilterCount,
   defaultProgressFilters,
@@ -85,6 +86,10 @@ export function ProgressScreen() {
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(
     () => buildSessionPlan(filteredReports, annotations, drillPractice),
+    [annotations, drillPractice, filteredReports],
+  );
+  const preSendGuard = useMemo(
+    () => buildPreSendGuard(filteredReports, annotations, drillPractice),
     [annotations, drillPractice, filteredReports],
   );
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
@@ -191,6 +196,71 @@ export function ProgressScreen() {
           </View>
 
           <Text style={styles.sessionPlanSafety}>{sessionPlan.safetyNote}</Text>
+        </View>
+      </Section>
+
+      <Section
+        title="Pre-send guard"
+        caption="A local hard-try check from signal quality, open cues, practice follow-through, and repeat outcomes."
+      >
+        <View
+          style={[
+            styles.preSendGuardCard,
+            preSendGuard.status === 'reset-first' ? styles.preSendGuardCardReset : null,
+            preSendGuard.status === 'hard-try-window' ? styles.preSendGuardCardReady : null,
+          ]}
+        >
+          <View style={styles.preSendGuardTop}>
+            <View style={styles.preSendGuardScoreBox}>
+              <Text style={styles.preSendGuardScore}>{preSendGuard.score}</Text>
+              <Text style={styles.preSendGuardScoreLabel}>Guard</Text>
+            </View>
+            <View style={styles.preSendGuardCopy}>
+              <View style={styles.preSendGuardTitleRow}>
+                <Text style={styles.preSendGuardTitle}>{preSendGuard.headline}</Text>
+                <Text
+                  style={[
+                    styles.preSendGuardBadge,
+                    preSendGuard.status === 'reset-first' ? styles.preSendGuardBadgeReset : null,
+                    preSendGuard.status === 'hard-try-window' ? styles.preSendGuardBadgeReady : null,
+                  ]}
+                >
+                  {preSendGuard.status}
+                </Text>
+              </View>
+              <Text style={styles.preSendGuardMeta}>Load cap: {preSendGuard.loadCap}</Text>
+            </View>
+          </View>
+
+          <View style={styles.preSendGuardAction}>
+            <Text style={styles.preSendGuardActionLabel}>Action</Text>
+            <Text style={styles.preSendGuardActionText}>{preSendGuard.action}</Text>
+          </View>
+
+          <View style={styles.preSendGuardSignals}>
+            {preSendGuard.signals.map((signal) => (
+              <View
+                key={signal.id}
+                style={[
+                  styles.preSendGuardSignal,
+                  signal.severity === 'blocker' ? styles.preSendGuardSignalBlocker : null,
+                  signal.severity === 'support' ? styles.preSendGuardSignalSupport : null,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.preSendGuardSignalSeverity,
+                    signal.severity === 'blocker' ? styles.preSendGuardSignalSeverityBlocker : null,
+                    signal.severity === 'support' ? styles.preSendGuardSignalSeveritySupport : null,
+                  ]}
+                >
+                  {signal.severity}
+                </Text>
+                <Text style={styles.preSendGuardSignalLabel}>{signal.label}</Text>
+                <Text style={styles.preSendGuardSignalEvidence}>{signal.evidence}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </Section>
 
@@ -1329,6 +1399,150 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '900',
     lineHeight: 23,
+  },
+  preSendGuardAction: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 4,
+    padding: theme.spacing.sm,
+  },
+  preSendGuardActionLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  preSendGuardActionText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  preSendGuardBadge: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  preSendGuardBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  preSendGuardBadgeReset: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  preSendGuardCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  preSendGuardCardReady: {
+    borderColor: theme.colors.success,
+  },
+  preSendGuardCardReset: {
+    borderColor: theme.colors.coral,
+  },
+  preSendGuardCopy: {
+    flex: 1,
+    gap: 5,
+  },
+  preSendGuardMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  preSendGuardScore: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  preSendGuardScoreBox: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    minWidth: 74,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  preSendGuardScoreLabel: {
+    color: '#DCECF3',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  preSendGuardSignal: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexGrow: 1,
+    gap: 4,
+    minWidth: 142,
+    padding: theme.spacing.sm,
+  },
+  preSendGuardSignalBlocker: {
+    backgroundColor: '#FFF0EC',
+    borderColor: '#F2C8BA',
+  },
+  preSendGuardSignalEvidence: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  preSendGuardSignalLabel: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  preSendGuardSignals: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  preSendGuardSignalSeverity: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  preSendGuardSignalSeverityBlocker: {
+    color: theme.colors.coral,
+  },
+  preSendGuardSignalSeveritySupport: {
+    color: theme.colors.success,
+  },
+  preSendGuardSignalSupport: {
+    backgroundColor: '#E8F4EE',
+    borderColor: '#BBDDCB',
+  },
+  preSendGuardTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 22,
+  },
+  preSendGuardTitleRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  preSendGuardTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
   },
   readinessBadge: {
     backgroundColor: theme.colors.brandSoft,

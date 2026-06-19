@@ -80,8 +80,8 @@ def main() -> None:
             if file_name in {"07-release-unblock.png", "08-data-portability.png"}:
                 pass
             elif tab_name == "Progress":
-                page.get_by_text("Repeat outcomes").scroll_into_view_if_needed()
-                expect(page.get_by_text("Repeat outcomes")).to_be_visible()
+                page.get_by_text("Pre-send guard", exact=True).scroll_into_view_if_needed()
+                expect(page.get_by_text("Pre-send guard", exact=True)).to_be_visible()
             else:
                 reset_scroll(page)
             page.screenshot(path=str(OUTPUT_DIR / file_name), full_page=True)
