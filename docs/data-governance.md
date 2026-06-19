@@ -10,8 +10,8 @@
 - Users must be able to delete local analysis bundles, including the report, private training log, drill practice log, and
   coach consent record, without uploading or exporting raw video.
 - Users must be able to create, preview, and restore a local backup of reports, private notes, drill practice records, and
-  consent records without raw video, video URI, audio, account identifiers, or secrets. Restore preview must show new,
-  existing, skipped, and checksum verification state before writing local storage.
+  consent records without raw video, video URI, audio, account identifiers, or secrets. Restore preview and restore
+  receipt must show new, existing, skipped, and checksum verification state around local storage writes.
 - Coach library batch exports must use consented queue metadata and team templates only, with no raw video, URI, private
   notes, drill notes, pose frames, key frames, or landmarks.
 - Cue-validation study seeds must include review tasks and thresholds only; reviewer scores must come from real reviewers

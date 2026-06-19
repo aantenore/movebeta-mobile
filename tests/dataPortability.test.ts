@@ -163,6 +163,8 @@ describe('local data portability', () => {
       annotationsRestored: 1,
       consentsRestored: 1,
       drillPracticeRestored: 1,
+      integrityChecksum: backup.integrity?.checksum,
+      integrityVerified: true,
       reportsRestored: 1,
       skippedAnnotations: 0,
       skippedConsents: 0,
@@ -188,6 +190,8 @@ describe('local data portability', () => {
     expect(await destinationDrillPractice.listRecordsForReport(source.report.id)).toHaveLength(1);
     expect(formatLocalDataRestoreResult(result)).toContain('Reports restored: 1');
     expect(formatLocalDataRestoreResult(result)).toContain('Drill practice records restored: 1');
+    expect(formatLocalDataRestoreResult(result)).toContain('Integrity verified: yes');
+    expect(formatLocalDataRestoreResult(result)).toContain(`Content checksum: ${backup.integrity?.checksum}`);
   });
 
   it('previews a restore without writing local repositories', async () => {
@@ -285,10 +289,19 @@ describe('local data portability', () => {
     const legacyBackup = { ...backup, integrity: undefined };
 
     const preview = previewLocalDataRestore(JSON.stringify(legacyBackup));
+    const result = await restoreLocalDataBackup(JSON.stringify(legacyBackup), {
+      annotations: new InMemoryReportAnnotationRepository(),
+      consents: new InMemoryCoachConsentRepository(),
+      drillPractice: new InMemoryDrillPracticeRepository(),
+      reports: new InMemoryReportRepository(),
+    });
 
     expect(preview.integrityChecksum).toBeNull();
     expect(preview.integrityVerified).toBe(false);
     expect(formatLocalDataRestorePreview(preview)).toContain('Integrity verified: legacy backup without checksum');
+    expect(result.integrityChecksum).toBeNull();
+    expect(result.integrityVerified).toBe(false);
+    expect(formatLocalDataRestoreResult(result)).toContain('Integrity verified: legacy backup without checksum');
   });
 
   it('rejects backups whose content no longer matches the integrity checksum', async () => {
