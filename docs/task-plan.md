@@ -98,3 +98,4 @@
 | T94 | Add model-analysis replay report for MoveNet-shaped cue evidence | Done |
 | T95 | Add model-analysis replay validation to launch readiness | Done |
 | T96 | Add local pre-send guard from readiness, cue, practice, and repeat evidence | Done |
+| T97 | Add local beta memory from improved and sent repeat outcomes | Done |
