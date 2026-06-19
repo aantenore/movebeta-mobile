@@ -70,3 +70,4 @@
 | T66 | Add local cue-validation study seed export from consented packets | Done |
 | T67 | Add local cue-validation review worksheet export | Done |
 | T68 | Add privacy-safe cue-validation worksheet CSV export | Done |
+| T69 | Add completed cue-validation worksheet dataset composer | Done |

@@ -8,11 +8,14 @@ import {
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
+  buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationStudySeed,
+  formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
   type CueValidationReviewWorksheet,
 } from '../src/movement/cueValidationStudy';
+import { validateCueValidationDataset } from '../scripts/cue_validation_dataset_checks.mjs';
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import { createReportAnnotation, updateCueFeedback } from '../src/movement/reportAnnotationRepository';
@@ -36,6 +39,27 @@ async function buildReport(id: string): Promise<LocalAnalysisReport> {
       title: id,
     },
   };
+}
+
+function completeWorksheetCsv(csv: string, score = 5) {
+  const [headerLine, ...rows] = csv.trimEnd().split('\n');
+  const headers = headerLine.split(',');
+  const indexes = Object.fromEntries(headers.map((header, index) => [header, index]));
+
+  return [
+    headerLine,
+    ...rows.map((row) => {
+      const cells = row.split(',');
+      const reviewerSlot = cells[indexes.reviewerSlot];
+      cells[indexes.reviewerId] = `coach-${reviewerSlot}`;
+      cells[indexes.relevance] = String(score);
+      cells[indexes.timingAccuracy] = String(score);
+      cells[indexes.drillFit] = String(score);
+      cells[indexes.safetyLanguage] = String(score);
+      cells[indexes.status] = 'reviewed';
+      return cells.join(',');
+    }),
+  ].join('\n') + '\n';
 }
 
 describe('cue validation study seed', () => {
@@ -256,6 +280,50 @@ describe('cue validation study seed', () => {
     expect(csv).toContain('"Hip, ""drop""\nmove"');
   });
 
+  it('builds a validation dataset from a completed worksheet CSV with real reviewer scores', async () => {
+    const report = await buildReport('completed-dataset-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T01:10:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          minDistinctReviewersPerClip: 2,
+          minReviewsPerCue: 2,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        appVersion: '1.0.0-test',
+        generatedAt: '2026-06-20T01:15:00.000Z',
+      },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T01:20:00.000Z' });
+    const completedCsv = completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet));
+
+    const dataset = buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedCsv, {
+      generatedAt: '2026-06-20T01:25:00.000Z',
+    });
+    const validation = validateCueValidationDataset(dataset);
+
+    expect(dataset).toMatchObject({
+      appVersion: '1.0.0-test',
+      generatedAt: '2026-06-20T01:25:00.000Z',
+    });
+    expect(dataset.clips[0].reviews).toHaveLength(seed.cueCount * 2);
+    expect(dataset.clips[0].reviews[0]).toMatchObject({
+      reviewerId: 'coach-1',
+      reviewerRole: 'coach',
+      reviewMode: 'packet-only',
+      relevance: 5,
+      timingAccuracy: 5,
+      drillFit: 5,
+      safetyLanguage: 5,
+    });
+    expect(formatCueValidationCompletedDatasetSummary(dataset)).toBe(
+      `1 consented clips · ${seed.cueCount * 2} real reviews · target 1 clips · ready for validation gate`,
+    );
+    expect(validation.ready).toBe(true);
+  });
+
   it('rejects injected raw artifact keys before study handoff', async () => {
     const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:10:00.000Z' });
     const unsafeSeed = {
@@ -306,5 +374,48 @@ describe('cue validation study seed', () => {
       'row,clip,packet,consent,cue,file:///private/local.mov,1,,coach,packet-only,,,,,awaiting-real-review\n';
 
     expect(() => assertCueValidationReviewWorksheetCsvIsPrivacySafe(unsafeCsv)).toThrow(/forbidden raw artifact text/i);
+  });
+
+  it('rejects incomplete worksheet CSV before building a validation dataset', async () => {
+    const report = await buildReport('incomplete-dataset-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T01:30:00.000Z' })],
+      { generatedAt: '2026-06-20T01:35:00.000Z' },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T01:40:00.000Z' });
+
+    expect(() => buildCueValidationDatasetFromCompletedWorksheetCsv(seed, buildCueValidationReviewWorksheetCsv(worksheet))).toThrow(
+      /requires a real reviewerId/i,
+    );
+  });
+
+  it('rejects worksheet CSV rows that do not match the source seed', async () => {
+    const report = await buildReport('mismatched-dataset-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T01:45:00.000Z' })],
+      { generatedAt: '2026-06-20T01:50:00.000Z' },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T01:55:00.000Z' });
+    const completedCsv = completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet)).replace(
+      worksheet.rows[0].cueId,
+      'unknown-cue',
+    );
+
+    expect(() => buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedCsv)).toThrow(/not part of this study seed/i);
+  });
+
+  it('rejects worksheet CSV scores outside the 1-5 review scale', async () => {
+    const report = await buildReport('bad-score-dataset-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T02:00:00.000Z' })],
+      { generatedAt: '2026-06-20T02:05:00.000Z' },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T02:10:00.000Z' });
+    const completedCsv = completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet), 6);
+
+    expect(() => buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedCsv)).toThrow(/score from 1 to 5/i);
   });
 });

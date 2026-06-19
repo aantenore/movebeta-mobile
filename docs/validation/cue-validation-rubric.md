@@ -53,3 +53,7 @@ the worksheet.
 
 For spreadsheet workflows, Sessions can export the same worksheet as CSV. Reviewer identity and score cells stay blank,
 values are CSV-escaped, and raw artifact references are rejected before the CSV is prepared.
+
+After real coach review, the completed worksheet CSV can be converted to dataset JSON only if every expected row is
+present, reviewer IDs are filled, scores are integers from 1 to 5, and worksheet metadata still matches the original
+study seed.

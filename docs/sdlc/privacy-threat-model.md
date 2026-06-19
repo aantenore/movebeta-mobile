@@ -27,6 +27,7 @@
 | Cue-validation seed invents reviewer evidence | Product-quality and trust risk | Seed stores review tasks only and marks reviewerScoresInvented=false |
 | Cue-validation worksheet pre-fills reviewer evidence | Product-quality and trust risk | Worksheet rows require null reviewerId and null score fields until real review |
 | Cue-validation CSV leaks raw artifacts | Privacy leakage | CSV export escapes values and rejects raw artifact references before handoff |
+| Completed worksheet is matched to the wrong seed | Product-quality and traceability risk | Composer rejects unknown, duplicate, or metadata-mismatched worksheet rows |
 | Gym bystanders captured | Consent and policy risk | Capture setup blockers, capture reminders, and export controls |
 | Deletion does not remove all local report-adjacent data | Trust and compliance risk | Privacy deletion bundle removes reports, private training logs, and coach consent records together |
 | Backup reintroduces raw video references | Privacy leakage | Versioned backup schema rejects URI-like artifacts and excludes raw video by contract |
