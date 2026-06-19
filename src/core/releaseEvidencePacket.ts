@@ -89,6 +89,12 @@ function artifactStatus(check?: LaunchReadinessCheck): z.infer<typeof ReleaseEvi
   return 'needed';
 }
 
+function joinedArtifactStatus(checks: Array<LaunchReadinessCheck | undefined>): z.infer<typeof ReleaseEvidenceArtifactSchema>['status'] {
+  if (checks.every((check) => check?.status === 'ready')) return 'ready';
+  if (checks.some((check) => check?.status === 'blocked')) return 'blocked';
+  return 'needed';
+}
+
 export function assertReleaseEvidencePacketIsShareSafe(packet: ReleaseEvidencePacket) {
   if (containsForbiddenValue(packet)) {
     throw new Error('Release evidence packet contains credential values, local paths, raw artifacts, or token-like data.');
@@ -127,6 +133,13 @@ export function buildReleaseEvidencePacket({
       label: 'iOS toolchain doctor',
       owner: 'engineering',
       purpose: 'Refresh full-Xcode, workspace, Pods, and build-settings readiness before iOS beta or store work.',
+    },
+    {
+      command: 'npm run release:credentials:doctor',
+      key: 'store-credentials-doctor',
+      label: 'Store credentials doctor',
+      owner: 'release',
+      purpose: 'Refresh Expo, App Store Connect, and Google Play credential presence without exposing secret values.',
     },
     {
       command: 'npm run native:qa:runbook',
@@ -171,6 +184,13 @@ export function buildReleaseEvidencePacket({
       label: 'iOS toolchain report',
       path: 'docs/sdlc/ios-toolchain-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'iosBuild')),
+    },
+    {
+      command: 'npm run release:credentials:doctor',
+      key: 'store-credentials-report',
+      label: 'Store credentials report',
+      path: 'docs/sdlc/store-credentials-report.json',
+      status: joinedArtifactStatus([findCheck(launchReadiness, 'easProject'), findCheck(launchReadiness, 'easCredentials')]),
     },
     {
       command: 'npm run native:qa:validate',

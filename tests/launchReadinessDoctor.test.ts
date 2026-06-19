@@ -58,6 +58,7 @@ function makeProjectRoot() {
       'modelAnalysisReplay',
       'nativeQaRunbook',
       'iosToolchainDoctor',
+      'storeCredentialsDoctor',
       'webExport',
       'easStandard',
       'securityAudit',
@@ -75,6 +76,14 @@ function makeProjectRoot() {
   writeJson(path.join(root, 'docs/sdlc/ios-toolchain-report.json'), {
     schemaVersion: 'movebeta.ios-toolchain-report.v1',
     status: 'blocked',
+  });
+  writeJson(path.join(root, 'docs/sdlc/store-credentials-report.json'), {
+    schemaVersion: 'movebeta.store-credentials-report.v1',
+    status: 'blocked',
+    summary: {
+      easCredentialsReady: false,
+      easProjectReady: false,
+    },
   });
   writeText(path.join(root, 'dist/index.html'), '<!doctype html>');
   writeText(path.join(root, 'docs/store/privacy-declarations.md'), '# Privacy');
@@ -261,6 +270,29 @@ describe('launch readiness doctor', () => {
     });
 
     expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).iosBuild).toBe(true);
+  });
+
+  it('uses the store credentials report for EAS project and credential evidence', () => {
+    const rootDir = makeProjectRoot();
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' })).toMatchObject({
+      easCredentials: false,
+      easProject: false,
+    });
+
+    writeJson(path.join(rootDir, 'docs/sdlc/store-credentials-report.json'), {
+      schemaVersion: 'movebeta.store-credentials-report.v1',
+      status: 'ready',
+      summary: {
+        easCredentialsReady: true,
+        easProjectReady: true,
+      },
+    });
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' })).toMatchObject({
+      easCredentials: true,
+      easProject: true,
+    });
   });
 
   it('validates native QA evidence content instead of only checking file presence', () => {

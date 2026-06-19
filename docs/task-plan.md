@@ -113,3 +113,4 @@
 | T109 | Add configurable provider readiness cockpit to Plan | Done |
 | T110 | Add iOS toolchain doctor and launch-readiness integration | Done |
 | T111 | Add share-safe release evidence packet to Plan | Done |
+| T112 | Add store credentials doctor and launch-readiness integration | Done |
