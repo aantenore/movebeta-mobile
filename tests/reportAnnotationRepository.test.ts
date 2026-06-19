@@ -5,6 +5,7 @@ import {
   InMemoryReportAnnotationRepository,
   LocalReportAnnotationRepository,
   SQLiteReportAnnotationRepository,
+  updateCueFeedback,
   updateReportAnnotation,
 } from '../src/movement/reportAnnotationRepository';
 import type { SQLiteDatabaseLike } from '../src/movement/reportRepository';
@@ -75,7 +76,22 @@ describe('report annotation repository', () => {
     expect(await repository.getAnnotation('analysis-1')).toEqual(annotation);
     expect(await repository.listAnnotations()).toEqual([annotation]);
 
-    const updated = updateReportAnnotation(annotation, {
+    const withCueFeedback = updateCueFeedback(annotation, {
+      cueId: 'cue-lockoff',
+      rating: 'useful',
+      updatedAt: '2026-06-19T12:15:00.000Z',
+    });
+
+    await repository.saveAnnotation(withCueFeedback);
+
+    expect((await repository.getAnnotation('analysis-1'))?.cueFeedback).toMatchObject([
+      {
+        cueId: 'cue-lockoff',
+        rating: 'useful',
+      },
+    ]);
+
+    const updated = updateReportAnnotation(withCueFeedback, {
       confidence: 5,
       privateNote: 'Ready for a send try.',
       projectStatus: 'sent',
@@ -89,13 +105,42 @@ describe('report annotation repository', () => {
     expect(await repository.getAnnotation('analysis-1')).toBeNull();
   });
 
+  it('restores legacy annotations without cue feedback', async () => {
+    const legacyAnnotation = {
+      confidence: 3,
+      perceivedEffort: 4,
+      privateNote: 'Legacy note.',
+      projectStatus: 'project',
+      reportId: 'legacy-analysis',
+      tags: ['board'],
+      updatedAt: '2026-06-19T12:00:00.000Z',
+    };
+    installLocalStorage({
+      'test.movebeta.legacy-annotations': JSON.stringify([legacyAnnotation]),
+    });
+
+    const repository = new LocalReportAnnotationRepository('test.movebeta.legacy-annotations');
+
+    expect(await repository.getAnnotation('legacy-analysis')).toMatchObject({
+      cueFeedback: [],
+      privateNote: 'Legacy note.',
+    });
+  });
+
   it('persists local annotations and restores them after reload', async () => {
     const store = installLocalStorage();
     const repository = new LocalReportAnnotationRepository('test.movebeta.annotations');
-    const annotation = createReportAnnotation('analysis-2', {
-      privateNote: 'Try quieter feet.',
-      updatedAt: '2026-06-19T12:00:00.000Z',
-    });
+    const annotation = updateCueFeedback(
+      createReportAnnotation('analysis-2', {
+        privateNote: 'Try quieter feet.',
+        updatedAt: '2026-06-19T12:00:00.000Z',
+      }),
+      {
+        cueId: 'cue-foot-cut',
+        rating: 'unclear',
+        updatedAt: '2026-06-19T12:10:00.000Z',
+      },
+    );
 
     await repository.saveAnnotation(annotation);
 
