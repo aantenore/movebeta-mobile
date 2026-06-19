@@ -39,6 +39,7 @@
 - Show a key-frame pose overlay and timeline events.
 - Show analysis quality, frame coverage, landmark coverage, visibility, and warnings before coaching cues.
 - Convert analysis quality into capture-readiness guidance so users know when to trust cues or retake the clip.
+- Generate a local beta replay plan with setup, crux, and exit actions from report cues, timeline, and weakest metric.
 - Block recording when capture setup has privacy or pose-extraction blockers.
 - Measure local video analysis duration, budget status, and processed frame rate in each report.
 - Keep raw video on-device by default.
@@ -101,6 +102,7 @@
 - Backup restore must validate schema version, reject URI-like raw-video artifacts, and skip orphan training-log,
   drill-practice, or consent records whose reports are not present in the backup.
 - Technique readiness must degrade to a baseline recommendation when no local reports exist.
+- Beta replay plans must degrade to weakest-metric guidance when no cue crosses a coaching threshold.
 - Personal benchmarks must return an empty state when no local reports exist and keep at least one top benchmark per
   supported segment when reports are present.
 - Session planning must degrade to a baseline block when no reports exist and must avoid max-intensity guidance during

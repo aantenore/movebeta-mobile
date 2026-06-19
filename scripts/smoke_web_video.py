@@ -53,6 +53,8 @@ def main() -> None:
         expect(page.get_by_text("Demo sources")).to_be_visible()
         expect(page.get_by_text("Analysis quality")).to_be_visible()
         expect(page.get_by_text("Ready for coaching")).to_be_visible()
+        expect(page.get_by_text("Beta replay plan")).to_be_visible()
+        expect(page.get_by_text("Reduce bent-arm time").first).to_be_visible()
         expect(page.get_by_text("Movement metrics")).to_be_visible()
         expect(page.get_by_text("Coach cues")).to_be_visible()
 
@@ -90,6 +92,7 @@ def main() -> None:
         expect(page.get_by_text("Clip ready")).to_be_visible()
         expect(page.get_by_text("Analysis quality")).to_be_visible()
         expect(page.get_by_text("Ready for coaching")).to_be_visible()
+        expect(page.get_by_text("Beta replay plan")).to_be_visible()
         expect(page.get_by_text("Movement metrics")).to_be_visible()
 
         page.get_by_role("tab", name="Progress").click()

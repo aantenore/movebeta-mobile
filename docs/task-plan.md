@@ -77,3 +77,4 @@
 | T73 | Add parity coverage between the in-app and CLI cue-validation gates | Done |
 | T74 | Add configurable launch-readiness cockpit for demo, beta, and store tracks | Done |
 | T75 | Add machine-detected launch-readiness doctor and durable report | Done |
+| T76 | Add local beta replay plan from cue and metric evidence | Done |

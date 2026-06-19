@@ -88,3 +88,4 @@
 - Configurable Plan launch-readiness cockpit for demo, internal beta, and store-submission tracks.
 - Launch-readiness evidence configuration through Expo extra or `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`.
 - Machine-detected launch readiness doctor with a durable JSON report for release evidence drift.
+- Local beta replay plan in Analyze with setup, crux, and exit actions derived from cue and metric evidence.
