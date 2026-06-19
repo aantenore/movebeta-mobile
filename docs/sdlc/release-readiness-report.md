@@ -61,6 +61,8 @@ platforms are validated on physical climbing videos and devices.
   state, attempt count, and resolved cues.
 - Progress converts private repeat outcomes into success rate, improved/sent/stalled counts, resolved cue count, and
   next-repeat action.
+- Progress converts improved and sent repeat outcomes into a local beta memory with reusable cue recommendations while
+  excluding private notes.
 - Progress filters local report history and the project queue by wall angle, grade, and gym.
 - Native report persistence uses SQLite behind the same repository contract, with browser/local fallback storage.
 - Sessions persists explicit per-report consent before preparing a coach review packet with privacy-safe athlete context
@@ -123,14 +125,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 65 test files and 253 tests.
+- `npm test`: passed, 66 test files and 257 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3710ms load time, 347ms average inference, and 350ms max inference in the latest run.
+  CPU backend, 4251ms load time, 330ms average inference, and 337ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -151,6 +153,8 @@ platforms are validated on physical climbing videos and devices.
   delete behavior, and corrupted-storage tolerance.
 - `tests/repeatOutcomeInsights.test.ts`: passed and covers progressing outcomes, stalled outcomes, orphan skipping, and
   empty state behavior.
+- `tests/betaMemory.test.ts`: passed and covers improved/sent beta entries, building and empty states, orphan skipping,
+  entry limits, resolved cue titles, and private-note exclusion.
 - `tests/drillPracticeRepository.test.ts`: passed and covers private completion/skipped records, local persistence,
   SQLite persistence, report-scoped deletion, and corrupted-storage tolerance.
 - `tests/drillPracticeInsights.test.ts`: passed and covers completion rate, blocked/skipped state, orphan skipping, and

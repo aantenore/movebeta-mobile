@@ -99,6 +99,7 @@
 - Local cue trust scoring in Analyze and coach packet exports, with privacy-safe signal factors and validation-readiness status.
 - Private repeat-outcome logging in Sessions and Progress insights for success rate, stalled repeats, resolved cues, and
   next-repeat action.
+- Local beta memory in Progress that turns improved and sent repeat outcomes into reusable privacy-safe beta cues.
 - MoveNet model execution smoke that loads TensorFlow.js MoveNet SinglePose Lightning and runs local inference on a
   synthetic frame.
 - MoveNet readiness report with load/inference budgets, memory evidence, launch-readiness detection, and release-gate

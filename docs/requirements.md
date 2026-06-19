@@ -63,6 +63,8 @@
   next repeat action.
 - Summarize private repeat outcomes into success rate, improved/sent/stalled counts, resolved cue count, and a local
   next-repeat recommendation.
+- Summarize improved and sent repeat outcomes into a local beta memory with reusable beta entries, resolved cue titles,
+  top pattern, and privacy-safe recommendations.
 - Persist configured session metadata in reports, exports, trends, drills, and coach review packets.
 - Persist per-report coach review consent records with grant, revoke, and delete behavior.
 - Prepare a coach review packet only after explicit athlete consent, without raw video, video URI, or key-frame landmarks.
@@ -197,6 +199,8 @@
   target `main` and pull requests, and upload release evidence without committing CI-generated outputs.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
+- Beta memory must ignore orphan annotations, remain useful without resolved cue ids, limit visible entries through a
+  replaceable option, and exclude private note text.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
   review coverage before production movement-quality claims.
 - In-app cue-validation gate previews must use local dataset content only and must not upload or fetch validation data.
