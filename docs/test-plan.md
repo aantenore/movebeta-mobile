@@ -87,6 +87,9 @@
   configurable acceptance thresholds, and raw-artifact exclusion.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
+- Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
+- Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
+  commands, Markdown rendering, and durable JSON/Markdown writes.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -101,6 +104,8 @@
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.
 - Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
+- Release handoff packet generation with `npm run release:handoff` after release readiness, screenshots, and archives are
+  refreshed.
 
 ## Browser Smoke
 

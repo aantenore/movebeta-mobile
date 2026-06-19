@@ -100,6 +100,8 @@
   required wall-angle coverage, native device checks, and external evidence owners.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
+- Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
+  screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 
 ## Non-Functional
 
@@ -167,6 +169,8 @@
   than hard-coded in the UI.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
+- Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret
+  values, and fail screenshot completeness when the manifest declares a missing screenshot.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
