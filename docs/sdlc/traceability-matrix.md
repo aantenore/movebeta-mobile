@@ -34,7 +34,7 @@
 | R30 report-level video performance evidence | `docs/requirements.md` | `tests/performanceBudget.test.ts`, `tests/videoWorkflow.test.ts` | native QA evidence comparison | Covered |
 | R31 durable coach consent records | `docs/requirements.md`, `docs/sdlc/privacy-threat-model.md` | `tests/coachConsentRepository.test.ts` | Sessions consent smoke | Covered |
 | R32 video metadata and muted recording | `docs/requirements.md`, `docs/architecture.md` | `tests/videoMetadata.test.ts`, `tests/videoWorkflow.test.ts` | native camera/import metadata QA | Contract covered |
-| R33 cue validation dataset readiness | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDataset.test.ts` | consented coach review study | Gate covered |
+| R33 cue validation dataset readiness | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDataset.test.ts` | versioned consented coach review study | Gate covered |
 | R34 EAS release readiness | `docs/sdlc/mobile-release-process.md`, `eas.json` | `tests/easReleaseChecks.test.ts`, `npm run release:eas:check` | `npm run release:eas:strict` with Expo, Apple, and Google credentials | Standard gate covered; credentials needed |
 | R35 selectable session review detail | `docs/requirements.md` | `tests/sessionDetail.test.ts`, browser smoke | Sessions tab review panel | Covered |
 | R36 private report training log | `docs/requirements.md` | `tests/reportAnnotationRepository.test.ts`, browser smoke | Sessions tab Training log panel | Covered |

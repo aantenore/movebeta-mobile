@@ -26,7 +26,7 @@
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
-- Build a cue-validation dataset JSON from a completed worksheet CSV only when reviewer identities and all 1-5 scores
+- Build a versioned cue-validation dataset JSON from a completed worksheet CSV only when reviewer identities and all 1-5 scores
   are present and every row matches the original study seed.
 - Let users paste completed cue-validation worksheet CSV in Sessions and prepare the gate-compatible dataset JSON locally.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
@@ -116,8 +116,8 @@
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.
-- Cue validation datasets must reject raw video URIs, key frames, pose landmarks, and incomplete review coverage before
-  production movement-quality claims.
+- Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
+  review coverage before production movement-quality claims.
 - Cue validation study seeds must not include raw video, URI, pose frames, key frames, landmarks, private notes, drill
   notes, or generated reviewer scores.
 - Cue validation review worksheets must keep reviewer identities and score fields empty until real coach review is entered.

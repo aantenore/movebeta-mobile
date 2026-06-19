@@ -62,6 +62,7 @@ describe('cue validation dataset readiness', () => {
       appVersion: '1.0.0',
       clips: [clip('slab', 1), clip('vertical', 2), clip('overhang', 3)],
       generatedAt: '2026-06-19T00:00:00.000Z',
+      schemaVersion: 'movebeta.cue-validation-dataset.v1',
     });
 
     expect(validation.ready).toBe(true);
@@ -110,6 +111,7 @@ describe('cue validation dataset readiness', () => {
       appVersion: '1.0.0',
       clips: [badClip],
       generatedAt: '2026-06-19T00:00:00.000Z',
+      schemaVersion: 'movebeta.cue-validation-dataset.v1',
     });
 
     expect(validation.ready).toBe(false);
@@ -131,9 +133,25 @@ describe('cue validation dataset readiness', () => {
       appVersion: '1.0.0',
       clips: [clip('vertical', 1)],
       generatedAt: '2026-06-19T00:00:00.000Z',
+      schemaVersion: 'movebeta.cue-validation-dataset.v1',
     });
 
     expect(validation.ready).toBe(false);
     expect(validation.checks.find((check) => check.id === 'dataset-size')?.detail).toContain('20');
+  });
+
+  it('fails when the dataset schema version is missing', () => {
+    const validation = validateCueValidationDataset({
+      acceptance: {
+        minClips: 1,
+        requiredWallAngles: ['vertical'],
+      },
+      appVersion: '1.0.0',
+      clips: [clip('vertical', 1)],
+      generatedAt: '2026-06-19T00:00:00.000Z',
+    });
+
+    expect(validation.ready).toBe(false);
+    expect(validation.checks.find((check) => check.id === 'dataset-header')?.detail).toContain('schemaVersion');
   });
 });

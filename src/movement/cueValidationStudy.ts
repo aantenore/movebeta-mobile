@@ -128,6 +128,7 @@ export const CueValidationCompletedDatasetSchema = z.object({
     }),
   ),
   generatedAt: z.string(),
+  schemaVersion: z.literal('movebeta.cue-validation-dataset.v1'),
 });
 
 export type CueValidationStudyAcceptance = z.infer<typeof CueValidationStudyAcceptanceSchema>;
@@ -606,6 +607,7 @@ export function buildCueValidationDatasetFromCompletedWorksheetCsv(
         ),
     })),
     generatedAt: options.generatedAt ?? new Date().toISOString(),
+    schemaVersion: 'movebeta.cue-validation-dataset.v1',
   });
 }
 
