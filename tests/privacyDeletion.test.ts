@@ -4,6 +4,10 @@ import {
   createCoachReviewConsentRecord,
   InMemoryCoachConsentRepository,
 } from '../src/movement/coachConsentRepository';
+import {
+  createDrillPracticeRecord,
+  InMemoryDrillPracticeRepository,
+} from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import {
   deleteAnalysisBundle,
@@ -20,6 +24,7 @@ async function createDeletionFixture() {
   const reports = new InMemoryReportRepository();
   const annotations = new InMemoryReportAnnotationRepository();
   const consents = new InMemoryCoachConsentRepository();
+  const drillPractice = new InMemoryDrillPracticeRepository();
   const report = await localMovementAnalyzer.analyze({
     frames: samplePoseFrames,
     session: sampleSession,
@@ -37,17 +42,27 @@ async function createDeletionFixture() {
       grantedAt: '2026-06-19T12:00:00.000Z',
     }),
   );
+  await drillPractice.saveRecord(
+    createDrillPracticeRecord({
+      cueId: report.cues[0].id,
+      drillId: `${report.cues[0].id}-${report.id}`,
+      reportId: report.id,
+      status: 'completed',
+      updatedAt: '2026-06-19T12:10:00.000Z',
+    }),
+  );
 
-  return { annotations, consents, report, reports };
+  return { annotations, consents, drillPractice, report, reports };
 }
 
 describe('privacy deletion bundle', () => {
   it('deletes a local report, private training log, and coach consent together', async () => {
-    const { annotations, consents, report, reports } = await createDeletionFixture();
+    const { annotations, consents, drillPractice, report, reports } = await createDeletionFixture();
 
     const result = await deleteAnalysisBundle(report.id, {
       annotations,
       consents,
+      drillPractice,
       now: () => '2026-06-19T14:30:00.000Z',
       reports,
     });
@@ -61,19 +76,30 @@ describe('privacy deletion bundle', () => {
     expect(await reports.getReport(report.id)).toBeNull();
     expect(await annotations.getAnnotation(report.id)).toBeNull();
     expect(await consents.getConsent(report.id)).toBeNull();
+    expect(await drillPractice.listRecordsForReport(report.id)).toEqual([]);
   });
 
   it('cleans orphaned local annotation and consent records even when the report is missing', async () => {
     const reports = new InMemoryReportRepository();
     const annotations = new InMemoryReportAnnotationRepository();
     const consents = new InMemoryCoachConsentRepository();
+    const drillPractice = new InMemoryDrillPracticeRepository();
 
     await annotations.saveAnnotation(createReportAnnotation('orphan-report'));
     await consents.saveConsent(createCoachReviewConsentRecord('orphan-report'));
+    await drillPractice.saveRecord(
+      createDrillPracticeRecord({
+        cueId: 'cue-orphan',
+        drillId: 'cue-orphan-orphan-report',
+        reportId: 'orphan-report',
+        status: 'skipped',
+      }),
+    );
 
     const result = await deleteAnalysisBundle('orphan-report', {
       annotations,
       consents,
+      drillPractice,
       now: () => '2026-06-19T14:31:00.000Z',
       reports,
     });
@@ -85,13 +111,15 @@ describe('privacy deletion bundle', () => {
     });
     expect(result.artifacts.find((artifact) => artifact.id === 'training-log')?.deleted).toBe(true);
     expect(result.artifacts.find((artifact) => artifact.id === 'coach-consent')?.deleted).toBe(true);
+    expect(result.artifacts.find((artifact) => artifact.id === 'drill-practice')?.deleted).toBe(true);
   });
 
   it('returns a privacy-safe deletion receipt', async () => {
-    const { annotations, consents, report, reports } = await createDeletionFixture();
+    const { annotations, consents, drillPractice, report, reports } = await createDeletionFixture();
     const result = await deleteAnalysisBundle(report.id, {
       annotations,
       consents,
+      drillPractice,
       now: () => '2026-06-19T14:32:00.000Z',
       reports,
     });
@@ -101,6 +129,7 @@ describe('privacy deletion bundle', () => {
     expect(receipt).toContain('Analysis report: deleted');
     expect(receipt).toContain('Private training log: deleted');
     expect(receipt).toContain('Coach consent record: deleted');
+    expect(receipt).toContain('Drill practice log: deleted');
     expect(receipt).toContain('Raw video included: no');
     expect(receipt).toContain('Video left device: no');
   });

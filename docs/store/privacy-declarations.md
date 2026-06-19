@@ -27,6 +27,7 @@ Source of truth: `docs/store/store-manifest.json`, generated with `npm run store
 ## Data Safety Notes
 
 - Raw clips remain in the local app/media sandbox unless the user explicitly exports or shares them.
-- Reports store pose landmarks, metrics, cues, timeline events, analysis quality, and provider metadata.
+- Reports store pose landmarks, metrics, cues, timeline events, analysis quality, provider metadata, private training logs,
+  and private drill practice records.
 - Diagnostics packets include aggregate quality, provider, consent, and sanitized events only.
 - Coach review packets exclude raw video, video URI, key-frame landmarks, and medical assessment.

@@ -50,11 +50,14 @@
 - Private per-cue usefulness feedback in local training logs with backup/restore migration coverage.
 - Progress project queue derived from private training logs with active/repeat/sent counts and next-repeat action.
 - Local Progress filters for wall angle, grade, and gym.
-- Privacy deletion bundle that removes report, private training log, and coach consent records together with a local receipt.
-- Privacy-safe local backup and restore JSON for reports, private training logs, and coach consent records.
+- Privacy deletion bundle that removes report, private training log, drill practice log, and coach consent records together
+  with a local receipt.
+- Privacy-safe local backup and restore JSON for reports, private training logs, drill practice logs, and coach consent
+  records.
 - Technique readiness score with next action, warm-up, risk, and drill evidence from local progress plus private logs.
 - Personal benchmarks for best overall, wall-angle, grade, and gym attempts with latest-vs-best deltas.
 - Next-session planning with target, duration, intensity cap, ordered phases, and local evidence.
 - Recurring cue pattern tracking for persistent, emerging, and cleared coach cues.
 - Cue usefulness insights from private feedback with useful rate, top cue, and review cue signals.
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
+- Private drill practice logging for completed or skipped suggested drills with backup, restore, and deletion coverage.

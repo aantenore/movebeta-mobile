@@ -230,7 +230,7 @@ export function PrivacyScreen() {
 
       <Section
         title="Data portability"
-        caption="Export and restore local reports, training logs, and consent records without raw video."
+        caption="Export and restore local reports, training logs, drill practice, and consent records without raw video."
         trailing={
           <Pressable onPress={() => void prepareBackup()} style={styles.action}>
             <Text style={styles.actionText}>Backup</Text>
@@ -244,7 +244,8 @@ export function PrivacyScreen() {
           </View>
           <Text style={styles.diagnosticsBody}>
             The backup is versioned and schema-validated. It includes local analysis reports, private training logs, and
-            coach consent records, but no raw video, video URI, audio, account identifiers, or secrets.
+            drill practice records, and coach consent records, but no raw video, video URI, audio, account identifiers, or
+            secrets.
           </Text>
           {backupSummary ? (
             <View style={styles.portabilityStats}>
@@ -259,6 +260,10 @@ export function PrivacyScreen() {
               <View style={styles.portabilityStat}>
                 <Text style={styles.portabilityValue}>{backupSummary.consents}</Text>
                 <Text style={styles.portabilityLabel}>Consents</Text>
+              </View>
+              <View style={styles.portabilityStat}>
+                <Text style={styles.portabilityValue}>{backupSummary.drillPractice}</Text>
+                <Text style={styles.portabilityLabel}>Drills</Text>
               </View>
             </View>
           ) : null}
@@ -432,10 +437,12 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.sm,
     flex: 1,
     gap: 2,
+    minWidth: 92,
     padding: theme.spacing.sm,
   },
   portabilityStats: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
   portabilityValue: {

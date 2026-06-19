@@ -8,6 +8,7 @@
 | MB-004 | Repeat comparison | As a climber, I can compare two attempts of the same move | Done | Latest-vs-baseline metrics, cue status, and recommendation in Progress |
 | MB-005 | Pro history | As a paying user, I can track long-term technique trends | Done | Active plan entitlements gate recent vs unlimited history; optional sync future |
 | MB-005A | Adaptive drills | As a climber, my drill plan reacts to which cues actually helped | Done | Private cue feedback marks drills as reinforce, variant, or untested without cloud sync |
+| MB-005B | Drill practice log | As a climber, I can record whether I completed or skipped suggested drills | Done | Private local records are persisted, backed up, restored, and deleted with the related report |
 | MB-006 | Coach review | As a coach, I can review athlete reports with consent | Done | Local coach review packet with consent metadata; multi-user workspace future |
 | MB-007 | Dependency hygiene | As a maintainer, I receive dependency update PRs | Done | Dependabot configured for npm and GitHub Actions; `npm ci` and CI gate pass |
 | MB-008 | Native release readiness | As a maintainer, I can create internal test builds | Should | EAS profiles, app identifiers, and standard validator are configured; strict gate needs real Expo, Apple, and Google credentials |
