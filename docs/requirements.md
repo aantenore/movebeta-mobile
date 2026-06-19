@@ -49,6 +49,8 @@
 - Prepare a coach review packet only after explicit athlete consent, without raw video, video URI, or key-frame landmarks.
 - Add privacy-safe athlete context to coach review packets from local training-log scores, cue feedback ratings, and drill
   practice counts while excluding private note text and drill notes.
+- Show a local coach library queue from active consented reports with review priority, signal status, feedback counts,
+  practice counts, and no raw video artifacts.
 - Prepare a local diagnostics support packet without raw video, video URI, key frames, pose landmarks, account identifiers, or secrets.
 - Show an airplane-mode readiness self-check for local analysis, local storage, cloud sync, raw export, and report history.
 - Summarize local report history into attempt count, average quality, best signal, next focus, and metric trends.
@@ -95,6 +97,7 @@
 - Drill practice summaries must ignore orphan practice records and return an empty state before practice is logged.
 - Coach review packets must ignore orphan training logs or drill records and must never include private note text or
   drill-practice notes.
+- Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.

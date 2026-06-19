@@ -67,3 +67,5 @@
   and drill-practice counts without private note text or drill notes.
 - Configurable Plan tab with freemium upgrade path, capability matrix, and billing-provider readiness without payment
   provider coupling.
+- Local coach library queue in Sessions from active consented reports with review priority, signal status, feedback counts,
+  practice counts, and no raw video artifacts.
