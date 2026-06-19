@@ -9,6 +9,7 @@ export const RELEASE_GATE_REPORT_SCHEMA_VERSION = 'movebeta.release-gate-report.
 export const releaseGateSteps = [
   { command: ['npm', 'run', 'quality'], key: 'quality', label: 'TypeScript and Vitest quality gate' },
   { command: ['npm', 'run', 'model:movenet:readiness'], key: 'modelReadiness', label: 'MoveNet readiness report' },
+  { command: ['npm', 'run', 'model:analysis:replay'], key: 'modelAnalysisReplay', label: 'Model-shaped analysis replay' },
   { command: ['npm', 'run', 'native:qa:runbook'], key: 'nativeQaRunbook', label: 'Native QA runbook generation' },
   { command: ['npm', 'run', 'export:web'], key: 'webExport', label: 'Expo web export' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },

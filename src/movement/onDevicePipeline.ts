@@ -3,6 +3,7 @@ import { buildVideoAnalysisPerformance } from '@/video/performanceBudget';
 
 import {
   LocalAnalysisReportSchema,
+  type AnalysisProvider,
   type ClimbSession,
   type LocalAnalysisReport,
   type OnDeviceAnalyzer,
@@ -15,14 +16,7 @@ import { sampleAttempts, samplePoseFrames } from './sampleSession';
 import { LocalVideoFallbackPoseEstimator } from './videoPoseFallback';
 import { WebTfjsMoveNetPoseEstimator } from './webTfjsPoseEstimator';
 
-export type AnalysisProvider =
-  | 'local-fixture'
-  | 'local-video-fallback'
-  | 'web-tfjs-movenet'
-  | 'native-platform-pose'
-  | 'native-mediapipe'
-  | 'native-coreml'
-  | 'native-tflite';
+export type { AnalysisProvider };
 
 export type PoseEstimator = {
   provider: AnalysisProvider;
@@ -70,7 +64,12 @@ export class OnDeviceMovementPipeline {
   async analyze(video: VideoAsset, session: ClimbSession): Promise<LocalAnalysisReport> {
     const startedAt = Date.now();
     const frames = await this.poseEstimator.estimate(video);
-    const report = await this.analyzer.analyze({ frames, session });
+    const report = await this.analyzer.analyze({
+      frames,
+      privacyMode: appConfig.privacyMode,
+      provider: this.poseEstimator.provider,
+      session,
+    });
     const completedAt = Date.now();
 
     return LocalAnalysisReportSchema.parse({

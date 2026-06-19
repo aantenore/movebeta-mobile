@@ -112,6 +112,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release gate report', 'docs/sdlc/release-gate-report.json'),
       artifact(rootDir, 'Launch readiness report', 'docs/sdlc/launch-readiness-report.json'),
       artifact(rootDir, 'MoveNet readiness report', 'docs/sdlc/movenet-readiness-report.json'),
+      artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
       artifact(rootDir, 'Native QA runbook', 'docs/sdlc/native-qa-runbook.json'),
       artifact(rootDir, 'Store manifest', 'docs/store/store-manifest.json'),
       artifact(rootDir, 'Screenshot gallery', 'docs/screenshots.md'),

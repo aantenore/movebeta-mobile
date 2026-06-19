@@ -103,6 +103,8 @@
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
+- Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
+  cue generation, metrics, and privacy checks.
 
 ## Non-Functional
 
@@ -158,6 +160,9 @@
   `PoseFrame` data before the local movement analyzer consumes it.
 - MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
   backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
+- Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
+  cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
+  real-video physical-device validation.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow

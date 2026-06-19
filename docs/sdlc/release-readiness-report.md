@@ -38,6 +38,8 @@ platforms are validated on physical climbing videos and devices.
 - MoveNet-shaped keypoints map through a reusable pose-frame contract before reaching the local movement analyzer.
 - MoveNet model readiness writes a durable local report with CPU backend, model load time, average and max inference
   time, memory evidence, and explicit synthetic-frame limitations.
+- Model-analysis replay writes a durable local report proving MoveNet-shaped keypoints produce privacy-safe metrics and
+  cues across bundled slab, vertical, and overhang attempts.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
   budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -107,7 +109,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
-  MoveNet readiness, native QA runbook, web export, EAS standard check, and high-severity audit.
+  MoveNet readiness, model-analysis replay, native QA runbook, web export, EAS standard check, and high-severity audit.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates native QA evidence and cue-validation datasets with their production validators
@@ -119,17 +121,19 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 61 test files and 232 tests.
+- `npm test`: passed, 62 test files and 235 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3526ms load time, 337ms average inference, and 342ms max inference in the latest run.
+  CPU backend, 3865ms load time, 351ms average inference, and 375ms max inference in the latest run.
+- `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
+  attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 6/6 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 7/7 release steps passing.
 - `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
   `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,

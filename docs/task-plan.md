@@ -95,3 +95,4 @@
 | T91 | Add release unblock checklist for external store and beta blockers | Done |
 | T92 | Add release handoff packet generator for stakeholder delivery | Done |
 | T93 | Add release archive checksum manifest generator | Done |
+| T94 | Add model-analysis replay report for MoveNet-shaped cue evidence | Done |
