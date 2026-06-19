@@ -58,3 +58,4 @@
 | R54 local coach team templates | `docs/requirements.md`, `docs/product-strategy.md` | `tests/coachTeamTemplates.test.ts`, browser smoke | Sessions tab Team templates | Covered |
 | R55 privacy-safe coach library export | `docs/requirements.md`, `docs/data-governance.md` | `tests/coachLibraryExport.test.ts`, browser smoke | Sessions tab Coach library export JSON | Covered |
 | R56 cue-validation study seed | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation seed JSON | Covered |
+| R57 cue-validation review worksheet | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation worksheet JSON | Covered |

@@ -68,3 +68,4 @@
 | T64 | Add local coach team templates from consented review signals | Done |
 | T65 | Add privacy-safe coach library batch export | Done |
 | T66 | Add local cue-validation study seed export from consented packets | Done |
+| T67 | Add local cue-validation review worksheet export | Done |

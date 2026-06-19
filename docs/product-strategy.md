@@ -35,6 +35,8 @@ The versioned coach library export gives the Coach tier a concrete batch handoff
 while keeping raw video, pose artifacts, and private notes outside the bundle.
 The cue-validation study seed shortens the path from local coach review to product evidence: coaches can score
 packet-only tasks later without the app inventing validation results.
+The review worksheet makes that evidence loop operational by giving each required coach slot a blank row while keeping
+validation score entry outside automated generation.
 
 ## Differentiation
 

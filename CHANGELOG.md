@@ -75,3 +75,5 @@
   notes, drill notes, raw video URIs, frames, key frames, and landmarks.
 - Local cue-validation study seed export for consented coach packets, including packet-only review tasks and explicit
   no-invented-score privacy metadata.
+- Local cue-validation review worksheet export with blank coach score rows, null reviewer identities, and privacy
+  guardrails against raw artifacts or invented evidence.
