@@ -47,6 +47,7 @@ import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
 import { summarizeAnalysisEvidence } from '@/movement/analysisEvidence';
+import { assertAnalysisEvidenceExportIsPrivacySafe, buildAnalysisEvidenceExport } from '@/movement/analysisEvidenceExport';
 import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
@@ -756,6 +757,29 @@ export function SessionsScreen() {
     setPreparedExport(report ? { body: JSON.stringify(report, null, 2), title: 'Prepared full report' } : null);
   }
 
+  async function prepareAnalysisEvidenceExport(reportId: string) {
+    selectionFeedback();
+    const report = await exportReport(reportId);
+    if (!report) {
+      setPreparedExport(null);
+      return;
+    }
+
+    try {
+      const evidenceExport = buildAnalysisEvidenceExport(report);
+      assertAnalysisEvidenceExportIsPrivacySafe(evidenceExport);
+      setPreparedExport({
+        body: JSON.stringify(evidenceExport, null, 2),
+        title: 'Prepared analysis evidence',
+      });
+    } catch (error) {
+      setPreparedExport({
+        body: error instanceof Error ? error.message : 'Analysis evidence export could not be prepared.',
+        title: 'Analysis evidence blocked',
+      });
+    }
+  }
+
   async function prepareCoachPacket(reportId: string) {
     selectionFeedback();
     const report = await exportReport(reportId);
@@ -965,6 +989,10 @@ export function SessionsScreen() {
                 <Pressable onPress={() => void prepareExport(report.id)} style={styles.secondaryAction}>
                   <Download color={theme.colors.brand} size={16} />
                   <Text style={styles.secondaryActionText}>Export</Text>
+                </Pressable>
+                <Pressable onPress={() => void prepareAnalysisEvidenceExport(report.id)} style={styles.secondaryAction}>
+                  <ShieldCheck color={theme.colors.brand} size={16} />
+                  <Text style={styles.secondaryActionText}>Evidence</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => void toggleCoachConsent(report.id)}

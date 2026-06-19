@@ -107,3 +107,4 @@
 | T103 | Feed completed validation campaign evidence into coach packet cue trust | Done |
 | T104 | Add file-based native sharing for prepared Sessions exports | Done |
 | T105 | Add versioned analysis evidence timeline to local reports | Done |
+| T106 | Add privacy-safe analysis evidence-only export | Done |

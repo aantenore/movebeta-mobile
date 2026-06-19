@@ -25,6 +25,7 @@ platforms are validated on physical climbing videos and devices.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Reports include a versioned local analysis evidence timeline for input normalization, pose provider, signal quality,
   cue generation, runtime budget, and privacy boundary.
+- Sessions prepares a versioned analysis evidence-only export with explicit negative privacy flags before sharing.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
 - Analyze turns the current cue and metric evidence into a local setup, crux, and exit beta replay plan before movement
   metrics.
@@ -132,14 +133,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 73 test files and 287 tests.
+- `npm test`: passed, 74 test files and 289 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4592ms load time, 340ms average inference, and 345ms max inference in the latest run.
+  CPU backend, 3850ms load time, 331ms average inference, and 336ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -159,6 +160,8 @@ platforms are validated on physical climbing videos and devices.
   performance facts, timeline marker bounds, and privacy evidence.
 - `tests/analysisEvidence.test.ts`: passed and covers versioned report timelines, privacy-safe step evidence, blocked
   weak-quality/over-budget/raw-artifact states, summaries, and legacy report fallback.
+- `tests/analysisEvidenceExport.test.ts`: passed and covers versioned evidence-only exports, negative privacy flags, and
+  URI/path/secret rejection before sharing.
 - `tests/reportAnnotationRepository.test.ts`: passed and covers private training-log creation, cue usefulness feedback,
   repeat outcome logging/clearing, legacy migration, updates, tag normalization, local persistence, SQLite persistence,
   delete behavior, and corrupted-storage tolerance.
@@ -255,7 +258,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions analysis evidence timeline, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
+  Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
   repeat outcome panel, the Sessions coach library queue, team templates,
   coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
