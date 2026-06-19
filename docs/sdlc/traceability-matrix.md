@@ -56,3 +56,4 @@
 | R52 freemium plan catalog | `docs/requirements.md`, `docs/product-strategy.md` | `tests/planCatalog.test.ts`, browser smoke | Plan tab catalog and upgrade path | Covered |
 | R53 local coach library | `docs/requirements.md`, `docs/data-governance.md` | `tests/coachLibrary.test.ts`, browser smoke | Sessions tab Coach library queue | Covered |
 | R54 local coach team templates | `docs/requirements.md`, `docs/product-strategy.md` | `tests/coachTeamTemplates.test.ts`, browser smoke | Sessions tab Team templates | Covered |
+| R55 privacy-safe coach library export | `docs/requirements.md`, `docs/data-governance.md` | `tests/coachLibraryExport.test.ts`, browser smoke | Sessions tab Coach library export JSON | Covered |

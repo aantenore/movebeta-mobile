@@ -66,3 +66,4 @@
 | T62 | Add configurable freemium plan catalog and Plan tab | Done |
 | T63 | Add local coach library from active consented reports | Done |
 | T64 | Add local coach team templates from consented review signals | Done |
+| T65 | Add privacy-safe coach library batch export | Done |
