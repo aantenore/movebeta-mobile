@@ -102,6 +102,8 @@ web build with `npm run store:screenshots`.
   and a draft evidence payload that remains blocked until real device values are entered.
 - In-app native QA evidence kit in the Plan tab with required device runs, workflows, budgets, placeholder policy, and
   validator command before internal beta or store submission.
+- In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
+  local privacy boundary.
 - In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
   evidence can satisfy release readiness.
 - Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native

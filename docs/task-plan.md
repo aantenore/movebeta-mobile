@@ -110,3 +110,4 @@
 | T106 | Add privacy-safe analysis evidence-only export | Done |
 | T107 | Add share-safe release unblock packet from Plan | Done |
 | T108 | Add share-safe native QA runbook packet from Plan | Done |
+| T109 | Add configurable provider readiness cockpit to Plan | Done |

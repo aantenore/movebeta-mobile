@@ -100,6 +100,8 @@
   policy, and raw-artifact exclusion.
 - Vitest native QA runbook packet tests for versioned share-safe packet generation, blocked placeholder evidence, and
   token-like value rejection before sharing.
+- Vitest provider readiness tests for configured web MoveNet path, native platform provider review state, reserved
+  provider blocking, fallback provider availability, and privacy-safe output.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
@@ -214,6 +216,7 @@
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Plan tab shows model evidence for MoveNet execution, model-shaped replay, and remaining real-video validation without
   production accuracy claims.
+- Plan tab shows provider readiness for primary video provider, fallback provider, native target, and device-proof state.
 - Plan tab shows the native QA evidence kit for Android/iOS physical-device runs, workflow count, placeholder policy, and
   validator command.
 - Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact
