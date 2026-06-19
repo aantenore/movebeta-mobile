@@ -100,6 +100,8 @@ web build with `npm run store:screenshots`.
   validation limitations.
 - Generated native QA runbook for physical iOS and Android validation, including workflow steps, performance budgets,
   and a draft evidence payload that remains blocked until real device values are entered.
+- In-app native QA evidence kit in the Plan tab with required device runs, workflows, budgets, placeholder policy, and
+  validator command before internal beta or store submission.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -174,6 +176,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
   `docs/sdlc/native-qa-evidence.template.json`.
+- Native QA evidence kit contract: `src/core/nativeQaEvidenceKit.ts`.
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
 - Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
