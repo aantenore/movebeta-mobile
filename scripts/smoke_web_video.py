@@ -132,6 +132,8 @@ def main() -> None:
         expect(page.get_by_text("Consented packets")).to_be_visible()
         expect(page.get_by_text("Ready packets")).to_be_visible()
         expect(page.get_by_text("Raw video included: no")).to_be_visible()
+        expect(page.get_by_text("Team templates")).to_be_visible()
+        expect(page.get_by_text("Privacy-safe packet review")).to_be_visible()
         page.get_by_text("Coach packet", exact=True).nth(0).click()
         expect(page.get_by_text("Prepared coach packet")).to_be_visible()
         expect(page.get_by_text('"athleteContext"')).to_be_visible()

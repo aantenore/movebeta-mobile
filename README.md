@@ -44,6 +44,7 @@ with their private training log, drill practice log, and coach-consent record fr
 - Plan catalog tab with current tier, upgrade path, capability matrix, and billing-provider readiness.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
 - Local coach library queue from active consented reports with review priority, signal status, and privacy-safe context counts.
+- Local coach team templates for high-priority reviews, follow-through reviews, signal retakes, and privacy-safe packet handoff.
 - Privacy deletion receipts that remove the local report, private training log, drill practice log, and coach consent
   record together.
 - Privacy-safe local backup and restore JSON for reports, training logs, drill practice logs, and coach consent records
