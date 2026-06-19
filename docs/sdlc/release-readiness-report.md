@@ -131,13 +131,16 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
-  MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, web export, EAS standard check, and
-  store credential readiness, plus moderate-or-higher dependency audit.
+  MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, web
+  export, EAS standard check, and store credential readiness, plus moderate-or-higher dependency audit.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
   `docs/sdlc/ios-toolchain-report.md`, so full-Xcode blockers are captured as release evidence.
 - `npm run release:credentials:doctor` writes `docs/sdlc/store-credentials-report.json` and
   `docs/sdlc/store-credentials-report.md`, so account-bound EAS/App Store/Play Store blockers are captured without
   exposing credential values.
+- `npm run validation:cue:doctor` writes `docs/sdlc/cue-validation-dataset-report.json` and
+  `docs/sdlc/cue-validation-dataset-report.md`, so real-review dataset blockers are captured without embedding dataset
+  rows or reviewer identities.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates model-analysis replay, native QA evidence, and cue-validation datasets with their
@@ -149,14 +152,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 81 test files and 312 tests.
+- `npm test`: passed, 82 test files and 315 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4231ms load time, 322ms average inference, and 325ms max inference in the latest run.
+  CPU backend, 4034ms load time, 323ms average inference, and 327ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -168,9 +171,12 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:credentials:doctor`: passed as a command and wrote `docs/sdlc/store-credentials-report.json` with
   status `blocked` because account-bound EAS project id, Expo token, App Store Connect, and Google Play credentials are
   not configured on this machine.
+- `npm run validation:cue:doctor`: passed as a command and wrote
+  `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
+  is not present.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
   for the Expo `xcode` tooling chain.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 9/9 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 10/10 release steps passing.
 - `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
   `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
@@ -231,6 +237,8 @@ platforms are validated on physical climbing videos and devices.
   evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, and launch evidence parsing
   from Expo/env configuration.
 - `tests/releaseGateReport.test.ts`: passed and covers release gate pass/fail aggregation plus ordered gate step evidence.
+- `tests/cueValidationDatasetDoctor.test.ts`: passed and covers missing dataset evidence, parse-error evidence, ready
+  summaries, durable JSON/Markdown writes, and reviewer identity exclusion.
 - `tests/iosToolchainDoctor.test.ts`: passed and covers Command Line Tools-only blocker detection, full-Xcode ready
   detection, and durable JSON/Markdown artifact writes.
 - `tests/ciWorkflow.test.ts`: passed and covers GitHub Actions template trigger coverage, deferred active-workflow

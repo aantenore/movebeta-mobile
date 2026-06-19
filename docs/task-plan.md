@@ -115,3 +115,4 @@
 | T111 | Add share-safe release evidence packet to Plan | Done |
 | T112 | Add store credentials doctor and launch-readiness integration | Done |
 | T113 | Add native QA evidence composer to Plan | Done |
+| T114 | Add cue validation dataset doctor and release evidence integration | Done |

@@ -223,9 +223,10 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       releaseGateReport.schemaVersion === 'movebeta.release-gate-report.v1' &&
       releaseGateReport.status === 'pass' &&
       Array.isArray(releaseGateReport.steps) &&
-      releaseGateReport.steps.length >= 9 &&
+      releaseGateReport.steps.length >= 10 &&
       releaseGateReport.steps.some((step) => step.key === 'modelAnalysisReplay') &&
       releaseGateReport.steps.some((step) => step.key === 'iosToolchainDoctor') &&
+      releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetDoctor') &&
       releaseGateReport.steps.some((step) => step.key === 'storeCredentialsDoctor') &&
       releaseGateReport.steps.every((step) => step.status === 'pass'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),

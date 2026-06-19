@@ -1,0 +1,31 @@
+{
+  "datasetPath": "docs/validation/cue-validation-dataset.json",
+  "failedChecks": [
+    {
+      "detail": "Create docs/validation/cue-validation-dataset.json from real consented coach review rows.",
+      "id": "dataset-file",
+      "label": "Dataset file",
+      "status": "fail"
+    }
+  ],
+  "generatedAt": "2026-06-19T23:29:49.480Z",
+  "nextAction": "Prepare a cue-validation study seed, collect real coach worksheet scores, compose the dataset JSON, then rerun this doctor.",
+  "privacy": {
+    "datasetIncluded": false,
+    "rawArtifactsIncluded": false,
+    "reviewerIdentitiesIncluded": false
+  },
+  "schemaVersion": "movebeta.cue-validation-dataset-report.v1",
+  "status": "blocked",
+  "summary": {
+    "averageScore": 0,
+    "clipCount": 0,
+    "cueCount": 0,
+    "fileExists": false,
+    "failedChecks": 1,
+    "ready": false,
+    "reviewCount": 0,
+    "totalChecks": 1,
+    "wallAngles": []
+  }
+}

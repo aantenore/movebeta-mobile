@@ -107,6 +107,7 @@ web build with `npm run store:screenshots`.
 - In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
   local privacy boundary.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
+- Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
   values.
 - In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
@@ -194,6 +195,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
 - iOS toolchain report: `docs/sdlc/ios-toolchain-report.json`, `docs/sdlc/ios-toolchain-report.md`.
+- Cue validation dataset report: `docs/sdlc/cue-validation-dataset-report.json`,
+  `docs/sdlc/cue-validation-dataset-report.md`.
 - Store credentials report: `docs/sdlc/store-credentials-report.json`, `docs/sdlc/store-credentials-report.md`.
 - Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
