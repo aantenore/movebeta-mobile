@@ -7,10 +7,10 @@
 - Reports store pose landmarks, metrics, cues, timeline events, session metadata, and aggregate analysis performance.
 - Android backup is disabled for local reports in the native manifest.
 - Cloud sync is opt-in and should be encrypted.
-- Users must be able to delete local analysis bundles, including the report, private training log, and coach consent
-  record, without uploading or exporting raw video.
-- Users must be able to create and restore a local backup of reports, private notes, and consent records without raw video,
-  video URI, audio, account identifiers, or secrets.
+- Users must be able to delete local analysis bundles, including the report, private training log, drill practice log, and
+  coach consent record, without uploading or exporting raw video.
+- Users must be able to create and restore a local backup of reports, private notes, drill practice records, and consent
+  records without raw video, video URI, audio, account identifiers, or secrets.
 
 ## Consent
 

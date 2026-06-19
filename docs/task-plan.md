@@ -59,3 +59,4 @@
 | T55 | Add private per-cue usefulness feedback inside local training logs | Done |
 | T56 | Add cue usefulness insights from private cue feedback | Done |
 | T57 | Adapt drill plans from private cue feedback | Done |
+| T58 | Add private drill practice logging with backup, restore, and deletion coverage | Done |

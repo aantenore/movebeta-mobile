@@ -42,8 +42,10 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Progress project queue generated from private training logs with next-repeat prioritization.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
-- Privacy deletion receipts that remove the local report, private training log, and coach consent record together.
-- Privacy-safe local backup and restore JSON for reports, training logs, and coach consent records without raw video.
+- Privacy deletion receipts that remove the local report, private training log, drill practice log, and coach consent
+  record together.
+- Privacy-safe local backup and restore JSON for reports, training logs, drill practice logs, and coach consent records
+  without raw video.
 - Explicitly consented coach review packets that exclude raw video, video URI, key-frame landmarks, and medical claims.
 - Privacy-safe diagnostics support packets that include only aggregate quality, provider, consent, and sanitized events.
 - Airplane-mode readiness self-check for the local analysis workflow.
@@ -63,6 +65,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
 - Evidence-based weekly drill plans generated from local report cues.
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
+- Private drill practice logging for completed or skipped suggested drills.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
 - Vitest for domain tests.
 
