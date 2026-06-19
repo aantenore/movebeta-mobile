@@ -28,6 +28,7 @@
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
 - Build a cue-validation dataset JSON from a completed worksheet CSV only when reviewer identities and all 1-5 scores
   are present and every row matches the original study seed.
+- Let users paste completed cue-validation worksheet CSV in Sessions and prepare the gate-compatible dataset JSON locally.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
 - Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
   for variants.
@@ -123,6 +124,7 @@
 - Cue validation worksheet CSV exports must reject raw artifact references and keep reviewer/score cells blank.
 - Completed worksheet CSV imports must reject missing reviewer identities, missing scores, out-of-range scores, duplicate
   rows, unknown rows, and rows that do not match the source study seed.
+- Completed worksheet dataset preparation must surface parse or validation failures without crashing the Sessions UI.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

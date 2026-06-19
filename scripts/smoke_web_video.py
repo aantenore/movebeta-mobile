@@ -1,7 +1,30 @@
+import csv
+import io
 import os
 import re
 
 from playwright.sync_api import expect, sync_playwright
+
+
+def complete_validation_csv(blank_csv: str) -> str:
+    source = io.StringIO(blank_csv)
+    reader = csv.DictReader(source)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=reader.fieldnames or [])
+    writer.writeheader()
+
+    for row in reader:
+        row["reviewerId"] = f"coach-{row['reviewerSlot']}"
+        row["relevance"] = "5"
+        row["timingAccuracy"] = "5"
+        row["drillFit"] = "5"
+        row["safetyLanguage"] = "5"
+        row["status"] = "reviewed"
+        if "notes" in row:
+            row["notes"] = "Smoke reviewed"
+        writer.writerow(row)
+
+    return output.getvalue()
 
 
 def main() -> None:
@@ -151,8 +174,14 @@ def main() -> None:
         expect(page.get_by_text('"rowCount"')).to_be_visible()
         page.get_by_text("Worksheet CSV", exact=True).click()
         expect(page.get_by_text("Prepared cue validation worksheet CSV")).to_be_visible()
-        expect(page.get_by_text("worksheetRowId,clipId,packetReportId")).to_be_visible()
-        expect(page.get_by_text("awaiting-real-review")).to_be_visible()
+        completed_csv_input = page.get_by_label("Completed cue validation worksheet CSV")
+        expect(completed_csv_input).to_have_value(re.compile("worksheetRowId,clipId,packetReportId"))
+        expect(completed_csv_input).to_have_value(re.compile("awaiting-real-review"))
+        completed_csv_input.fill(complete_validation_csv(completed_csv_input.input_value()))
+        page.get_by_text("Build dataset", exact=True).click()
+        expect(page.get_by_text("Prepared cue validation dataset")).to_be_visible()
+        expect(page.get_by_text('"acceptance"')).to_be_visible()
+        expect(page.get_by_text('"reviewerId": "coach-1"')).to_be_visible()
         page.get_by_text("Coach packet", exact=True).nth(0).click()
         expect(page.get_by_text("Prepared coach packet")).to_be_visible()
         expect(page.get_by_text('"athleteContext"')).to_be_visible()
