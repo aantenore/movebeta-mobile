@@ -61,6 +61,7 @@
 - Vitest launch-readiness doctor tests for artifact detection, configured-evidence drift, and durable report writes.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest beta replay plan tests for setup/crux/exit action generation, timestamp ordering, and no-cue metric fallback.
+- Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
 - Vitest store-readiness tests for bundle/package identifiers, permission copy, privacy declaration, listing copy, and
@@ -89,6 +90,7 @@
 - Analysis quality renders before coaching cues and warns on weak pose confidence.
 - Capture-readiness guidance renders before coaching cues and recommends whether to trust or retake the clip.
 - Beta replay plan renders before movement metrics with setup, crux, and exit actions.
+- Movement phase breakdown renders before movement metrics with the primary phase and phase scores.
 - Selecting each bundled local attempt runs analysis and updates pose overlay, metrics, cues, and timeline.
 - Sessions tab refreshes on focus and shows the latest local attempts.
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
