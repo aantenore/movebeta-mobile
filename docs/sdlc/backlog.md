@@ -27,4 +27,5 @@
 | MB-007 | Dependency hygiene | As a maintainer, I receive dependency update PRs | Done | Dependabot configured for npm and GitHub Actions; `npm ci` and CI gate pass |
 | MB-008 | Native release readiness | As a maintainer, I can create internal test builds | Should | EAS profiles, app identifiers, and standard validator are configured; strict gate needs real Expo, Apple, and Google credentials |
 | MB-008A | Launch readiness cockpit | As a maintainer, I can see which launch tracks are ready without digging through release docs | Done | Plan tab summarizes stakeholder demo, internal native beta, and store-submission readiness from configurable evidence |
+| MB-008B | Launch readiness doctor | As a maintainer, I can detect when launch evidence flags drift from local artifacts | Done | `npm run release:readiness` writes a JSON report with configured, detected, verified, missing, and drift statuses |
 | MB-009 | Privacy-safe observability | As a maintainer, I can inspect diagnostics without leaking sensitive data | Done | Redaction utilities, aggregate support packet, Privacy UI, and smoke coverage |

@@ -1,0 +1,140 @@
+{
+  "checks": [
+    {
+      "action": "Build or refresh android/app/build/outputs/apk/debug/app-debug.apk.",
+      "label": "Android custom debug build",
+      "owner": "engineering",
+      "configured": true,
+      "detected": true,
+      "key": "androidDebugBuild",
+      "status": "verified"
+    },
+    {
+      "action": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+      "label": "Real cue-validation dataset",
+      "owner": "product",
+      "configured": false,
+      "detected": false,
+      "key": "cueValidationDataset",
+      "status": "missing"
+    },
+    {
+      "action": "Set Expo, App Store Connect, and Google Play submission credentials outside the repository.",
+      "label": "Store submission credentials",
+      "owner": "release",
+      "configured": false,
+      "detected": false,
+      "key": "easCredentials",
+      "status": "missing"
+    },
+    {
+      "action": "Run npx eas-cli@latest init and store extra.eas.projectId in app.json.",
+      "label": "EAS project binding",
+      "owner": "release",
+      "configured": false,
+      "detected": false,
+      "key": "easProject",
+      "status": "missing"
+    },
+    {
+      "action": "Install full Xcode and verify an iOS simulator or device build.",
+      "label": "iOS build verification",
+      "owner": "engineering",
+      "configured": false,
+      "detected": false,
+      "key": "iosBuild",
+      "status": "missing"
+    },
+    {
+      "action": "Run npm run native:ios:pods until ios/Pods is populated.",
+      "label": "iOS pods install",
+      "owner": "engineering",
+      "configured": true,
+      "detected": true,
+      "key": "iosPods",
+      "status": "verified"
+    },
+    {
+      "action": "Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.",
+      "label": "Native device QA evidence",
+      "owner": "qa",
+      "configured": false,
+      "detected": false,
+      "key": "nativeDeviceQa",
+      "status": "missing"
+    },
+    {
+      "action": "Generate docs/store/store-manifest.json and keep privacy declarations current.",
+      "label": "Privacy declarations",
+      "owner": "product",
+      "configured": true,
+      "detected": true,
+      "key": "privacyManifest",
+      "status": "verified"
+    },
+    {
+      "action": "Run npm run release:check and refresh the release readiness report.",
+      "label": "Release gate",
+      "owner": "engineering",
+      "configured": true,
+      "detected": true,
+      "key": "releaseGate",
+      "status": "verified"
+    },
+    {
+      "action": "Generate store listing copy and screenshots.",
+      "label": "Store listing kit",
+      "owner": "product",
+      "configured": true,
+      "detected": true,
+      "key": "storeListing",
+      "status": "verified"
+    },
+    {
+      "action": "Run scripts/smoke_web_video.py against the exported web bundle.",
+      "label": "Web preview smoke",
+      "owner": "qa",
+      "configured": true,
+      "detected": true,
+      "key": "webSmoke",
+      "status": "verified"
+    }
+  ],
+  "generatedAt": "2026-06-19T14:50:56.780Z",
+  "schemaVersion": "movebeta.launch-readiness-report.v1",
+  "summary": {
+    "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+    "readyTracks": 1,
+    "status": "blocked",
+    "totalTracks": 3
+  },
+  "tracks": [
+    {
+      "driftChecks": 0,
+      "key": "demo",
+      "label": "Stakeholder demo",
+      "missingChecks": 0,
+      "requiredChecks": 4,
+      "status": "ready",
+      "verifiedChecks": 4
+    },
+    {
+      "driftChecks": 0,
+      "key": "internal",
+      "label": "Internal native beta",
+      "missingChecks": 1,
+      "requiredChecks": 5,
+      "status": "blocked",
+      "verifiedChecks": 4
+    },
+    {
+      "driftChecks": 0,
+      "key": "store",
+      "label": "Store submission",
+      "missingChecks": 5,
+      "requiredChecks": 9,
+      "status": "blocked",
+      "verifiedChecks": 4
+    }
+  ]
+}

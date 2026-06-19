@@ -86,6 +86,8 @@ platforms are validated on physical climbing videos and devices.
   full-Xcode, physical-device QA, real cue-validation data, and EAS/store credentials visible as explicit blockers.
 - Launch-readiness evidence can come from Expo `extra.launchReadinessEvidence` or
   `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
+- `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
+  detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
 - Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
@@ -93,7 +95,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 46 test files and 179 tests.
+- `npm test`: passed, 47 test files and 182 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -139,6 +141,8 @@ platforms are validated on physical climbing videos and devices.
   centralized capability copy, and provider-agnostic recommendations.
 - `tests/launchReadiness.test.ts` and `tests/config.test.ts`: passed and cover default blocker status, all-ready
   evidence, partial evidence overrides, and launch evidence parsing from Expo/env configuration.
+- `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
+  durable launch readiness report writes.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
@@ -170,6 +174,9 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueValidationGateParity.test.ts`: passed and covers app/CLI parity for ready datasets, production evidence
   gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
+- `npm run release:readiness`: passed and generated `docs/sdlc/launch-readiness-report.json` with stakeholder demo ready,
+  internal native beta blocked by missing physical-device QA evidence, and store submission blocked by missing full Xcode,
+  physical-device QA, real cue-validation data, EAS project binding, and store credentials.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
