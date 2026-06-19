@@ -61,6 +61,18 @@ export type LocalDataRestoreResult = {
   status: 'restored';
 };
 
+export type LocalDataRestorePreview = {
+  annotationsToRestore: number;
+  consentsToRestore: number;
+  drillPracticeToRestore: number;
+  generatedAt: string;
+  reportsToRestore: number;
+  skippedAnnotations: number;
+  skippedConsents: number;
+  skippedDrillPractice: number;
+  status: 'ready-to-restore';
+};
+
 export type LocalDataPortabilityRepositories = {
   annotations: Pick<ReportAnnotationRepository, 'listAnnotations' | 'saveAnnotation'>;
   consents: Pick<CoachConsentRepository, 'listConsents' | 'saveConsent'>;
@@ -125,16 +137,43 @@ export async function createLocalDataBackup(
   });
 }
 
-export async function restoreLocalDataBackup(
-  payload: string | LocalDataBackup,
-  repositories: LocalDataPortabilityRepositories = defaultRepositories,
-): Promise<LocalDataRestoreResult> {
+function parseLocalDataBackupPayload(payload: string | LocalDataBackup) {
   const parsedPayload = typeof payload === 'string' ? JSON.parse(payload) : payload;
   const backup = assertLocalDataBackupIsPrivacySafe(LocalDataBackupSchema.parse(parsedPayload));
   const reportIds = new Set(backup.reports.map((report) => report.id));
   const annotations = backup.annotations.filter((annotation) => reportIds.has(annotation.reportId));
   const consents = backup.consents.filter((consent) => reportIds.has(consent.reportId));
   const drillPractice = backup.drillPractice.filter((record) => reportIds.has(record.reportId));
+
+  return {
+    annotations,
+    backup,
+    consents,
+    drillPractice,
+  };
+}
+
+export function previewLocalDataRestore(payload: string | LocalDataBackup): LocalDataRestorePreview {
+  const { annotations, backup, consents, drillPractice } = parseLocalDataBackupPayload(payload);
+
+  return {
+    annotationsToRestore: annotations.length,
+    consentsToRestore: consents.length,
+    drillPracticeToRestore: drillPractice.length,
+    generatedAt: backup.generatedAt,
+    reportsToRestore: backup.reports.length,
+    skippedAnnotations: backup.annotations.length - annotations.length,
+    skippedConsents: backup.consents.length - consents.length,
+    skippedDrillPractice: backup.drillPractice.length - drillPractice.length,
+    status: 'ready-to-restore',
+  };
+}
+
+export async function restoreLocalDataBackup(
+  payload: string | LocalDataBackup,
+  repositories: LocalDataPortabilityRepositories = defaultRepositories,
+): Promise<LocalDataRestoreResult> {
+  const { annotations, backup, consents, drillPractice } = parseLocalDataBackupPayload(payload);
 
   await Promise.all(backup.reports.map((report) => repositories.reports.saveReport(report)));
   await Promise.all(annotations.map((annotation) => repositories.annotations.saveAnnotation(annotation)));
@@ -163,6 +202,22 @@ export function summarizeLocalDataBackup(backup: LocalDataBackup): LocalDataBack
     generatedAt: parsed.generatedAt,
     reports: parsed.reports.length,
   };
+}
+
+export function formatLocalDataRestorePreview(preview: LocalDataRestorePreview) {
+  return [
+    `Status: ${preview.status}`,
+    `Backup generated at: ${preview.generatedAt}`,
+    `Reports ready: ${preview.reportsToRestore}`,
+    `Training logs ready: ${preview.annotationsToRestore}`,
+    `Coach consent records ready: ${preview.consentsToRestore}`,
+    `Drill practice records ready: ${preview.drillPracticeToRestore}`,
+    `Skipped training logs: ${preview.skippedAnnotations}`,
+    `Skipped consent records: ${preview.skippedConsents}`,
+    `Skipped drill practice records: ${preview.skippedDrillPractice}`,
+    'Raw video included: no',
+    'Video left device: no',
+  ].join('\n');
 }
 
 export function formatLocalDataRestoreResult(result: LocalDataRestoreResult) {

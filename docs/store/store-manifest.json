@@ -99,6 +99,15 @@
         "height": 844,
         "width": 390
       }
+    },
+    {
+      "fileName": "08-data-portability.png",
+      "label": "Local backup restore preview",
+      "route": "privacy",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
     }
   ],
   "version": "1.0.0"
