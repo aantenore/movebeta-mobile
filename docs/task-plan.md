@@ -79,3 +79,4 @@
 | T75 | Add machine-detected launch-readiness doctor and durable report | Done |
 | T76 | Add local beta replay plan from cue and metric evidence | Done |
 | T77 | Add movement phase breakdown from cue and timeline evidence | Done |
+| T78 | Add local cue trust scoring for Analyze and coach packet exports | Done |

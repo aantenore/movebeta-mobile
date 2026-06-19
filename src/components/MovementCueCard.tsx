@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { MovementCue } from '@/movement/contracts';
+import type { CueTrustSignal } from '@/movement/cueTrust';
 import { theme } from '@/core/theme';
 
 type MovementCueCardProps = {
   cue: MovementCue;
+  trustSignal?: CueTrustSignal;
 };
 
-export function MovementCueCard({ cue }: MovementCueCardProps) {
+export function MovementCueCard({ cue, trustSignal }: MovementCueCardProps) {
   return (
     <View style={[styles.card, cue.severity === 'fix' && styles.fix]}>
       <View style={styles.top}>
@@ -16,6 +18,12 @@ export function MovementCueCard({ cue }: MovementCueCardProps) {
       </View>
       <Text style={styles.body}>{cue.body}</Text>
       <Text style={styles.drill}>{cue.drill}</Text>
+      {trustSignal ? (
+        <View style={styles.trust}>
+          <Text style={styles.trustLabel}>{trustSignal.label}</Text>
+          <Text style={styles.trustScore}>{trustSignal.score}/100</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -65,5 +73,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '900',
     lineHeight: 18,
+  },
+  trust: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  trustLabel: {
+    color: theme.colors.brandDark,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  trustScore: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
   },
 });
