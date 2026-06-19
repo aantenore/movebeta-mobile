@@ -17,6 +17,8 @@
   repeat outcome logging/clearing, tag normalization, local persistence, SQLite persistence, delete behavior, and
   corrupted-storage tolerance.
 - Vitest repeat outcome insight tests for progressing, stalled, orphan-skipping, and empty states.
+- Vitest beta memory tests for improved/sent entries, building and empty states, orphan skipping, entry limits, resolved
+  cue titles, and private-note exclusion.
 - Vitest drill practice repository tests for private completion/skipped records, local persistence, SQLite persistence,
   report-scoped deletion, and corrupted-storage tolerance.
 - Vitest drill practice insight tests for completion rate, blocked/skipped state, orphan skipping, and empty state.
@@ -180,6 +182,7 @@
 - Progress tab shows cue usefulness insights from private Sessions feedback.
 - Progress tab shows repeat-outcome success, improved/sent/stalled counts, and next-repeat action after a Sessions repeat
   outcome is logged.
+- Progress tab shows beta memory after improved or sent repeat outcomes without exposing private note text.
 - Progress tab shows practice consistency from private Drills completion/skipped logs.
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.

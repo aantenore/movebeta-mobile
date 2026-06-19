@@ -9,6 +9,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
+import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
 import { summarizeCuePatterns } from '@/movement/cuePatterns';
@@ -95,6 +96,7 @@ export function ProgressScreen() {
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
   const repeatOutcomeInsights = useMemo(() => summarizeRepeatOutcomes(filteredReports, annotations), [annotations, filteredReports]);
+  const betaMemory = useMemo(() => summarizeBetaMemory(filteredReports, annotations), [annotations, filteredReports]);
   const drillPracticeInsights = useMemo(
     () => summarizeDrillPracticeInsights(filteredReports, drillPractice),
     [drillPractice, filteredReports],
@@ -557,6 +559,55 @@ export function ProgressScreen() {
           <View style={styles.preview}>
             <Text style={styles.previewTitle}>No repeat outcome yet</Text>
             <Text style={styles.previewText}>Mark the repeat result in Sessions after trying the beta plan.</Text>
+          </View>
+        )}
+      </Section>
+
+      <Section title="Beta memory" caption="Successful local repeats converted into reusable beta cues without exposing private notes.">
+        {betaMemory.totalSuccessful > 0 ? (
+          <View style={styles.betaMemoryCard}>
+            <View style={styles.betaMemorySummary}>
+              <View style={styles.betaMemoryScore}>
+                <Text style={styles.betaMemoryScoreValue}>{betaMemory.totalSuccessful}</Text>
+                <Text style={styles.betaMemoryScoreLabel}>Stored</Text>
+              </View>
+              <View style={styles.betaMemoryCounts}>
+                <Text style={styles.betaMemoryCountText}>Improved {betaMemory.improvedCount}</Text>
+                <Text style={styles.betaMemoryCountText}>Sent {betaMemory.sentCount}</Text>
+                <Text style={styles.betaMemoryCountText}>Status {betaMemory.status}</Text>
+              </View>
+            </View>
+
+            <View style={styles.betaMemoryPattern}>
+              <Text style={styles.betaMemoryPatternLabel}>Pattern</Text>
+              <Text style={styles.betaMemoryPatternText}>{betaMemory.topPattern}</Text>
+            </View>
+
+            <Text style={styles.betaMemoryRecommendation}>{betaMemory.recommendation}</Text>
+
+            <View style={styles.betaMemoryGrid}>
+              {betaMemory.entries.map((entry) => (
+                <View key={`${entry.reportId}-${entry.updatedAt}`} style={styles.betaMemoryItem}>
+                  <View style={styles.betaMemoryItemHeader}>
+                    <Text style={styles.betaMemoryItemLabel}>{entry.status}</Text>
+                    <Text style={styles.betaMemoryItemAttempts}>{entry.attempts}x</Text>
+                  </View>
+                  <Text style={styles.betaMemoryItemTitle}>{entry.title}</Text>
+                  <Text style={styles.betaMemoryItemMeta}>
+                    {entry.wallAngle} · {entry.grade} · {entry.gym}
+                  </Text>
+                  <Text style={styles.betaMemoryItemEvidence}>{entry.evidence}</Text>
+                  {entry.cueTitles.length > 0 ? (
+                    <Text style={styles.betaMemoryItemCue}>Resolved: {entry.cueTitles.join(', ')}</Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>{betaMemory.status === 'building' ? 'Beta memory building' : 'No beta memory yet'}</Text>
+            <Text style={styles.previewText}>{betaMemory.recommendation}</Text>
           </View>
         )}
       </Section>
@@ -1115,6 +1166,128 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   cueUsefulnessSummary: {
+    alignItems: 'stretch',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  betaMemoryCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  betaMemoryCountText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  betaMemoryCounts: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  betaMemoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  betaMemoryItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 156,
+    padding: theme.spacing.sm,
+  },
+  betaMemoryItemAttempts: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  betaMemoryItemCue: {
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    lineHeight: 15,
+  },
+  betaMemoryItemEvidence: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  betaMemoryItemHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  betaMemoryItemLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  betaMemoryItemMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  betaMemoryItemTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  betaMemoryPattern: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  betaMemoryPatternLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  betaMemoryPatternText: {
+    color: theme.colors.brandDark,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  betaMemoryRecommendation: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  betaMemoryScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.moss,
+    borderRadius: theme.radius.md,
+    minWidth: 104,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  betaMemoryScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  betaMemoryScoreValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  betaMemorySummary: {
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,
