@@ -54,3 +54,4 @@
 | R50 practice-aware session planning | `docs/requirements.md` | `tests/sessionPlan.test.ts`, browser smoke | Progress tab Next session plan | Covered |
 | R51 privacy-safe coach athlete context | `docs/requirements.md`, `docs/data-governance.md` | `tests/coachReviewPacket.test.ts`, browser smoke | Sessions tab consented Coach packet JSON | Covered |
 | R52 freemium plan catalog | `docs/requirements.md`, `docs/product-strategy.md` | `tests/planCatalog.test.ts`, browser smoke | Plan tab catalog and upgrade path | Covered |
+| R53 local coach library | `docs/requirements.md`, `docs/data-governance.md` | `tests/coachLibrary.test.ts`, browser smoke | Sessions tab Coach library queue | Covered |

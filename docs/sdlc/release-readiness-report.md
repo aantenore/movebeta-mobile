@@ -51,6 +51,8 @@ platforms are validated on physical climbing videos and devices.
 - Sessions persists explicit per-report consent before preparing a coach review packet with privacy-safe athlete context
   from training-log scores, cue feedback, and drill practice, without raw video, URI, key-frame, landmark, private-note, or
   drill-note artifacts.
+- Sessions shows a local coach library queue from active consented reports with review priority, signal status, feedback
+  counts, practice counts, and no-raw-video evidence.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -72,7 +74,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 38 test files and 145 tests.
+- `npm test`: passed, 39 test files and 147 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -105,6 +107,8 @@ platforms are validated on physical climbing videos and devices.
   practice-reset planning from skipped drill logs.
 - `tests/coachReviewPacket.test.ts`: passed and covers consent metadata, review rubric, privacy-safe athlete context,
   private-note exclusion, drill-note exclusion, and raw video/landmark exclusion.
+- `tests/coachLibrary.test.ts`: passed and covers active consent filtering, revoked/orphan consent skipping, review
+  priority, low-signal status, athlete context counts, and private-note exclusion.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
@@ -117,7 +121,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
+  Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
   Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
   diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
