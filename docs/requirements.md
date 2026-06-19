@@ -129,6 +129,8 @@
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 - Generate an iOS toolchain report that checks the selected Developer directory, full Xcode availability, workspace,
   Pods, and build-settings probe before marking iOS build evidence ready.
+- Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
+  key presence, and Google Play credential key presence without exposing any secret values.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
@@ -196,6 +198,8 @@
   detection can mark the release gate verified.
 - iOS build evidence must come from the generated toolchain report and remain blocked unless full Xcode, workspace, Pods,
   and the build-settings probe are ready.
+- Store credential evidence must come from a generated report that includes key names and readiness state only, never
+  credential values, token-like strings, private keys, or local credential paths.
 - Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
 - Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Launch-readiness detection must validate native QA evidence and cue-validation dataset content before marking either

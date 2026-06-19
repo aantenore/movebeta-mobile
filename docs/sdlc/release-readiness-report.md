@@ -130,9 +130,12 @@ platforms are validated on physical climbing videos and devices.
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, web export, EAS standard check, and
-  moderate-or-higher dependency audit.
+  store credential readiness, plus moderate-or-higher dependency audit.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
   `docs/sdlc/ios-toolchain-report.md`, so full-Xcode blockers are captured as release evidence.
+- `npm run release:credentials:doctor` writes `docs/sdlc/store-credentials-report.json` and
+  `docs/sdlc/store-credentials-report.md`, so account-bound EAS/App Store/Play Store blockers are captured without
+  exposing credential values.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates model-analysis replay, native QA evidence, and cue-validation datasets with their
@@ -144,14 +147,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 79 test files and 305 tests.
+- `npm test`: passed, 80 test files and 309 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4322ms load time, 329ms average inference, and 334ms max inference in the latest run.
+  CPU backend, 5910ms load time, 334ms average inference, and 340ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -160,9 +163,12 @@ platforms are validated on physical climbing videos and devices.
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run native:ios:doctor`: passed as a command and wrote `docs/sdlc/ios-toolchain-report.json` with status `blocked`
   because this machine has Command Line Tools selected instead of full Xcode.
+- `npm run release:credentials:doctor`: passed as a command and wrote `docs/sdlc/store-credentials-report.json` with
+  status `blocked` because account-bound EAS project id, Expo token, App Store Connect, and Google Play credentials are
+  not configured on this machine.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
   for the Expo `xcode` tooling chain.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 8/8 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 9/9 release steps passing.
 - `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
   `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
@@ -253,6 +259,8 @@ platforms are validated on physical climbing videos and devices.
   injected token/local-path rejection before sharing.
 - `tests/releaseEvidencePacket.test.ts`: passed and covers aggregated launch/model/provider/native QA evidence, all-ready
   state, artifact status mapping, and credential/local-path rejection before sharing.
+- `tests/storeCredentialsDoctor.test.ts`: passed and covers blocked local credentials, injected ready credentials,
+  durable JSON/Markdown writes, and credential value exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
@@ -287,7 +295,7 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
-  runbook packet export, native QA validator preview, native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export, safety-language guard, and billing-provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  runbook packet export, native QA validator preview, native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, and billing-provider readiness, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
