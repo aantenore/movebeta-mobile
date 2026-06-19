@@ -90,3 +90,4 @@
 | T86 | Validate native QA and cue-validation dataset content inside launch-readiness detection | Done |
 | T87 | Add machine-readable release gate report and launch-readiness detection | Done |
 | T88 | Add in-app native QA evidence kit for physical-device readiness | Done |
+| T89 | Add in-app native QA evidence validator preview with CLI parity | Done |

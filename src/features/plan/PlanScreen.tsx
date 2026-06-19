@@ -7,6 +7,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
+import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 
@@ -92,6 +93,8 @@ function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQa
         `${Math.round(budget.maxClipDurationMs / 1000)}s clip: ${Math.round(budget.maxAnalysisMs / 1000)}s analysis`,
     )
     .join(' · ');
+  const draftValidation = validateNativeQaEvidenceForApp(buildNativeQaEvidenceDraft());
+  const readyRuns = draftValidation.runSummaries.filter((run) => run.status === 'pass').length;
 
   return (
     <View style={styles.qaKit}>
@@ -112,6 +115,28 @@ function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQa
       <Text style={styles.qaKitAction}>{kit.summary.action}</Text>
       <Text style={styles.qaKitText}>{kit.placeholderPolicy}</Text>
       <Text style={styles.qaKitText}>Latency budgets: {latencyCopy}</Text>
+      <View style={styles.qaValidation}>
+        <View style={styles.qaValidationTop}>
+          <View style={styles.launchTrackTitleGroup}>
+            <Text style={styles.qaValidationTitle}>Evidence validator preview</Text>
+            <Text style={styles.qaKitText}>Draft evidence remains blocked until real device values replace placeholders.</Text>
+          </View>
+          <Text style={[styles.launchStatus, styles.launchStatusBlocked]}>Blocked</Text>
+        </View>
+        <View style={styles.qaValidationStats}>
+          <Text style={styles.qaValidationStat}>
+            {readyRuns}/{draftValidation.runSummaries.length} ready runs
+          </Text>
+          <Text style={styles.qaValidationStat}>{draftValidation.failedChecks.length} blocking checks</Text>
+          <Text style={styles.qaValidationStat}>No raw artifact references accepted</Text>
+        </View>
+        {draftValidation.failedChecks.slice(0, 3).map((check) => (
+          <View key={check.id} style={styles.qaWorkflowRow}>
+            <TriangleAlert color={theme.colors.coral} size={14} />
+            <Text style={styles.qaWorkflowText}>{check.detail}</Text>
+          </View>
+        ))}
+      </View>
       <View style={styles.qaPlatformList}>
         {kit.platforms.map((platform) => (
           <View key={platform.key} style={styles.qaPlatform}>
@@ -501,6 +526,36 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
     fontSize: 13,
     fontWeight: '900',
+  },
+  qaValidation: {
+    backgroundColor: '#FBE7E1',
+    borderColor: theme.colors.coral,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: 8,
+    padding: theme.spacing.sm,
+  },
+  qaValidationStat: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 11,
+    fontWeight: '900',
+    lineHeight: 15,
+  },
+  qaValidationStats: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  qaValidationTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  qaValidationTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   qaWorkflowRow: {
     alignItems: 'center',

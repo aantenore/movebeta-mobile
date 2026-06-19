@@ -35,3 +35,6 @@ device results, and run:
 ```bash
 npm run native:qa:validate
 ```
+
+The Plan tab also shows a Native QA evidence kit and validator preview. It mirrors the CLI validator for ready runs,
+placeholder blockers, and raw local artifact rejection, but the CLI remains the release authority.
