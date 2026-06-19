@@ -48,7 +48,9 @@ platforms are validated on physical climbing videos and devices.
   effort, and next-repeat action.
 - Progress filters local report history and the project queue by wall angle, grade, and gym.
 - Native report persistence uses SQLite behind the same repository contract, with browser/local fallback storage.
-- Sessions persists explicit per-report consent before preparing a coach review packet without raw video, URI, key-frame, or landmark artifacts.
+- Sessions persists explicit per-report consent before preparing a coach review packet with privacy-safe athlete context
+  from training-log scores, cue feedback, and drill practice, without raw video, URI, key-frame, landmark, private-note, or
+  drill-note artifacts.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -68,7 +70,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 37 test files and 140 tests.
+- `npm test`: passed, 37 test files and 141 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -99,6 +101,8 @@ platforms are validated on physical climbing videos and devices.
   and empty local history behavior.
 - `tests/sessionPlan.test.ts`: passed and covers baseline blocks, recovery intensity caps, repeat-project planning, and
   practice-reset planning from skipped drill logs.
+- `tests/coachReviewPacket.test.ts`: passed and covers consent metadata, review rubric, privacy-safe athlete context,
+  private-note exclusion, drill-note exclusion, and raw video/landmark exclusion.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
@@ -109,7 +113,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
+  Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
   Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
   airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.

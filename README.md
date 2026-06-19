@@ -10,7 +10,7 @@ extraction and fall back to deterministic local landmarks when the browser canno
 builds can use the local `movebeta-pose` Expo module: Apple Vision on iOS and ML Kit Pose Detection on Android, behind
 the same pipeline contract. Reports are
 persisted locally, include analysis quality and performance evidence, can be refreshed, exported as JSON, and deleted
-with their private training log plus coach-consent record from the Sessions tab.
+with their private training log, drill practice log, and coach-consent record from the Sessions tab.
 
 ## Product Wedge
 
@@ -46,7 +46,9 @@ with their private training log plus coach-consent record from the Sessions tab.
   record together.
 - Privacy-safe local backup and restore JSON for reports, training logs, drill practice logs, and coach consent records
   without raw video.
-- Explicitly consented coach review packets that exclude raw video, video URI, key-frame landmarks, and medical claims.
+- Explicitly consented coach review packets that include privacy-safe athlete context from local training logs, cue
+  feedback, and drill practice while excluding raw video, video URI, key-frame landmarks, private notes, drill notes, and
+  medical claims.
 - Privacy-safe diagnostics support packets that include only aggregate quality, provider, consent, and sanitized events.
 - Airplane-mode readiness self-check for the local analysis workflow.
 - Store readiness manifest, privacy declarations, listing copy, and automated screenshot capture.
