@@ -89,3 +89,4 @@
 | R83 safety language guard | `docs/requirements.md` | `tests/safetyLanguage.test.ts`, browser smoke | Plan tab Safety language guard | Covered; human review still required for final store/legal copy |
 | R84 model evidence sync | `docs/requirements.md`, `scripts/sync_model_evidence.mjs` | `tests/modelEvidenceSync.test.ts`, `npm run model:evidence:sync` | Commit synced app config after new model reports | Covered |
 | R85 native QA evidence import preview | `docs/requirements.md`, `src/core/nativeQaEvidenceImport.ts` | `tests/nativeQaEvidenceImport.test.ts`, browser smoke | Plan tab pasted native QA evidence JSON | Covered; physical device evidence still needed |
+| R86 real-world validation campaign tracker | `docs/requirements.md`, `src/movement/coachValidationWorkflow.ts` | `tests/coachValidationWorkflow.test.ts`, browser smoke | Sessions tab validation campaign panel and status export | Covered; real coach review data still needed |

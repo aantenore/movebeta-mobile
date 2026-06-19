@@ -60,6 +60,8 @@
   reviewer rejection, seed mismatch rejection, and out-of-range score rejection.
 - Vitest in-app cue-validation gate tests for ready datasets, default production evidence gaps, and raw-artifact rejection.
 - Vitest cue-validation gate parity tests that keep the in-app preview aligned with the CLI production validation gate.
+- Vitest coach validation workflow tests for no-consent, active-consent, revoked/orphan consent exclusion, completed
+  worksheet dataset readiness, status export, and raw-artifact blocking.
 - Vitest cue validation dataset tests for schema version, production thresholds, wall-angle coverage, reviewer coverage,
   raw-artifact exclusion, and weak-score failures.
 - Vitest performance-budget tests for local analysis duration thresholds, frame-rate evidence, and over-budget status.
