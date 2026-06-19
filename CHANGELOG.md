@@ -88,6 +88,7 @@
 - Configurable Plan launch-readiness cockpit for demo, internal beta, and store-submission tracks.
 - Launch-readiness evidence configuration through Expo extra or `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`.
 - Machine-detected launch readiness doctor with a durable JSON report for release evidence drift.
+- Launch readiness detector now validates native QA evidence and cue-validation datasets before marking them verified.
 - Local beta replay plan in Analyze with setup, crux, and exit actions derived from cue and metric evidence.
 - Local movement phase breakdown for launch, crux, and finish rehearsal priorities.
 - Local cue trust scoring in Analyze and coach packet exports, with privacy-safe signal factors and validation-readiness status.

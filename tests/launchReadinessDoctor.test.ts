@@ -67,6 +67,94 @@ function makeProjectRoot() {
   return root;
 }
 
+const nativeQaRun = {
+  buildId: '1.0.0-qa-android-20260619',
+  clip: {
+    durationMs: 10_000,
+    id: 'qa-clip-001',
+    source: 'camera',
+  },
+  deviceName: 'Pixel 8',
+  osVersion: 'Android 16',
+  performance: {
+    analysisMs: 7_000,
+    batteryDropPct: 2,
+    thermalState: 'nominal',
+  },
+  provider: 'native-platform-pose',
+  workflows: {
+    airplaneModeAnalysis: 'pass',
+    cameraPermission: 'pass',
+    deleteReport: 'pass',
+    importVideo: 'pass',
+    metadataRead: 'pass',
+    mutedRecording: 'pass',
+    recordVideo: 'pass',
+  },
+};
+
+function writeValidNativeQaEvidence(rootDir: string) {
+  writeJson(path.join(rootDir, 'docs/sdlc/native-qa-evidence.json'), {
+    appVersion: '1.0.0',
+    generatedAt: '2026-06-20T09:00:00.000Z',
+    runs: [
+      { ...nativeQaRun, platform: 'android' },
+      {
+        ...nativeQaRun,
+        buildId: '1.0.0-qa-ios-20260619',
+        clip: { ...nativeQaRun.clip, id: 'qa-clip-002' },
+        deviceName: 'iPhone 15',
+        osVersion: 'iOS 20',
+        platform: 'ios',
+      },
+    ],
+  });
+}
+
+function validationClip(wallAngle: 'slab' | 'vertical' | 'overhang') {
+  return {
+    clipId: `clip-${wallAngle}`,
+    consentRecordId: `consent-${wallAngle}`,
+    packet: {
+      analysis: {
+        cues: [{ id: `cue-${wallAngle}`, title: `Cue ${wallAngle}` }],
+      },
+      consent: {
+        rawVideoIncluded: false,
+        videoLeavesDevice: false,
+      },
+      reportId: `analysis-${wallAngle}`,
+      session: { wallAngle },
+    },
+    reviews: [
+      {
+        cueId: `cue-${wallAngle}`,
+        drillFit: 5,
+        relevance: 5,
+        reviewMode: 'packet-only',
+        reviewerId: `coach-${wallAngle}-a`,
+        reviewerRole: 'coach',
+        safetyLanguage: 5,
+        timingAccuracy: 5,
+      },
+    ],
+  };
+}
+
+function writeValidCueValidationDataset(rootDir: string) {
+  writeJson(path.join(rootDir, 'docs/validation/cue-validation-dataset.json'), {
+    acceptance: {
+      minClips: 3,
+      minDistinctReviewersPerClip: 1,
+      minReviewsPerCue: 1,
+    },
+    appVersion: '1.0.0',
+    clips: [validationClip('slab'), validationClip('vertical'), validationClip('overhang')],
+    generatedAt: '2026-06-20T09:05:00.000Z',
+    schemaVersion: 'movebeta.cue-validation-dataset.v1',
+  });
+}
+
 afterEach(() => {
   for (const root of tmpRoots.splice(0)) {
     fs.rmSync(root, { force: true, recursive: true });
@@ -87,6 +175,45 @@ describe('launch readiness doctor', () => {
       webSmoke: true,
       nativeQaRunbook: true,
     });
+  });
+
+  it('validates native QA evidence content instead of only checking file presence', () => {
+    const rootDir = makeProjectRoot();
+    writeJson(path.join(rootDir, 'docs/sdlc/native-qa-evidence.json'), {
+      appVersion: '1.0.0',
+      generatedAt: '2026-06-20T09:00:00.000Z',
+      runs: [
+        {
+          ...nativeQaRun,
+          buildId: 'internal-build-id',
+          clip: { ...nativeQaRun.clip, id: 'real-climbing-clip-id' },
+          deviceName: 'Pixel device name',
+          platform: 'android',
+        },
+      ],
+    });
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).nativeDeviceQa).toBe(false);
+
+    writeValidNativeQaEvidence(rootDir);
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).nativeDeviceQa).toBe(true);
+  });
+
+  it('validates cue-validation dataset content instead of only checking file presence', () => {
+    const rootDir = makeProjectRoot();
+    writeJson(path.join(rootDir, 'docs/validation/cue-validation-dataset.json'), {
+      appVersion: '1.0.0',
+      clips: [validationClip('vertical')],
+      generatedAt: '2026-06-20T09:05:00.000Z',
+      schemaVersion: 'movebeta.cue-validation-dataset.v1',
+    });
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).cueValidationDataset).toBe(false);
+
+    writeValidCueValidationDataset(rootDir);
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).cueValidationDataset).toBe(true);
   });
 
   it('marks configured-but-missing evidence as drift', () => {
