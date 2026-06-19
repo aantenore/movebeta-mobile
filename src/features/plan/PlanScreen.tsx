@@ -7,6 +7,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
+import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
@@ -159,6 +160,50 @@ function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQa
   );
 }
 
+function ModelEvidenceCard({ evidence }: { evidence: ReturnType<typeof buildModelEvidenceSummary> }) {
+  const isReady = evidence.status === 'ready';
+  const isDegraded = evidence.status === 'degraded' || evidence.status === 'missing';
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>{evidence.modelName}</Text>
+          <Text style={styles.qaKitText}>{evidence.provider}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isDegraded ? styles.launchStatusBlocked : null]}>
+          {evidence.badge}
+        </Text>
+      </View>
+      <View style={styles.qaKitHero}>
+        {evidence.metrics.map((metric) => (
+          <View key={metric.key} style={styles.qaKitMetric}>
+            <Text style={styles.qaKitMetricValue}>{metric.value}</Text>
+            <Text style={styles.qaKitMetricLabel}>{metric.label}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.qaKitAction}>{evidence.action}</Text>
+      <Text style={styles.qaKitText}>{evidence.limitation}</Text>
+      <View style={styles.qaPlatformList}>
+        {evidence.checks.map((check) => (
+          <View key={check.key} style={styles.qaWorkflowRow}>
+            {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>{check.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvidenceCollectionPlan> }) {
   return (
     <View style={styles.evidencePlan}>
@@ -262,6 +307,7 @@ export function PlanScreen() {
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
+  const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
   const groupedCapabilities = catalog
@@ -341,6 +387,10 @@ export function PlanScreen() {
             ))}
           </View>
         </View>
+      </Section>
+
+      <Section title="Model evidence" caption="Local model proof with real-world validation kept explicit.">
+        <ModelEvidenceCard evidence={modelEvidence} />
       </Section>
 
       <Section title="Native QA evidence kit" caption="Physical-device evidence checklist for internal beta and store readiness.">

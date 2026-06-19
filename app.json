@@ -57,6 +57,7 @@
         "privacyManifest": true,
         "storeListing": true,
         "modelReadiness": true,
+        "modelAnalysisReplay": true,
         "nativeQaRunbook": true,
         "androidDebugBuild": true,
         "iosPods": true,
@@ -65,6 +66,43 @@
         "cueValidationDataset": false,
         "easProject": false,
         "easCredentials": false
+      },
+      "modelEvidence": {
+        "modelName": "MoveNet SinglePose Lightning",
+        "provider": "web-tfjs-movenet",
+        "readiness": {
+          "status": "ready",
+          "backend": "cpu",
+          "loadMs": 3720,
+          "averageInferenceMs": 337,
+          "maxInferenceMs": 341,
+          "budget": {
+            "loadMs": 25000,
+            "averageInferenceMs": 1500,
+            "maxInferenceMs": 3000
+          },
+          "generatedAt": "2026-06-19T21:29:24.609Z"
+        },
+        "analysisReplay": {
+          "status": "pass",
+          "totalAttempts": 3,
+          "passedAttempts": 3,
+          "minimumQualityScore": 100,
+          "provider": "web-tfjs-movenet",
+          "privacySafe": true,
+          "generatedAt": "2026-06-19T21:19:28.747Z"
+        },
+        "realWorldValidation": {
+          "status": "needs-real-video",
+          "requiredClips": 20,
+          "estimatedReviewRows": 40,
+          "requiredWallAngles": [
+            "slab",
+            "vertical",
+            "overhang"
+          ],
+          "nextAction": "Collect consented climbing clips, coach review rows, and physical-device evidence before production movement-quality claims."
+        }
       }
     },
     "plugins": [

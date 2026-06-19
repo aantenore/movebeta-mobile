@@ -85,3 +85,4 @@
 | R79 GitHub Actions CI template | `docs/requirements.md`, `docs/sdlc/ci-templates/github-actions-quality.yml` | `tests/ciWorkflow.test.ts`, `npm run ci` | Move template to `.github/workflows/quality.yml` after token scope update | Covered; activation deferred by missing `workflow` OAuth scope |
 | R80 pre-send guard | `docs/requirements.md` | `tests/preSendGuard.test.ts`, browser smoke | Progress tab Pre-send guard panel | Covered |
 | R81 beta memory | `docs/requirements.md` | `tests/betaMemory.test.ts`, browser smoke | Progress tab Beta memory panel | Covered |
+| R82 in-app model evidence | `docs/requirements.md`, `app.json` | `tests/modelEvidence.test.ts`, `tests/config.test.ts`, browser smoke | Real climbing-video validation dataset | Technical evidence covered; production accuracy still needs real clips |
