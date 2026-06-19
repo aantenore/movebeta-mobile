@@ -112,6 +112,8 @@
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
+- Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
+  real climbing-video validation evidence without claiming production accuracy early.
 - Provide a GitHub Actions quality workflow template for pushes to `main` and pull requests, using lockfile-based
   dependency installation, the shared local release gate, and downloadable machine-readable release evidence after
   activation.
@@ -179,6 +181,8 @@
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.
+- In-app model evidence must be driven by replaceable configuration, keep local technical readiness distinct from
+  real-world validation, and avoid raw video, URI, local-path, or secret-like evidence fields.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow
