@@ -13,7 +13,8 @@ SCREENSHOTS = [
     ("02-drills.png", "Drills", "Weekly drill plan"),
     ("03-progress.png", "Progress", "Technique trends"),
     ("04-sessions.png", "Sessions", "Local attempts"),
-    ("05-privacy.png", "Privacy", "No upload by default"),
+    ("05-plan.png", "Plan", "Plan catalog"),
+    ("06-privacy.png", "Privacy", "No upload by default"),
 ]
 
 

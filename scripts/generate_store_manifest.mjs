@@ -34,7 +34,8 @@ const manifest = {
     { fileName: '02-drills.png', label: 'Evidence-based drills', route: 'drills', viewport: { height: 844, width: 390 } },
     { fileName: '03-progress.png', label: 'Technique progress trends', route: 'progress', viewport: { height: 844, width: 390 } },
     { fileName: '04-sessions.png', label: 'Local report history', route: 'sessions', viewport: { height: 844, width: 390 } },
-    { fileName: '05-privacy.png', label: 'Privacy and offline readiness', route: 'privacy', viewport: { height: 844, width: 390 } },
+    { fileName: '05-plan.png', label: 'Freemium plan catalog', route: 'plan', viewport: { height: 844, width: 390 } },
+    { fileName: '06-privacy.png', label: 'Privacy and offline readiness', route: 'privacy', viewport: { height: 844, width: 390 } },
   ],
   version: appJson.version ?? '',
 };

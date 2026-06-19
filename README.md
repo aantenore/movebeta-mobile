@@ -41,6 +41,7 @@ with their private training log, drill practice log, and coach-consent record fr
 - Private per-report training log with project status, cue usefulness feedback, effort, confidence, notes, tags, and local persistence.
 - Progress project queue generated from private training logs with next-repeat prioritization.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
+- Plan catalog tab with current tier, upgrade path, capability matrix, and billing-provider readiness.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
 - Privacy deletion receipts that remove the local report, private training log, drill practice log, and coach consent
   record together.

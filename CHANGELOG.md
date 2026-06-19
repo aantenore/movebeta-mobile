@@ -65,3 +65,5 @@
 - Practice-aware next-session planning that lowers intensity and prescribes easier variants when drills are repeatedly skipped.
 - Privacy-safe athlete context inside consented coach review packets, including training-log scores, cue feedback ratings,
   and drill-practice counts without private note text or drill notes.
+- Configurable Plan tab with freemium upgrade path, capability matrix, and billing-provider readiness without payment
+  provider coupling.

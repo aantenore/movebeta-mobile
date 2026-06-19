@@ -59,18 +59,20 @@ platforms are validated on physical climbing videos and devices.
   copy, and screenshot plan.
 - EAS release readiness validates remote app versioning, internal development/preview profiles, production app bundle
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
-- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, and Privacy.
+- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, and Privacy.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
 - Cue validation dataset contract, template, and CLI gate are ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
+- Plan tab shows the configured current tier, upgrade path, capability matrix, and billing-provider readiness from the
+  shared entitlement catalog.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
-- Drills, Progress, and Privacy tabs navigate successfully.
+- Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
 
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 37 test files and 141 tests.
+- `npm test`: passed, 38 test files and 145 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -103,19 +105,21 @@ platforms are validated on physical climbing videos and devices.
   practice-reset planning from skipped drill logs.
 - `tests/coachReviewPacket.test.ts`: passed and covers consent metadata, review rubric, privacy-safe athlete context,
   private-note exclusion, drill-note exclusion, and raw video/landmark exclusion.
+- `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
+  centralized capability copy, and provider-agnostic recommendations.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated six 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
-  Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
-  airplane-mode readiness self-check.
+  Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
+  diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
