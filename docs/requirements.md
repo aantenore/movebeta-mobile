@@ -30,6 +30,8 @@
   are present and every row matches the original study seed.
 - Let users paste completed cue-validation worksheet CSV in Sessions and prepare the gate-compatible dataset JSON locally.
 - Show a local cue-validation gate preview after dataset composition, including ready or needs-data status and failed checks.
+- Show a local real-world validation campaign tracker with consented clip progress, review-row progress, wall-angle gaps,
+  completed worksheet gate status, next action, and privacy-safe status export.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
 - Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
   for variants.
@@ -220,6 +222,8 @@
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
   review coverage before production movement-quality claims.
 - In-app cue-validation gate previews must use local dataset content only and must not upload or fetch validation data.
+- Real-world validation campaign tracking must derive seed, worksheet, dataset, gate, progress, and status export from
+  existing cue-validation contracts, keep acceptance thresholds replaceable, avoid hidden IO, and exclude raw artifacts.
 - Cue validation study seeds must not include raw video, URI, pose frames, key frames, landmarks, private notes, drill
   notes, or generated reviewer scores.
 - Cue validation review worksheets must keep reviewer identities and score fields empty until real coach review is entered.

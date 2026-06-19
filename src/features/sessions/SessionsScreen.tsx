@@ -45,7 +45,7 @@ import { theme } from '@/core/theme';
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
-import { drillPracticeRepository } from '@/movement/drillPracticeRepository';
+import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
   cueFeedbackRatings,
@@ -59,6 +59,7 @@ import {
   type ReportAnnotation,
 } from '@/movement/reportAnnotationRepository';
 import { buildCoachTeamTemplates } from '@/movement/coachTeamTemplates';
+import { buildCoachValidationWorkflow, type CoachValidationWorkflow } from '@/movement/coachValidationWorkflow';
 
 const scoreOptions = [1, 2, 3, 4, 5] as const;
 
@@ -568,12 +569,80 @@ function CoachLibraryPanel({
   );
 }
 
+function ValidationCampaignPanel({
+  onPrepareStatusExport,
+  workflow,
+}: {
+  onPrepareStatusExport: () => void;
+  workflow: CoachValidationWorkflow;
+}) {
+  const statusLabel: Record<CoachValidationWorkflow['status'], string> = {
+    blocked: 'Blocked',
+    'needs-consent': 'Consent',
+    'needs-review': 'Review',
+    ready: 'Ready',
+  };
+  const isReady = workflow.status === 'ready';
+
+  return (
+    <Section title="Validation campaign" caption="Real-world cue evidence tracker derived from local consent and review contracts.">
+      <View style={styles.campaignShell}>
+        <View style={styles.libraryTop}>
+          <View style={styles.libraryTitleGroup}>
+            <Text style={styles.campaignTitle}>{statusLabel[workflow.status]}</Text>
+            <Text style={styles.libraryMeta}>{workflow.seedSummary}</Text>
+          </View>
+          <Text style={[styles.libraryBadge, isReady ? styles.libraryBadgeReady : styles.libraryBadgeHigh]}>
+            {workflow.status}
+          </Text>
+        </View>
+        <View style={styles.libraryStats}>
+          <View style={styles.libraryStat}>
+            <Text style={styles.libraryStatValue}>
+              {workflow.progress.consentedClipCount}/{workflow.progress.targetClipCount}
+            </Text>
+            <Text style={styles.libraryStatLabel}>Clips</Text>
+          </View>
+          <View style={styles.libraryStat}>
+            <Text style={styles.libraryStatValue}>
+              {workflow.progress.reviewCount}/{workflow.progress.estimatedTargetReviewRows}
+            </Text>
+            <Text style={styles.libraryStatLabel}>Reviews</Text>
+          </View>
+          <View style={styles.libraryStat}>
+            <Text style={styles.libraryStatValue}>{workflow.progress.missingWallAngles.length}</Text>
+            <Text style={styles.libraryStatLabel}>Angles missing</Text>
+          </View>
+        </View>
+        <Text style={styles.libraryFocus}>{workflow.action}</Text>
+        <Text style={styles.libraryPrivacy}>{workflow.worksheetSummary}</Text>
+        {workflow.errors.length > 0 ? (
+          <View style={styles.campaignErrors}>
+            {workflow.errors.map((error) => (
+              <Text key={error} style={styles.campaignError}>
+                {error}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+        <View style={styles.libraryActionRow}>
+          <Pressable accessibilityLabel="Export validation campaign status" onPress={onPrepareStatusExport} style={styles.secondaryAction}>
+            <Download color={theme.colors.brand} size={16} />
+            <Text style={styles.secondaryActionText}>Export status</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Section>
+  );
+}
+
 export function SessionsScreen() {
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const [coachConsentByReport, setCoachConsentByReport] = useState<Record<string, CoachReviewConsentRecord>>({});
   const [annotationByReport, setAnnotationByReport] = useState<Record<string, ReportAnnotation>>({});
   const [coachLibrary, setCoachLibrary] = useState<CoachLibrary>(() => buildCoachLibrary([], []));
   const [completedWorksheetCsv, setCompletedWorksheetCsv] = useState('');
+  const [drillPracticeRecords, setDrillPracticeRecords] = useState<DrillPracticeRecord[]>([]);
   const [preparedExport, setPreparedExport] = useState<{ body: string; title: string } | null>(null);
   const [draftAnnotation, setDraftAnnotation] = useState<ReportAnnotation | null>(null);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
@@ -602,6 +671,7 @@ export function SessionsScreen() {
       ),
     );
     setCoachLibrary(buildCoachLibrary(nextReports, consents, scopedAnnotations, drillPractice));
+    setDrillPracticeRecords(drillPractice);
   }
 
   async function remove(reportId: string) {
@@ -742,6 +812,14 @@ export function SessionsScreen() {
     }
   }
 
+  function prepareValidationCampaignStatus() {
+    selectionFeedback();
+    setPreparedExport({
+      body: coachValidationWorkflow.shareableStatusJson,
+      title: 'Prepared validation campaign status',
+    });
+  }
+
   async function sharePreparedExport() {
     if (!preparedExport) return;
     selectionFeedback();
@@ -776,6 +854,11 @@ export function SessionsScreen() {
 
   const selectedReport = reports.find((report) => report.id === selectedReportId) ?? reports[0] ?? null;
   const selectedReview = selectedReport ? buildSessionReviewDetail(selectedReport) : null;
+  const coachValidationWorkflow = buildCoachValidationWorkflow(reports, Object.values(coachConsentByReport), {
+    annotations: Object.values(annotationByReport),
+    completedWorksheetCsv,
+    drillPractice: drillPracticeRecords,
+  });
 
   useEffect(() => {
     if (!selectedReport) {
@@ -861,6 +944,11 @@ export function SessionsScreen() {
             onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
             onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}
+          />
+
+          <ValidationCampaignPanel
+            onPrepareStatusExport={prepareValidationCampaignStatus}
+            workflow={coachValidationWorkflow}
           />
 
           {coachLibrary.entries.length > 0 ? (
@@ -1023,6 +1111,31 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
+  campaignError: {
+    color: theme.colors.coral,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  campaignErrors: {
+    backgroundColor: '#FFF0EC',
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.sm,
+  },
+  campaignShell: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  campaignTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
   libraryBadge: {
     backgroundColor: theme.colors.brandSoft,
     borderRadius: theme.radius.sm,
@@ -1037,6 +1150,10 @@ const styles = StyleSheet.create({
   libraryBadgeHigh: {
     backgroundColor: '#FFF0EC',
     color: theme.colors.coral,
+  },
+  libraryBadgeReady: {
+    backgroundColor: '#E6F3EC',
+    color: theme.colors.success,
   },
   libraryCard: {
     backgroundColor: theme.colors.surface,
