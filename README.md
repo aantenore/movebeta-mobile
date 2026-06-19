@@ -113,6 +113,8 @@ web build with `npm run store:screenshots`.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
   values.
+- Store submission packet for metadata, privacy declarations, screenshots, copy-risk scan, and store commands without
+  credentials or raw artifacts.
 - In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
   evidence can satisfy release readiness.
 - Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native

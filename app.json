@@ -51,6 +51,25 @@
       "videoAnalysisProvider": "web-tfjs-movenet",
       "nativeVideoAnalysisProvider": "native-platform-pose",
       "privacyMode": "on-device",
+      "storeReadinessConfig": {
+        "android": {
+          "package": "com.movebeta.mobile",
+          "permissions": [
+            "CAMERA",
+            "READ_MEDIA_VIDEO"
+          ]
+        },
+        "ios": {
+          "bundleIdentifier": "com.movebeta.mobile",
+          "infoPlist": {
+            "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
+            "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
+            "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+          }
+        },
+        "name": "MoveBeta",
+        "version": "1.0.0"
+      },
       "launchReadinessEvidence": {
         "releaseGate": true,
         "webSmoke": true,
@@ -69,7 +88,7 @@
       },
       "modelEvidence": {
         "analysisReplay": {
-          "generatedAt": "2026-06-19T23:41:43.629Z",
+          "generatedAt": "2026-06-19T23:53:15.783Z",
           "minimumQualityScore": 100,
           "passedAttempts": 3,
           "privacySafe": true,
@@ -80,16 +99,16 @@
         "modelName": "MoveNet SinglePose Lightning",
         "provider": "web-tfjs-movenet",
         "readiness": {
-          "averageInferenceMs": 321,
+          "averageInferenceMs": 324,
           "backend": "cpu",
           "budget": {
             "averageInferenceMs": 1500,
             "loadMs": 25000,
             "maxInferenceMs": 3000
           },
-          "generatedAt": "2026-06-19T23:41:37.207Z",
-          "loadMs": 4824,
-          "maxInferenceMs": 324,
+          "generatedAt": "2026-06-19T23:53:10.532Z",
+          "loadMs": 3668,
+          "maxInferenceMs": 328,
           "status": "ready"
         },
         "realWorldValidation": {

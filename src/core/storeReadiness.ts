@@ -100,7 +100,7 @@ export const defaultStorePrivacy = {
 export const defaultStoreScreenshots = [
   {
     fileName: '01-analyze.png',
-    label: 'On-device video analysis',
+    label: 'On-device video analysis and capture setup',
     route: 'analyze',
     viewport: { height: 844, width: 390 },
   },
@@ -135,8 +135,14 @@ export const defaultStoreScreenshots = [
     viewport: { height: 844, width: 390 },
   },
   {
+    fileName: '07-release-unblock.png',
+    label: 'Release unblock checklist',
+    route: 'plan',
+    viewport: { height: 844, width: 390 },
+  },
+  {
     fileName: '08-data-portability.png',
-    label: 'Local backup restore preview',
+    label: 'Checksum-aware local backup restore preview',
     route: 'privacy',
     viewport: { height: 844, width: 390 },
   },

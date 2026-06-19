@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import Constants from 'expo-constants';
 import { ArrowUpRight, CheckCircle2, Circle, Download, Share2, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
+import appJson from '../../../app.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
@@ -26,6 +28,8 @@ import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/r
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
+import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
+import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
 
@@ -104,6 +108,28 @@ const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
     thermalState: 'nominal',
   },
 ];
+
+function buildRuntimeStoreReadinessManifest() {
+  const expo = Constants.expoConfig;
+  const staticExpo = appJson.expo;
+  const extra = expo?.extra as { storeReadinessConfig?: ExpoStoreConfig } | undefined;
+  const staticExtra = staticExpo.extra as { storeReadinessConfig?: ExpoStoreConfig } | undefined;
+  const fallback = extra?.storeReadinessConfig ?? staticExtra?.storeReadinessConfig ?? {};
+
+  return buildStoreReadinessManifest({
+    android: {
+      package: expo?.android?.package ?? fallback.android?.package ?? staticExpo.android?.package,
+      permissions: expo?.android?.permissions ?? fallback.android?.permissions ?? staticExpo.android?.permissions,
+    },
+    ios: {
+      bundleIdentifier: expo?.ios?.bundleIdentifier ?? fallback.ios?.bundleIdentifier ?? staticExpo.ios?.bundleIdentifier,
+      infoPlist:
+        (expo?.ios?.infoPlist as Record<string, string> | undefined) ?? fallback.ios?.infoPlist ?? staticExpo.ios?.infoPlist,
+    },
+    name: expo?.name ?? fallback.name ?? staticExpo.name,
+    version: expo?.version ?? fallback.version ?? staticExpo.version,
+  });
+}
 
 function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
   const isReady = track.status === 'ready';
@@ -759,6 +785,68 @@ function ReleaseEvidencePacketCard({
   );
 }
 
+function StoreSubmissionPacketCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: StoreSubmissionPacket;
+}) {
+  const isReady = packet.summary.status === 'metadata-ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {packet.summary.checksPassed}/{packet.summary.checkCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.screenshotCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>screens</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.copyIssueCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>copy issues</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Store submission packet</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'Review'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare store submission packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Store packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.qaPlatformList}>
+        <View style={styles.qaWorkflowRow}>
+          <CheckCircle2 color={theme.colors.success} size={14} />
+          <View style={styles.launchTrackTitleGroup}>
+            <Text style={styles.qaWorkflowText}>{packet.summary.iosBundleIdentifier}</Text>
+            <Text style={styles.qaPlatformMore}>iOS bundle identifier</Text>
+          </View>
+        </View>
+        <View style={styles.qaWorkflowRow}>
+          <CheckCircle2 color={theme.colors.success} size={14} />
+          <View style={styles.launchTrackTitleGroup}>
+            <Text style={styles.qaWorkflowText}>{packet.summary.androidPackage}</Text>
+            <Text style={styles.qaPlatformMore}>Android package</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 function SafetyLanguageGuardCard({ guard }: { guard: ReturnType<typeof buildSafetyLanguageGuard> }) {
   const isClear = guard.status === 'clear';
 
@@ -895,6 +983,9 @@ export function PlanScreen() {
     providerReadiness,
     releaseUnblockPacket,
   });
+  const storeSubmissionPacket = buildStoreSubmissionPacket({
+    manifest: buildRuntimeStoreReadinessManifest(),
+  });
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
       evidencePlan,
@@ -932,6 +1023,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseEvidencePacket, null, 2),
       title: 'Prepared release evidence packet',
+    });
+  }
+
+  function prepareStoreSubmissionPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(storeSubmissionPacket, null, 2),
+      title: 'Prepared store submission packet',
     });
   }
 
@@ -1084,6 +1183,10 @@ export function PlanScreen() {
 
       <Section title="Release evidence packet" caption="One share-safe packet for QA, product validation, and release owners.">
         <ReleaseEvidencePacketCard packet={releaseEvidencePacket} onPreparePacket={prepareReleaseEvidencePacket} />
+      </Section>
+
+      <Section title="Store submission packet" caption="Metadata, privacy declarations, screenshots, and copy checks before App Store or Play handoff.">
+        <StoreSubmissionPacketCard packet={storeSubmissionPacket} onPreparePacket={prepareStoreSubmissionPacket} />
       </Section>
 
       {preparedPlanExport ? (

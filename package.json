@@ -57,6 +57,7 @@
     "export:web": "expo export --platform web",
     "preview:web": "node scripts/serve-web.mjs dist 8082",
     "store:manifest": "node scripts/generate_store_manifest.mjs",
+    "store:submission": "tsx scripts/store_submission_packet.ts",
     "store:screenshots": "python3 scripts/capture_store_screenshots.py",
     "store:check": "npm run store:manifest && npm run store:screenshots",
     "toolchain:ios": "bash scripts/bootstrap-ios-toolchain.sh",
