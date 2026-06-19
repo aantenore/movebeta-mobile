@@ -83,6 +83,7 @@
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
 - Expose provider, active plan, privacy mode, and launch-readiness evidence in configuration.
+- Generate a machine-detected launch-readiness report that separates configured evidence from detected evidence.
 
 ## Non-Functional
 
@@ -118,6 +119,7 @@
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Launch-readiness status must be generated from a replaceable evidence object and keep external blockers explicit.
+- Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

@@ -97,6 +97,7 @@ npm run toolchain:ios
 npm run native:android:debug
 npm run native:android:manifest
 npm run release:eas:check
+npm run release:readiness
 ```
 
 ## Configuration
@@ -147,6 +148,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Requirement-to-test traceability: `docs/sdlc/traceability-matrix.md`.
 - Release checklist and operational runbook: `docs/sdlc/release-checklist.md`, `docs/sdlc/runbook.md`.
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
+- Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
 - Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
@@ -156,7 +158,11 @@ The local release gate is:
 
 ```bash
 npm run release:check
+npm run release:readiness
 ```
+
+Use `npm run release:full` to run the full local quality gate and refresh the machine-detected launch readiness report in
+one command.
 
 The EAS release gates are:
 

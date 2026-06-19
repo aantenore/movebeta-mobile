@@ -62,6 +62,8 @@
     "security:audit": "npm audit --audit-level=high",
     "release:eas:check": "node scripts/validate_eas_release.mjs",
     "release:eas:strict": "node scripts/validate_eas_release.mjs --strict",
+    "release:readiness": "node scripts/launch_readiness_doctor.mjs",
+    "release:full": "npm run release:check && npm run release:readiness",
     "release:check": "npm run quality && npm run export:web && npm run release:eas:check && npm run security:audit",
     "ci": "npm run release:check"
   },
