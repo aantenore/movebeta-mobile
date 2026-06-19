@@ -73,3 +73,4 @@
 | T69 | Add completed cue-validation worksheet dataset composer | Done |
 | T70 | Add Sessions UI for completed worksheet CSV to validation dataset JSON | Done |
 | T71 | Add native share action for prepared Sessions exports | Done |
+| T72 | Add in-app cue-validation gate preview for completed datasets | Done |
