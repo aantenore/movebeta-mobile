@@ -7,6 +7,7 @@ import {
 } from './nativeQaEvidenceValidation';
 
 export const nativeQaEvidenceComposerSchemaVersion = 'movebeta.native-qa-evidence-composer.v1';
+export const nativeQaEvidenceComposerExportSchemaVersion = 'movebeta.native-qa-evidence-composer-export.v1';
 
 type NativeQaPlatform = (typeof nativeQaEvidenceBudgets.requiredPlatforms)[number];
 type NativeQaWorkflow = (typeof nativeQaEvidenceBudgets.requiredWorkflows)[number];
@@ -46,6 +47,28 @@ export type NativeQaEvidenceComposerPreview = {
   totalRuns: number;
 };
 
+export type NativeQaEvidenceComposerExport = {
+  generatedAt: string;
+  payload: NativeQaEvidencePayload;
+  privacy: {
+    credentialValuesIncluded: false;
+    localPathsIncluded: false;
+    rawArtifactsIncluded: false;
+    rawVideoIncluded: false;
+    secretsIncluded: false;
+  };
+  schemaVersion: typeof nativeQaEvidenceComposerExportSchemaVersion;
+  summary: {
+    blockingChecks: number;
+    readyRuns: number;
+    status: NativeQaEvidenceComposerPreview['status'];
+    totalRuns: number;
+  };
+};
+
+const forbiddenComposerExportPattern =
+  /(file:\/\/|content:\/\/|asset:\/\/|ph:\/\/|\/Users\/|\/private\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9_]+|pat_[A-Za-z0-9_]+|sk_live_[A-Za-z0-9_]+|sk_test_[A-Za-z0-9_]+|eyJ[A-Za-z0-9_-]{20,})/i;
+
 function optionalText(value: string | null | undefined) {
   const trimmed = value?.trim();
   return trimmed && trimmed.length > 0 ? trimmed : undefined;
@@ -67,6 +90,20 @@ function workflowMap(run: NativeQaEvidenceComposerRun) {
   return Object.fromEntries(
     nativeQaEvidenceBudgets.requiredWorkflows.map((workflow) => [workflow, run.allWorkflowsPassed ? 'pass' : 'pending']),
   ) as Record<NativeQaWorkflow, NativeQaWorkflowStatus>;
+}
+
+function containsForbiddenComposerExportValue(value: unknown): boolean {
+  if (typeof value === 'string') return forbiddenComposerExportPattern.test(value);
+  if (Array.isArray(value)) return value.some(containsForbiddenComposerExportValue);
+  if (value && typeof value === 'object') return Object.values(value).some(containsForbiddenComposerExportValue);
+  return false;
+}
+
+export function assertNativeQaEvidenceComposerExportIsShareSafe(packet: NativeQaEvidenceComposerExport) {
+  if (containsForbiddenComposerExportValue(packet)) {
+    throw new Error('Native QA evidence export contains a raw artifact, local path, credential, or token-like value.');
+  }
+  return packet;
 }
 
 export function composeNativeQaEvidence(input: NativeQaEvidenceComposerInput): NativeQaEvidencePayload {
@@ -115,4 +152,31 @@ export function buildNativeQaEvidenceComposerPreview(input: NativeQaEvidenceComp
     status: validation.ready ? 'ready' : 'blocked',
     totalRuns: validation.runSummaries.length,
   };
+}
+
+export function buildNativeQaEvidenceComposerExport({
+  generatedAt = new Date().toISOString(),
+  preview,
+}: {
+  generatedAt?: string;
+  preview: NativeQaEvidenceComposerPreview;
+}): NativeQaEvidenceComposerExport {
+  return assertNativeQaEvidenceComposerExportIsShareSafe({
+    generatedAt,
+    payload: preview.payload,
+    privacy: {
+      credentialValuesIncluded: false,
+      localPathsIncluded: false,
+      rawArtifactsIncluded: false,
+      rawVideoIncluded: false,
+      secretsIncluded: false,
+    },
+    schemaVersion: nativeQaEvidenceComposerExportSchemaVersion,
+    summary: {
+      blockingChecks: preview.blockingChecks,
+      readyRuns: preview.readyRuns,
+      status: preview.status,
+      totalRuns: preview.totalRuns,
+    },
+  });
 }

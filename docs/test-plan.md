@@ -114,6 +114,7 @@
   raw local artifact rejection in the Plan-tab paste flow.
 - Vitest native QA evidence composer tests for structured Android/iOS run inputs, second-to-millisecond normalization,
   incomplete workflow blocking, and raw artifact rejection through the shared validator.
+- Vitest native QA evidence composer export tests for versioned share-safe payloads and raw URI/path/token rejection.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, and raw-artifact exclusion.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
