@@ -52,13 +52,13 @@ describe('app config', () => {
         modelName: 'MoveNet SinglePose Lightning',
         provider: 'web-tfjs-movenet',
         readiness: {
-          averageInferenceMs: 342,
+          averageInferenceMs: 340,
           budget: {
             averageInferenceMs: 1500,
             loadMs: 25000,
             maxInferenceMs: 3000,
           },
-          loadMs: 3574,
+          loadMs: 4592,
           maxInferenceMs: 345,
           status: 'ready',
         },
