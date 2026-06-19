@@ -122,13 +122,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 63 test files and 239 tests.
+- `npm test`: passed, 63 test files and 241 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3948ms load time, 337ms average inference, and 339ms max inference in the latest run.
+  CPU backend, 5649ms load time, 332ms average inference, and 335ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -159,8 +159,9 @@ platforms are validated on physical climbing videos and devices.
   active filter counting.
 - `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, drill-practice, coach-consent cleanup,
   orphan cleanup, and privacy-safe deletion receipt copy.
-- `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, cue feedback backup/restore, restore into
-  empty repositories, drill practice backup/restore, orphan skipping, and URI-like artifact rejection.
+- `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, cue feedback backup/restore, non-mutating
+  restore preview, restore into empty repositories, drill practice backup/restore, orphan skipping, and URI-like artifact
+  rejection.
 - `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `tests/personalBenchmarks.test.ts`: passed and covers best overall, wall-angle, grade, gym, latest-vs-best deltas,
   and empty local history behavior.
@@ -213,7 +214,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated seven 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated eight 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
@@ -226,7 +227,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, native QA validator
   preview, evidence collection plan, release unblock checklist, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
-  packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
+  packet, Privacy data portability backup/restore preview, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
@@ -249,7 +250,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 7/7 screenshots, 5 external blockers, release archive artifacts, current
+  `docs/sdlc/release-handoff-packet.md` with 8/8 screenshots, 5 external blockers, release archive artifacts, current
   artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.

@@ -23,10 +23,13 @@ import {
 import { theme } from '@/core/theme';
 import {
   createLocalDataBackup,
+  formatLocalDataRestorePreview,
   formatLocalDataRestoreResult,
+  previewLocalDataRestore,
   restoreLocalDataBackup,
   summarizeLocalDataBackup,
   type LocalDataBackup,
+  type LocalDataRestorePreview,
   type LocalDataRestoreResult,
 } from '@/movement/dataPortability';
 import { listReports } from '@/movement/repository';
@@ -67,6 +70,7 @@ export function PrivacyScreen() {
   const [backup, setBackup] = useState<LocalDataBackup | null>(null);
   const [restoreInput, setRestoreInput] = useState('');
   const [restoreMessage, setRestoreMessage] = useState('');
+  const [restorePreviewMessage, setRestorePreviewMessage] = useState('');
   const [diagnostics, setDiagnostics] = useState<DiagnosticSupportPacket | null>(null);
   const [offlineReportCount, setOfflineReportCount] = useState(0);
   const offlineReadiness = assessOfflineReadiness({
@@ -124,7 +128,18 @@ export function PrivacyScreen() {
     const nextBackup = await createLocalDataBackup();
     setBackup(nextBackup);
     setRestoreInput(JSON.stringify(nextBackup, null, 2));
+    setRestorePreviewMessage('');
     setRestoreMessage('');
+  }
+
+  function previewBackup() {
+    try {
+      const preview: LocalDataRestorePreview = previewLocalDataRestore(restoreInput);
+      setRestorePreviewMessage(formatLocalDataRestorePreview(preview));
+      setRestoreMessage('');
+    } catch (error) {
+      setRestorePreviewMessage(error instanceof Error ? error.message : 'Backup preview failed.');
+    }
   }
 
   async function restoreBackup() {
@@ -282,15 +297,29 @@ export function PrivacyScreen() {
           <TextInput
             accessibilityLabel="Local backup JSON"
             multiline
-            onChangeText={setRestoreInput}
+            onChangeText={(value) => {
+              setRestoreInput(value);
+              setRestorePreviewMessage('');
+              setRestoreMessage('');
+            }}
             placeholder="Paste a MoveBeta local backup JSON payload."
             placeholderTextColor={theme.colors.muted}
             style={styles.restoreInput}
             value={restoreInput}
           />
-          <Pressable onPress={() => void restoreBackup()} style={styles.restoreAction}>
-            <Text style={styles.restoreActionText}>Restore backup</Text>
-          </Pressable>
+          <View style={styles.restoreActions}>
+            <Pressable onPress={previewBackup} style={styles.restoreActionSecondary}>
+              <Text style={styles.restoreActionText}>Preview restore</Text>
+            </Pressable>
+            <Pressable onPress={() => void restoreBackup()} style={styles.restoreAction}>
+              <Text style={styles.restoreActionText}>Restore backup</Text>
+            </Pressable>
+          </View>
+          {restorePreviewMessage ? (
+            <View style={styles.payloadBox}>
+              <Text style={styles.payloadText}>{restorePreviewMessage}</Text>
+            </View>
+          ) : null}
           {restoreMessage ? (
             <View style={styles.payloadBox}>
               <Text style={styles.payloadText}>{restoreMessage}</Text>
@@ -456,6 +485,20 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.sm,
     paddingHorizontal: 12,
     paddingVertical: 9,
+  },
+  restoreActionSecondary: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  restoreActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
   },
   restoreActionText: {
     color: theme.colors.brand,
