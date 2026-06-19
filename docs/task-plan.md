@@ -55,3 +55,4 @@
 | T51 | Add technique readiness scoring from trends, cues, project status, effort, confidence, and drills | Done |
 | T52 | Add personal benchmarks for best overall, wall angle, grade, and gym attempts | Done |
 | T53 | Add next-session planning from readiness, benchmarks, drills, and private project notes | Done |
+| T54 | Add recurring cue pattern tracking for persistent, emerging, and cleared technique issues | Done |

@@ -10,6 +10,7 @@ import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
 import type { LocalAnalysisReport } from '@/movement/contracts';
+import { summarizeCuePatterns } from '@/movement/cuePatterns';
 import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
 import {
   activeProgressFilterCount,
@@ -78,6 +79,7 @@ export function ProgressScreen() {
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(() => buildSessionPlan(filteredReports, annotations), [annotations, filteredReports]);
+  const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -318,6 +320,56 @@ export function ProgressScreen() {
           <View style={styles.preview}>
             <Text style={styles.previewTitle}>No benchmark yet</Text>
             <Text style={styles.previewText}>Run one local analysis to create the first personal benchmark.</Text>
+          </View>
+        )}
+      </Section>
+
+      <Section title="Cue patterns" caption="Recurring coach cues across local reports after the active filters.">
+        {cuePatterns.patterns.length > 0 ? (
+          <View style={styles.cuePatternCard}>
+            <View style={styles.cuePatternSummary}>
+              <View style={styles.cuePatternStat}>
+                <Text style={styles.cuePatternStatValue}>{cuePatterns.latestCueCount}</Text>
+                <Text style={styles.cuePatternStatLabel}>Latest cues</Text>
+              </View>
+              <View style={styles.cuePatternStat}>
+                <Text style={styles.cuePatternStatValue}>{cuePatterns.patternCount}</Text>
+                <Text style={styles.cuePatternStatLabel}>Patterns</Text>
+              </View>
+              <View style={styles.cuePatternStat}>
+                <Text style={styles.cuePatternStatValue}>{cuePatterns.resolvedCount}</Text>
+                <Text style={styles.cuePatternStatLabel}>Cleared</Text>
+              </View>
+            </View>
+
+            <View style={styles.cuePatternList}>
+              {cuePatterns.patterns.map((pattern) => (
+                <View key={pattern.cueId} style={styles.cuePatternItem}>
+                  <View style={styles.cuePatternHeader}>
+                    <Text style={styles.cuePatternTitle}>{pattern.title}</Text>
+                    <Text
+                      style={[
+                        styles.cuePatternBadge,
+                        pattern.status === 'cleared' ? styles.cuePatternBadgeCleared : null,
+                        pattern.status === 'persistent' ? styles.cuePatternBadgePersistent : null,
+                      ]}
+                    >
+                      {pattern.status}
+                    </Text>
+                  </View>
+                  <Text style={styles.cuePatternMeta}>
+                    {pattern.reportCount} report{pattern.reportCount === 1 ? '' : 's'} · {pattern.severity} · latest{' '}
+                    {pattern.latestReportTitle}
+                  </Text>
+                  <Text style={styles.cuePatternDrill}>{pattern.drill}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>No cue pattern yet</Text>
+            <Text style={styles.previewText}>Run analyses with coach cues to reveal recurring or cleared patterns.</Text>
           </View>
         )}
       </Section>
@@ -667,6 +719,89 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: theme.spacing.md,
     padding: theme.spacing.md,
+  },
+  cuePatternBadge: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  cuePatternBadgeCleared: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  cuePatternBadgePersistent: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  cuePatternCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  cuePatternDrill: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  cuePatternHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  cuePatternItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.sm,
+  },
+  cuePatternList: {
+    gap: theme.spacing.sm,
+  },
+  cuePatternMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  cuePatternStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  cuePatternStatLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  cuePatternStatValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  cuePatternSummary: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  cuePatternTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
   },
   sessionPlanCard: {
     backgroundColor: theme.colors.surface,
