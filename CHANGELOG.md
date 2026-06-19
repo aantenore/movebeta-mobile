@@ -131,6 +131,8 @@
   blocking checks, and local-only validation feedback.
 - Evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows, wall-angle
   coverage, native device checks, and external evidence owners derived from release contracts.
+- Real-world validation campaign tracker in Sessions with consented clip progress, review-row progress, wall-angle gaps,
+  completed worksheet gate status, and privacy-safe status export.
 - Release unblock checklist in the Plan tab with launch-derived blockers, proof artifacts, commands, owners, affected
   tracks, and credential key names for beta and store release.
 - Release handoff packet generator that writes stakeholder-ready JSON and Markdown from release gates, launch readiness,
