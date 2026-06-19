@@ -59,6 +59,7 @@ with their private training log, drill practice log, and coach-consent record fr
 - Cue validation scoring harness and rubric for consented coach review datasets.
 - Cue validation dataset gate for consented clip studies before production movement-quality claims.
 - Local cue-validation study seed export from consented coach packets, with review tasks but no invented reviewer scores.
+- Local cue-validation review worksheet export with blank coach score rows and no reviewer identity defaults.
 - Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
 - Report-level video analysis performance evidence with local duration, frame rate, and budget status.
