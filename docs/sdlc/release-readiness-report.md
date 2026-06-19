@@ -98,7 +98,9 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueValidationDataset.test.ts`: passed and covers dataset thresholds, wall-angle coverage, reviewer coverage,
   review modes, score quality, and raw-artifact exclusion.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
-- `npm run handoff:git`: correctly reports that this folder has no Git repository or remote yet.
+- `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
+- Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed at commit
+  `d57d0eb7f3453479a6ad5797d20d76018effec02`.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
 
 ## Known Residual Risks
@@ -113,5 +115,6 @@ platforms are validated on physical climbing videos and devices.
 - Production movement-quality claims require `docs/validation/cue-validation-dataset.json` to be filled with real
   consented coach review packets and pass `npm run validation:cue`.
 - `npm audit` reports moderate vulnerabilities in the Expo config chain through `uuid`/`xcode`; the current suggested forced fix is breaking and is not applied in this release.
-- The project folder is a deliverable directory, not an initialized Git repository with connected CI remote. See
-  `docs/sdlc/git-handoff.md` for first-push commands after a target remote is chosen.
+- GitHub Actions workflow activation is deferred because the available GitHub OAuth token lacks the `workflow` scope.
+  The quality workflow is committed as `docs/sdlc/ci-templates/github-actions-quality.yml` and can be moved into
+  `.github/workflows/quality.yml` after `gh auth refresh -h github.com -s workflow`.
