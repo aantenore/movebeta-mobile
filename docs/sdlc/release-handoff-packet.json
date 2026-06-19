@@ -175,7 +175,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-19T20:23:07.955Z",
+  "generatedAt": "2026-06-19T20:30:40.516Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -185,9 +185,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "49bc36c44963da79037b1443e316ca6f3835d746",
+    "baseCommitSha": "4df3d0edf816e61f9b0fdb6f6131f78adfec587d",
     "changedPaths": [],
-    "commitSha": "49bc36c44963da79037b1443e316ca6f3835d746",
+    "commitSha": "4df3d0edf816e61f9b0fdb6f6131f78adfec587d",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -234,16 +234,22 @@
       "fileName": "07-release-unblock.png",
       "label": "Release unblock checklist",
       "path": "docs/store/screenshots/07-release-unblock.png"
+    },
+    {
+      "exists": true,
+      "fileName": "08-data-portability.png",
+      "label": "Local backup restore preview",
+      "path": "docs/store/screenshots/08-data-portability.png"
     }
   ],
   "summary": {
     "blockerCount": 5,
-    "existingScreenshots": 7,
-    "expectedScreenshots": 7,
+    "existingScreenshots": 8,
+    "expectedScreenshots": 8,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 337,
-    "moveNetLoadMs": 3948,
+    "moveNetAverageInferenceMs": 332,
+    "moveNetLoadMs": 5649,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",
