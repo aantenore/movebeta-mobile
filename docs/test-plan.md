@@ -74,7 +74,7 @@
   screenshot plan.
 - Vitest Android manifest checks for camera/import permissions, audio exclusion, and disabled Android backup.
 - Vitest native QA evidence tests for platform coverage, muted recording, metadata reads, workflow pass/fail state,
-  latency budgets, battery budget, and thermal state.
+  latency budgets, battery budget, thermal state, and placeholder evidence rejection.
 - Vitest native QA runbook tests for platform workflows, budget reuse, privacy-safe setup instructions, and blocked
   evidence drafts before real device values are entered.
 - Web export with `npm run export:web`.

@@ -77,4 +77,43 @@ describe('native QA evidence', () => {
       'run-1-thermal',
     ]);
   });
+
+  it('rejects placeholder device and clip identifiers even when workflows are marked pass', () => {
+    const validation = validateNativeQaEvidence({
+      appVersion: '1.0.0',
+      generatedAt: '2026-06-19T00:00:00.000Z',
+      runs: [
+        {
+          ...baseRun,
+          buildId: 'internal-build-id',
+          clip: {
+            ...baseRun.clip,
+            id: 'real-climbing-clip-id',
+          },
+          deviceName: 'Pixel device name',
+          osVersion: 'Android version',
+          platform: 'android',
+        },
+        {
+          ...baseRun,
+          buildId: 'replace-with-internal-build-id',
+          clip: {
+            ...baseRun.clip,
+            id: 'ios-real-climbing-clip-id',
+          },
+          deviceName: 'replace-with-ios-device-name',
+          osVersion: 'replace-with-ios-os-version',
+          platform: 'ios',
+        },
+      ],
+    });
+
+    expect(validation.ready).toBe(false);
+    expect(validation.checks.filter((check) => check.status === 'fail').map((check) => check.id)).toEqual([
+      'run-1-device',
+      'run-1-clip',
+      'run-2-device',
+      'run-2-clip',
+    ]);
+  });
 });
