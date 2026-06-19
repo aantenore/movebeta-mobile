@@ -36,17 +36,21 @@ function gitValue(rootDir, args, fallback = 'unknown') {
   }
 }
 
+function gitStatusPath(line) {
+  const filePath = line.trimStart().replace(/^[ MADRCU?!]{1,2}\s+/, '');
+  return filePath.replace(/^"/, '').replace(/"$/, '');
+}
+
 function gitStatusLines(rootDir) {
   const generatedPacketPaths = new Set(['docs/sdlc/release-handoff-packet.json', 'docs/sdlc/release-handoff-packet.md']);
   const output = gitValue(rootDir, ['status', '--short'], '');
   return output
     .split('\n')
-    .map((line) => line.trim())
     .filter(Boolean)
     .filter((line) => {
-      const filePath = line.replace(/^.. /, '').replace(/^"/, '').replace(/"$/, '');
-      return !generatedPacketPaths.has(filePath);
-    });
+      return !generatedPacketPaths.has(gitStatusPath(line));
+    })
+    .map((line) => line.trim());
 }
 
 function tracksForCheck(checkKey) {

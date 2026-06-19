@@ -175,6 +175,20 @@ describe('release handoff packet', () => {
     expect(cleanPacket.repository.worktreeDirty).toBe(false);
     expect(cleanPacket.repository.changedPaths).toEqual([]);
 
+    execFileSync('git', ['add', 'docs/sdlc/release-handoff-packet.json', 'docs/sdlc/release-handoff-packet.md'], {
+      cwd: rootDir,
+      stdio: 'ignore',
+    });
+    execFileSync('git', ['commit', '-m', 'add generated packet'], { cwd: rootDir, stdio: 'ignore' });
+    writeText(path.join(rootDir, 'docs/sdlc/release-handoff-packet.md'), '# regenerated packet');
+    const modifiedPacketOnly = buildReleaseHandoffPacket({
+      generatedAt: '2026-06-20T10:01:30.000Z',
+      rootDir,
+    });
+
+    expect(modifiedPacketOnly.repository.worktreeDirty).toBe(false);
+    expect(modifiedPacketOnly.repository.changedPaths).toEqual([]);
+
     writeText(path.join(rootDir, 'README.md'), '# changed');
     const dirtyPacket = buildReleaseHandoffPacket({
       generatedAt: '2026-06-20T10:02:00.000Z',
