@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Activity, Dumbbell, History, ShieldCheck, TrendingUp } from 'lucide-react-native';
+import { Activity, BadgeCheck, Dumbbell, History, ShieldCheck, TrendingUp } from 'lucide-react-native';
 
 import { theme } from '@/core/theme';
 
@@ -49,6 +49,13 @@ export default function TabsLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ color, size }) => <TrendingUp color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
+        name="plan"
+        options={{
+          title: 'Plan',
+          tabBarIcon: ({ color, size }) => <BadgeCheck color={color} size={size} />,
         }}
       />
       <Tabs.Screen

@@ -35,6 +35,7 @@ describe('store readiness', () => {
       'drills',
       'progress',
       'sessions',
+      'plan',
       'privacy',
     ]);
   });

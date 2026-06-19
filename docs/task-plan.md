@@ -63,3 +63,4 @@
 | T59 | Add Progress practice consistency insights from private drill logs | Done |
 | T60 | Make next-session planning adapt to blocked practice consistency | Done |
 | T61 | Add privacy-safe athlete context to consented coach review packets | Done |
+| T62 | Add configurable freemium plan catalog and Plan tab | Done |

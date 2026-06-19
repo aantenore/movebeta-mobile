@@ -135,6 +135,16 @@ def main() -> None:
         expect(page.get_by_text('"privateNoteIncluded": false')).to_be_visible()
         expect(page.get_by_text('"noteIncluded": false')).to_be_visible()
 
+        page.get_by_role("tab", name="Plan").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Plan catalog")).to_be_visible()
+        expect(page.get_by_text("Current plan").first).to_be_visible()
+        expect(page.get_by_text("Upgrade path")).to_be_visible()
+        expect(page.get_by_text("Capability matrix")).to_be_visible()
+        expect(page.get_by_text("Commercial readiness")).to_be_visible()
+        expect(page.get_by_text("Provider status")).to_be_visible()
+        expect(page.get_by_text("Not connected")).to_be_visible()
+
         page.get_by_role("tab", name="Privacy").click()
         page.wait_for_load_state("networkidle")
         expect(page.get_by_text("No upload by default")).to_be_visible()
