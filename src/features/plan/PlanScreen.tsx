@@ -87,7 +87,7 @@ function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
-  const launchReadiness = buildLaunchReadinessSummary();
+  const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const groupedCapabilities = catalog
     .find((item) => item.key === 'coach')
     ?.capabilities.reduce<Record<string, PlanCatalogItem['capabilities']>>((groups, capability) => {

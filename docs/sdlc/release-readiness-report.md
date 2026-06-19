@@ -84,6 +84,8 @@ platforms are validated on physical climbing videos and devices.
   shared entitlement catalog.
 - Plan tab shows launch-readiness tracks for stakeholder demo, internal native beta, and store submission, keeping
   full-Xcode, physical-device QA, real cue-validation data, and EAS/store credentials visible as explicit blockers.
+- Launch-readiness evidence can come from Expo `extra.launchReadinessEvidence` or
+  `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
 - Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
@@ -91,7 +93,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 45 test files and 175 tests.
+- `npm test`: passed, 46 test files and 179 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -135,8 +137,8 @@ platforms are validated on physical climbing videos and devices.
   CSV escaping, completed dataset composition, validation-gate compatibility, and injected raw-artifact key rejection.
 - `tests/planCatalog.test.ts`: passed and covers current tier status, highlighted upgrade unlocks, Coach capabilities,
   centralized capability copy, and provider-agnostic recommendations.
-- `tests/launchReadiness.test.ts`: passed and covers default blocker status, all-ready evidence, and partial evidence
-  overrides.
+- `tests/launchReadiness.test.ts` and `tests/config.test.ts`: passed and cover default blocker status, all-ready
+  evidence, partial evidence overrides, and launch evidence parsing from Expo/env configuration.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.

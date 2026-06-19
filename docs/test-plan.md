@@ -56,7 +56,8 @@
 - Vitest entitlement tests for Free, Pro, Coach capabilities, upgrade paths, and history limits.
 - Vitest plan catalog tests for current tier status, highlighted upgrade unlocks, coach tier capabilities, and
   provider-agnostic recommendations.
-- Vitest launch-readiness tests for default blockers, all-ready evidence, and partial evidence overrides.
+- Vitest launch-readiness and config tests for default blockers, all-ready evidence, partial evidence overrides, and
+  Expo/env launch evidence parsing.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.

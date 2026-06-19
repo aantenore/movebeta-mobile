@@ -86,3 +86,4 @@
 - In-app cue-validation gate preview for completed validation datasets.
 - Automated parity coverage between the in-app cue-validation gate preview and the CLI production gate.
 - Configurable Plan launch-readiness cockpit for demo, internal beta, and store-submission tracks.
+- Launch-readiness evidence configuration through Expo extra or `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`.
