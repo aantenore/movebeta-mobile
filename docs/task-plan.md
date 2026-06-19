@@ -1,0 +1,52 @@
+# MoveBeta Task Plan
+
+| ID | Task | Status |
+| --- | --- | --- |
+| T01 | Define on-device climbing coach product direction | Done |
+| T02 | Replace guide-style app surface with coach, sessions, drills, progress, privacy | Done |
+| T03 | Add movement schemas for video, landmarks, sessions, metrics, cues, reports | Done |
+| T04 | Add replaceable pose-estimator provider boundary | Done |
+| T05 | Implement local movement analyzer and fixture provider | Done |
+| T06 | Add domain tests for privacy, contracts, provider selection, and cue generation | Done |
+| T07 | Run typecheck, tests, web export, and browser smoke | Done |
+| T08 | Build native Apple Vision and Android ML Kit platform adapter | Done |
+| T09 | Add persistent local report storage, export, refresh, and deletion controls | Done |
+| T10 | Validate cue quality with real climbing clips | External data needed |
+| T11 | Add SDLC delivery contract, DoD, release checklist, runbook, and risk register | Done |
+| T12 | Add CI workflow, PR/issue templates, dependency update policy, and release gate scripts | Done |
+| T13 | Add consent policy, report repository contract, failure-mode tests, and mobile release config | Done |
+| T14 | Add selectable bundled attempts as a camera/import workaround for the runnable MVP | Done |
+| T15 | Add real video record, import, preview, source normalization, and local video fallback analysis | Done |
+| T16 | Validate native camera/import flows on physical iOS and Android devices | Next |
+| T17 | Add browser-side TensorFlow.js MoveNet provider for local video pose extraction | Done |
+| T18 | Install local Android toolchain and verify native Android debug build | Done |
+| T19 | Install local Ruby/CocoaPods and verify iOS Pods | Done |
+| T20 | Install full Xcode and verify iOS simulator/device build | Next |
+| T21 | Add analysis quality scoring and low-confidence video warnings | Done |
+| T22 | Add Git handoff check and first-push procedure | Done |
+| T23 | Add local progress history insights and trend deltas | Done |
+| T24 | Add weekly drill plan from local report cues | Done |
+| T25 | Add latest-vs-baseline attempt comparison | Done |
+| T26 | Add consented coach review packet export | Done |
+| T27 | Add cue validation scoring harness and rubric | Done |
+| T28 | Add capability-based Free, Pro, and Coach entitlements | Done |
+| T29 | Add capture-readiness guidance from local video signal quality | Done |
+| T30 | Add privacy-safe diagnostics support packet | Done |
+| T31 | Add airplane-mode readiness self-check | Done |
+| T32 | Add video intake readiness, local URI guard, duration guard, frame estimate, and recorder timer | Done |
+| T33 | Add store readiness manifest, privacy declarations, listing copy, and screenshot automation | Done |
+| T34 | Add editable session metadata for recorded/imported attempts and persist it through reports | Done |
+| T35 | Add pre-recording capture setup calibration with privacy and pose-quality blockers | Done |
+| T36 | Add Android merged manifest validation for video permissions, no audio permission, and disabled backup | Done |
+| T37 | Add native QA evidence template, performance budgets, and validation script | Done |
+| T38 | Add report-level video analysis performance evidence and budget status | Done |
+| T39 | Require explicit athlete consent before coach packet preparation | Done |
+| T40 | Persist per-report coach review consent with grant, revoke, and delete behavior | Done |
+| T41 | Add native video metadata extraction, muted recording profile, and partial-frame pose tolerance | Done |
+| T42 | Add cue validation dataset contract, template, CLI gate, and tests | Done |
+| T43 | Add EAS release config validator, strict credential gate, and regression tests | Done |
+| T44 | Add selectable local session review with focus metric, primary cue, timeline, and evidence facts | Done |
+| T45 | Add private per-report training log with project status, effort, confidence, note, tags, and local persistence | Done |
+| T46 | Add Progress project queue from private training logs with next-repeat prioritization | Done |
+| T47 | Add local Progress filters by wall angle, grade, and gym | Done |
+| T48 | Add privacy deletion bundle for reports, training logs, consent records, and deletion receipts | Done |

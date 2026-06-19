@@ -1,0 +1,87 @@
+{
+  "androidPackage": "com.movebeta.mobile",
+  "androidPermissions": [
+    "CAMERA",
+    "READ_MEDIA_VIDEO"
+  ],
+  "iosBundleIdentifier": "com.movebeta.mobile",
+  "iosUsageDescriptions": {
+    "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
+    "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
+    "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+  },
+  "listing": {
+    "appName": "MoveBeta",
+    "category": "Sports",
+    "fullDescription": "MoveBeta helps indoor climbers review short attempts without sending raw video to a cloud service. Calibrate capture setup, record or import a clip, run local pose analysis, review movement quality, and turn cues into drills. The app focuses on flow, pause time, bent-arm load, hip drift, and likely foot cuts while keeping reports, metrics, and diagnostics privacy-safe by default.",
+    "keywords": [
+      "climbing",
+      "bouldering",
+      "training",
+      "movement",
+      "technique",
+      "video",
+      "coach",
+      "on-device"
+    ],
+    "promotionalText": "Review climbing movement locally with pose-based cues, drills, and privacy-safe reports.",
+    "shortDescription": "On-device climbing video coach for local technique review.",
+    "subtitle": "Local climbing coach"
+  },
+  "privacy": {
+    "cloudSyncDefault": false,
+    "dataLinkedToUser": false,
+    "diagnosticsContainRawVideo": false,
+    "medicalClaims": false,
+    "rawVideoUploadDefault": false,
+    "tracking": false
+  },
+  "screenshots": [
+    {
+      "fileName": "01-analyze.png",
+      "label": "On-device video analysis and capture setup",
+      "route": "analyze",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "fileName": "02-drills.png",
+      "label": "Evidence-based drills",
+      "route": "drills",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "fileName": "03-progress.png",
+      "label": "Technique progress trends",
+      "route": "progress",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "fileName": "04-sessions.png",
+      "label": "Local report history",
+      "route": "sessions",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
+      "fileName": "05-privacy.png",
+      "label": "Privacy and offline readiness",
+      "route": "privacy",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    }
+  ],
+  "version": "1.0.0"
+}

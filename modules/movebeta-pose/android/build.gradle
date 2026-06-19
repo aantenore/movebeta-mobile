@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.movebeta'
+version = '1.0.0'
+
+android {
+  namespace 'com.movebeta.pose'
+
+  defaultConfig {
+    minSdkVersion 24
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  implementation 'com.google.mlkit:pose-detection-accurate:18.0.0-beta5'
+}

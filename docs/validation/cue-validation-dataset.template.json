@@ -1,0 +1,93 @@
+{
+  "appVersion": "1.0.0",
+  "generatedAt": "2026-06-19T00:00:00.000Z",
+  "acceptance": {
+    "minAverageCueScore": 4,
+    "minClips": 20,
+    "minDistinctReviewersPerClip": 2,
+    "minReviewsPerCue": 1,
+    "requiredReviewModes": ["packet-only"],
+    "requiredReviewerRoles": ["coach"],
+    "requiredWallAngles": ["slab", "vertical", "overhang"]
+  },
+  "clips": [
+    {
+      "clipId": "replace-with-consented-clip-id",
+      "consentRecordId": "replace-with-local-consent-record-id",
+      "packet": {
+        "reportId": "analysis-real-clip-001",
+        "consent": {
+          "grantedAt": "2026-06-19T00:00:00.000Z",
+          "policyVersion": "coach-review-v1",
+          "rawVideoIncluded": false,
+          "scope": ["coach-review", "cue-validation"],
+          "videoLeavesDevice": false
+        },
+        "session": {
+          "grade": "6b",
+          "gym": "Training wall",
+          "title": "Real clip placeholder",
+          "wallAngle": "vertical"
+        },
+        "analysis": {
+          "quality": {
+            "averageVisibility": 0.86,
+            "frameCoverage": 0.92,
+            "landmarkCoverage": 0.95,
+            "score": 91,
+            "warnings": []
+          },
+          "metrics": [
+            {
+              "id": "flow",
+              "label": "Flow score",
+              "score": 82,
+              "unit": "/100",
+              "value": 82
+            }
+          ],
+          "cues": [
+            {
+              "id": "cue-pause",
+              "body": "Replace with the generated cue body from the real packet.",
+              "drill": "Replace with the generated drill from the real packet.",
+              "severity": "watch",
+              "timestampMs": 4200,
+              "title": "Replace with generated cue title"
+            }
+          ],
+          "timeline": [
+            {
+              "id": "pause-0",
+              "label": "Low movement pause",
+              "timestampMs": 4200,
+              "type": "pause"
+            }
+          ]
+        }
+      },
+      "reviews": [
+        {
+          "cueId": "cue-pause",
+          "drillFit": 5,
+          "relevance": 5,
+          "reviewMode": "packet-only",
+          "reviewerId": "coach-001",
+          "reviewerRole": "coach",
+          "safetyLanguage": 5,
+          "timingAccuracy": 5
+        },
+        {
+          "cueId": "cue-pause",
+          "drillFit": 4,
+          "relevance": 4,
+          "reviewMode": "packet-only",
+          "reviewerId": "coach-002",
+          "reviewerRole": "coach",
+          "safetyLanguage": 5,
+          "timingAccuracy": 4
+        }
+      ]
+    }
+  ]
+}

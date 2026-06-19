@@ -1,0 +1,88 @@
+{
+  "expo": {
+    "name": "MoveBeta",
+    "slug": "movebeta-mobile",
+    "scheme": "movebeta",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.movebeta.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
+        "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
+        "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+      },
+      "supportsTablet": true
+    },
+    "android": {
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.movebeta.mobile",
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_VIDEO"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "analysisProvider": "local-fixture",
+      "activePlan": "free",
+      "videoAnalysisProvider": "web-tfjs-movenet",
+      "nativeVideoAnalysisProvider": "native-platform-pose",
+      "privacyMode": "on-device"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      "./plugins/withMoveBetaAndroidManifest",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MoveBeta uses the camera to record climbing attempts for on-device analysis.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MoveBeta can import selected climbing videos for on-device analysis.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "MoveBeta can read selected climbing videos for local analysis.",
+          "savePhotosPermission": "MoveBeta can save recordings only when you choose to keep them.",
+          "granularPermissions": [
+            "video"
+          ]
+        }
+      ],
+      "expo-image",
+      "expo-sqlite"
+    ]
+  }
+}
