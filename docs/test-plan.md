@@ -79,6 +79,8 @@
   latency budgets, battery budget, thermal state, and placeholder evidence rejection.
 - Vitest native QA runbook tests for platform workflows, budget reuse, privacy-safe setup instructions, and blocked
   evidence drafts before real device values are entered.
+- Vitest native QA evidence kit tests for Plan-tab workflow coverage, shared budgets, validator command, placeholder
+  policy, and raw-artifact exclusion.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -149,6 +151,8 @@
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Plan tab shows current tier, upgrade path, capability matrix, and provider readiness from the shared plan catalog.
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
+- Plan tab shows the native QA evidence kit for Android/iOS physical-device runs, workflow count, placeholder policy, and
+  validator command.
 - Privacy tab confirms no-upload default behavior.
 
 Command used for local smoke:
