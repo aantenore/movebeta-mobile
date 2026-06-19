@@ -64,6 +64,8 @@
   worksheet dataset readiness, status export, and raw-artifact blocking.
 - Vitest cue validation dataset tests for schema version, production thresholds, wall-angle coverage, reviewer coverage,
   raw-artifact exclusion, and weak-score failures.
+- Vitest cue validation dataset doctor tests for missing dataset evidence, parse-error evidence, ready summaries, and
+  reviewer identity exclusion.
 - Vitest performance-budget tests for local analysis duration thresholds, frame-rate evidence, and over-budget status.
 - Vitest analysis evidence tests for versioned report timelines, pass/review/blocked summaries, legacy report fallback,
   and raw artifact rejection.
@@ -154,6 +156,8 @@
   included in `npm run release:check`.
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
+- Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
+  `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.
 - Native QA evidence validation with `npm run native:qa:validate` after real device runs are captured.
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are

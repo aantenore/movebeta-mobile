@@ -142,6 +142,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh Expo, App Store Connect, and Google Play credential presence without exposing secret values.',
     },
     {
+      command: 'npm run validation:cue:doctor',
+      key: 'cue-validation-doctor',
+      label: 'Cue validation dataset doctor',
+      owner: 'product',
+      purpose: 'Refresh missing, malformed, or incomplete cue-validation dataset evidence without inventing coach review data.',
+    },
+    {
       command: 'npm run native:qa:runbook',
       key: 'native-qa-runbook',
       label: 'Native QA runbook',
@@ -198,6 +205,13 @@ export function buildReleaseEvidencePacket({
       label: 'Native QA evidence',
       path: 'docs/sdlc/native-qa-evidence.json',
       status: artifactStatus(findCheck(launchReadiness, 'nativeDeviceQa')),
+    },
+    {
+      command: 'npm run validation:cue:doctor',
+      key: 'cue-validation-dataset-report',
+      label: 'Cue validation dataset report',
+      path: 'docs/sdlc/cue-validation-dataset-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'cueValidationDataset')),
     },
     {
       command: 'npm run validation:cue',

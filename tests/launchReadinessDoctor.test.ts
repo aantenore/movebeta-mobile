@@ -58,6 +58,7 @@ function makeProjectRoot() {
       'modelAnalysisReplay',
       'nativeQaRunbook',
       'iosToolchainDoctor',
+      'cueValidationDatasetDoctor',
       'storeCredentialsDoctor',
       'webExport',
       'easStandard',
