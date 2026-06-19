@@ -53,6 +53,8 @@
 - Filter local progress history and project queue by wall angle, grade, and gym.
 - Summarize personal benchmarks for best overall, wall angle, grade, and gym attempts from local report history.
 - Generate a next-session plan from technique readiness, personal benchmarks, drill evidence, and private project notes.
+- Adjust next-session plans from private drill practice consistency by lowering intensity and prescribing easier variants
+  when skipped drills exceed completed drills.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.
 - Summarize private cue usefulness feedback into useful rate, top useful cue, and review cue signals.
 - Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,

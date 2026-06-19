@@ -82,7 +82,10 @@ export function ProgressScreen() {
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
-  const sessionPlan = useMemo(() => buildSessionPlan(filteredReports, annotations), [annotations, filteredReports]);
+  const sessionPlan = useMemo(
+    () => buildSessionPlan(filteredReports, annotations, drillPractice),
+    [annotations, drillPractice, filteredReports],
+  );
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
   const drillPracticeInsights = useMemo(

@@ -51,3 +51,4 @@
 | R47 feedback-adapted drill plans | `docs/requirements.md` | `tests/drillPlanner.test.ts`, browser smoke | Drills tab Feedback row | Covered |
 | R48 private drill practice log | `docs/requirements.md`, `docs/data-governance.md` | `tests/drillPracticeRepository.test.ts`, `tests/dataPortability.test.ts`, `tests/privacyDeletion.test.ts`, browser smoke | Drills tab Practice log controls | Covered |
 | R49 practice consistency insights | `docs/requirements.md` | `tests/drillPracticeInsights.test.ts`, browser smoke | Progress tab Practice consistency panel | Covered |
+| R50 practice-aware session planning | `docs/requirements.md` | `tests/sessionPlan.test.ts`, browser smoke | Progress tab Next session plan | Covered |

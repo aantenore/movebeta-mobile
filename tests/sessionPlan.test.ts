@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import { createReportAnnotation } from '../src/movement/reportAnnotationRepository';
 import { sampleAttempts } from '../src/movement/sampleSession';
@@ -60,5 +61,36 @@ describe('session plan', () => {
     expect(plan.anchor).toBe(reports[1].session.title);
     expect(plan.phases.find((phase) => phase.id === 'repeat-project')?.instruction).toContain('Repeat');
     expect(plan.durationMinutes).toBe(45);
+  });
+
+  it('lowers intensity when skipped practice logs show follow-through is blocked', async () => {
+    const reports = await buildSampleReports();
+    const cueId = reports[0].cues[0].id;
+    const plan = buildSessionPlan(
+      reports,
+      [],
+      [
+        createDrillPracticeRecord({
+          cueId,
+          drillId: `${cueId}-${reports[0].id}`,
+          reportId: reports[0].id,
+          status: 'skipped',
+          updatedAt: '2026-06-19T16:00:00.000Z',
+        }),
+        createDrillPracticeRecord({
+          cueId,
+          drillId: `${cueId}-${reports[1].id}`,
+          reportId: reports[1].id,
+          status: 'skipped',
+          updatedAt: '2026-06-19T17:00:00.000Z',
+        }),
+      ],
+    );
+
+    expect(plan.title).toBe('Practice reset session');
+    expect(plan.status).toBe('recover');
+    expect(plan.intensityCap).toBe('easy');
+    expect(plan.phases.map((phase) => phase.id)).toContain('practice-reset-drill');
+    expect(plan.safetyNote).toContain('Reduce complexity');
   });
 });
