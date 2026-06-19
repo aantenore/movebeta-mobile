@@ -11,11 +11,12 @@
 1. Update requirements, changelog, and versioning notes.
 2. Run `npm run release:check`.
 3. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
-4. Run `npm run release:eas:check`.
-5. Run `npm run native:qa:runbook` before collecting physical-device evidence.
-6. Run browser smoke.
-7. For native releases, run EAS preview build.
-8. Complete privacy and permission review.
+4. Review the Plan tab release unblock checklist for remaining proof artifacts, commands, and credential key names.
+5. Run `npm run release:eas:check`.
+6. Run `npm run native:qa:runbook` before collecting physical-device evidence.
+7. Run browser smoke.
+8. For native releases, run EAS preview build.
+9. Complete privacy and permission review.
 
 ## EAS Readiness
 
@@ -43,6 +44,9 @@ Strict mode requires:
 
 Credential values must stay in local shell secrets, CI secrets, or EAS credentials. Do not commit store credential files or
 secret-like values into `eas.json`.
+
+The Plan tab release unblock checklist mirrors these strict prerequisites. It lists the required proof artifacts,
+commands, affected release tracks, owners, and credential key names while deliberately excluding credential values.
 
 ## Go/No-Go
 

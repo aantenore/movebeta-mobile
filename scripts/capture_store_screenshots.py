@@ -16,6 +16,7 @@ SCREENSHOTS = [
     ("04-sessions.png", "Sessions", "Local attempts"),
     ("05-plan.png", "Plan", "Plan catalog"),
     ("06-privacy.png", "Privacy", "No upload by default"),
+    ("07-release-unblock.png", "Plan", "Release unblock checklist"),
 ]
 
 
@@ -64,8 +65,12 @@ def main() -> None:
             if tab_name != "Analyze":
                 page.get_by_role("tab", name=tab_name).click()
                 page.wait_for_load_state("networkidle")
+            if file_name == "07-release-unblock.png":
+                page.get_by_text(expected_text).scroll_into_view_if_needed()
             expect(page.get_by_text(expected_text).first).to_be_visible()
-            if tab_name == "Progress":
+            if file_name == "07-release-unblock.png":
+                pass
+            elif tab_name == "Progress":
                 page.get_by_text("Repeat outcomes").scroll_into_view_if_needed()
                 expect(page.get_by_text("Repeat outcomes")).to_be_visible()
             else:

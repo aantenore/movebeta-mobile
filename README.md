@@ -106,6 +106,8 @@ web build with `npm run store:screenshots`.
   evidence can satisfy release readiness.
 - Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native
   device checks, and external evidence owners derived from release contracts.
+- Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
+  owners, affected tracks, and credential key names without secret values.
 - Vitest for domain tests.
 
 ## Local Setup

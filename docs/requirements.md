@@ -98,6 +98,8 @@
   exclusion before physical-device evidence is collected.
 - Show an evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows,
   required wall-angle coverage, native device checks, and external evidence owners.
+- Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
+  lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 
 ## Non-Functional
 
@@ -163,6 +165,8 @@
   references, URI fields, local paths, and secret-like keys.
 - Evidence collection planning must be derived from cue-validation acceptance thresholds and native QA budgets rather
   than hard-coded in the UI.
+- Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
+  keeping proof artifacts, commands, and credential key names in a replaceable release contract.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
