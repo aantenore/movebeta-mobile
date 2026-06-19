@@ -40,6 +40,7 @@ platforms are validated on physical climbing videos and devices.
 - User can select bundled local attempts and get distinct local analysis reports.
 - Reports are persisted locally, refreshed on Sessions focus, exported as full JSON, and deleted with their private
   training log, drill practice log, and coach consent record.
+- Prepared Sessions exports expose an explicit native share action after the payload is generated.
 - Sessions lets the user select a local report review with quality facts, performance facts, focus metric, primary cue,
   timeline markers, and local privacy evidence.
 - Sessions lets the user keep private per-report training notes with cue usefulness, project status, perceived effort,
@@ -142,7 +143,8 @@ platforms are validated on physical climbing videos and devices.
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
   coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
-  dataset composition, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
+  dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
+  privacy-safe athlete context, and export, the
   Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
   diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.

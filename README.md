@@ -8,9 +8,9 @@ local analysis workflow. Video recording uses a muted configurable profile, and 
 from the file before intake when the runtime can read them. Web runtimes try TensorFlow.js MoveNet for real pose
 extraction and fall back to deterministic local landmarks when the browser cannot decode the source. Custom native
 builds can use the local `movebeta-pose` Expo module: Apple Vision on iOS and ML Kit Pose Detection on Android, behind
-the same pipeline contract. Reports are
-persisted locally, include analysis quality and performance evidence, can be refreshed, exported as JSON, and deleted
-with their private training log, drill practice log, and coach-consent record from the Sessions tab.
+the same pipeline contract. Reports are persisted locally, include analysis quality and performance evidence, can be
+refreshed, exported as JSON, shared through the native share sheet, and deleted with their private training log, drill
+practice log, and coach-consent record from the Sessions tab.
 
 ## Product Wedge
 
