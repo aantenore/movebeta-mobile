@@ -107,4 +107,6 @@
   placeholder policy, and validator command.
 - In-app Native QA evidence validator preview with app/CLI parity coverage, blocking-check summaries, and raw local
   artifact rejection.
+- Evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows, wall-angle
+  coverage, native device checks, and external evidence owners derived from release contracts.
 - Documentation screenshot gallery generated from the exported web build.
