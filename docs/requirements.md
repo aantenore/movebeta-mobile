@@ -51,8 +51,8 @@
 - Export and restore a versioned local backup JSON containing reports, private training logs, drill practice logs, and
   coach consent records without raw video, video URI, audio, account identifiers, or secrets, including an offline
   content checksum for integrity checks.
-- Preview a local backup restore before writing data, including report, training-log, drill-practice, consent, new,
-  existing, skipped orphan, and integrity counts.
+- Preview a local backup restore before writing data and show a restore receipt after writing, including report,
+  training-log, drill-practice, consent, new, existing, skipped orphan, integrity, and checksum evidence.
 - Show a selectable session review for local reports with quality, performance, focus metric, primary cue, timeline, and
   privacy evidence.
 - Let users keep private per-report training notes with project status, perceived effort, confidence, and local tags.
@@ -127,7 +127,8 @@
   already missing.
 - Backup restore and restore preview must validate schema version, reject URI-like raw-video artifacts, verify the
   content checksum when present, skip orphan training-log, drill-practice, or consent records whose reports are not
-  present in the backup, and show which incoming records already exist in the current local repository before writing.
+  present in the backup, show which incoming records already exist in the current local repository before writing, and
+  include checksum verification state in the restore receipt after writing.
 - Technique readiness must degrade to a baseline recommendation when no local reports exist.
 - Beta replay plans must degrade to weakest-metric guidance when no cue crosses a coaching threshold.
 - Movement phase breakdowns must degrade to smooth phase guidance when no disruptive cue or timeline event is present.

@@ -54,8 +54,8 @@
   with a local receipt.
 - Privacy-safe local backup and restore JSON for reports, private training logs, drill practice logs, and coach consent
   records, with a deterministic offline content checksum.
-- Local backup restore preview that validates schema/privacy and shows restore, new, existing, and skipped orphan counts
-  plus integrity status before writing local data.
+- Local backup restore preview and restore receipt that validate schema/privacy and show restore, new, existing, skipped
+  orphan, integrity status, and checksum evidence around local data writes.
 - Technique readiness score with next action, warm-up, risk, and drill evidence from local progress plus private logs.
 - Personal benchmarks for best overall, wall-angle, grade, and gym attempts with latest-vs-best deltas.
 - Next-session planning with target, duration, intensity cap, ordered phases, and local evidence.

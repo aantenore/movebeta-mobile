@@ -72,6 +72,8 @@ export type LocalDataRestoreResult = {
   consentsRestored: number;
   drillPracticeRestored: number;
   importedAt: string;
+  integrityChecksum: string | null;
+  integrityVerified: boolean;
   reportsRestored: number;
   skippedAnnotations: number;
   skippedConsents: number;
@@ -331,6 +333,8 @@ export async function restoreLocalDataBackup(
     consentsRestored: consents.length,
     drillPracticeRestored: drillPractice.length,
     importedAt: (repositories.now ?? clock)(),
+    integrityChecksum: backup.integrity?.checksum ?? null,
+    integrityVerified: verifyLocalDataBackupIntegrity(backup),
     reportsRestored: backup.reports.length,
     skippedAnnotations: backup.annotations.length - annotations.length,
     skippedConsents: backup.consents.length - consents.length,
@@ -383,6 +387,8 @@ export function formatLocalDataRestoreResult(result: LocalDataRestoreResult) {
   return [
     `Status: ${result.status}`,
     `Imported at: ${result.importedAt}`,
+    `Integrity verified: ${result.integrityVerified ? 'yes' : 'legacy backup without checksum'}`,
+    `Content checksum: ${result.integrityChecksum ?? 'not available'}`,
     `Reports restored: ${result.reportsRestored}`,
     `Training logs restored: ${result.annotationsRestored}`,
     `Coach consent records restored: ${result.consentsRestored}`,

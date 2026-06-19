@@ -84,7 +84,8 @@ platforms are validated on physical climbing videos and devices.
   with the CLI gate used for release validation.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
-  records without raw video, video URI, audio, account identifiers, or secrets.
+  records without raw video, video URI, audio, account identifiers, or secrets, while exposing checksum state before and
+  after restore.
 - Privacy shows an airplane-mode readiness self-check for local provider, storage, cloud sync, raw export, and report history.
 - Store readiness manifest validates bundle identifier, Android package, permission copy, privacy declarations, listing
   copy, and screenshot plan.
@@ -129,7 +130,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3341ms load time, 329ms average inference, and 335ms max inference in the latest run.
+  CPU backend, 3607ms load time, 350ms average inference, and 359ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -161,8 +162,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, drill-practice, coach-consent cleanup,
   orphan cleanup, and privacy-safe deletion receipt copy.
 - `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, cue feedback backup/restore, non-mutating
-  restore preview, existing-record conflict preview, restore into empty repositories, drill practice backup/restore,
-  orphan skipping, and URI-like artifact rejection.
+  restore preview, existing-record conflict preview, checksum restore receipt, restore into empty repositories, drill
+  practice backup/restore, orphan skipping, and URI-like artifact rejection.
 - `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `tests/personalBenchmarks.test.ts`: passed and covers best overall, wall-angle, grade, gym, latest-vs-best deltas,
   and empty local history behavior.
