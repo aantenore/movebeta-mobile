@@ -114,6 +114,8 @@
   cue generation, metrics, and privacy checks.
 - Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
   real climbing-video validation evidence without claiming production accuracy early.
+- Show a configurable safety-language guard that checks product and release copy for medical, injury-prevention,
+  route-safety, and guaranteed-outcome claims before stakeholder handoff.
 - Provide a GitHub Actions quality workflow template for pushes to `main` and pull requests, using lockfile-based
   dependency installation, the shared local release gate, and downloadable machine-readable release evidence after
   activation.
@@ -183,6 +185,8 @@
   real-video physical-device validation.
 - In-app model evidence must be driven by replaceable configuration, keep local technical readiness distinct from
   real-world validation, and avoid raw video, URI, local-path, or secret-like evidence fields.
+- Safety-language checks must use replaceable rules, ignore explicit negated policy/disclaimer copy, limit visible
+  findings, and keep recommendations framed as educational movement feedback.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA evidence validation must reject placeholder device identities, build ids, and clip ids even when workflow
