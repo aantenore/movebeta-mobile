@@ -69,6 +69,8 @@ def main() -> None:
         expect(page.get_by_text("Next action")).to_be_visible()
         expect(page.get_by_text("Personal benchmarks")).to_be_visible()
         expect(page.get_by_text("Best overall")).to_be_visible()
+        expect(page.get_by_text("Cue patterns")).to_be_visible()
+        expect(page.get_by_text("Latest cues")).to_be_visible()
         expect(page.get_by_text("Attempt comparison")).to_be_visible()
         expect(page.get_by_text("Current trend")).to_be_visible()
         expect(page.get_by_text("Pro history preview")).to_be_visible()
