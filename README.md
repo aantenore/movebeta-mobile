@@ -105,6 +105,8 @@ web build with `npm run store:screenshots`.
 - In-app native QA evidence composer for Android/iOS physical-run measurements, with local validation before committing
   proof JSON.
 - Share-safe native QA evidence composer export with schema version, validator summary, and raw path/token rejection.
+- Cue-validation clip intake manifest for consented clip coverage, wall-angle gaps, required coach review rows, and
+  raw-artifact-free handoff planning.
 - In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
   local privacy boundary.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.

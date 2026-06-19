@@ -124,6 +124,9 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
   QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
   flags.
+- Sessions prepares a cue-validation clip intake manifest from consented study seed data, showing clip coverage,
+  wall-angle gaps, required coach review rows, negative privacy flags, and raw artifact rejection before coach worksheets
+  are shared.
 - Plan tab shows a configurable safety-language guard for medical, injury-prevention, route-safety, and
   guaranteed-outcome copy risks across product and release copy.
 - `npm run release:handoff` writes JSON and Markdown handoff packets with repo, commit, product identity, gate status,
@@ -154,14 +157,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 82 test files and 317 tests.
+- `npm test`: passed, 82 test files and 319 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 5507ms load time, 323ms average inference, and 327ms max inference in the latest run.
+  CPU backend, 4824ms load time, 321ms average inference, and 324ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -306,7 +309,7 @@ platforms are validated on physical climbing videos and devices.
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
   repeat outcome panel, the Sessions coach library queue, team templates,
-  coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
+  coach library export, cue-validation study seed, cue-validation clip intake manifest, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA

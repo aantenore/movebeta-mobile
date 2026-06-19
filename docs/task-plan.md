@@ -117,3 +117,4 @@
 | T113 | Add native QA evidence composer to Plan | Done |
 | T114 | Add cue validation dataset doctor and release evidence integration | Done |
 | T115 | Add share-safe native QA evidence composer export | Done |
+| T116 | Add cue-validation clip intake manifest | Done |
