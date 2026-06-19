@@ -13,7 +13,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'native:qa:runbook'], key: 'nativeQaRunbook', label: 'Native QA runbook generation' },
   { command: ['npm', 'run', 'export:web'], key: 'webExport', label: 'Expo web export' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },
-  { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'High-severity dependency audit' },
+  { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },
 ];
 
 export function resolveProjectRoot() {

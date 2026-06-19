@@ -64,7 +64,7 @@
     "validation:cue": "node scripts/validate_cue_validation_dataset.mjs",
     "native:ios:pods": "bash scripts/ios-pods.sh",
     "handoff:git": "bash scripts/git-handoff-check.sh",
-    "security:audit": "npm audit --audit-level=high",
+    "security:audit": "npm audit --audit-level=moderate",
     "release:eas:check": "node scripts/validate_eas_release.mjs",
     "release:eas:strict": "node scripts/validate_eas_release.mjs --strict",
     "release:readiness": "node scripts/launch_readiness_doctor.mjs",
@@ -73,6 +73,9 @@
     "release:full": "npm run release:check && npm run release:readiness && npm run release:archives && npm run release:handoff",
     "release:check": "node scripts/release_check.mjs",
     "ci": "npm run release:check"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   },
   "private": true
 }

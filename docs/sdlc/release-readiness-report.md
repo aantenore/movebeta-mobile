@@ -109,7 +109,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
-  MoveNet readiness, model-analysis replay, native QA runbook, web export, EAS standard check, and high-severity audit.
+  MoveNet readiness, model-analysis replay, native QA runbook, web export, EAS standard check, and moderate-or-higher
+  dependency audit.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates model-analysis replay, native QA evidence, and cue-validation datasets with their
@@ -127,12 +128,13 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3719ms load time, 409ms average inference, and 446ms max inference in the latest run.
+  CPU backend, 4183ms load time, 335ms average inference, and 337ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
-- `npm run security:audit`: passed at `--audit-level=high`.
+- `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
+  for the Expo `xcode` tooling chain.
 - `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 7/7 release steps passing.
 - `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
   `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
@@ -266,7 +268,6 @@ platforms are validated on physical climbing videos and devices.
   `npm run release:eas:strict` can pass.
 - Production movement-quality claims require the cue-validation review worksheet to be filled with real reviewer scores,
   composed into `docs/validation/cue-validation-dataset.json`, and pass `npm run validation:cue`.
-- `npm audit` reports moderate vulnerabilities in the Expo config chain through `uuid`/`xcode`; the current suggested forced fix is breaking and is not applied in this release.
 - GitHub Actions workflow activation is deferred because the available GitHub OAuth token lacks the `workflow` scope.
   The quality workflow is committed as `docs/sdlc/ci-templates/github-actions-quality.yml` and can be moved into
   `.github/workflows/quality.yml` after `gh auth refresh -h github.com -s workflow`.
