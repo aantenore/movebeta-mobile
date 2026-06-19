@@ -58,6 +58,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Personal benchmarks for best overall, wall angle, grade, and gym attempts after the active local filters.
 - Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
 - Recurring cue pattern tracking for persistent, emerging, and cleared technique issues.
+- Cue usefulness insights that turn private cue feedback into useful, unclear, and review signals.
 - Technique readiness scoring that turns local trends and private training logs into next-session guidance.
 - Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
 - Evidence-based weekly drill plans generated from local report cues.

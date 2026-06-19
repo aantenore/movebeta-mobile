@@ -49,6 +49,7 @@
 - Summarize personal benchmarks for best overall, wall angle, grade, and gym attempts from local report history.
 - Generate a next-session plan from technique readiness, personal benchmarks, drill evidence, and private project notes.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.
+- Summarize private cue usefulness feedback into useful rate, top useful cue, and review cue signals.
 - Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,
   and drill evidence.
 - Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
@@ -76,6 +77,7 @@
   recovery states.
 - Cue pattern summaries must return an empty state without local cues and must keep cleared counts independent of UI
   display limits.
+- Cue usefulness summaries must ignore orphan training logs and return an empty state before feedback exists.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

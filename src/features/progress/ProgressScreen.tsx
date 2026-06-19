@@ -10,6 +10,7 @@ import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
 import type { LocalAnalysisReport } from '@/movement/contracts';
+import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
 import { summarizeCuePatterns } from '@/movement/cuePatterns';
 import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
 import {
@@ -80,6 +81,7 @@ export function ProgressScreen() {
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(() => buildSessionPlan(filteredReports, annotations), [annotations, filteredReports]);
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
+  const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -370,6 +372,53 @@ export function ProgressScreen() {
           <View style={styles.preview}>
             <Text style={styles.previewTitle}>No cue pattern yet</Text>
             <Text style={styles.previewText}>Run analyses with coach cues to reveal recurring or cleared patterns.</Text>
+          </View>
+        )}
+      </Section>
+
+      <Section title="Cue usefulness" caption="Private feedback on which local coach cues are actually helping.">
+        {cueFeedbackInsights.feedbackCount > 0 ? (
+          <View style={styles.cueUsefulnessCard}>
+            <View style={styles.cueUsefulnessSummary}>
+              <View style={styles.cueUsefulnessScore}>
+                <Text style={styles.cueUsefulnessScoreValue}>{cueFeedbackInsights.usefulnessRate}%</Text>
+                <Text style={styles.cueUsefulnessScoreLabel}>Useful rate</Text>
+              </View>
+              <View style={styles.cueUsefulnessCounts}>
+                <Text style={styles.cueUsefulnessCountText}>Useful {cueFeedbackInsights.usefulCount}</Text>
+                <Text style={styles.cueUsefulnessCountText}>Unclear {cueFeedbackInsights.unclearCount}</Text>
+                <Text style={styles.cueUsefulnessCountText}>Not useful {cueFeedbackInsights.notUsefulCount}</Text>
+              </View>
+            </View>
+
+            <View style={styles.cueUsefulnessGrid}>
+              {cueFeedbackInsights.topUsefulCue ? (
+                <View style={styles.cueUsefulnessItem}>
+                  <Text style={styles.cueUsefulnessItemLabel}>Keep</Text>
+                  <Text style={styles.cueUsefulnessItemTitle}>{cueFeedbackInsights.topUsefulCue.title}</Text>
+                  <Text style={styles.cueUsefulnessItemMeta}>
+                    {cueFeedbackInsights.topUsefulCue.usefulCount}/{cueFeedbackInsights.topUsefulCue.total} useful · latest{' '}
+                    {cueFeedbackInsights.topUsefulCue.latestRating}
+                  </Text>
+                </View>
+              ) : null}
+
+              {cueFeedbackInsights.reviewCue ? (
+                <View style={styles.cueUsefulnessItem}>
+                  <Text style={styles.cueUsefulnessItemLabel}>Review</Text>
+                  <Text style={styles.cueUsefulnessItemTitle}>{cueFeedbackInsights.reviewCue.title}</Text>
+                  <Text style={styles.cueUsefulnessItemMeta}>
+                    {cueFeedbackInsights.reviewCue.unclearCount + cueFeedbackInsights.reviewCue.notUsefulCount} review signal
+                    {cueFeedbackInsights.reviewCue.unclearCount + cueFeedbackInsights.reviewCue.notUsefulCount === 1 ? '' : 's'}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>No cue feedback yet</Text>
+            <Text style={styles.previewText}>Mark cues as useful, unclear, or not useful in Sessions to tune future repeats.</Text>
           </View>
         )}
       </Section>
@@ -802,6 +851,82 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '900',
     lineHeight: 18,
+  },
+  cueUsefulnessCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  cueUsefulnessCountText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  cueUsefulnessCounts: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  cueUsefulnessGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  cueUsefulnessItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 146,
+    padding: theme.spacing.sm,
+  },
+  cueUsefulnessItemLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  cueUsefulnessItemMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  cueUsefulnessItemTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  cueUsefulnessScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.moss,
+    borderRadius: theme.radius.md,
+    minWidth: 96,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  cueUsefulnessScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  cueUsefulnessScoreValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  cueUsefulnessSummary: {
+    alignItems: 'stretch',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
   },
   sessionPlanCard: {
     backgroundColor: theme.colors.surface,

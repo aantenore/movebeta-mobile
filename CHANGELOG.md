@@ -56,3 +56,4 @@
 - Personal benchmarks for best overall, wall-angle, grade, and gym attempts with latest-vs-best deltas.
 - Next-session planning with target, duration, intensity cap, ordered phases, and local evidence.
 - Recurring cue pattern tracking for persistent, emerging, and cleared coach cues.
+- Cue usefulness insights from private feedback with useful rate, top cue, and review cue signals.
