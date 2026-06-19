@@ -122,13 +122,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 62 test files and 236 tests.
+- `npm test`: passed, 63 test files and 239 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4183ms load time, 335ms average inference, and 337ms max inference in the latest run.
+  CPU backend, 3948ms load time, 337ms average inference, and 339ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -242,6 +242,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueValidationGateParity.test.ts`: passed and covers app/CLI parity for ready datasets, production evidence
   gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
+- `tests/nativePoseBridge.test.ts`: passed and covers the optional JavaScript native module boundary, Expo module
+  registration, Apple Vision iOS provider, local Photos resolution, and Android ML Kit frame extraction.
 - `npm run release:readiness`: passed and generated `docs/sdlc/launch-readiness-report.json` with stakeholder demo ready,
   MoveNet readiness, model-analysis replay, and native QA runbook verified, internal native beta blocked by missing
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
