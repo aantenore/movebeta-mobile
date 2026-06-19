@@ -65,6 +65,8 @@ def main() -> None:
         expect(page.get_by_text("Technique trends")).to_be_visible()
         expect(page.get_by_text("Technique readiness")).to_be_visible()
         expect(page.get_by_text("Next action")).to_be_visible()
+        expect(page.get_by_text("Personal benchmarks")).to_be_visible()
+        expect(page.get_by_text("Best overall")).to_be_visible()
         expect(page.get_by_text("Attempt comparison")).to_be_visible()
         expect(page.get_by_text("Current trend")).to_be_visible()
         expect(page.get_by_text("Pro history preview")).to_be_visible()
@@ -72,7 +74,7 @@ def main() -> None:
 
         page.get_by_role("tab", name="Sessions").click()
         page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Local attempts")).to_be_visible()
+        expect(page.get_by_text("Local attempts", exact=True)).to_be_visible()
         expect(page.get_by_text("Session review")).to_be_visible()
         expect(page.get_by_text("Focus metric")).to_be_visible()
         expect(page.get_by_text("Primary cue")).to_be_visible()
