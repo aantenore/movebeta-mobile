@@ -26,11 +26,12 @@ Indoor climbing videos can include other people. The app should include capture 
 features, and provide clear export controls before any sharing workflow. Coach packets require explicit per-report
 athlete consent for coach review and cue validation. Consent records are stored locally with grant, revoke, and delete
 behavior alongside report history.
-Batch coach-library exports must remain local until the user explicitly shares them.
-Cue-validation study seeds must remain local until the user explicitly shares them with reviewers.
-Cue-validation review worksheets must remain local until the user explicitly shares them with reviewers.
-Cue-validation worksheet CSV exports must remain local until the user explicitly shares them with reviewers.
-Completed worksheet CSV files must remain local until the user explicitly validates and shares the resulting dataset.
+- Batch coach-library exports must remain local until the user explicitly shares them.
+- Cue-validation study seeds must remain local until the user explicitly shares them with reviewers.
+- Cue-validation review worksheets must remain local until the user explicitly shares them with reviewers.
+- Cue-validation worksheet CSV exports must remain local until the user explicitly shares them with reviewers.
+- Completed worksheet CSV files must remain local until the user explicitly validates and shares the resulting dataset.
+- Sessions dataset preparation must keep the completed CSV and generated dataset in local UI state unless the user exports it.
 
 ## Sensitive Data
 

@@ -63,8 +63,8 @@ platforms are validated on physical climbing videos and devices.
   fields for real coach completion.
 - Sessions prepares a cue-validation worksheet CSV with stable headers, escaped values, blank reviewer/score cells, and
   raw-artifact text rejection.
-- The domain layer can compose validation dataset JSON from completed worksheet CSV only after real reviewer IDs and 1-5
-  scores are present and rows still match the original study seed.
+- Sessions can compose validation dataset JSON from completed worksheet CSV only after real reviewer IDs and 1-5 scores
+  are present and rows still match the original study seed.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
 - Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
   records without raw video, video URI, audio, account identifiers, or secrets.
@@ -141,7 +141,8 @@ platforms are validated on physical climbing videos and devices.
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
-  coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
+  coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
+  dataset composition, the Progress project queue, the Sessions coach packet consent gate, privacy-safe athlete context, and export, the
   Plan tab catalog, upgrade path, capability matrix, and provider readiness, the Sessions deletion receipt, the Privacy
   diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.

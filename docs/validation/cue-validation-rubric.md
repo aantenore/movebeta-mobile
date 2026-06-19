@@ -56,4 +56,5 @@ values are CSV-escaped, and raw artifact references are rejected before the CSV 
 
 After real coach review, the completed worksheet CSV can be converted to dataset JSON only if every expected row is
 present, reviewer IDs are filled, scores are integers from 1 to 5, and worksheet metadata still matches the original
-study seed.
+study seed. Sessions includes a local builder for this conversion so the product team can paste the completed CSV and
+prepare gate-compatible JSON before running `npm run validation:cue`.
