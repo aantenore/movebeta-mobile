@@ -63,6 +63,7 @@
   and drill evidence.
 - Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
+- Show a configurable Plan tab with current plan, upgrade path, capability matrix, and billing-provider readiness.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
 - Expose provider, active plan, and privacy mode in configuration.
 
@@ -94,6 +95,7 @@
 - Drill practice summaries must ignore orphan practice records and return an empty state before practice is logged.
 - Coach review packets must ignore orphan training logs or drill records and must never include private note text or
   drill-practice notes.
+- Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

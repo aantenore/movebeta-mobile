@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const StoreScreenshotSchema = z.object({
   fileName: z.string().min(1),
   label: z.string().min(1),
-  route: z.enum(['analyze', 'drills', 'progress', 'sessions', 'privacy']),
+  route: z.enum(['analyze', 'drills', 'progress', 'sessions', 'plan', 'privacy']),
   viewport: z.object({
     height: z.number().int().positive(),
     width: z.number().int().positive(),
@@ -123,7 +123,13 @@ export const defaultStoreScreenshots = [
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '05-privacy.png',
+    fileName: '05-plan.png',
+    label: 'Freemium plan catalog',
+    route: 'plan',
+    viewport: { height: 844, width: 390 },
+  },
+  {
+    fileName: '06-privacy.png',
     label: 'Privacy and offline readiness',
     route: 'privacy',
     viewport: { height: 844, width: 390 },
@@ -227,7 +233,7 @@ export function validateStoreReadinessManifest(manifest: StoreReadinessManifest)
 
   checks.push(
     manifest.screenshots.length >= 5 && new Set(manifest.screenshots.map((item) => item.route)).size >= 5
-      ? pass('screenshots', 'Store screenshot plan', `${manifest.screenshots.length} screenshots across Analyze, Drills, Progress, Sessions, and Privacy.`)
+      ? pass('screenshots', 'Store screenshot plan', `${manifest.screenshots.length} screenshots across Analyze, Drills, Progress, Sessions, Plan, and Privacy.`)
       : fail('screenshots', 'Store screenshot plan', 'Provide at least five screenshots across the core product tabs.'),
   );
 

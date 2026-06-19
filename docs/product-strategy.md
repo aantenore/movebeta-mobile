@@ -25,6 +25,8 @@ trying to be another generic training diary.
 
 The app now models these tiers as replaceable entitlements. `EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN` or Expo `extra.activePlan`
 selects the current plan; product surfaces read capabilities instead of hard-coding prices or payment providers.
+The Plan tab turns the same entitlement contract into a catalog, upgrade path, and capability matrix while leaving checkout
+to a replaceable store-subscription or billing provider integration.
 
 ## Differentiation
 
