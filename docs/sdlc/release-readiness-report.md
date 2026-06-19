@@ -129,14 +129,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 69 test files and 270 tests.
+- `npm test`: passed, 70 test files and 274 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3632ms load time, 348ms average inference, and 359ms max inference in the latest run.
+  CPU backend, 3450ms load time, 328ms average inference, and 329ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -211,6 +211,8 @@ platforms are validated on physical climbing videos and devices.
   policy, validator command, and raw-artifact exclusion.
 - `tests/nativeQaEvidenceValidation.test.ts`: passed and covers app/CLI parity for ready evidence, blocked draft
   evidence, run summaries, and raw local artifact rejection.
+- `tests/nativeQaEvidenceImport.test.ts`: passed and covers empty paste state, invalid JSON, ready native QA evidence
+  summaries, blocking-check counts, and raw local artifact rejection.
 - `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
   workflow checks, configurable acceptance thresholds, and privacy-safe collection planning.
 - `tests/releaseUnblockChecklist.test.ts`: passed and covers default external blockers, launch-readiness label/action
@@ -249,7 +251,7 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, native QA evidence kit, native QA
-  validator preview, evidence collection plan, release unblock checklist, safety-language guard, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  validator preview, native QA evidence import preview, evidence collection plan, release unblock checklist, safety-language guard, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
