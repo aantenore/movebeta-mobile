@@ -15,6 +15,7 @@ import {
   isCoachReviewConsentActive,
   type CoachReviewConsentRecord,
 } from '@/movement/coachConsentRepository';
+import { buildCoachLibrary, type CoachLibrary } from '@/movement/coachLibrary';
 import { deleteLocalAnalysisBundle, exportReport, formatAnalysisBundleDeletionReceipt, listReports } from '@/movement/repository';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { assertCoachPacketIsPrivacySafe, buildCoachReviewPacket } from '@/movement/coachReviewPacket';
@@ -321,26 +322,84 @@ function TrainingLogPanel({
   );
 }
 
+function CoachLibraryPanel({ library }: { library: CoachLibrary }) {
+  return (
+    <Section title="Coach library" caption="Local review queue built only from reports with active coach consent.">
+      <View style={styles.libraryStats}>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{library.activeConsentCount}</Text>
+          <Text style={styles.libraryStatLabel}>Consented packets</Text>
+        </View>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{library.readyPacketCount}</Text>
+          <Text style={styles.libraryStatLabel}>Ready packets</Text>
+        </View>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{library.highPriorityCount}</Text>
+          <Text style={styles.libraryStatLabel}>High priority</Text>
+        </View>
+      </View>
+
+      {library.entries.length > 0 ? (
+        <View style={styles.libraryList}>
+          {library.entries.map((entry) => (
+            <View key={entry.reportId} style={styles.libraryCard}>
+              <View style={styles.libraryTop}>
+                <View style={styles.libraryTitleGroup}>
+                  <Text style={styles.libraryTitle}>{entry.title}</Text>
+                  <Text style={styles.libraryMeta}>
+                    {entry.gym} · {entry.grade} · {entry.wallAngle}
+                  </Text>
+                </View>
+                <Text style={[styles.libraryBadge, entry.priority === 'high' ? styles.libraryBadgeHigh : null]}>
+                  {entry.priority}
+                </Text>
+              </View>
+              <Text style={styles.libraryFocus}>{entry.reviewFocus}</Text>
+              <View style={styles.libraryEvidenceRow}>
+                <Text style={styles.libraryEvidence}>Feedback {entry.cueFeedbackCount}</Text>
+                <Text style={styles.libraryEvidence}>Practice {entry.drillPracticeCount}</Text>
+                <Text style={styles.libraryEvidence}>{entry.signalStatus === 'ready' ? 'Signal ready' : 'Review signal'}</Text>
+              </View>
+              <Text style={styles.libraryPrivacy}>
+                Raw video included: no · video leaves device: no · athlete context included
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.empty}>
+          <Text style={styles.emptyTitle}>No consented coach packets yet</Text>
+          <Text style={styles.emptyText}>Grant consent on a local report to add it to the coach library.</Text>
+        </View>
+      )}
+    </Section>
+  );
+}
+
 export function SessionsScreen() {
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const [coachConsentByReport, setCoachConsentByReport] = useState<Record<string, CoachReviewConsentRecord>>({});
   const [annotationByReport, setAnnotationByReport] = useState<Record<string, ReportAnnotation>>({});
+  const [coachLibrary, setCoachLibrary] = useState<CoachLibrary>(() => buildCoachLibrary([], []));
   const [preparedExport, setPreparedExport] = useState<{ body: string; title: string } | null>(null);
   const [draftAnnotation, setDraftAnnotation] = useState<ReportAnnotation | null>(null);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
   async function refresh() {
-    const [nextReports, consents, annotations] = await Promise.all([
+    const [nextReports, consents, annotations, drillPractice] = await Promise.all([
       listReports(),
       coachConsentRepository.listConsents(),
       reportAnnotationRepository.listAnnotations(),
+      drillPracticeRepository.listRecords(),
     ]);
     const reportIds = new Set(nextReports.map((report) => report.id));
+    const scopedAnnotations = annotations.filter((annotation) => reportIds.has(annotation.reportId));
     setReports(nextReports);
     setSelectedReportId((current) => (current && reportIds.has(current) ? current : nextReports[0]?.id ?? null));
     setAnnotationByReport(
       Object.fromEntries(
-        annotations.filter((annotation) => reportIds.has(annotation.reportId)).map((annotation) => [annotation.reportId, annotation]),
+        scopedAnnotations.map((annotation) => [annotation.reportId, annotation]),
       ),
     );
     setCoachConsentByReport(
@@ -350,6 +409,7 @@ export function SessionsScreen() {
           .map((consent) => [consent.reportId, consent]),
       ),
     );
+    setCoachLibrary(buildCoachLibrary(nextReports, consents, scopedAnnotations, drillPractice));
   }
 
   async function remove(reportId: string) {
@@ -506,6 +566,8 @@ export function SessionsScreen() {
             </View>
           ))}
 
+          <CoachLibraryPanel library={coachLibrary} />
+
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
 
           {draftAnnotation && selectedReport ? (
@@ -635,6 +697,103 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     fontSize: 13,
     lineHeight: 18,
+  },
+  libraryBadge: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  libraryBadgeHigh: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  libraryCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  libraryEvidence: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brandDark,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  libraryEvidenceRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 7,
+  },
+  libraryFocus: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  libraryList: {
+    gap: theme.spacing.sm,
+  },
+  libraryMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  libraryPrivacy: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  libraryStat: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flex: 1,
+    minWidth: 112,
+    padding: theme.spacing.md,
+  },
+  libraryStatLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  libraryStats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  libraryStatValue: {
+    color: theme.colors.brandDark,
+    fontSize: 22,
+    fontWeight: '900',
+  },
+  libraryTitle: {
+    color: theme.colors.ink,
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  libraryTitleGroup: {
+    flex: 1,
+    gap: 3,
+  },
+  libraryTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   reviewBadge: {
     borderRadius: theme.radius.sm,

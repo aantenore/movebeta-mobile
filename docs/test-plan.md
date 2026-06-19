@@ -36,6 +36,8 @@
   dosage, and empty cue reports.
 - Vitest coach review packet tests for consent metadata, review rubric, privacy-safe athlete context, and raw
   video/landmark/note exclusion.
+- Vitest coach library tests for active consent filtering, revoked/orphan consent skipping, review priority, low-signal
+  status, athlete context counts, and private-note exclusion.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
 - Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
   exclusion, and weak-score failures.
@@ -76,6 +78,8 @@
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
   coach consent record from local storage with a deletion receipt.
+- Sessions tab shows a local coach library after consent with packet counts, review priority, signal status, and
+  no-raw-video evidence.
 - Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
   and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
