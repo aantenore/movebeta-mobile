@@ -3,9 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { createCoachReviewConsentRecord } from '../src/movement/coachConsentRepository';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import {
+  assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
+  buildCueValidationReviewWorksheet,
   buildCueValidationStudySeed,
+  formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
+  type CueValidationReviewWorksheet,
 } from '../src/movement/cueValidationStudy';
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
@@ -146,6 +150,60 @@ describe('cue validation study seed', () => {
     });
   });
 
+  it('builds a blank review worksheet without inventing coach identities or scores', async () => {
+    const report = await buildReport('worksheet-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:15:00.000Z' })],
+      { generatedAt: '2026-06-20T00:20:00.000Z' },
+    );
+
+    const worksheet = buildCueValidationReviewWorksheet(seed, {
+      generatedAt: '2026-06-20T00:25:00.000Z',
+      reviewerCount: 2,
+    });
+    const serialized = JSON.stringify(worksheet);
+
+    expect(() => assertCueValidationReviewWorksheetIsPrivacySafe(worksheet)).not.toThrow();
+    expect(worksheet).toMatchObject({
+      generatedAt: '2026-06-20T00:25:00.000Z',
+      privacy: {
+        keyFramesIncluded: false,
+        landmarksIncluded: false,
+        privateNotesIncluded: false,
+        rawUrisIncluded: false,
+        rawVideoIncluded: false,
+        reviewerScoresInvented: false,
+        videoLeavesDevice: false,
+      },
+      requiredReviewerCount: 2,
+      rowCount: seed.cueCount * 2,
+      schemaVersion: 'movebeta.cue-validation-review-worksheet.v1',
+      seedGeneratedAt: seed.generatedAt,
+      sourceClipCount: seed.clipCount,
+      sourceCueCount: seed.cueCount,
+    });
+    expect(worksheet.rows[0]).toMatchObject({
+      clipId: report.id,
+      cueId: report.cues[0].id,
+      packetReportId: report.id,
+      reviewerId: null,
+      reviewerRole: 'coach',
+      reviewerSlot: 1,
+      scores: {
+        drillFit: null,
+        relevance: null,
+        safetyLanguage: null,
+        timingAccuracy: null,
+      },
+      status: 'awaiting-real-review',
+    });
+    expect(formatCueValidationReviewWorksheetSummary(worksheet)).toBe(
+      `${seed.clipCount} consented clips · ${seed.cueCount} cues · ${seed.cueCount * 2} review rows · 2 coach slots · scores invented: no`,
+    );
+    expect(serialized).not.toMatch(/"(?:privateNote|rawVideoUri|videoUri|landmarks|keyFrame|uri)"\s*:/i);
+  });
+
   it('rejects injected raw artifact keys before study handoff', async () => {
     const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:10:00.000Z' });
     const unsafeSeed = {
@@ -154,5 +212,39 @@ describe('cue validation study seed', () => {
     };
 
     expect(() => assertCueValidationStudySeedIsPrivacySafe(unsafeSeed)).toThrow(/forbidden raw artifact keys/i);
+  });
+
+  it('rejects worksheet rows with invented reviewer scores', async () => {
+    const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:30:00.000Z' });
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T00:35:00.000Z' });
+    const unsafeWorksheet = {
+      ...worksheet,
+      rows: [
+        {
+          clipId: 'clip',
+          consentRecordId: 'consent',
+          cueId: 'cue',
+          cueTitle: 'Cue',
+          id: 'clip:cue:coach-1',
+          packetReportId: 'clip',
+          requiredScores: ['relevance', 'timingAccuracy', 'drillFit', 'safetyLanguage'],
+          reviewMode: 'packet-only',
+          reviewerId: 'coach-1',
+          reviewerRole: 'coach',
+          reviewerSlot: 1,
+          scores: {
+            drillFit: 5,
+            relevance: 5,
+            safetyLanguage: 5,
+            timingAccuracy: 5,
+          },
+          status: 'awaiting-real-review',
+        },
+      ],
+    } as unknown as CueValidationReviewWorksheet;
+
+    expect(() => assertCueValidationReviewWorksheetIsPrivacySafe(unsafeWorksheet)).toThrow(
+      /invented reviewer identities or scores/i,
+    );
   });
 });
