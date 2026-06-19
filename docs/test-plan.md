@@ -38,6 +38,8 @@
   video/landmark/note exclusion.
 - Vitest coach library tests for active consent filtering, revoked/orphan consent skipping, review priority, low-signal
   status, athlete context counts, and private-note exclusion.
+- Vitest coach team template tests for high-priority, follow-through, signal-retake, privacy-safe packet templates, and
+  private/raw artifact exclusion.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
 - Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
   exclusion, and weak-score failures.
@@ -80,6 +82,7 @@
   coach consent record from local storage with a deletion receipt.
 - Sessions tab shows a local coach library after consent with packet counts, review priority, signal status, and
   no-raw-video evidence.
+- Sessions tab shows local team templates generated from consented coach library signals.
 - Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
   and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.

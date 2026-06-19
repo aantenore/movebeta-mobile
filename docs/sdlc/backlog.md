@@ -14,6 +14,7 @@
 | MB-006 | Coach review | As a coach, I can review athlete reports with consent | Done | Local coach review packet with consent metadata; multi-user workspace future |
 | MB-006A | Coach context | As a coach, I can see privacy-safe athlete practice context in a consented packet | Done | Packet includes training-log scores, cue feedback ratings, and drill-practice counts while excluding private note text and drill notes |
 | MB-006B | Coach library | As a coach, I can see a local queue of consented review packets | Done | Sessions shows a privacy-safe coach library from active consent records, review priority, signal status, feedback counts, and practice counts |
+| MB-006C | Team templates | As a coach, I can reuse local review templates for classes and projects | Done | Sessions generates privacy-safe team templates from consented library signals without raw video, landmarks, or private notes |
 | MB-007 | Dependency hygiene | As a maintainer, I receive dependency update PRs | Done | Dependabot configured for npm and GitHub Actions; `npm ci` and CI gate pass |
 | MB-008 | Native release readiness | As a maintainer, I can create internal test builds | Should | EAS profiles, app identifiers, and standard validator are configured; strict gate needs real Expo, Apple, and Google credentials |
 | MB-009 | Privacy-safe observability | As a maintainer, I can inspect diagnostics without leaking sensitive data | Done | Redaction utilities, aggregate support packet, Privacy UI, and smoke coverage |
