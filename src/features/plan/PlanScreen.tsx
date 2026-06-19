@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { ArrowUpRight, CheckCircle2, Circle, ShieldCheck, TriangleAlert } from 'lucide-react-native';
+import { ArrowUpRight, CheckCircle2, Circle, Download, Share2, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
@@ -15,7 +15,10 @@ import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/co
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
+import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
+import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
+import { selectionFeedback } from '@/core/haptics';
 
 function statusLabel(status: PlanCatalogItem['status']) {
   if (status === 'current') return 'Current';
@@ -363,7 +366,13 @@ function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvi
   );
 }
 
-function ReleaseUnblockChecklistCard({ checklist }: { checklist: ReturnType<typeof buildReleaseUnblockChecklist> }) {
+function ReleaseUnblockChecklistCard({
+  checklist,
+  onPreparePacket,
+}: {
+  checklist: ReturnType<typeof buildReleaseUnblockChecklist>;
+  onPreparePacket: () => void;
+}) {
   const isReady = checklist.summary.status === 'ready';
 
   return (
@@ -383,6 +392,12 @@ function ReleaseUnblockChecklistCard({ checklist }: { checklist: ReturnType<type
         </View>
       </View>
       <Text style={styles.qaKitAction}>{checklist.summary.nextAction}</Text>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release unblock packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Prepare packet</Text>
+        </Pressable>
+      </View>
       {isReady ? (
         <View style={styles.releaseReadyRow}>
           <CheckCircle2 color={theme.colors.success} size={15} />
@@ -517,6 +532,7 @@ function buildPlanSafetySources({
 
 export function PlanScreen() {
   const [nativeQaEvidenceJson, setNativeQaEvidenceJson] = useState('');
+  const [preparedPlanExport, setPreparedPlanExport] = useState<{ body: string; title: string } | null>(null);
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
@@ -540,6 +556,30 @@ export function PlanScreen() {
       groups[capability.group] = [...(groups[capability.group] ?? []), capability];
       return groups;
     }, {});
+
+  function prepareReleaseUnblockPacket() {
+    selectionFeedback();
+    const packet = buildReleaseUnblockPacket({
+      checklist: releaseUnblockChecklist,
+    });
+    setPreparedPlanExport({
+      body: JSON.stringify(packet, null, 2),
+      title: 'Prepared release unblock packet',
+    });
+  }
+
+  async function sharePreparedPlanExport() {
+    if (!preparedPlanExport) return;
+    selectionFeedback();
+    try {
+      await sharePreparedExportFile(preparedPlanExport);
+    } catch (error) {
+      setPreparedPlanExport({
+        body: error instanceof Error ? error.message : 'Prepared plan export could not be shared from this device.',
+        title: 'Share failed',
+      });
+    }
+  }
 
   return (
     <Screen>
@@ -632,8 +672,24 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
-        <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} />
+        <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} onPreparePacket={prepareReleaseUnblockPacket} />
       </Section>
+
+      {preparedPlanExport ? (
+        <Section
+          title={preparedPlanExport.title}
+          trailing={
+            <Pressable accessibilityLabel="Share prepared plan export" onPress={() => void sharePreparedPlanExport()} style={styles.planAction}>
+              <Share2 color={theme.colors.brand} size={16} />
+              <Text style={styles.planActionText}>Share</Text>
+            </Pressable>
+          }
+        >
+          <View style={styles.planExportBox}>
+            <Text selectable style={styles.planExportText}>{preparedPlanExport.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section title="Safety language guard" caption="Checks product and release copy for medical or route-safety guarantees.">
         <SafetyLanguageGuardCard guard={safetyLanguageGuard} />
@@ -885,6 +941,41 @@ const styles = StyleSheet.create({
   },
   planUpgrade: {
     borderColor: theme.colors.brand,
+  },
+  planAction: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  planActionRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  planActionText: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  planExportBox: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    padding: theme.spacing.md,
+  },
+  planExportText: {
+    color: theme.colors.text,
+    fontFamily: 'Courier',
+    fontSize: 11,
+    lineHeight: 15,
   },
   nativeEvidenceActions: {
     alignItems: 'flex-start',
