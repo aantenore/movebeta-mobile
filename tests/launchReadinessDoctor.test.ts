@@ -52,7 +52,7 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.release-gate-report.v1',
     startedAt: '2026-06-20T07:59:00.000Z',
     status: 'pass',
-    steps: ['quality', 'modelReadiness', 'nativeQaRunbook', 'webExport', 'easStandard', 'securityAudit'].map((key) => ({
+    steps: ['quality', 'modelReadiness', 'modelAnalysisReplay', 'nativeQaRunbook', 'webExport', 'easStandard', 'securityAudit'].map((key) => ({
       command: `npm run ${key}`,
       completedAt: '2026-06-20T08:00:00.000Z',
       durationMs: 100,
@@ -70,6 +70,31 @@ function makeProjectRoot() {
   writeJson(path.join(root, 'docs/sdlc/movenet-readiness-report.json'), {
     schemaVersion: 'movebeta.movenet-readiness-report.v1',
     status: 'ready',
+  });
+  writeJson(path.join(root, 'docs/sdlc/model-analysis-replay-report.json'), {
+    attempts: [
+      {
+        analysisQualityScore: 100,
+        cueIds: ['cue-pause'],
+        frameCount: 35,
+        metricIds: ['flow', 'pause-time', 'lock-off', 'hip-drift', 'foot-cuts'],
+        passed: true,
+        privacySafe: true,
+        provider: 'web-tfjs-movenet',
+        sessionId: 'session-board-001',
+        title: 'Overhang board attempt',
+        wallAngle: 'overhang',
+      },
+    ],
+    generatedAt: '2026-06-20T08:00:00.000Z',
+    minQualityScore: 90,
+    schemaVersion: 'movebeta.model-analysis-replay-report.v1',
+    status: 'pass',
+    summary: {
+      failedAttempts: 0,
+      passedAttempts: 1,
+      totalAttempts: 1,
+    },
   });
   writeJson(path.join(root, 'docs/sdlc/native-qa-runbook.json'), {
     schemaVersion: 'movebeta.native-qa-runbook.v1',
@@ -184,6 +209,7 @@ describe('launch readiness doctor', () => {
     expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' })).toMatchObject({
       androidDebugBuild: true,
       iosPods: true,
+      modelAnalysisReplay: true,
       modelReadiness: true,
       privacyManifest: true,
       releaseGate: true,
@@ -261,6 +287,7 @@ describe('launch readiness doctor', () => {
     expect(report.checks.find((check) => check.key === 'androidDebugBuild')?.status).toBe('verified');
     expect(report.checks.find((check) => check.key === 'nativeDeviceQa')?.status).toBe('missing');
     expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('verified');
+    expect(report.checks.find((check) => check.key === 'modelAnalysisReplay')?.status).toBe('verified');
     expect(report.checks.find((check) => check.key === 'nativeQaRunbook')?.status).toBe('verified');
     expect(report.summary.status).toBe('blocked');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('ready');
@@ -309,6 +336,55 @@ describe('launch readiness doctor', () => {
 
     expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('missing');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('blocked');
+  });
+
+  it('blocks demo readiness when the model-analysis replay report is missing or failing', () => {
+    const rootDir = makeProjectRoot();
+    fs.rmSync(path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json'));
+
+    const missingReport = buildLaunchReadinessDoctorReport({
+      env: { NODE_ENV: 'test' },
+      generatedAt: '2026-06-20T08:12:00.000Z',
+      rootDir,
+    });
+
+    expect(missingReport.checks.find((check) => check.key === 'modelAnalysisReplay')?.status).toBe('missing');
+    expect(missingReport.tracks.find((track) => track.key === 'demo')?.status).toBe('blocked');
+
+    writeJson(path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json'), {
+      attempts: [
+        {
+          analysisQualityScore: 44,
+          cueIds: [],
+          frameCount: 35,
+          metricIds: [],
+          passed: false,
+          privacySafe: true,
+          provider: 'web-tfjs-movenet',
+          sessionId: 'session-board-001',
+          title: 'Overhang board attempt',
+          wallAngle: 'overhang',
+        },
+      ],
+      generatedAt: '2026-06-20T08:13:00.000Z',
+      minQualityScore: 90,
+      schemaVersion: 'movebeta.model-analysis-replay-report.v1',
+      status: 'fail',
+      summary: {
+        failedAttempts: 1,
+        passedAttempts: 0,
+        totalAttempts: 1,
+      },
+    });
+
+    const failingReport = buildLaunchReadinessDoctorReport({
+      env: { NODE_ENV: 'test' },
+      generatedAt: '2026-06-20T08:14:00.000Z',
+      rootDir,
+    });
+
+    expect(failingReport.checks.find((check) => check.key === 'modelAnalysisReplay')?.status).toBe('missing');
+    expect(failingReport.tracks.find((track) => track.key === 'demo')?.status).toBe('blocked');
   });
 
   it('reports missing native QA runbook separately from missing device evidence', () => {

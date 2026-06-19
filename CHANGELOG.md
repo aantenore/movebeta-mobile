@@ -102,6 +102,8 @@
 - Reusable MoveNet pose mapper with contract tests that replay model-shaped keypoints through the movement analyzer.
 - Deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through metrics, cues, quality checks,
   and privacy-safe output checks across bundled slab, vertical, and overhang attempts.
+- Launch-readiness validation for the model-analysis replay report, so demo, beta, and store tracks expose model-shaped
+  cue evidence as a first-class readiness check.
 - Native QA runbook generator with platform workflow steps, shared performance budgets, privacy instructions, and blocked
   evidence drafts for physical-device validation.
 - Native QA evidence validator now rejects placeholder device/build/clip values instead of accepting filled-out templates.
