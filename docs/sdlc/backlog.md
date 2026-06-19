@@ -8,6 +8,7 @@
 | MB-003A | Validation study seed | As a product team, I can prepare a privacy-safe study seed from consented local packets | Done | Sessions exports packet-only review tasks from active cue-validation consent without raw artifacts or invented reviewer scores |
 | MB-003B | Validation worksheet | As a product team, I can give reviewers a blank worksheet for real cue scores | Done | Sessions exports null reviewer identities and null score fields for each packet-only task without raw artifacts |
 | MB-003C | Validation CSV | As a product team, I can export the review worksheet to a spreadsheet-friendly CSV | Done | Sessions exports stable CSV headers with blank reviewer/score cells, escaped values, and raw-artifact text rejection |
+| MB-003D | Completed validation dataset | As a product team, I can turn completed worksheet CSV into validation dataset JSON | Done | Domain composer accepts only real reviewer ids, 1-5 scores, expected rows, and seed-matching metadata before producing gate-compatible JSON |
 | MB-004 | Repeat comparison | As a climber, I can compare two attempts of the same move | Done | Latest-vs-baseline metrics, cue status, and recommendation in Progress |
 | MB-005 | Pro history | As a paying user, I can track long-term technique trends | Done | Active plan entitlements gate recent vs unlimited history; optional sync future |
 | MB-005A | Adaptive drills | As a climber, my drill plan reacts to which cues actually helped | Done | Private cue feedback marks drills as reinforce, variant, or untested without cloud sync |

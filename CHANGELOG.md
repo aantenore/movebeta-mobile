@@ -78,3 +78,5 @@
 - Local cue-validation review worksheet export with blank coach score rows, null reviewer identities, and privacy
   guardrails against raw artifacts or invented evidence.
 - Privacy-safe cue-validation worksheet CSV export with stable headers, blank reviewer/score cells, and CSV escaping.
+- Completed cue-validation worksheet CSV parser and dataset composer with row matching, 1-5 score validation, and
+  compatibility with the production validation gate.
