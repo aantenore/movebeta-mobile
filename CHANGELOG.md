@@ -1,0 +1,52 @@
+# Changelog
+
+## 1.0.0 - 2026-06-17
+
+### Added
+
+- On-device movement coaching prototype with local fixture pose provider.
+- Three selectable bundled climbing attempts for the runnable camera/import workaround.
+- Local report persistence with focus refresh, privacy-safe JSON export, and delete controls.
+- Replaceable pose-estimator pipeline for MediaPipe, Core ML, and TensorFlow Lite adapters.
+- Local movement analyzer for flow, pause, bent-arm load, hip drift, and foot-cut metrics.
+- Coach, Sessions, Drills, Progress, and Privacy app screens.
+- Domain tests, web export, browser smoke verification, and SDLC delivery artifacts.
+- Browser-side TensorFlow.js MoveNet provider for local video pose extraction.
+- Local Expo native pose module with Apple Vision and Android ML Kit adapters.
+- Verified Android debug build with local JDK and Android SDK toolchain.
+- Local iOS Ruby/CocoaPods bootstrap and verified Pods install for the native pose module.
+- Analysis quality scoring and UI warnings for low-confidence pose input.
+- Local progress history insights with attempt count, average quality, focus metric, and trend deltas.
+- Weekly drill plan generated from local report cues with priority, dosage, and evidence.
+- Latest-vs-baseline attempt comparison with metric deltas, cue status, and next-repeat recommendation.
+- Native SQLite report repository with web/local fallback behind the same persistence contract.
+- Consented coach review packet export with rubric and no raw video, URI, key-frame, or landmark artifacts.
+- Cue validation scoring harness for pass, needs-review, and insufficient-data review outcomes.
+- Capability-based Free, Pro, and Coach entitlements with active plan configuration and history limits.
+- Capture-readiness guidance that tells users when a clip is ready, borderline, or should be retaken.
+- Verified dependency hygiene with Dependabot, CI gates, and `npm ci` from the lockfile.
+- Privacy-safe diagnostics support packet with aggregate report quality, provider, consent, and sanitized event data.
+- Airplane-mode readiness self-check for local workflow, storage, sync, raw export, and report history.
+- Video intake readiness with local-source validation, short-clip blocking, duration/resolution warnings, sampled-frame
+  estimates, and recorder timer.
+- Store readiness kit with generated listing metadata, privacy declarations, screenshot plan, and Playwright screenshot
+  capture from the exported app.
+- Editable session metadata for recorded/imported attempts, persisted into reports, exports, trends, drills, and coach
+  packets.
+- Pre-recording capture setup calibration with privacy, framing, distance, lighting, contrast, and phone stability checks.
+- Android merged manifest validation for camera/import permissions, audio exclusion, and disabled report backup.
+- Native QA evidence template and validator for platform coverage, airplane-mode workflow, latency, battery, and thermal budgets.
+- Report-level video analysis performance evidence with duration, frame rate, and budget status.
+- Explicit athlete consent gate before coach review packet preparation.
+- Durable per-report coach review consent records with local persistence, revocation, and report-delete cleanup.
+- Native video metadata extraction for duration/dimensions, configured muted recording, and partial-frame pose tolerance.
+- Cue validation dataset contract, template, CLI readiness gate, and tests for consented coach review studies.
+- EAS release readiness validator with standard and strict modes for app versioning, production artifact type, submit
+  secrets, project id, and store credential prerequisites.
+- Selectable local session review in Sessions with quality facts, performance facts, focus metric, primary cue, timeline
+  markers, and local privacy evidence.
+- Private per-report training log with project status, perceived effort, confidence, notes, tags, and local/SQLite
+  persistence.
+- Progress project queue derived from private training logs with active/repeat/sent counts and next-repeat action.
+- Local Progress filters for wall angle, grade, and gym.
+- Privacy deletion bundle that removes report, private training log, and coach consent records together with a local receipt.

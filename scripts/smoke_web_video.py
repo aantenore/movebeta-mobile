@@ -1,0 +1,133 @@
+import os
+
+from playwright.sync_api import expect, sync_playwright
+
+
+def main() -> None:
+    base_url = os.environ.get("MOVEBETA_SMOKE_URL", "http://127.0.0.1:8083")
+    console_errors: list[str] = []
+    page_errors: list[str] = []
+
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
+        page.on("pageerror", lambda error: page_errors.append(str(error)))
+        page.goto(base_url)
+        page.wait_for_load_state("networkidle")
+
+        expect(page.get_by_text("On-device climbing coach")).to_be_visible()
+        expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
+        expect(page.get_by_text("Session metadata")).to_be_visible()
+        expect(page.get_by_text("Capture setup")).to_be_visible()
+        expect(page.get_by_text("Setup ready")).to_be_visible()
+        expect(page.get_by_label("People: Clear")).to_be_visible()
+        expect(page.get_by_label("Gym or wall")).to_be_visible()
+        expect(page.get_by_label("Grade or focus")).to_be_visible()
+        expect(page.get_by_text("Record", exact=True)).to_be_visible()
+        expect(page.get_by_text("Import", exact=True)).to_be_visible()
+        expect(page.get_by_text("Demo sources")).to_be_visible()
+        expect(page.get_by_text("Analysis quality")).to_be_visible()
+        expect(page.get_by_text("Ready for coaching")).to_be_visible()
+        expect(page.get_by_text("Movement metrics")).to_be_visible()
+        expect(page.get_by_text("Coach cues")).to_be_visible()
+
+        page.get_by_text("Vertical sequence repeat").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Vertical sequence repeat")).to_be_visible()
+        expect(page.get_by_text("local-fixture")).to_be_visible()
+
+        page.get_by_role("tab", name="Drills").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Practice from evidence")).to_be_visible()
+        expect(page.get_by_text("Weekly drill plan")).to_be_visible()
+        expect(page.get_by_text("Coach pack preview")).to_be_visible()
+        expect(page.get_by_text("Plan access").first).to_be_visible()
+        expect(page.get_by_text("Unlocks with Pro")).to_be_visible()
+
+        page.set_viewport_size({"width": 1280, "height": 900})
+        page.get_by_role("tab", name="Analyze").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
+        page.get_by_label("Gym or wall").fill("MoonBoard Room")
+        page.get_by_label("Grade or focus").fill("7a")
+        page.get_by_label("View: Diagonal").click()
+        expect(page.get_by_text("Setup can improve")).to_be_visible()
+        page.get_by_label("View: Side On").click()
+        expect(page.get_by_text("Clip ready")).to_be_visible()
+        expect(page.get_by_text("Analysis quality")).to_be_visible()
+        expect(page.get_by_text("Ready for coaching")).to_be_visible()
+        expect(page.get_by_text("Movement metrics")).to_be_visible()
+
+        page.get_by_role("tab", name="Progress").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Technique trends")).to_be_visible()
+        expect(page.get_by_text("Attempt comparison")).to_be_visible()
+        expect(page.get_by_text("Current trend")).to_be_visible()
+        expect(page.get_by_text("Pro history preview")).to_be_visible()
+        expect(page.get_by_text("Plan access").first).to_be_visible()
+
+        page.get_by_role("tab", name="Sessions").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Local attempts")).to_be_visible()
+        expect(page.get_by_text("Session review")).to_be_visible()
+        expect(page.get_by_text("Focus metric")).to_be_visible()
+        expect(page.get_by_text("Primary cue")).to_be_visible()
+        expect(page.get_by_text("Timeline", exact=True).first).to_be_visible()
+        expect(page.get_by_text("Local evidence")).to_be_visible()
+        expect(page.get_by_text("Training log", exact=True)).to_be_visible()
+        page.get_by_label("Project status Repeat").click()
+        page.get_by_label("Effort 4").click()
+        page.get_by_label("Confidence 5").click()
+        page.get_by_label("Private training note").fill("Left hip in before the crux.")
+        page.get_by_label("Training log tags").fill("board, crux")
+        page.get_by_text("Save", exact=True).click()
+        page.get_by_role("tab", name="Progress").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("History filters")).to_be_visible()
+        page.get_by_label("vertical", exact=True).click()
+        expect(page.get_by_text("1 active filters")).to_be_visible()
+        page.get_by_label("Clear progress filters").click()
+        expect(page.get_by_text("Project queue")).to_be_visible()
+        expect(page.get_by_text("Next repeat", exact=True)).to_be_visible()
+        expect(page.get_by_text("confidence 5/5")).to_be_visible()
+        page.get_by_role("tab", name="Sessions").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("Coach packet", exact=True).nth(0)).to_be_visible()
+        page.get_by_text("Coach packet", exact=True).nth(0).click()
+        expect(page.get_by_text("Consent required")).to_be_visible()
+        page.get_by_text("Consent", exact=True).nth(0).click()
+        page.get_by_text("Coach packet", exact=True).nth(0).click()
+        expect(page.get_by_text("Prepared coach packet")).to_be_visible()
+
+        page.get_by_role("tab", name="Privacy").click()
+        page.wait_for_load_state("networkidle")
+        expect(page.get_by_text("No upload by default")).to_be_visible()
+        expect(page.get_by_text("Airplane-mode readiness")).to_be_visible()
+        page.get_by_text("Check", exact=True).click()
+        expect(page.get_by_text("Ready for offline analysis")).to_be_visible()
+        expect(page.get_by_text("Diagnostics")).to_be_visible()
+        page.get_by_text("Prepare", exact=True).click()
+        expect(page.get_by_text("Privacy-safe support packet")).to_be_visible()
+        expect(page.get_by_text('"excludedArtifacts"')).to_be_visible()
+
+        page.get_by_role("tab", name="Sessions").click()
+        page.wait_for_load_state("networkidle")
+        page.get_by_label("Delete Vertical sequence repeat").first.click()
+        expect(page.get_by_text("Local deletion receipt")).to_be_visible()
+        expect(page.get_by_text("Private training log: deleted")).to_be_visible()
+        expect(page.get_by_text("Coach consent record: deleted")).to_be_visible()
+        expect(page.get_by_text("Video left device: no")).to_be_visible()
+
+        browser.close()
+
+    if page_errors:
+      raise AssertionError(f"Page errors: {page_errors}")
+    if console_errors:
+      ignored = [item for item in console_errors if "favicon" not in item.lower()]
+      if ignored:
+        raise AssertionError(f"Console errors: {ignored}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      expo-stack:
+        patterns:
+          - expo
+          - expo-*
+          - react-native
+          - react-native-*
+      test-tooling:
+        patterns:
+          - vitest
+          - typescript
+          - "@types/*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

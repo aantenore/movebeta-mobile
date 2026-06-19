@@ -1,0 +1,663 @@
+import { useCallback, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+
+import { Header } from '@/components/Header';
+import { PlanStatusCard } from '@/components/PlanStatusCard';
+import { Screen } from '@/components/Screen';
+import { Section } from '@/components/Section';
+import { appConfig } from '@/core/config';
+import { limitHistoryForPlan } from '@/core/entitlements';
+import { selectionFeedback } from '@/core/haptics';
+import type { LocalAnalysisReport } from '@/movement/contracts';
+import {
+  activeProgressFilterCount,
+  defaultProgressFilters,
+  deriveProgressFilterOptions,
+  filterProgressReports,
+  type ProgressFilters,
+} from '@/movement/progressFilters';
+import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
+import { summarizeProgress } from '@/movement/progressInsights';
+import { summarizeProjectQueue } from '@/movement/projectQueue';
+import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
+import { theme } from '@/core/theme';
+
+type FilterChipProps = {
+  label: string;
+  onPress: () => void;
+  selected: boolean;
+};
+
+function FilterChip({ label, onPress, selected }: FilterChipProps) {
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      onPress={() => {
+        selectionFeedback();
+        onPress();
+      }}
+      style={[styles.filterChip, selected ? styles.filterChipSelected : null]}
+    >
+      <Text style={[styles.filterChipText, selected ? styles.filterChipTextSelected : null]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function FilterGroup({
+  label,
+  options,
+}: {
+  label: string;
+  options: Array<{ label: string; onPress: () => void; selected: boolean }>;
+}) {
+  return (
+    <View style={styles.filterGroup}>
+      <Text style={styles.filterGroupLabel}>{label}</Text>
+      <View style={styles.filterChips}>
+        {options.map((option) => (
+          <FilterChip key={`${label}-${option.label}`} {...option} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+export function ProgressScreen() {
+  const [annotations, setAnnotations] = useState<ReportAnnotation[]>([]);
+  const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
+  const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
+  const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
+  const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
+  const filteredReports = useMemo(() => filterProgressReports(visibleReports, filters), [visibleReports, filters]);
+  const summary = useMemo(() => summarizeProgress(filteredReports), [filteredReports]);
+  const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
+  const comparison = summary.attemptComparison;
+  const activeFilters = activeProgressFilterCount(filters);
+
+  async function refresh() {
+    let nextReports = await listReports();
+
+    if (nextReports.length === 0) {
+      await Promise.all(listDemoAttempts().map((attempt) => analyzeDemoAttempt(attempt.session.id)));
+      nextReports = await listReports();
+    }
+
+    setReports(nextReports);
+    setAnnotations(await reportAnnotationRepository.listAnnotations());
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      void refresh().catch(() => {
+        setAnnotations([]);
+        setReports([]);
+      });
+    }, []),
+  );
+
+  return (
+    <Screen>
+      <Header
+        eyebrow="Progress"
+        title="Technique trends"
+        subtitle="Track movement quality over attempts: flow, pause time, foot cuts, hip drift, and bent-arm load."
+      />
+
+      <View style={styles.summaryGrid}>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryLabel}>Attempts</Text>
+          <Text style={styles.summaryValue}>{summary.attemptCount}</Text>
+        </View>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryLabel}>Avg quality</Text>
+          <Text style={styles.summaryValue}>{summary.averageQuality}/100</Text>
+        </View>
+      </View>
+
+      {summary.bestMetric && summary.focusMetric ? (
+        <View style={styles.focusBand}>
+          <View style={styles.focusItem}>
+            <Text style={styles.focusLabel}>Best signal</Text>
+            <Text style={styles.focusValue}>{summary.bestMetric.label}</Text>
+            <Text style={styles.focusMeta}>{summary.bestMetric.score}/100</Text>
+          </View>
+          <View style={styles.focusItem}>
+            <Text style={styles.focusLabel}>Next focus</Text>
+            <Text style={styles.focusValue}>{summary.focusMetric.label}</Text>
+            <Text style={styles.focusMeta}>{summary.focusMetric.score}/100</Text>
+          </View>
+        </View>
+      ) : null}
+
+      <Section
+        title="History filters"
+        caption={`${filteredReports.length}/${visibleReports.length} local reports shown · ${activeFilters} active filters`}
+        trailing={
+          activeFilters > 0 ? (
+            <Pressable
+              accessibilityLabel="Clear progress filters"
+              onPress={() => {
+                selectionFeedback();
+                setFilters(defaultProgressFilters);
+              }}
+              style={styles.clearFilters}
+            >
+              <Text style={styles.clearFiltersText}>Clear</Text>
+            </Pressable>
+          ) : null
+        }
+      >
+        <View style={styles.filterPanel}>
+          <FilterGroup
+            label="Wall angle"
+            options={[
+              {
+                label: 'All walls',
+                onPress: () => setFilters((current) => ({ ...current, wallAngle: 'all' })),
+                selected: filters.wallAngle === 'all',
+              },
+              ...filterOptions.wallAngles.map((wallAngle) => ({
+                label: wallAngle,
+                onPress: () => setFilters((current) => ({ ...current, wallAngle })),
+                selected: filters.wallAngle === wallAngle,
+              })),
+            ]}
+          />
+          <FilterGroup
+            label="Grade"
+            options={[
+              {
+                label: 'All grades',
+                onPress: () => setFilters((current) => ({ ...current, grade: 'all' })),
+                selected: filters.grade === 'all',
+              },
+              ...filterOptions.grades.map((grade) => ({
+                label: grade,
+                onPress: () => setFilters((current) => ({ ...current, grade })),
+                selected: filters.grade === grade,
+              })),
+            ]}
+          />
+          <FilterGroup
+            label="Gym"
+            options={[
+              {
+                label: 'All gyms',
+                onPress: () => setFilters((current) => ({ ...current, gym: 'all' })),
+                selected: filters.gym === 'all',
+              },
+              ...filterOptions.gyms.map((gym) => ({
+                label: gym,
+                onPress: () => setFilters((current) => ({ ...current, gym })),
+                selected: filters.gym === gym,
+              })),
+            ]}
+          />
+        </View>
+      </Section>
+
+      <Section title="Project queue" caption="Private training-log status converted into the next local repeat.">
+        <View style={styles.projectQueueCard}>
+          <View style={styles.projectQueueStats}>
+            <View style={styles.projectQueueStat}>
+              <Text style={styles.projectQueueValue}>{projectQueue.activeCount}</Text>
+              <Text style={styles.projectQueueLabel}>Active</Text>
+            </View>
+            <View style={styles.projectQueueStat}>
+              <Text style={styles.projectQueueValue}>{projectQueue.repeatCount}</Text>
+              <Text style={styles.projectQueueLabel}>Repeats</Text>
+            </View>
+            <View style={styles.projectQueueStat}>
+              <Text style={styles.projectQueueValue}>{projectQueue.sentCount}</Text>
+              <Text style={styles.projectQueueLabel}>Sent</Text>
+            </View>
+            <View style={styles.projectQueueStat}>
+              <Text style={styles.projectQueueValue}>{projectQueue.averageEffort || '-'}</Text>
+              <Text style={styles.projectQueueLabel}>Effort</Text>
+            </View>
+          </View>
+
+          {projectQueue.nextProject ? (
+            <View style={styles.nextProject}>
+              <Text style={styles.nextProjectLabel}>Next repeat</Text>
+              <Text style={styles.nextProjectTitle}>{projectQueue.nextProject.report.session.title}</Text>
+              <Text style={styles.nextProjectAction}>{projectQueue.nextProject.action}</Text>
+              <Text style={styles.nextProjectMeta}>
+                {projectQueue.nextProject.annotation.projectStatus} · confidence{' '}
+                {projectQueue.nextProject.annotation.confidence}/5 · effort{' '}
+                {projectQueue.nextProject.annotation.perceivedEffort}/5
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.previewCompact}>
+              <Text style={styles.previewTitle}>No active projects yet</Text>
+              <Text style={styles.previewText}>Save a Sessions training log as Project or Repeat to populate this queue.</Text>
+            </View>
+          )}
+        </View>
+      </Section>
+
+      {comparison ? (
+        <Section title="Attempt comparison" caption="Latest attempt measured against the previous local report.">
+          <View style={styles.comparisonCard}>
+            <View style={styles.comparisonHeader}>
+              <View style={styles.comparisonTitleGroup}>
+                <Text style={styles.comparisonLabel}>Latest</Text>
+                <Text style={styles.comparisonTitle}>{comparison.currentReport.session.title}</Text>
+              </View>
+              <View style={styles.deltaPill}>
+                <Text
+                  style={[
+                    styles.deltaPillText,
+                    comparison.overallScoreDelta < 0 ? styles.deltaPillTextDown : null,
+                  ]}
+                >
+                  {comparison.overallScoreDelta > 0 ? '+' : ''}
+                  {comparison.overallScoreDelta}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.comparisonText}>{comparison.headline}</Text>
+            <Text style={styles.comparisonMeta}>
+              Baseline: {comparison.baselineReport.session.title} · Quality{' '}
+              {comparison.qualityDelta > 0 ? '+' : ''}
+              {comparison.qualityDelta}
+            </Text>
+
+            <View style={styles.comparisonStats}>
+              <View style={styles.comparisonStat}>
+                <Text style={styles.comparisonStatValue}>{comparison.improvedMetrics.length}</Text>
+                <Text style={styles.comparisonStatLabel}>Improved</Text>
+              </View>
+              <View style={styles.comparisonStat}>
+                <Text style={styles.comparisonStatValue}>{comparison.regressedMetrics.length}</Text>
+                <Text style={styles.comparisonStatLabel}>Regressed</Text>
+              </View>
+              <View style={styles.comparisonStat}>
+                <Text style={styles.comparisonStatValue}>{comparison.cueComparison.resolvedCues.length}</Text>
+                <Text style={styles.comparisonStatLabel}>Cues cleared</Text>
+              </View>
+            </View>
+
+            <Text style={styles.recommendation}>{comparison.recommendation}</Text>
+          </View>
+        </Section>
+      ) : (
+        <Section title="Attempt comparison" caption="Run two analyses of the same climb to unlock beta deltas.">
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>Need one more attempt</Text>
+            <Text style={styles.previewText}>The next repeat will unlock score deltas, cleared cues, and focus shifts.</Text>
+          </View>
+        </Section>
+      )}
+
+      <Section title="Current trend">
+        <View style={styles.chart}>
+          {summary.trends.map((trend) => (
+            <View key={trend.id} style={styles.row}>
+              <Text style={styles.label}>{trend.label}</Text>
+              <View style={styles.track}>
+                <View style={[styles.bar, { width: `${trend.currentScore}%` }]} />
+              </View>
+              <View style={styles.scoreGroup}>
+                <Text style={styles.score}>{trend.currentScore}</Text>
+                <Text style={[styles.delta, trend.direction === 'down' ? styles.deltaDown : null]}>
+                  {trend.delta === null ? 'new' : `${trend.delta > 0 ? '+' : ''}${trend.delta}`}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </Section>
+
+      <Section title="Pro history preview" caption="Local-first history can later unlock filters, benchmarks, and coach sharing.">
+        <View style={styles.preview}>
+          <Text style={styles.previewTitle}>Next unlock</Text>
+          <Text style={styles.previewText}>
+            Compare trends by grade, wall angle, and gym while keeping raw video out of sync by default.
+          </Text>
+        </View>
+      </Section>
+
+      <Section title="Plan access" caption="History and coach features are capability-gated, not hard-coded to prices.">
+        <PlanStatusCard
+          capability="unlimited-history"
+          includedText="Unlimited local history is enabled for this build."
+          lockedText="Recent trends stay available; unlimited history is a Pro capability."
+          plan={appConfig.activePlan}
+          title="Unlimited local history"
+        />
+      </Section>
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  chart: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  label: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    width: 106,
+  },
+  track: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: 999,
+    flex: 1,
+    height: 12,
+    overflow: 'hidden',
+  },
+  bar: {
+    backgroundColor: theme.colors.moss,
+    borderRadius: 999,
+    height: '100%',
+  },
+  comparisonCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  comparisonHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  comparisonLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  comparisonMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  comparisonStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  comparisonStatLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  comparisonStats: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  comparisonStatValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  comparisonText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  comparisonTitle: {
+    color: theme.colors.ink,
+    fontSize: 17,
+    fontWeight: '900',
+    lineHeight: 21,
+  },
+  comparisonTitleGroup: {
+    flex: 1,
+    gap: 3,
+  },
+  delta: {
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    textAlign: 'right',
+  },
+  deltaDown: {
+    color: theme.colors.coral,
+  },
+  deltaPill: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    minWidth: 48,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+  },
+  deltaPillText: {
+    color: theme.colors.success,
+    fontSize: 16,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  deltaPillTextDown: {
+    color: theme.colors.coral,
+  },
+  focusBand: {
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.lg,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  focusItem: {
+    flex: 1,
+    gap: 3,
+  },
+  focusLabel: {
+    color: '#DCECF3',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  focusMeta: {
+    color: '#DCECF3',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  focusValue: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  clearFilters: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  clearFiltersText: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  filterPanel: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  filterGroup: {
+    gap: 8,
+  },
+  filterGroupLabel: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  filterChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  filterChip: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+  },
+  filterChipSelected: {
+    backgroundColor: theme.colors.brandDark,
+    borderColor: theme.colors.brandDark,
+  },
+  filterChipText: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  filterChipTextSelected: {
+    color: '#FFFFFF',
+  },
+  projectQueueCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  projectQueueStats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  projectQueueStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexGrow: 1,
+    gap: 2,
+    minWidth: 72,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  projectQueueValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  projectQueueLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  nextProject: {
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.md,
+    gap: 5,
+    padding: theme.spacing.md,
+  },
+  nextProjectAction: {
+    color: '#DCECF3',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  nextProjectLabel: {
+    color: '#DCECF3',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  nextProjectMeta: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  nextProjectTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  score: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontWeight: '900',
+    textAlign: 'right',
+  },
+  scoreGroup: {
+    alignItems: 'flex-end',
+    width: 32,
+  },
+  summaryCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flex: 1,
+    gap: 5,
+    padding: theme.spacing.md,
+  },
+  summaryGrid: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  summaryLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  summaryValue: {
+    color: theme.colors.ink,
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  preview: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: 5,
+    padding: theme.spacing.md,
+  },
+  previewCompact: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.md,
+  },
+  previewText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  previewTitle: {
+    color: theme.colors.brand,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  recommendation: {
+    color: theme.colors.brand,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+});
