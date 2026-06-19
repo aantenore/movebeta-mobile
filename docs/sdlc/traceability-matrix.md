@@ -30,7 +30,7 @@
 | R26 editable session metadata | `docs/requirements.md` | `tests/videoWorkflow.test.ts` | Analyze tab smoke | Covered |
 | R27 capture setup calibration | `docs/requirements.md` | `tests/captureCalibration.test.ts` | Analyze tab smoke | Covered |
 | R28 Android manifest privacy and permissions | `docs/requirements.md` | `tests/androidManifestChecks.test.ts`, `npm run native:android:debug` | APK permission review | Covered |
-| R29 native QA evidence budget | `docs/sdlc/native-qa-matrix.md` | `tests/nativeQaEvidence.test.ts` | `npm run native:qa:validate` with real device evidence | Harness covered |
+| R29 native QA evidence budget | `docs/sdlc/native-qa-matrix.md` | `tests/nativeQaEvidence.test.ts` | `npm run native:qa:validate` with real device evidence | Harness and placeholder rejection covered |
 | R30 report-level video performance evidence | `docs/requirements.md` | `tests/performanceBudget.test.ts`, `tests/videoWorkflow.test.ts` | native QA evidence comparison | Covered |
 | R31 durable coach consent records | `docs/requirements.md`, `docs/sdlc/privacy-threat-model.md` | `tests/coachConsentRepository.test.ts` | Sessions consent smoke | Covered |
 | R32 video metadata and muted recording | `docs/requirements.md`, `docs/architecture.md` | `tests/videoMetadata.test.ts`, `tests/videoWorkflow.test.ts` | native camera/import metadata QA | Contract covered |

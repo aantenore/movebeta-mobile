@@ -100,4 +100,5 @@
 - Reusable MoveNet pose mapper with contract tests that replay model-shaped keypoints through the movement analyzer.
 - Native QA runbook generator with platform workflow steps, shared performance budgets, privacy instructions, and blocked
   evidence drafts for physical-device validation.
+- Native QA evidence validator now rejects placeholder device/build/clip values instead of accepting filled-out templates.
 - Documentation screenshot gallery generated from the exported web build.

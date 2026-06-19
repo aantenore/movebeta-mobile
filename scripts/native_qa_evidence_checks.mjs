@@ -37,6 +37,14 @@ function hasText(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function looksLikePlaceholder(value) {
+  return /^(android|ios)-real-climbing-clip-id$/i.test(value.trim()) || /placeholder|replace|device name|android version|ios version|internal-build-id|real-climbing-clip-id/i.test(value);
+}
+
+function hasRealText(value) {
+  return hasText(value) && !looksLikePlaceholder(value);
+}
+
 function validateRun(run, index) {
   const checks = [];
   const prefix = `run-${index + 1}`;
@@ -48,9 +56,9 @@ function validateRun(run, index) {
   );
 
   checks.push(
-    hasText(run.deviceName) && hasText(run.osVersion) && hasText(run.buildId)
+    hasRealText(run.deviceName) && hasRealText(run.osVersion) && hasRealText(run.buildId)
       ? pass(`${prefix}-device`, 'Device identity', `${run.deviceName} · ${run.osVersion} · ${run.buildId}`)
-      : fail(`${prefix}-device`, 'Device identity', 'Device name, OS version, and build id are required.'),
+      : fail(`${prefix}-device`, 'Device identity', 'Real device name, OS version, and build id are required; placeholders are rejected.'),
   );
 
   checks.push(
@@ -60,9 +68,9 @@ function validateRun(run, index) {
   );
 
   checks.push(
-    run.clip && hasText(run.clip.id) && Number.isFinite(run.clip.durationMs) && run.clip.durationMs > 0
+    run.clip && hasRealText(run.clip.id) && Number.isFinite(run.clip.durationMs) && run.clip.durationMs > 0
       ? pass(`${prefix}-clip`, 'Clip evidence', `${run.clip.id} · ${run.clip.durationMs}ms`)
-      : fail(`${prefix}-clip`, 'Clip evidence', 'Clip id and positive duration are required.'),
+      : fail(`${prefix}-clip`, 'Clip evidence', 'A real clip id and positive duration are required; placeholders are rejected.'),
   );
 
   for (const workflow of nativeQaBudgets.requiredWorkflows) {
