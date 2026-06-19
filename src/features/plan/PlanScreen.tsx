@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
+import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildNativeQaEvidenceKit } from '@/core/nativeQaEvidenceKit';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
@@ -157,9 +158,59 @@ function NativeQaEvidenceKitCard({ kit }: { kit: ReturnType<typeof buildNativeQa
   );
 }
 
+function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvidenceCollectionPlan> }) {
+  return (
+    <View style={styles.evidencePlan}>
+      <View style={styles.evidencePlanHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.cueValidation.minClips}</Text>
+          <Text style={styles.qaKitMetricLabel}>clips</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.estimatedReviewRows}</Text>
+          <Text style={styles.qaKitMetricLabel}>review rows</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.nativeQa.nativeWorkflowChecks}</Text>
+          <Text style={styles.qaKitMetricLabel}>device checks</Text>
+        </View>
+      </View>
+      <Text style={styles.qaKitAction}>{plan.summary.action}</Text>
+      <View style={styles.evidencePlanGrid}>
+        <View style={styles.evidencePlanItem}>
+          <Text style={styles.evidencePlanTitle}>Cue validation</Text>
+          <Text style={styles.qaKitText}>
+            {plan.cueValidation.minDistinctReviewersPerClip} coach reviewers per clip · average score at least{' '}
+            {plan.cueValidation.minAverageCueScore}/5
+          </Text>
+          <Text style={styles.qaPlatformMore}>Angles: {plan.cueValidation.requiredWallAngles.join(', ')}</Text>
+        </View>
+        <View style={styles.evidencePlanItem}>
+          <Text style={styles.evidencePlanTitle}>Native QA</Text>
+          <Text style={styles.qaKitText}>
+            {plan.nativeQa.requiredRuns} physical runs · {plan.nativeQa.requiredWorkflows.length} workflows per platform
+          </Text>
+          <Text style={styles.qaPlatformMore}>Battery budget: {plan.nativeQa.maxBatteryDropPct}% per run</Text>
+        </View>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {plan.externalEvidence.map((item) => (
+          <View key={item.key} style={styles.qaWorkflowRow}>
+            <TriangleAlert color={theme.colors.amber} size={14} />
+            <Text style={styles.qaWorkflowText}>
+              {item.owner}: {item.label}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
+  const evidencePlan = buildEvidenceCollectionPlan();
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
   const groupedCapabilities = catalog
@@ -245,6 +296,10 @@ export function PlanScreen() {
         <NativeQaEvidenceKitCard kit={nativeQaKit} />
       </Section>
 
+      <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
+        <EvidenceCollectionPlanCard plan={evidencePlan} />
+      </Section>
+
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
         <View style={styles.readiness}>
           <Text style={styles.readinessTitle}>Provider status</Text>
@@ -260,6 +315,32 @@ export function PlanScreen() {
 }
 
 const styles = StyleSheet.create({
+  evidencePlan: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  evidencePlanGrid: {
+    gap: theme.spacing.sm,
+  },
+  evidencePlanHero: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  evidencePlanItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.sm,
+  },
+  evidencePlanTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
   launchAction: {
     color: theme.colors.text,
     fontSize: 12,

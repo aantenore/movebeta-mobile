@@ -112,13 +112,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 57 test files and 217 tests.
+- `npm test`: passed, 58 test files and 220 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3817ms load time, 341ms average inference, and 348ms max inference in the latest run.
+  CPU backend, 3410ms load time, 342ms average inference, and 347ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -178,6 +178,8 @@ platforms are validated on physical climbing videos and devices.
   policy, validator command, and raw-artifact exclusion.
 - `tests/nativeQaEvidenceValidation.test.ts`: passed and covers app/CLI parity for ready evidence, blocked draft
   evidence, run summaries, and raw local artifact rejection.
+- `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
+  workflow checks, configurable acceptance thresholds, and privacy-safe collection planning.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
@@ -204,8 +206,8 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, native QA evidence kit, native QA validator
-  preview, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics packet, Privacy data
-  portability backup/restore, and the Privacy airplane-mode readiness self-check.
+  preview, evidence collection plan, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
