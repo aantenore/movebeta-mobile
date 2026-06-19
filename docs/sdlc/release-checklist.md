@@ -9,6 +9,7 @@
 - [x] `npm run release:eas:check` passes with account-bound store prerequisites reported as warnings.
 - [x] `npm run native:android:debug` passes.
 - [x] Android merged manifest validation passes with camera/import permissions, no audio permission, and backup disabled.
+- [x] Native QA runbook is generated with `npm run native:qa:runbook`.
 - [x] `npm run native:ios:pods` passes with local Ruby/CocoaPods.
 - [x] Versioning is aligned across `package.json`, `app.json`, and native build numbers.
 - [x] Browser smoke passes on desktop and 390px mobile viewport.

@@ -22,8 +22,15 @@
 
 ## Evidence File
 
-Copy `docs/sdlc/native-qa-evidence.template.json` to `docs/sdlc/native-qa-evidence.json`, replace placeholders with real
-device results, then run:
+Generate the current runbook first:
+
+```bash
+npm run native:qa:runbook
+```
+
+Then copy either `docs/sdlc/native-qa-runbook.json` → `evidenceDraft` or
+`docs/sdlc/native-qa-evidence.template.json` to `docs/sdlc/native-qa-evidence.json`, replace placeholders with real
+device results, and run:
 
 ```bash
 npm run native:qa:validate

@@ -84,3 +84,4 @@
 | T80 | Add MoveNet model execution smoke for local inference verification | Done |
 | T81 | Add generated screenshot gallery to documentation | Done |
 | T82 | Add MoveNet readiness report and launch-readiness gate | Done |
+| T83 | Add native QA runbook generator and launch-readiness gate | Done |

@@ -31,6 +31,7 @@ function makeProjectRoot() {
           androidDebugBuild: true,
           iosPods: true,
           nativeDeviceQa: false,
+          nativeQaRunbook: true,
           releaseGate: true,
           webSmoke: true,
         },
@@ -53,6 +54,9 @@ function makeProjectRoot() {
   writeJson(path.join(root, 'docs/sdlc/movenet-readiness-report.json'), {
     schemaVersion: 'movebeta.movenet-readiness-report.v1',
     status: 'ready',
+  });
+  writeJson(path.join(root, 'docs/sdlc/native-qa-runbook.json'), {
+    schemaVersion: 'movebeta.native-qa-runbook.v1',
   });
   for (const fileName of ['01-analyze.png', '02-drills.png', '03-progress.png', '04-sessions.png', '05-plan.png', '06-privacy.png']) {
     writeText(path.join(root, 'docs/store/screenshots', fileName), 'png');
@@ -81,6 +85,7 @@ describe('launch readiness doctor', () => {
       releaseGate: true,
       storeListing: true,
       webSmoke: true,
+      nativeQaRunbook: true,
     });
   });
 
@@ -96,6 +101,7 @@ describe('launch readiness doctor', () => {
     expect(report.checks.find((check) => check.key === 'androidDebugBuild')?.status).toBe('verified');
     expect(report.checks.find((check) => check.key === 'nativeDeviceQa')?.status).toBe('missing');
     expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('verified');
+    expect(report.checks.find((check) => check.key === 'nativeQaRunbook')?.status).toBe('verified');
     expect(report.summary.status).toBe('blocked');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('ready');
   });
@@ -112,6 +118,22 @@ describe('launch readiness doctor', () => {
 
     expect(report.checks.find((check) => check.key === 'modelReadiness')?.status).toBe('missing');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('blocked');
+  });
+
+  it('reports missing native QA runbook separately from missing device evidence', () => {
+    const rootDir = makeProjectRoot();
+    fs.rmSync(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json'));
+
+    const report = buildLaunchReadinessDoctorReport({
+      env: { NODE_ENV: 'test' },
+      generatedAt: '2026-06-20T08:20:00.000Z',
+      rootDir,
+    });
+
+    expect(report.checks.find((check) => check.key === 'nativeQaRunbook')?.status).toBe('drift');
+    expect(report.checks.find((check) => check.key === 'nativeDeviceQa')?.status).toBe('missing');
+    expect(report.tracks.find((track) => track.key === 'internal')?.driftChecks).toBe(1);
+    expect(report.tracks.find((track) => track.key === 'internal')?.missingChecks).toBe(1);
   });
 
   it('writes a durable launch readiness report', () => {
