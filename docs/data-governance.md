@@ -9,6 +9,8 @@
 - Cloud sync is opt-in and should be encrypted.
 - Users must be able to delete local analysis bundles, including the report, private training log, and coach consent
   record, without uploading or exporting raw video.
+- Users must be able to create and restore a local backup of reports, private notes, and consent records without raw video,
+  video URI, audio, account identifiers, or secrets.
 
 ## Consent
 

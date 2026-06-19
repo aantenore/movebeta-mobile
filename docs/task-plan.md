@@ -51,3 +51,4 @@
 | T47 | Add local Progress filters by wall angle, grade, and gym | Done |
 | T48 | Add privacy deletion bundle for reports, training logs, consent records, and deletion receipts | Done |
 | T49 | Create private GitHub repository and push main handoff snapshot | Done |
+| T50 | Add privacy-safe local data backup and restore for reports, training logs, and consent records | Done |

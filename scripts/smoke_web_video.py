@@ -1,4 +1,5 @@
 import os
+import re
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -110,6 +111,13 @@ def main() -> None:
         page.get_by_text("Prepare", exact=True).click()
         expect(page.get_by_text("Privacy-safe support packet")).to_be_visible()
         expect(page.get_by_text('"excludedArtifacts"')).to_be_visible()
+        expect(page.get_by_text("Data portability")).to_be_visible()
+        page.get_by_text("Backup", exact=True).click()
+        expect(page.get_by_text("Local backup JSON")).to_be_visible()
+        expect(page.get_by_role("textbox", name="Local backup JSON")).to_have_value(re.compile('"schemaVersion"'))
+        page.get_by_text("Restore backup", exact=True).click()
+        expect(page.get_by_text("Status: restored")).to_be_visible()
+        expect(page.get_by_text("Reports restored:")).to_be_visible()
 
         page.get_by_role("tab", name="Sessions").click()
         page.wait_for_load_state("networkidle")
@@ -117,7 +125,7 @@ def main() -> None:
         expect(page.get_by_text("Local deletion receipt")).to_be_visible()
         expect(page.get_by_text("Private training log: deleted")).to_be_visible()
         expect(page.get_by_text("Coach consent record: deleted")).to_be_visible()
-        expect(page.get_by_text("Video left device: no")).to_be_visible()
+        expect(page.get_by_text("Video left device: no").last).to_be_visible()
 
         browser.close()
 

@@ -43,6 +43,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
 - Privacy deletion receipts that remove the local report, private training log, and coach consent record together.
+- Privacy-safe local backup and restore JSON for reports, training logs, and coach consent records without raw video.
 - Explicitly consented coach review packets that exclude raw video, video URI, key-frame landmarks, and medical claims.
 - Privacy-safe diagnostics support packets that include only aggregate quality, provider, consent, and sanitized events.
 - Airplane-mode readiness self-check for the local analysis workflow.
