@@ -39,6 +39,8 @@ The review worksheet makes that evidence loop operational by giving each require
 validation score entry outside automated generation.
 The worksheet CSV makes the same loop usable with spreadsheet-based review collection before a dedicated coach portal is
 worth building.
+The completed-worksheet composer closes the evidence loop by producing validation-gate JSON only from real reviewer rows
+that still match the original consented seed.
 
 ## Differentiation
 

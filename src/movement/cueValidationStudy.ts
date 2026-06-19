@@ -105,9 +105,35 @@ export const CueValidationReviewWorksheetSchema = z.object({
   sourceCueCount: z.number().int().nonnegative(),
 });
 
+const CueValidationCompletedReviewSchema = z.object({
+  cueId: z.string(),
+  drillFit: z.number().int().min(1).max(5),
+  relevance: z.number().int().min(1).max(5),
+  reviewMode: z.literal('packet-only'),
+  reviewerId: z.string().min(1),
+  reviewerRole: z.literal('coach'),
+  safetyLanguage: z.number().int().min(1).max(5),
+  timingAccuracy: z.number().int().min(1).max(5),
+});
+
+export const CueValidationCompletedDatasetSchema = z.object({
+  acceptance: CueValidationStudyAcceptanceSchema,
+  appVersion: z.string(),
+  clips: z.array(
+    z.object({
+      clipId: z.string(),
+      consentRecordId: z.string(),
+      packet: CoachReviewPacketSchema,
+      reviews: z.array(CueValidationCompletedReviewSchema),
+    }),
+  ),
+  generatedAt: z.string(),
+});
+
 export type CueValidationStudyAcceptance = z.infer<typeof CueValidationStudyAcceptanceSchema>;
 export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
+export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
 
 export type CueValidationStudySeedOptions = {
   acceptance?: Partial<CueValidationStudyAcceptance>;
@@ -120,6 +146,11 @@ export type CueValidationStudySeedOptions = {
 export type CueValidationReviewWorksheetOptions = {
   generatedAt?: string;
   reviewerCount?: number;
+};
+
+export type CueValidationCompletedDatasetOptions = {
+  appVersion?: string;
+  generatedAt?: string;
 };
 
 export const defaultCueValidationStudyAcceptance: CueValidationStudyAcceptance = CueValidationStudyAcceptanceSchema.parse({
@@ -186,6 +217,120 @@ function csvCell(value: string | number | null) {
   const text = String(value);
   if (!/[",\n\r]/.test(text)) return text;
   return `"${text.replaceAll('"', '""')}"`;
+}
+
+function parseCsv(csv: string) {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = '';
+  let inQuotes = false;
+
+  for (let index = 0; index < csv.length; index += 1) {
+    const char = csv[index];
+    const next = csv[index + 1];
+
+    if (inQuotes) {
+      if (char === '"' && next === '"') {
+        cell += '"';
+        index += 1;
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        cell += char;
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      inQuotes = true;
+      continue;
+    }
+
+    if (char === ',') {
+      row.push(cell);
+      cell = '';
+      continue;
+    }
+
+    if (char === '\n') {
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = '';
+      continue;
+    }
+
+    if (char === '\r') {
+      continue;
+    }
+
+    cell += char;
+  }
+
+  if (inQuotes) {
+    throw new Error('Cue validation worksheet CSV has an unterminated quoted cell.');
+  }
+
+  if (cell.length > 0 || row.length > 0) {
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows.filter((csvRow) => csvRow.some((value) => value.trim().length > 0));
+}
+
+function parseScore(value: string, rowId: string, field: string) {
+  const score = Number(value);
+  if (!Number.isInteger(score) || score < 1 || score > 5) {
+    throw new Error(`Cue validation worksheet row ${rowId} requires a ${field} score from 1 to 5.`);
+  }
+  return score;
+}
+
+function parseCompletedWorksheetCsv(csv: string) {
+  assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv);
+  const [headerRow, ...rows] = parseCsv(csv);
+
+  if (!headerRow) {
+    throw new Error('Cue validation worksheet CSV is empty.');
+  }
+
+  if (headerRow.join(',') !== worksheetCsvHeaders.join(',')) {
+    throw new Error('Cue validation worksheet CSV header does not match the expected worksheet format.');
+  }
+
+  return rows.map((row) => {
+    const record = Object.fromEntries(worksheetCsvHeaders.map((header, index) => [header, row[index] ?? '']));
+    const rowId = record.worksheetRowId;
+
+    if (!rowId) {
+      throw new Error('Cue validation worksheet row is missing worksheetRowId.');
+    }
+
+    if (!record.reviewerId) {
+      throw new Error(`Cue validation worksheet row ${rowId} requires a real reviewerId.`);
+    }
+
+    return {
+      clipId: record.clipId,
+      consentRecordId: record.consentRecordId,
+      cueId: record.cueId,
+      cueTitle: record.cueTitle,
+      packetReportId: record.packetReportId,
+      reviewMode: record.reviewMode,
+      reviewerId: record.reviewerId,
+      reviewerRole: record.reviewerRole,
+      reviewerSlot: Number(record.reviewerSlot),
+      scores: {
+        drillFit: parseScore(record.drillFit, rowId, 'drillFit'),
+        relevance: parseScore(record.relevance, rowId, 'relevance'),
+        safetyLanguage: parseScore(record.safetyLanguage, rowId, 'safetyLanguage'),
+        timingAccuracy: parseScore(record.timingAccuracy, rowId, 'timingAccuracy'),
+      },
+      status: record.status,
+      worksheetRowId: rowId,
+    };
+  });
 }
 
 export function buildCueValidationStudySeed(
@@ -397,6 +542,73 @@ export function assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv: string) 
   }
 }
 
+export function buildCueValidationDatasetFromCompletedWorksheetCsv(
+  seed: CueValidationStudySeed,
+  csv: string,
+  options: CueValidationCompletedDatasetOptions = {},
+): CueValidationCompletedDataset {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const expectedWorksheet = buildCueValidationReviewWorksheet(parsedSeed);
+  const expectedRows = new Map(expectedWorksheet.rows.map((row) => [row.id, row]));
+  const completedRows = parseCompletedWorksheetCsv(csv);
+  const seenRowIds = new Set<string>();
+
+  if (completedRows.length !== expectedWorksheet.rows.length) {
+    throw new Error(
+      `Cue validation worksheet CSV must include ${expectedWorksheet.rows.length} completed review rows; received ${completedRows.length}.`,
+    );
+  }
+
+  for (const row of completedRows) {
+    const expected = expectedRows.get(row.worksheetRowId);
+    if (!expected) {
+      throw new Error(`Cue validation worksheet row ${row.worksheetRowId} is not part of this study seed.`);
+    }
+    if (seenRowIds.has(row.worksheetRowId)) {
+      throw new Error(`Cue validation worksheet row ${row.worksheetRowId} is duplicated.`);
+    }
+    seenRowIds.add(row.worksheetRowId);
+
+    if (
+      row.clipId !== expected.clipId ||
+      row.packetReportId !== expected.packetReportId ||
+      row.consentRecordId !== expected.consentRecordId ||
+      row.cueId !== expected.cueId ||
+      row.reviewerSlot !== expected.reviewerSlot ||
+      row.reviewerRole !== expected.reviewerRole ||
+      row.reviewMode !== expected.reviewMode
+    ) {
+      throw new Error(`Cue validation worksheet row ${row.worksheetRowId} does not match the source study seed.`);
+    }
+  }
+
+  return CueValidationCompletedDatasetSchema.parse({
+    acceptance: parsedSeed.acceptance,
+    appVersion: options.appVersion ?? parsedSeed.appVersion,
+    clips: parsedSeed.clips.map((clip) => ({
+      clipId: clip.clipId,
+      consentRecordId: clip.consentRecordId,
+      packet: clip.packet,
+      reviews: completedRows
+        .filter((row) => row.clipId === clip.clipId)
+        .map((row) =>
+          CueValidationCompletedReviewSchema.parse({
+            cueId: row.cueId,
+            drillFit: row.scores.drillFit,
+            relevance: row.scores.relevance,
+            reviewMode: 'packet-only',
+            reviewerId: row.reviewerId,
+            reviewerRole: 'coach',
+            safetyLanguage: row.scores.safetyLanguage,
+            timingAccuracy: row.scores.timingAccuracy,
+          }),
+        ),
+    })),
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+  });
+}
+
 export function formatCueValidationStudySeedSummary(seed: CueValidationStudySeed) {
   const parsed = CueValidationStudySeedSchema.parse(seed);
   return [
@@ -405,6 +617,17 @@ export function formatCueValidationStudySeedSummary(seed: CueValidationStudySeed
     `target ${parsed.acceptance.minClips} clips`,
     'raw video: no',
     'scores invented: no',
+  ].join(' · ');
+}
+
+export function formatCueValidationCompletedDatasetSummary(dataset: CueValidationCompletedDataset) {
+  const parsed = CueValidationCompletedDatasetSchema.parse(dataset);
+  const reviewCount = parsed.clips.reduce((sum, clip) => sum + clip.reviews.length, 0);
+  return [
+    `${parsed.clips.length} consented clips`,
+    `${reviewCount} real reviews`,
+    `target ${parsed.acceptance.minClips} clips`,
+    'ready for validation gate',
   ].join(' · ');
 }
 

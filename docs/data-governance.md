@@ -17,6 +17,8 @@
   and raw artifacts must stay out of the seed.
 - Cue-validation review worksheets must keep reviewer identity and score fields blank until a real coach fills them.
 - Cue-validation worksheet CSV exports must keep reviewer identity and score cells blank until a real coach fills them.
+- Completed worksheet CSV processing must verify reviewer identity, score range, row identity, and seed match before
+  building dataset JSON.
 
 ## Consent
 
@@ -28,6 +30,7 @@ Batch coach-library exports must remain local until the user explicitly shares t
 Cue-validation study seeds must remain local until the user explicitly shares them with reviewers.
 Cue-validation review worksheets must remain local until the user explicitly shares them with reviewers.
 Cue-validation worksheet CSV exports must remain local until the user explicitly shares them with reviewers.
+Completed worksheet CSV files must remain local until the user explicitly validates and shares the resulting dataset.
 
 ## Sensitive Data
 

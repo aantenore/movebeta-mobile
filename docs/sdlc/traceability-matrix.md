@@ -60,3 +60,4 @@
 | R56 cue-validation study seed | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation seed JSON | Covered |
 | R57 cue-validation review worksheet | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation worksheet JSON | Covered |
 | R58 cue-validation worksheet CSV | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation worksheet CSV | Covered |
+| R59 completed cue-validation dataset composer | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, `tests/cueValidationDataset.test.ts` | completed worksheet CSV to dataset JSON | Covered |
