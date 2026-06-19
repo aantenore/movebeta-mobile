@@ -60,3 +60,4 @@
 | T56 | Add cue usefulness insights from private cue feedback | Done |
 | T57 | Adapt drill plans from private cue feedback | Done |
 | T58 | Add private drill practice logging with backup, restore, and deletion coverage | Done |
+| T59 | Add Progress practice consistency insights from private drill logs | Done |

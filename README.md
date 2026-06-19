@@ -66,6 +66,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Evidence-based weekly drill plans generated from local report cues.
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
 - Private drill practice logging for completed or skipped suggested drills.
+- Practice consistency insights from private drill completion and skip history.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
 - Vitest for domain tests.
 

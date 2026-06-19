@@ -12,6 +12,8 @@ import { selectionFeedback } from '@/core/haptics';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
 import { summarizeCuePatterns } from '@/movement/cuePatterns';
+import { summarizeDrillPracticeInsights } from '@/movement/drillPracticeInsights';
+import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
 import {
   activeProgressFilterCount,
@@ -70,6 +72,7 @@ function FilterGroup({
 
 export function ProgressScreen() {
   const [annotations, setAnnotations] = useState<ReportAnnotation[]>([]);
+  const [drillPractice, setDrillPractice] = useState<DrillPracticeRecord[]>([]);
   const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
@@ -82,6 +85,10 @@ export function ProgressScreen() {
   const sessionPlan = useMemo(() => buildSessionPlan(filteredReports, annotations), [annotations, filteredReports]);
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
+  const drillPracticeInsights = useMemo(
+    () => summarizeDrillPracticeInsights(filteredReports, drillPractice),
+    [drillPractice, filteredReports],
+  );
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -93,14 +100,21 @@ export function ProgressScreen() {
       nextReports = await listReports();
     }
 
+    const [nextAnnotations, nextDrillPractice] = await Promise.all([
+      reportAnnotationRepository.listAnnotations(),
+      drillPracticeRepository.listRecords(),
+    ]);
+
     setReports(nextReports);
-    setAnnotations(await reportAnnotationRepository.listAnnotations());
+    setAnnotations(nextAnnotations);
+    setDrillPractice(nextDrillPractice);
   }
 
   useFocusEffect(
     useCallback(() => {
       void refresh().catch(() => {
         setAnnotations([]);
+        setDrillPractice([]);
         setReports([]);
       });
     }, []),
@@ -419,6 +433,59 @@ export function ProgressScreen() {
           <View style={styles.preview}>
             <Text style={styles.previewTitle}>No cue feedback yet</Text>
             <Text style={styles.previewText}>Mark cues as useful, unclear, or not useful in Sessions to tune future repeats.</Text>
+          </View>
+        )}
+      </Section>
+
+      <Section title="Practice consistency" caption="Private drill completion history from the Drills tab.">
+        {drillPracticeInsights.totalCount > 0 ? (
+          <View style={styles.practiceConsistencyCard}>
+            <View style={styles.practiceConsistencySummary}>
+              <View
+                style={[
+                  styles.practiceConsistencyScore,
+                  drillPracticeInsights.status === 'blocked' ? styles.practiceConsistencyScoreBlocked : null,
+                  drillPracticeInsights.status === 'consistent' ? styles.practiceConsistencyScoreReady : null,
+                ]}
+              >
+                <Text style={styles.practiceConsistencyScoreValue}>{drillPracticeInsights.completionRate}%</Text>
+                <Text style={styles.practiceConsistencyScoreLabel}>Completion</Text>
+              </View>
+              <View style={styles.practiceConsistencyCounts}>
+                <Text style={styles.practiceConsistencyCountText}>Done {drillPracticeInsights.completedCount}</Text>
+                <Text style={styles.practiceConsistencyCountText}>Skipped {drillPracticeInsights.skippedCount}</Text>
+                <Text style={styles.practiceConsistencyCountText}>Status {drillPracticeInsights.status}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.practiceConsistencyRecommendation}>{drillPracticeInsights.recommendation}</Text>
+
+            <View style={styles.practiceConsistencyGrid}>
+              {drillPracticeInsights.latest ? (
+                <View style={styles.practiceConsistencyItem}>
+                  <Text style={styles.practiceConsistencyItemLabel}>Latest</Text>
+                  <Text style={styles.practiceConsistencyItemTitle}>{drillPracticeInsights.latest.title}</Text>
+                  <Text style={styles.practiceConsistencyItemMeta}>
+                    {drillPracticeInsights.latest.latestStatus} · {drillPracticeInsights.latest.latestReportTitle}
+                  </Text>
+                </View>
+              ) : null}
+
+              {drillPracticeInsights.skippedCue ? (
+                <View style={styles.practiceConsistencyItem}>
+                  <Text style={styles.practiceConsistencyItemLabel}>Review</Text>
+                  <Text style={styles.practiceConsistencyItemTitle}>{drillPracticeInsights.skippedCue.title}</Text>
+                  <Text style={styles.practiceConsistencyItemMeta}>
+                    {drillPracticeInsights.skippedCue.skippedCount}/{drillPracticeInsights.skippedCue.total} skipped
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>No practice log yet</Text>
+            <Text style={styles.previewText}>Mark a suggested drill as Done or Skip in Drills to measure follow-through.</Text>
           </View>
         )}
       </Section>
@@ -924,6 +991,94 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   cueUsefulnessSummary: {
+    alignItems: 'stretch',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  practiceConsistencyCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  practiceConsistencyCountText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  practiceConsistencyCounts: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  practiceConsistencyGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  practiceConsistencyItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 146,
+    padding: theme.spacing.sm,
+  },
+  practiceConsistencyItemLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  practiceConsistencyItemMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  practiceConsistencyItemTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  practiceConsistencyRecommendation: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  practiceConsistencyScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 104,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  practiceConsistencyScoreBlocked: {
+    backgroundColor: theme.colors.coral,
+  },
+  practiceConsistencyScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  practiceConsistencyScoreReady: {
+    backgroundColor: theme.colors.success,
+  },
+  practiceConsistencyScoreValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  practiceConsistencySummary: {
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,

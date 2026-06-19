@@ -25,7 +25,8 @@ platforms are validated on physical climbing videos and devices.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
-  personal benchmarks, recurring cue patterns, cue usefulness insights, attempt comparison, and trend deltas.
+  personal benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt comparison, and
+  trend deltas.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
   practice logging, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
@@ -65,7 +66,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 36 test files and 135 tests.
+- `npm test`: passed, 37 test files and 139 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -81,6 +82,8 @@ platforms are validated on physical climbing videos and devices.
   tolerance.
 - `tests/drillPracticeRepository.test.ts`: passed and covers private completion/skipped records, local persistence,
   SQLite persistence, report-scoped deletion, and corrupted-storage tolerance.
+- `tests/drillPracticeInsights.test.ts`: passed and covers completion rate, blocked/skipped state, orphan skipping, and
+  empty practice state.
 - `tests/projectQueue.test.ts`: passed and covers active/repeat/sent counts, average effort, next-repeat priority,
   missing-report tolerance, and action generation.
 - `tests/progressFilters.test.ts`: passed and covers wall-angle, grade, and gym option derivation, report filtering, and
@@ -101,7 +104,7 @@ platforms are validated on physical climbing videos and devices.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, the Progress technique readiness
-  panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress attempt
+  panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
   Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
