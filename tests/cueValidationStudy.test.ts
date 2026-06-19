@@ -4,8 +4,10 @@ import { createCoachReviewConsentRecord } from '../src/movement/coachConsentRepo
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import {
   assertCueValidationReviewWorksheetIsPrivacySafe,
+  assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationReviewWorksheet,
+  buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
@@ -204,6 +206,56 @@ describe('cue validation study seed', () => {
     expect(serialized).not.toMatch(/"(?:privateNote|rawVideoUri|videoUri|landmarks|keyFrame|uri)"\s*:/i);
   });
 
+  it('exports the review worksheet as privacy-safe CSV with blank reviewer fields', async () => {
+    const report = await buildReport('worksheet-csv-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:40:00.000Z' })],
+      { generatedAt: '2026-06-20T00:45:00.000Z' },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, {
+      generatedAt: '2026-06-20T00:50:00.000Z',
+      reviewerCount: 2,
+    });
+
+    const csv = buildCueValidationReviewWorksheetCsv(worksheet);
+
+    expect(() => assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv)).not.toThrow();
+    expect(csv.split('\n')[0]).toBe(
+      'worksheetRowId,clipId,packetReportId,consentRecordId,cueId,cueTitle,reviewerSlot,reviewerId,reviewerRole,reviewMode,relevance,timingAccuracy,drillFit,safetyLanguage,status',
+    );
+    expect(csv).toContain(`${worksheet.rows[0].id},${report.id},${report.id},`);
+    expect(csv).toContain(',coach,packet-only,,,,,awaiting-real-review');
+    expect(csv).not.toMatch(/(?:file:\/\/|privateNote|rawVideoUri|videoUri|landmarks|keyFrame)/i);
+  });
+
+  it('escapes worksheet CSV cells that contain commas, quotes, or new lines', async () => {
+    const report = await buildReport('worksheet-csv-escaping');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:55:00.000Z' })],
+      { generatedAt: '2026-06-20T01:00:00.000Z' },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, {
+      generatedAt: '2026-06-20T01:05:00.000Z',
+      reviewerCount: 1,
+    });
+    const escapedWorksheet = {
+      ...worksheet,
+      rows: [
+        {
+          ...worksheet.rows[0],
+          cueTitle: 'Hip, "drop"\nmove',
+        },
+        ...worksheet.rows.slice(1),
+      ],
+    } satisfies CueValidationReviewWorksheet;
+
+    const csv = buildCueValidationReviewWorksheetCsv(escapedWorksheet);
+
+    expect(csv).toContain('"Hip, ""drop""\nmove"');
+  });
+
   it('rejects injected raw artifact keys before study handoff', async () => {
     const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:10:00.000Z' });
     const unsafeSeed = {
@@ -246,5 +298,13 @@ describe('cue validation study seed', () => {
     expect(() => assertCueValidationReviewWorksheetIsPrivacySafe(unsafeWorksheet)).toThrow(
       /invented reviewer identities or scores/i,
     );
+  });
+
+  it('rejects worksheet CSV text with raw artifact references', () => {
+    const unsafeCsv =
+      'worksheetRowId,clipId,packetReportId,consentRecordId,cueId,cueTitle,reviewerSlot,reviewerId,reviewerRole,reviewMode,relevance,timingAccuracy,drillFit,safetyLanguage,status\n' +
+      'row,clip,packet,consent,cue,file:///private/local.mov,1,,coach,packet-only,,,,,awaiting-real-review\n';
+
+    expect(() => assertCueValidationReviewWorksheetCsvIsPrivacySafe(unsafeCsv)).toThrow(/forbidden raw artifact text/i);
   });
 });
