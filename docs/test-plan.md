@@ -98,6 +98,7 @@
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
+- Vitest model evidence tests for technical-ready, validated, degraded, missing, environment JSON, and privacy-safe states.
 - Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
   commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
@@ -188,6 +189,8 @@
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Plan tab shows current tier, upgrade path, capability matrix, and provider readiness from the shared plan catalog.
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
+- Plan tab shows model evidence for MoveNet execution, model-shaped replay, and remaining real-video validation without
+  production accuracy claims.
 - Plan tab shows the native QA evidence kit for Android/iOS physical-device runs, workflow count, placeholder policy, and
   validator command.
 - Plan tab shows the native QA evidence validator preview with ready run count, blocking check count, and raw-artifact

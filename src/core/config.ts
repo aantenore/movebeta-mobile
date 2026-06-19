@@ -5,6 +5,12 @@ import { AnalysisProviderSchema, PrivacyModeSchema } from '@/movement/contracts'
 
 import { PlanKeySchema } from './entitlements';
 import { LaunchReadinessEvidenceSchema, type LaunchReadinessEvidence } from './launchReadiness';
+import {
+  defaultModelEvidenceConfig,
+  ModelEvidenceConfigSchema,
+  parseModelEvidenceConfig,
+  type ModelEvidenceConfig,
+} from './modelEvidence';
 
 const ConfigSchema = z.object({
   activePlan: PlanKeySchema,
@@ -14,6 +20,7 @@ const ConfigSchema = z.object({
   privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
   launchReadinessEvidence: LaunchReadinessEvidenceSchema.optional(),
+  modelEvidence: ModelEvidenceConfigSchema.optional(),
 });
 
 const expoExtra = Constants.expoConfig?.extra ?? {};
@@ -25,6 +32,10 @@ export function resolveLaunchReadinessEvidence(value: unknown): LaunchReadinessE
   if (value === undefined || value === null || value === '') return undefined;
   const parsed = typeof value === 'string' ? JSON.parse(value) : value;
   return LaunchReadinessEvidenceSchema.parse(parsed);
+}
+
+export function resolveModelEvidence(value: unknown): ModelEvidenceConfig | undefined {
+  return parseModelEvidenceConfig(value);
 }
 
 export const appConfig = ConfigSchema.parse({
@@ -51,6 +62,8 @@ export const appConfig = ConfigSchema.parse({
   launchReadinessEvidence: resolveLaunchReadinessEvidence(
     process.env.EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE ?? expoExtra.launchReadinessEvidence,
   ),
+  modelEvidence:
+    resolveModelEvidence(process.env.EXPO_PUBLIC_MOVEBETA_MODEL_EVIDENCE ?? expoExtra.modelEvidence) ?? defaultModelEvidenceConfig,
 });
 
 export type AppConfig = z.infer<typeof ConfigSchema>;
