@@ -87,6 +87,7 @@
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
   coach consent record from local storage with a deletion receipt.
+- Prepared Sessions exports show a native share action after an export is generated.
 - Sessions tab shows a local coach library after consent with packet counts, review priority, signal status, and
   no-raw-video evidence.
 - Sessions tab shows local team templates generated from consented coach library signals.

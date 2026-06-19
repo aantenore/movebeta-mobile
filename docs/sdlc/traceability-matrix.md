@@ -61,3 +61,4 @@
 | R57 cue-validation review worksheet | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation worksheet JSON | Covered |
 | R58 cue-validation worksheet CSV | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, browser smoke | Sessions tab cue-validation worksheet CSV | Covered |
 | R59 completed cue-validation dataset composer | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, `tests/cueValidationDataset.test.ts`, browser smoke | Sessions completed worksheet CSV to dataset JSON | Covered |
+| R60 native prepared export share | `docs/requirements.md`, `docs/data-governance.md` | browser smoke | Sessions prepared export share action | Covered |

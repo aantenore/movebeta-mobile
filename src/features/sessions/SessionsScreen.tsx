@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { Download, Eye, NotebookPen, RefreshCw, Save, ShieldCheck, Trash2, UserCheck } from 'lucide-react-native';
+import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Trash2, UserCheck } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { MovementCueCard } from '@/components/MovementCueCard';
@@ -635,6 +635,22 @@ export function SessionsScreen() {
     }
   }
 
+  async function sharePreparedExport() {
+    if (!preparedExport) return;
+    selectionFeedback();
+    try {
+      await Share.share({
+        message: `${preparedExport.title}\n\n${preparedExport.body}`,
+        title: preparedExport.title,
+      });
+    } catch (error) {
+      setPreparedExport({
+        body: error instanceof Error ? error.message : 'Prepared export could not be shared from this device.',
+        title: 'Share failed',
+      });
+    }
+  }
+
   async function saveTrainingLog(annotation: ReportAnnotation) {
     selectionFeedback();
     const saved = await reportAnnotationRepository.saveAnnotation(updateReportAnnotation(annotation, {}));
@@ -782,9 +798,17 @@ export function SessionsScreen() {
       )}
 
       {preparedExport ? (
-        <Section title={preparedExport.title}>
+        <Section
+          title={preparedExport.title}
+          trailing={
+            <Pressable accessibilityLabel="Share prepared export" onPress={() => void sharePreparedExport()} style={styles.action}>
+              <Share2 color={theme.colors.brand} size={16} />
+              <Text style={styles.actionText}>Share</Text>
+            </Pressable>
+          }
+        >
           <View style={styles.exportBox}>
-            <Text style={styles.exportText}>{preparedExport.body}</Text>
+            <Text selectable style={styles.exportText}>{preparedExport.body}</Text>
           </View>
         </Section>
       ) : null}

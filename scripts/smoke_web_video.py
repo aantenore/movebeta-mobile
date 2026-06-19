@@ -159,6 +159,7 @@ def main() -> None:
         expect(page.get_by_text("Privacy-safe packet review")).to_be_visible()
         page.get_by_text("Export library", exact=True).click()
         expect(page.get_by_text("Prepared coach library export")).to_be_visible()
+        expect(page.get_by_label("Share prepared export")).to_be_visible()
         expect(page.get_by_text('"schemaVersion": "movebeta.coach-library-export.v1"')).to_be_visible()
         expect(page.get_by_text('"privateNotesIncluded": false')).to_be_visible()
         expect(page.get_by_text('"templates"')).to_be_visible()

@@ -42,6 +42,7 @@
 - Measure local video analysis duration, budget status, and processed frame rate in each report.
 - Keep raw video on-device by default.
 - Persist local reports with native SQLite or browser/local fallback storage and support refresh, JSON export, and deletion.
+- Share prepared Sessions exports through the native share sheet without adding cloud coupling.
 - Delete a local analysis bundle as one privacy action, covering the report, private training log, drill practice log, and
   coach consent record while confirming that raw video was not included or uploaded.
 - Export and restore a versioned local backup JSON containing reports, private training logs, drill practice logs, and
@@ -112,6 +113,7 @@
 - Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
+- Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
