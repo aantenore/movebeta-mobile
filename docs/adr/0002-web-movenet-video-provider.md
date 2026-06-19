@@ -18,6 +18,10 @@ Add `web-tfjs-movenet` as the preferred video provider for web builds. It loads 
 Lightning in the browser, seeks across the local video, maps MoveNet keypoints into the MoveBeta `PoseFrame` contract,
 and passes those frames to the existing local analyzer.
 
+The MoveNet keypoint-to-`PoseFrame` mapping lives in a reusable movement module rather than inside the browser provider.
+Contract tests replay MoveNet-shaped keypoints through this mapper and then into the local analyzer, so future providers
+must preserve the same normalized landmark boundary before producing coaching output.
+
 If the browser runtime, video decoder, or model inference is unavailable, the repository falls back to
 `local-video-fallback` so the product remains usable and testable.
 

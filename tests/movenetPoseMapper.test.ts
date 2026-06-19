@@ -1,0 +1,69 @@
+import type { Keypoint, Pose } from '@tensorflow-models/pose-detection';
+import { describe, expect, it } from 'vitest';
+
+import { LocalAnalysisReportSchema, PoseFrameSchema, type PoseFrame } from '../src/movement/contracts';
+import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
+import { mapMoveNetPoseToFrame, moveNetRequiredKeypoints } from '../src/movement/movenetPoseMapper';
+import { samplePoseFrames, sampleSession } from '../src/movement/sampleSession';
+
+const dimensions = {
+  height: 1920,
+  width: 1080,
+};
+
+function moveNetPoseFromFrame(frame: PoseFrame): Pick<Pose, 'keypoints'> {
+  const keypoints = Object.entries(moveNetRequiredKeypoints).map(([landmarkName, keypointName]) => {
+    const landmark = frame.landmarks.find((item) => item.name === landmarkName);
+    if (!landmark) throw new Error(`Missing fixture landmark: ${landmarkName}`);
+
+    return {
+      name: keypointName,
+      score: landmark.visibility,
+      x: landmark.x * dimensions.width,
+      y: landmark.y * dimensions.height,
+      z: landmark.z,
+    } satisfies Keypoint;
+  });
+
+  return { keypoints };
+}
+
+describe('MoveNet pose mapper', () => {
+  it('maps MoveNet keypoints into the normalized app pose-frame contract', () => {
+    const frame = mapMoveNetPoseToFrame(moveNetPoseFromFrame(samplePoseFrames[0]), dimensions, 1234);
+
+    expect(PoseFrameSchema.parse(frame)).toEqual(frame);
+    expect(frame.timestampMs).toBe(1234);
+    expect(frame.landmarks.map((landmark) => landmark.name)).toEqual(Object.keys(moveNetRequiredKeypoints));
+    expect(frame.landmarks.find((landmark) => landmark.name === 'rightWrist')?.x).toBeCloseTo(
+      samplePoseFrames[0].landmarks.find((landmark) => landmark.name === 'rightWrist')!.x,
+      4,
+    );
+  });
+
+  it('fails clearly when a required MoveNet keypoint is missing', () => {
+    const pose = moveNetPoseFromFrame(samplePoseFrames[0]);
+    const incompletePose = {
+      keypoints: pose.keypoints.filter((keypoint) => keypoint.name !== moveNetRequiredKeypoints.leftHip),
+    };
+
+    expect(() => mapMoveNetPoseToFrame(incompletePose, dimensions, 0)).toThrow('required leftHip keypoint');
+  });
+
+  it('feeds mapped MoveNet frames into the local movement analyzer report contract', async () => {
+    const mappedFrames = samplePoseFrames.map((frame) =>
+      mapMoveNetPoseToFrame(moveNetPoseFromFrame(frame), dimensions, frame.timestampMs),
+    );
+
+    const report = await localMovementAnalyzer.analyze({
+      frames: mappedFrames,
+      session: sampleSession,
+    });
+
+    expect(LocalAnalysisReportSchema.parse(report)).toEqual(report);
+    expect(report.engine.uploadsVideo).toBe(false);
+    expect(report.engine.processedFrames).toBe(mappedFrames.length);
+    expect(report.analysisQuality.score).toBeGreaterThanOrEqual(95);
+    expect(report.cues.length).toBeGreaterThan(0);
+  });
+});

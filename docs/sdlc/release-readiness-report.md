@@ -35,6 +35,7 @@ platforms are validated on physical climbing videos and devices.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
   practice logging, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
+- MoveNet-shaped keypoints map through a reusable pose-frame contract before reaching the local movement analyzer.
 - MoveNet model readiness writes a durable local report with CPU backend, model load time, average and max inference
   time, memory evidence, and explicit synthetic-frame limitations.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
@@ -107,13 +108,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 53 test files and 201 tests.
+- `npm test`: passed, 54 test files and 204 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4060ms load time, 338ms average inference, and 351ms max inference in the latest run.
+  CPU backend, 3915ms load time, 338ms average inference, and 352ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -169,6 +170,8 @@ platforms are validated on physical climbing videos and devices.
   expected validator failure until real physical-device values are entered.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
+- `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
+  mapped-frame compatibility with the local movement analyzer report contract.
 - `tests/betaReplayPlan.test.ts`: passed and covers setup/crux/exit action generation, timestamp ordering, and weakest
   metric fallback when no cue crosses threshold.
 - `tests/movementPhaseBreakdown.test.ts`: passed and covers launch/crux/finish scoring, primary phase selection, and
@@ -222,8 +225,9 @@ platforms are validated on physical climbing videos and devices.
 - Native release requires custom Expo development build validation on physical iOS and Android devices with real climbing
   clips. The validator, template, and runbook now exist, but `docs/sdlc/native-qa-evidence.json` must be filled from real
   devices.
-- The MoveNet smoke and readiness report verify model load and inference execution on synthetic local frames only. Real
-  climbing-video model validation still requires physical-device QA plus consented climbing clips.
+- The MoveNet smoke, readiness report, and pose-mapper contract verify model execution and app data-contract compatibility
+  on synthetic/model-shaped inputs only. Real climbing-video model validation still requires physical-device QA plus
+  consented climbing clips.
 - Store-bound EAS submission requires `npx eas-cli@latest init` on the target Expo account, `extra.eas.projectId`,
   `EXPO_TOKEN`, App Store Connect credentials, and Google Play service account credentials before
   `npm run release:eas:strict` can pass.

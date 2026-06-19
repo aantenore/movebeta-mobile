@@ -139,6 +139,8 @@
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.
 - The TensorFlow.js MoveNet provider must have an automated model-execution smoke that loads the model and runs local
   inference without a camera or cloud runtime.
+- MoveNet keypoint mapping must stay isolated behind a reusable contract that converts model output into normalized
+  `PoseFrame` data before the local movement analyzer consumes it.
 - MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
   backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
