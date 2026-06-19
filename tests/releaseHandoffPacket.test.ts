@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -84,6 +85,14 @@ function makeProjectRoot() {
   return root;
 }
 
+function initializeGitRepo(rootDir: string) {
+  execFileSync('git', ['init'], { cwd: rootDir, stdio: 'ignore' });
+  execFileSync('git', ['config', 'user.email', 'test@example.com'], { cwd: rootDir, stdio: 'ignore' });
+  execFileSync('git', ['config', 'user.name', 'MoveBeta Test'], { cwd: rootDir, stdio: 'ignore' });
+  execFileSync('git', ['add', '.'], { cwd: rootDir, stdio: 'ignore' });
+  execFileSync('git', ['commit', '-m', 'baseline'], { cwd: rootDir, stdio: 'ignore' });
+}
+
 afterEach(() => {
   for (const root of tmpRoots.splice(0)) {
     fs.rmSync(root, { force: true, recursive: true });
@@ -148,5 +157,31 @@ describe('release handoff packet', () => {
     expect(markdownTarget).toBe(markdownOutputPath);
     expect(JSON.parse(fs.readFileSync(jsonOutputPath, 'utf8'))).toEqual(packet);
     expect(fs.readFileSync(markdownOutputPath, 'utf8')).toContain('## Verification Commands');
+  });
+
+  it('ignores generated packet files but reports real source changes in repository state', () => {
+    const rootDir = makeProjectRoot();
+    initializeGitRepo(rootDir);
+    writeReleaseHandoffPacket({
+      generatedAt: '2026-06-20T10:00:00.000Z',
+      rootDir,
+    });
+
+    const cleanPacket = buildReleaseHandoffPacket({
+      generatedAt: '2026-06-20T10:01:00.000Z',
+      rootDir,
+    });
+
+    expect(cleanPacket.repository.worktreeDirty).toBe(false);
+    expect(cleanPacket.repository.changedPaths).toEqual([]);
+
+    writeText(path.join(rootDir, 'README.md'), '# changed');
+    const dirtyPacket = buildReleaseHandoffPacket({
+      generatedAt: '2026-06-20T10:02:00.000Z',
+      rootDir,
+    });
+
+    expect(dirtyPacket.repository.worktreeDirty).toBe(true);
+    expect(dirtyPacket.repository.changedPaths.join('\n')).toContain('README.md');
   });
 });

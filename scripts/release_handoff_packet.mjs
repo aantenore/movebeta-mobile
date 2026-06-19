@@ -36,6 +36,19 @@ function gitValue(rootDir, args, fallback = 'unknown') {
   }
 }
 
+function gitStatusLines(rootDir) {
+  const generatedPacketPaths = new Set(['docs/sdlc/release-handoff-packet.json', 'docs/sdlc/release-handoff-packet.md']);
+  const output = gitValue(rootDir, ['status', '--short'], '');
+  return output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => {
+      const filePath = line.replace(/^.. /, '').replace(/^"/, '').replace(/"$/, '');
+      return !generatedPacketPaths.has(filePath);
+    });
+}
+
 function tracksForCheck(checkKey) {
   return Object.entries(TRACK_REQUIREMENTS)
     .filter(([, keys]) => keys.includes(checkKey))
@@ -132,8 +145,11 @@ export function buildReleaseHandoffPacket({
     },
     repository: {
       branch: gitValue(rootDir, ['branch', '--show-current']),
+      baseCommitSha: commitSha ?? gitValue(rootDir, ['rev-parse', 'HEAD']),
+      changedPaths: gitStatusLines(rootDir),
       commitSha: commitSha ?? gitValue(rootDir, ['rev-parse', 'HEAD']),
       remoteUrl: remoteUrl ?? gitValue(rootDir, ['config', '--get', 'remote.origin.url']),
+      worktreeDirty: gitStatusLines(rootDir).length > 0,
     },
     schemaVersion: RELEASE_HANDOFF_PACKET_SCHEMA_VERSION,
     screenshots,
@@ -174,7 +190,8 @@ Generated: ${packet.generatedAt}
 - Product: ${packet.product.appName} ${packet.product.version}
 - Repository: ${packet.repository.remoteUrl}
 - Branch: ${packet.repository.branch}
-- Commit: ${packet.repository.commitSha}
+- Base commit at generation: ${packet.repository.baseCommitSha ?? packet.repository.commitSha}
+- Worktree dirty at generation: ${packet.repository.worktreeDirty ? 'yes' : 'no'}
 
 ## Summary
 
