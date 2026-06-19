@@ -81,6 +81,8 @@
 - Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.
 - Vitest cue trust tests for signal-factor scoring, low-quality degradation, and real validation evidence downgrade.
 - Vitest coach packet tests for validation-aware cue trust, failed-cue downgrade, and reviewer/raw-artifact exclusion.
+- Vitest prepared export share tests for stable file names, JSON/CSV content types, native file-share writes, unavailable
+  sharing fallback, and write-failure fallback.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
 - Vitest store-readiness tests for bundle/package identifiers, permission copy, privacy declaration, listing copy, and
@@ -159,7 +161,7 @@
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
   coach consent record from local storage with a deletion receipt.
-- Prepared Sessions exports show a native share action after an export is generated.
+- Prepared Sessions exports show a native share action after an export is generated and use file sharing when available.
 - Sessions tab shows a local coach library after consent with packet counts, review priority, signal status, and
   no-raw-video evidence.
 - Sessions tab shows local team templates generated from consented coach library signals.

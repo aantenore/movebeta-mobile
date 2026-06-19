@@ -48,6 +48,8 @@
 - Keep raw video on-device by default.
 - Persist local reports with native SQLite or browser/local fallback storage and support refresh, JSON export, and deletion.
 - Share prepared Sessions exports through the native share sheet without adding cloud coupling.
+- Share prepared Sessions exports as local `.json`, `.csv`, or `.txt` files when native file sharing is available, with a
+  text-share fallback for web or unsupported runtimes.
 - Delete a local analysis bundle as one privacy action, covering the report, private training log, drill practice log, and
   coach consent record while confirming that raw video was not included or uploaded.
 - Export and restore a versioned local backup JSON containing reports, private training logs, drill practice logs, and
@@ -172,6 +174,8 @@
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
+- Prepared export file sharing must write only to app cache, infer stable file names and content types, avoid cloud
+  dependencies, and fall back to text sharing if file sharing or file writes are unavailable.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
 - Release gate execution must produce a machine-readable JSON report with ordered step results before launch-readiness
   detection can mark the release gate verified.
