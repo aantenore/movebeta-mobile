@@ -1,5 +1,6 @@
 import type { CoachReviewConsentRecord } from './coachConsentRepository';
 import type { LocalAnalysisReport } from './contracts';
+import type { CueTrustValidationEvidence } from './cueTrust';
 import {
   formatCueValidationGateFailures,
   formatCueValidationGateSummary,
@@ -133,6 +134,73 @@ function buildStatusExport({
     null,
     2,
   );
+}
+
+function average(values: number[]) {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function reviewAverage(review: CueValidationCompletedDataset['clips'][number]['reviews'][number]) {
+  return average([review.drillFit, review.relevance, review.safetyLanguage, review.timingAccuracy]);
+}
+
+export function buildCueTrustValidationEvidenceForReport(
+  workflow: Pick<CoachValidationWorkflow, 'completedDataset' | 'datasetGate'>,
+  report: LocalAnalysisReport,
+): CueTrustValidationEvidence | undefined {
+  if (!workflow.completedDataset) return undefined;
+
+  const datasetGate = workflow.datasetGate ?? validateCueValidationCompletedDataset(workflow.completedDataset);
+  const acceptance = {
+    ...defaultCueValidationStudyAcceptance,
+    ...workflow.completedDataset.acceptance,
+  };
+  const reportCueIds = report.cues.map((cue) => cue.id);
+  const clip = workflow.completedDataset.clips.find(
+    (item) => item.clipId === report.id || item.packet.reportId === report.id,
+  );
+
+  if (!clip) {
+    return {
+      acceptance: 'insufficient-data',
+      averageScore: 0,
+      failingCueIds: [],
+      reviewedCueCount: 0,
+      unreviewedCueIds: reportCueIds,
+    };
+  }
+
+  const failingCueIds: string[] = [];
+  const unreviewedCueIds: string[] = [];
+  const reviewedCueIds: string[] = [];
+  const scoredReviews = clip.reviews.filter((review) => reportCueIds.includes(review.cueId));
+
+  for (const cueId of reportCueIds) {
+    const reviews = scoredReviews.filter((review) => review.cueId === cueId);
+    const reviewerCount = new Set(reviews.map((review) => review.reviewerId)).size;
+    const cueAverage = average(reviews.map(reviewAverage));
+
+    if (reviews.length < acceptance.minReviewsPerCue || reviewerCount < acceptance.minDistinctReviewersPerClip) {
+      unreviewedCueIds.push(cueId);
+      continue;
+    }
+
+    reviewedCueIds.push(cueId);
+    if (cueAverage < acceptance.minAverageCueScore || reviews.some((review) => review.safetyLanguage < 4)) {
+      failingCueIds.push(cueId);
+    }
+  }
+
+  const averageScore = Number(average(scoredReviews.map(reviewAverage)).toFixed(2));
+
+  return {
+    acceptance: datasetGate.ready ? 'pass' : reviewedCueIds.length > 0 ? 'needs-review' : 'insufficient-data',
+    averageScore,
+    failingCueIds,
+    reviewedCueCount: reviewedCueIds.length,
+    unreviewedCueIds,
+  };
 }
 
 export function buildCoachValidationWorkflow(

@@ -157,6 +157,30 @@ describe('coach review packet', () => {
     expect(() => assertCoachPacketIsPrivacySafe(packet)).not.toThrow();
   });
 
+  it('includes real validation evidence in cue trust when provided', async () => {
+    const report = await buildReport();
+    const failingCueId = report.cues[0].id;
+    const packet = buildCoachReviewPacket(report, {
+      consent: coachConsent,
+      createdAt: '2026-06-20T08:00:00.000Z',
+      validation: {
+        acceptance: 'needs-review',
+        averageScore: 3.25,
+        failingCueIds: [failingCueId],
+        reviewedCueCount: report.cues.length,
+        unreviewedCueIds: [],
+      },
+    });
+    const failingSignal = packet.analysis.cueTrust.signals.find((signal) => signal.cueId === failingCueId);
+
+    expect(packet.analysis.cueTrust.validationStatus).toBe('needs-review');
+    expect(failingSignal?.factors.find((factor) => factor.id === 'validation')).toMatchObject({
+      status: 'weak',
+    });
+    expect(JSON.stringify(packet)).not.toMatch(/reviewerId|rawVideoUri|videoUri|file:\/\//i);
+    expect(() => assertCoachPacketIsPrivacySafe(packet)).not.toThrow();
+  });
+
   it('rejects packets that contain upload-capable or raw pose artifacts', async () => {
     const report = await buildReport();
     const packet = buildCoachReviewPacket(report, { consent: coachConsent });

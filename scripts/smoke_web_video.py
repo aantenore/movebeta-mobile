@@ -225,6 +225,7 @@ def main() -> None:
         expect(page.get_by_text('"noteIncluded": false')).to_be_visible()
         expect(page.get_by_text('"schemaVersion": "movebeta.coach-review.v2"')).to_be_visible()
         expect(page.get_by_text('"cueTrust"')).to_be_visible()
+        expect(page.get_by_text('"validationStatus": "needs-review"')).to_be_visible()
         expect(page.get_by_text('"repeatOutcome"')).to_be_visible()
 
         page.get_by_role("tab", name="Plan").click()
