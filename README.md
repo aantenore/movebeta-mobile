@@ -179,6 +179,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
 - Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
+- Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
+  `docs/sdlc/release-handoff-packet.json`.
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
   `docs/sdlc/native-qa-evidence.template.json`.
@@ -193,10 +195,11 @@ The local release gate is:
 ```bash
 npm run release:check
 npm run release:readiness
+npm run release:handoff
 ```
 
 Use `npm run release:full` to run the full local quality gate and refresh the machine-detected launch readiness report in
-one command.
+one command, including the release handoff packet.
 
 The EAS release gates are:
 

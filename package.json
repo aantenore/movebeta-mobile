@@ -66,7 +66,8 @@
     "release:eas:check": "node scripts/validate_eas_release.mjs",
     "release:eas:strict": "node scripts/validate_eas_release.mjs --strict",
     "release:readiness": "node scripts/launch_readiness_doctor.mjs",
-    "release:full": "npm run release:check && npm run release:readiness",
+    "release:handoff": "node scripts/release_handoff_packet.mjs",
+    "release:full": "npm run release:check && npm run release:readiness && npm run release:handoff",
     "release:check": "node scripts/release_check.mjs",
     "ci": "npm run release:check"
   },

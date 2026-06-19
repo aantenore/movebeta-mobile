@@ -111,4 +111,6 @@
   coverage, native device checks, and external evidence owners derived from release contracts.
 - Release unblock checklist in the Plan tab with launch-derived blockers, proof artifacts, commands, owners, affected
   tracks, and credential key names for beta and store release.
+- Release handoff packet generator that writes stakeholder-ready JSON and Markdown from release gates, launch readiness,
+  screenshots, commit metadata, artifacts, commands, and remaining external blockers.
 - Documentation screenshot gallery generated from the exported web build.

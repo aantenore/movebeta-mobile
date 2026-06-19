@@ -122,10 +122,19 @@ function validatedJsonFile(rootDir, relativePath, validator) {
   }
 }
 
+function requiredScreenshotNames(rootDir) {
+  const manifest = readJsonIfExists(path.join(rootDir, 'docs/store/store-manifest.json'));
+  const manifestScreenshots = Array.isArray(manifest?.screenshots)
+    ? manifest.screenshots.map((item) => item?.fileName).filter((fileName) => typeof fileName === 'string' && fileName.length > 0)
+    : [];
+
+  return manifestScreenshots.length > 0
+    ? manifestScreenshots
+    : ['01-analyze.png', '02-drills.png', '03-progress.png', '04-sessions.png', '05-plan.png', '06-privacy.png'];
+}
+
 function hasAllScreenshots(rootDir) {
-  return ['01-analyze.png', '02-drills.png', '03-progress.png', '04-sessions.png', '05-plan.png', '06-privacy.png'].every(
-    (fileName) => exists(rootDir, path.join('docs/store/screenshots', fileName)),
-  );
+  return requiredScreenshotNames(rootDir).every((fileName) => exists(rootDir, path.join('docs/store/screenshots', fileName)));
 }
 
 function hasAnyEnv(env, keys) {

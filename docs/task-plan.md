@@ -93,3 +93,4 @@
 | T89 | Add in-app native QA evidence validator preview with CLI parity | Done |
 | T90 | Add evidence collection plan for validation and device QA targets | Done |
 | T91 | Add release unblock checklist for external store and beta blockers | Done |
+| T92 | Add release handoff packet generator for stakeholder delivery | Done |

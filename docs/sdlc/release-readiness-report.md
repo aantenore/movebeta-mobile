@@ -100,6 +100,8 @@ platforms are validated on physical climbing videos and devices.
   as explicit blockers.
 - Plan tab shows a release unblock checklist that derives external blockers from launch readiness and lists proof
   artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
+- `npm run release:handoff` writes JSON and Markdown handoff packets with repo, commit, product identity, gate status,
+  blockers, screenshots, artifacts, and verification commands.
 - Launch-readiness evidence can come from Expo `extra.launchReadinessEvidence` or
   `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
@@ -115,13 +117,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 59 test files and 224 tests.
+- `npm test`: passed, 60 test files and 228 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3887ms load time, 349ms average inference, and 361ms max inference in the latest run.
+  CPU backend, 3308ms load time, 351ms average inference, and 353ms max inference in the latest run.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -185,6 +187,8 @@ platforms are validated on physical climbing videos and devices.
   workflow checks, configurable acceptance thresholds, and privacy-safe collection planning.
 - `tests/releaseUnblockChecklist.test.ts`: passed and covers default external blockers, launch-readiness label/action
   parity, credential key-name disclosure without secret values, and all-ready evidence state.
+- `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
+  completeness, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
@@ -232,6 +236,9 @@ platforms are validated on physical climbing videos and devices.
   model readiness and native QA runbook verified, internal native beta blocked by missing physical-device QA evidence, and
   store submission blocked by missing full Xcode, physical-device QA, real cue-validation data, EAS project binding, and
   store credentials.
+- `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
+  `docs/sdlc/release-handoff-packet.md` with 7/7 screenshots, 5 external blockers, current artifacts, and verification
+  commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
