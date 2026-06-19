@@ -10,6 +10,7 @@ import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import {
+  buildNativeQaEvidenceComposerExport,
   buildNativeQaEvidenceComposerPreview,
   type NativeQaEvidenceComposerPreview,
   type NativeQaEvidenceComposerRun,
@@ -328,11 +329,13 @@ function NativeQaComposerRunCard({
 }
 
 function NativeQaEvidenceComposerPanel({
+  onPrepareComposedExport,
   onRunChange,
   onUseComposedJson,
   preview,
   runs,
 }: {
+  onPrepareComposedExport: () => void;
   onRunChange: (platform: NativeQaEvidenceComposerRun['platform'], patch: Partial<NativeQaEvidenceComposerRun>) => void;
   onUseComposedJson: () => void;
   preview: NativeQaEvidenceComposerPreview;
@@ -369,6 +372,10 @@ function NativeQaEvidenceComposerPanel({
           <Download color={theme.colors.brand} size={16} />
           <Text style={styles.planActionText}>Use composed JSON</Text>
         </Pressable>
+        <Pressable accessibilityLabel="Prepare composed native QA evidence export" onPress={onPrepareComposedExport} style={styles.planAction}>
+          <Share2 color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Evidence JSON</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -383,6 +390,7 @@ function NativeQaEvidenceKitCard({
   onClearImport,
   onComposerRunChange,
   onImportChange,
+  onPrepareComposedExport,
   onPrepareRunbook,
   onUseComposedEvidence,
 }: {
@@ -397,6 +405,7 @@ function NativeQaEvidenceKitCard({
     patch: Partial<NativeQaEvidenceComposerRun>,
   ) => void;
   onImportChange: (value: string) => void;
+  onPrepareComposedExport: () => void;
   onPrepareRunbook: () => void;
   onUseComposedEvidence: () => void;
 }) {
@@ -473,6 +482,7 @@ function NativeQaEvidenceKitCard({
         ))}
       </View>
       <NativeQaEvidenceComposerPanel
+        onPrepareComposedExport={onPrepareComposedExport}
         onRunChange={onComposerRunChange}
         onUseComposedJson={onUseComposedEvidence}
         preview={composerPreview}
@@ -937,6 +947,24 @@ export function PlanScreen() {
     setNativeQaEvidenceJson(nativeQaComposerPreview.payloadJson);
   }
 
+  function prepareComposedNativeQaEvidenceExport() {
+    selectionFeedback();
+    try {
+      const packet = buildNativeQaEvidenceComposerExport({
+        preview: nativeQaComposerPreview,
+      });
+      setPreparedPlanExport({
+        body: JSON.stringify(packet, null, 2),
+        title: 'Prepared native QA evidence JSON',
+      });
+    } catch (error) {
+      setPreparedPlanExport({
+        body: error instanceof Error ? error.message : 'Native QA evidence export could not be prepared.',
+        title: 'Native QA evidence blocked',
+      });
+    }
+  }
+
   async function sharePreparedPlanExport() {
     if (!preparedPlanExport) return;
     selectionFeedback();
@@ -1040,6 +1068,7 @@ export function PlanScreen() {
           onClearImport={() => setNativeQaEvidenceJson('')}
           onComposerRunChange={updateNativeQaComposerRun}
           onImportChange={setNativeQaEvidenceJson}
+          onPrepareComposedExport={prepareComposedNativeQaEvidenceExport}
           onPrepareRunbook={prepareNativeQaRunbookPacket}
           onUseComposedEvidence={useComposedNativeQaEvidence}
         />

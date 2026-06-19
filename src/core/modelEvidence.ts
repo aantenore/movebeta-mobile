@@ -63,7 +63,7 @@ export type ModelEvidenceSummary = {
 
 export const defaultModelEvidenceConfig: ModelEvidenceConfig = {
   analysisReplay: {
-    generatedAt: '2026-06-19T23:29:49.108Z',
+    generatedAt: '2026-06-19T23:35:58.590Z',
     minimumQualityScore: 100,
     passedAttempts: 3,
     privacySafe: true,
@@ -81,8 +81,8 @@ export const defaultModelEvidenceConfig: ModelEvidenceConfig = {
       loadMs: 25000,
       maxInferenceMs: 3000,
     },
-    generatedAt: '2026-06-19T23:29:43.475Z',
-    loadMs: 4034,
+    generatedAt: '2026-06-19T23:35:51.484Z',
+    loadMs: 5507,
     maxInferenceMs: 327,
     status: 'ready',
   },

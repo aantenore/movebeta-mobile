@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  assertNativeQaEvidenceComposerExportIsShareSafe,
+  buildNativeQaEvidenceComposerExport,
   buildNativeQaEvidenceComposerPreview,
   composeNativeQaEvidence,
+  nativeQaEvidenceComposerExportSchemaVersion,
   nativeQaEvidenceComposerSchemaVersion,
   type NativeQaEvidenceComposerRun,
 } from '../src/core/nativeQaEvidenceComposer';
@@ -88,5 +91,72 @@ describe('native QA evidence composer', () => {
     expect(validateNativeQaEvidenceForApp(preview.payload).failedChecks.map((check) => check.id)).toContain(
       'privacy-artifacts',
     );
+  });
+
+  it('builds a versioned share-safe export from composed evidence', () => {
+    const preview = buildNativeQaEvidenceComposerPreview({
+      appVersion: '1.0.0',
+      generatedAt: '2026-06-20T00:00:00.000Z',
+      runs: [
+        readyRun,
+        {
+          ...readyRun,
+          clipId: 'qa-clip-002',
+          deviceName: 'iPhone 16',
+          osVersion: 'iOS 20',
+          platform: 'ios',
+        },
+      ],
+    });
+    const packet = buildNativeQaEvidenceComposerExport({
+      generatedAt: '2026-06-20T00:05:00.000Z',
+      preview,
+    });
+
+    expect(packet).toMatchObject({
+      privacy: {
+        credentialValuesIncluded: false,
+        localPathsIncluded: false,
+        rawArtifactsIncluded: false,
+        rawVideoIncluded: false,
+        secretsIncluded: false,
+      },
+      schemaVersion: nativeQaEvidenceComposerExportSchemaVersion,
+      summary: {
+        blockingChecks: 0,
+        readyRuns: 2,
+        status: 'ready',
+        totalRuns: 2,
+      },
+    });
+    expect(packet.payload.runs?.map((run) => run.platform)).toEqual(['android', 'ios']);
+  });
+
+  it('rejects unsafe composed exports before sharing', () => {
+    const preview = buildNativeQaEvidenceComposerPreview({
+      generatedAt: '2026-06-20T00:00:00.000Z',
+      runs: [{ ...readyRun, clipId: 'content://media/external/video/42' }],
+    });
+
+    expect(() =>
+      assertNativeQaEvidenceComposerExportIsShareSafe({
+        generatedAt: '2026-06-20T00:05:00.000Z',
+        payload: preview.payload,
+        privacy: {
+          credentialValuesIncluded: false,
+          localPathsIncluded: false,
+          rawArtifactsIncluded: false,
+          rawVideoIncluded: false,
+          secretsIncluded: false,
+        },
+        schemaVersion: nativeQaEvidenceComposerExportSchemaVersion,
+        summary: {
+          blockingChecks: preview.blockingChecks,
+          readyRuns: preview.readyRuns,
+          status: preview.status,
+          totalRuns: preview.totalRuns,
+        },
+      }),
+    ).toThrow('Native QA evidence export contains');
   });
 });

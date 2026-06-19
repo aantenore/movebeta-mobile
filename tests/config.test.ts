@@ -59,7 +59,7 @@ describe('app config', () => {
             loadMs: 25000,
             maxInferenceMs: 3000,
           },
-          loadMs: 4034,
+          loadMs: 5507,
           maxInferenceMs: 327,
           status: 'ready',
         },

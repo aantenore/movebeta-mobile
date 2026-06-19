@@ -4,7 +4,7 @@ import { buildModelEvidenceSummary, parseModelEvidenceConfig, type ModelEvidence
 
 const technicalEvidence: ModelEvidenceConfig = {
   analysisReplay: {
-    generatedAt: '2026-06-19T23:29:49.108Z',
+    generatedAt: '2026-06-19T23:35:58.590Z',
     minimumQualityScore: 100,
     passedAttempts: 3,
     privacySafe: true,
@@ -22,8 +22,8 @@ const technicalEvidence: ModelEvidenceConfig = {
       loadMs: 25000,
       maxInferenceMs: 3000,
     },
-    generatedAt: '2026-06-19T23:29:43.475Z',
-    loadMs: 4034,
+    generatedAt: '2026-06-19T23:35:51.484Z',
+    loadMs: 5507,
     maxInferenceMs: 327,
     status: 'ready',
   },
@@ -42,7 +42,7 @@ describe('model evidence summary', () => {
 
     expect(summary.status).toBe('technical-ready');
     expect(summary.badge).toBe('Technical ready');
-    expect(summary.metrics.map((metric) => metric.value)).toEqual(['4.0s', '323ms', '3/3']);
+    expect(summary.metrics.map((metric) => metric.value)).toEqual(['5.5s', '323ms', '3/3']);
     expect(summary.checks.map((check) => [check.label, check.status])).toEqual([
       ['MoveNet execution', 'ready'],
       ['Model-shaped replay', 'ready'],
