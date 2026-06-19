@@ -130,6 +130,10 @@ def main() -> None:
         page.get_by_text("Consent", exact=True).nth(0).click()
         page.get_by_text("Coach packet", exact=True).nth(0).click()
         expect(page.get_by_text("Prepared coach packet")).to_be_visible()
+        expect(page.get_by_text('"athleteContext"')).to_be_visible()
+        expect(page.get_by_text('"drillPractice"')).to_be_visible()
+        expect(page.get_by_text('"privateNoteIncluded": false')).to_be_visible()
+        expect(page.get_by_text('"noteIncluded": false')).to_be_visible()
 
         page.get_by_role("tab", name="Privacy").click()
         page.wait_for_load_state("networkidle")

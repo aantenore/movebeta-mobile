@@ -34,7 +34,8 @@
 - Vitest attempt comparison tests for latest-vs-baseline ordering, metric deltas, cue status, and insufficient history.
 - Vitest drill planner tests for cue deduplication, feedback-adapted reinforcement or variants, priority ordering,
   dosage, and empty cue reports.
-- Vitest coach review packet tests for consent metadata, review rubric, and raw video/landmark exclusion.
+- Vitest coach review packet tests for consent metadata, review rubric, privacy-safe athlete context, and raw
+  video/landmark/note exclusion.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
 - Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
   exclusion, and weak-score failures.
@@ -73,7 +74,8 @@
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
   coach consent record from local storage with a deletion receipt.
-- Coach packet export requires persisted explicit consent and then renders review JSON without raw video artifacts.
+- Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
+  and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
 - Privacy data portability prepares a backup JSON and restores it locally without raw video leaving the device.
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.

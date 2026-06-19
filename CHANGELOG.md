@@ -63,3 +63,5 @@
 - Private drill practice logging for completed or skipped suggested drills with backup, restore, and deletion coverage.
 - Practice consistency insights from private drill logs with completion rate, latest status, and skipped-cue review.
 - Practice-aware next-session planning that lowers intensity and prescribes easier variants when drills are repeatedly skipped.
+- Privacy-safe athlete context inside consented coach review packets, including training-log scores, cue feedback ratings,
+  and drill-practice counts without private note text or drill notes.

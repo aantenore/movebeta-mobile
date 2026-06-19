@@ -10,11 +10,41 @@ import {
   TimelineEventSchema,
   type LocalAnalysisReport,
 } from './contracts';
+import { drillPracticeStatuses, type DrillPracticeRecord } from './drillPracticeRepository';
+import { cueFeedbackRatings, reportProjectStatuses, type ReportAnnotation } from './reportAnnotationRepository';
 
 export const CoachReviewRubricItemSchema = z.object({
   id: z.string(),
   label: z.string(),
   prompt: z.string(),
+});
+
+export const CoachAthleteContextSchema = z.object({
+  drillPractice: z.object({
+    blockedCueIds: z.array(z.string()),
+    completedCount: z.number().int().nonnegative(),
+    latestStatus: z.enum(drillPracticeStatuses).nullable(),
+    practicedCueIds: z.array(z.string()),
+    skippedCount: z.number().int().nonnegative(),
+    totalCount: z.number().int().nonnegative(),
+    updatedAt: z.string().nullable(),
+  }),
+  trainingLog: z.object({
+    confidence: z.number().int().min(1).max(5).nullable(),
+    cueFeedback: z.array(
+      z.object({
+        cueId: z.string(),
+        noteIncluded: z.literal(false),
+        rating: z.enum(cueFeedbackRatings),
+        updatedAt: z.string(),
+      }),
+    ),
+    perceivedEffort: z.number().int().min(1).max(5).nullable(),
+    privateNoteIncluded: z.literal(false),
+    projectStatus: z.enum(reportProjectStatuses).nullable(),
+    tags: z.array(z.string()),
+    updatedAt: z.string().nullable(),
+  }),
 });
 
 export const CoachReviewPacketSchema = z.object({
@@ -37,6 +67,7 @@ export const CoachReviewPacketSchema = z.object({
     quality: AnalysisQualitySchema,
     timeline: z.array(TimelineEventSchema),
   }),
+  athleteContext: CoachAthleteContextSchema,
   consent: z.object({
     granted: z.boolean(),
     grantedAt: z.string(),
@@ -54,6 +85,7 @@ export const CoachReviewPacketSchema = z.object({
 });
 
 export type CoachReviewPacket = z.infer<typeof CoachReviewPacketSchema>;
+export type CoachAthleteContext = z.infer<typeof CoachAthleteContextSchema>;
 
 const reviewRubric = [
   {
@@ -82,9 +114,63 @@ function now() {
   return new Date().toISOString();
 }
 
+function uniqueSorted(values: string[]) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function buildAthleteContext(
+  report: LocalAnalysisReport,
+  annotation?: ReportAnnotation | null,
+  drillPractice: DrillPracticeRecord[] = [],
+): CoachAthleteContext {
+  const reportCueIds = new Set(report.cues.map((cue) => cue.id));
+  const trainingLog = annotation?.reportId === report.id ? annotation : null;
+  const reportDrillPractice = drillPractice
+    .filter((record) => record.reportId === report.id && reportCueIds.has(record.cueId))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  const completed = reportDrillPractice.filter((record) => record.status === 'completed');
+  const skipped = reportDrillPractice.filter((record) => record.status === 'skipped');
+
+  return CoachAthleteContextSchema.parse({
+    drillPractice: {
+      blockedCueIds: uniqueSorted(skipped.map((record) => record.cueId)),
+      completedCount: completed.length,
+      latestStatus: reportDrillPractice[0]?.status ?? null,
+      practicedCueIds: uniqueSorted(completed.map((record) => record.cueId)),
+      skippedCount: skipped.length,
+      totalCount: reportDrillPractice.length,
+      updatedAt: reportDrillPractice[0]?.updatedAt ?? null,
+    },
+    trainingLog: {
+      confidence: trainingLog?.confidence ?? null,
+      cueFeedback:
+        trainingLog?.cueFeedback
+          .filter((feedback) => reportCueIds.has(feedback.cueId))
+          .map((feedback) => ({
+            cueId: feedback.cueId,
+            noteIncluded: false,
+            rating: feedback.rating,
+            updatedAt: feedback.updatedAt,
+          })) ?? [],
+      perceivedEffort: trainingLog?.perceivedEffort ?? null,
+      privateNoteIncluded: false,
+      projectStatus: trainingLog?.projectStatus ?? null,
+      tags: trainingLog?.tags ?? [],
+      updatedAt: trainingLog?.updatedAt ?? null,
+    },
+  });
+}
+
 export function buildCoachReviewPacket(
   report: LocalAnalysisReport,
-  options: { consent?: PrivacyConsent; consentGrantedAt?: string; createdAt?: string } = {},
+  options: {
+    annotation?: ReportAnnotation | null;
+    consent?: PrivacyConsent;
+    consentGrantedAt?: string;
+    createdAt?: string;
+    drillPractice?: DrillPracticeRecord[];
+  } = {},
 ): CoachReviewPacket {
   const consent = options.consent ?? defaultPrivacyConsent;
   assertCoachReviewConsent(consent);
@@ -110,6 +196,7 @@ export function buildCoachReviewPacket(
       quality: report.analysisQuality,
       timeline: report.timeline,
     },
+    athleteContext: buildAthleteContext(report, options.annotation, options.drillPractice),
     consent: {
       granted: true,
       grantedAt: options.consentGrantedAt ?? createdAt,
@@ -141,7 +228,14 @@ export function buildCoachReviewPacket(
 
 export function assertCoachPacketIsPrivacySafe(packet: CoachReviewPacket) {
   const serialized = JSON.stringify(packet);
-  const forbiddenPatterns = [/"uri"\s*:/i, /"keyFrame"\s*:/i, /"landmarks"\s*:/i, /raw video uri/i];
+  const forbiddenPatterns = [
+    /"keyFrame"\s*:/i,
+    /"landmarks"\s*:/i,
+    /"note"\s*:/i,
+    /"privateNote"\s*:/i,
+    /"uri"\s*:/i,
+    /raw video uri/i,
+  ];
 
   if (packet.consent.rawVideoIncluded || packet.consent.videoLeavesDevice || packet.analysis.engine.uploadsVideo) {
     throw new Error('Coach review packet must not include upload-capable consent or raw video artifacts.');

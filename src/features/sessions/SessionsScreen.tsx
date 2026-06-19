@@ -22,6 +22,7 @@ import { theme } from '@/core/theme';
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
+import { drillPracticeRepository } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
   cueFeedbackRatings,
@@ -399,8 +400,10 @@ export function SessionsScreen() {
     }
 
     const packet = buildCoachReviewPacket(report, {
+      annotation: annotationByReport[reportId] ?? (await reportAnnotationRepository.getAnnotation(reportId)),
       consent: consentRecordToPrivacyConsent(consentRecord),
       consentGrantedAt: consentRecord.grantedAt,
+      drillPractice: await drillPracticeRepository.listRecordsForReport(reportId),
     });
     assertCoachPacketIsPrivacySafe(packet);
     setPreparedExport({ body: JSON.stringify(packet, null, 2), title: 'Prepared coach packet' });
