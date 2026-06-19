@@ -1,0 +1,166 @@
+# MoveBeta Mobile
+
+Cross-platform mobile prototype for an on-device climbing movement coach. The app analyzes a short climbing attempt,
+extracts body landmarks locally, scores movement quality, and turns those signals into concrete coaching cues and drills.
+
+The current build records video in-app, imports local climbing clips, previews the selected source, and runs a fully
+local analysis workflow. Video recording uses a muted configurable profile, and local duration/dimensions are resolved
+from the file before intake when the runtime can read them. Web runtimes try TensorFlow.js MoveNet for real pose
+extraction and fall back to deterministic local landmarks when the browser cannot decode the source. Custom native
+builds can use the local `movebeta-pose` Expo module: Apple Vision on iOS and ML Kit Pose Detection on Android, behind
+the same pipeline contract. Reports are
+persisted locally, include analysis quality and performance evidence, can be refreshed, exported as JSON, and deleted
+with their private training log plus coach-consent record from the Sessions tab.
+
+## Product Wedge
+
+- Post-climb movement review for indoor climbing and board sessions.
+- Video does not leave the device by default.
+- Reports store only landmarks, metrics, cues, and timeline events.
+- Local MVP workflow: record or import a video, run local analysis, review cues, export/delete the report.
+- Freemium model: free local analysis and trend preview, paid deeper history, advanced drills, team tools, and optional
+  encrypted sync.
+
+## Stack
+
+- Expo SDK 56 and Expo Router.
+- React Native 0.85 with TypeScript strict mode.
+- Expo Camera, Image Picker, Media Library, and Expo Video for capture, import, permissions, and preview.
+- Native video metadata reads through `movebeta-pose` with browser and picker/timer/default fallback.
+- Video intake readiness for local URI validation, duration checks, resolution warnings, sampled-frame estimates, and
+  recorder timing.
+- Editable session metadata for attempt title, gym or wall, grade or focus, and wall angle.
+- Capture setup calibration for privacy, framing, angle, distance, lighting, wall contrast, and phone stability before
+  recording.
+- TensorFlow.js MoveNet for browser-side pose extraction from local video sources.
+- Local Expo native module for Apple Vision and Android ML Kit pose extraction.
+- Zod contracts for movement data and report validation.
+- Local rule engine for coaching cues.
+- Local report repository with native SQLite storage and browser/mobile-safe persistence fallback.
+- Selectable local session review with quality, performance, focus metric, primary cue, timeline, and privacy evidence.
+- Private per-report training log with project status, effort, confidence, notes, tags, and local persistence.
+- Progress project queue generated from private training logs with next-repeat prioritization.
+- Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
+- Durable per-report coach consent records with grant, revoke, and delete behavior.
+- Privacy deletion receipts that remove the local report, private training log, and coach consent record together.
+- Explicitly consented coach review packets that exclude raw video, video URI, key-frame landmarks, and medical claims.
+- Privacy-safe diagnostics support packets that include only aggregate quality, provider, consent, and sanitized events.
+- Airplane-mode readiness self-check for the local analysis workflow.
+- Store readiness manifest, privacy declarations, listing copy, and automated screenshot capture.
+- Cue validation scoring harness and rubric for consented coach review datasets.
+- Cue validation dataset gate for consented clip studies before production movement-quality claims.
+- Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
+- Capture-readiness guidance that turns weak video signal into concrete retake advice.
+- Report-level video analysis performance evidence with local duration, frame rate, and budget status.
+- Local progress insights for best signal, next focus metric, and attempt-to-attempt trend deltas.
+- Local progress filters for wall angle, grade, and gym.
+- Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
+- Evidence-based weekly drill plans generated from local report cues.
+- Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
+- Vitest for domain tests.
+
+## Local Setup
+
+```bash
+npm install
+npm run quality
+npm run export:web
+npm run preview:web
+npm run store:manifest
+npm run store:screenshots
+npm run toolchain:ios
+npm run native:android:debug
+npm run native:android:manifest
+npm run release:eas:check
+```
+
+## Configuration
+
+```bash
+EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER=local-fixture
+EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER=web-tfjs-movenet
+EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
+EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
+EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
+EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
+```
+
+Supported local provider keys:
+
+- `local-fixture`: deterministic preview provider for tests and web demos.
+- `local-video-fallback`: deterministic local video adapter for Expo/web runtimes without native frame processors.
+- `web-tfjs-movenet`: browser-side TensorFlow.js MoveNet provider for local video pose extraction.
+- `native-platform-pose`: local Expo module using Apple Vision on iOS and ML Kit on Android.
+- `native-mediapipe`: reserved future native bridge for MediaPipe Pose Landmarker; rejected clearly in this build.
+- `native-coreml`: reserved future iOS bridge for a custom Core ML pose model; rejected clearly in this build.
+- `native-tflite`: reserved future Android/iOS TensorFlow Lite bridge; rejected clearly in this build.
+
+## Project Shape
+
+```text
+src/
+  app/                  Expo navigation entries
+  components/           Shared interface primitives
+  core/                 Theme, haptics, configuration
+  features/             Product screens
+  movement/             On-device movement contracts, provider boundary, pipeline, analyzer
+  video/                Video capture/import normalization, intake readiness, and source configuration
+tests/                  Domain and privacy tests
+docs/                   Product, architecture, requirements, and test notes
+```
+
+## Software Lifecycle
+
+MoveBeta now includes lightweight SDLC artifacts for the full product loop:
+
+- Delivery contract and acceptance threshold: `docs/sdlc/delivery-contract.md`.
+- Definition of Done and quality gates: `docs/sdlc/definition-of-done.md`.
+- Requirement-to-test traceability: `docs/sdlc/traceability-matrix.md`.
+- Release checklist and operational runbook: `docs/sdlc/release-checklist.md`, `docs/sdlc/runbook.md`.
+- Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
+- Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
+- Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
+- Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
+- CI workflow: `.github/workflows/quality.yml`.
+
+The local release gate is:
+
+```bash
+npm run release:check
+```
+
+The EAS release gates are:
+
+```bash
+npm run release:eas:check
+npm run release:eas:strict
+```
+
+`release:eas:check` validates the committed build and submit configuration while reporting account-bound Expo, Apple,
+and Google prerequisites as warnings. `release:eas:strict` must pass before submitting to TestFlight, Play internal
+testing, or production, and expects the project id plus store credentials to be injected from environment or CI secrets.
+
+Native store validation uses `docs/sdlc/native-qa-evidence.template.json` as the run template. Copy it to
+`docs/sdlc/native-qa-evidence.json`, fill real iOS and Android device runs, then execute `npm run native:qa:validate`.
+Cue-quality validation uses `docs/validation/cue-validation-dataset.template.json` as the study template. Copy it to
+`docs/validation/cue-validation-dataset.json`, fill consented coach review packets and reviews, then execute
+`npm run validation:cue`.
+
+## Native Build Note
+
+Expo Go cannot run the native pose bridge. Use a custom Expo development build or native run:
+
+```bash
+npx expo prebuild --no-install
+npm run toolchain:ios
+npm run native:android:debug
+npm run native:ios:pods
+npm run release:eas:check
+npx eas-cli@latest build -p ios --profile production
+npx eas-cli@latest build -p android --profile production
+```
+
+Android debug build is verified locally with the bundled Temurin 17 JDK and local Android SDK under `.tools`. iOS source
+is implemented and `pod install` is verified with the local Ruby/CocoaPods toolchain under `.tools/ruby-3.3.11`. The
+Android build also validates the merged manifest for camera/import permissions, no audio permission, and disabled backup.
+iOS compilation still requires full Xcode, while this machine currently exposes only Command Line Tools.

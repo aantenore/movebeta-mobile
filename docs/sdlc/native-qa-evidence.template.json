@@ -1,0 +1,60 @@
+{
+  "appVersion": "1.0.0",
+  "generatedAt": "2026-06-19T00:00:00.000Z",
+  "runs": [
+    {
+      "platform": "android",
+      "deviceName": "Pixel device name",
+      "osVersion": "Android version",
+      "buildId": "internal-build-id",
+      "provider": "native-platform-pose",
+      "clip": {
+        "id": "real-climbing-clip-id",
+        "durationMs": 10000,
+        "source": "camera"
+      },
+      "workflows": {
+        "cameraPermission": "pass",
+        "recordVideo": "pass",
+        "mutedRecording": "pass",
+        "metadataRead": "pass",
+        "importVideo": "pass",
+        "airplaneModeAnalysis": "pass",
+        "deleteReport": "pass"
+      },
+      "performance": {
+        "analysisMs": 8000,
+        "batteryDropPct": 4,
+        "thermalState": "fair"
+      },
+      "notes": "Replace every placeholder with real device evidence."
+    },
+    {
+      "platform": "ios",
+      "deviceName": "iPhone device name",
+      "osVersion": "iOS version",
+      "buildId": "internal-build-id",
+      "provider": "native-platform-pose",
+      "clip": {
+        "id": "real-climbing-clip-id",
+        "durationMs": 10000,
+        "source": "camera"
+      },
+      "workflows": {
+        "cameraPermission": "pass",
+        "recordVideo": "pass",
+        "mutedRecording": "pass",
+        "metadataRead": "pass",
+        "importVideo": "pass",
+        "airplaneModeAnalysis": "pass",
+        "deleteReport": "pass"
+      },
+      "performance": {
+        "analysisMs": 8000,
+        "batteryDropPct": 4,
+        "thermalState": "fair"
+      },
+      "notes": "Replace every placeholder with real device evidence."
+    }
+  ]
+}

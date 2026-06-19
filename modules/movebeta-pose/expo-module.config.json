@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["MoveBetaPoseModule"]
+  },
+  "android": {
+    "modules": ["com.movebeta.pose.MoveBetaPoseModule"]
+  }
+}
