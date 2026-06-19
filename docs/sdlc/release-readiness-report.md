@@ -129,14 +129,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 71 test files and 278 tests.
+- `npm test`: passed, 71 test files and 279 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4536ms load time, 331ms average inference, and 336ms max inference in the latest run.
+  CPU backend, 4065ms load time, 328ms average inference, and 330ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -182,8 +182,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/preSendGuard.test.ts`: passed and covers baseline, controlled-repeat, reset-first, hard-try window, blocked
   practice, and replaceable threshold behavior.
 - `tests/coachReviewPacket.test.ts`: passed and covers `movebeta.coach-review.v2`, consent metadata, review rubric,
-  cue trust export, privacy-safe athlete context, private-note exclusion, drill-note exclusion, and raw video/landmark
-  exclusion.
+  cue trust export, validation-aware cue trust downgrade, reviewer identity exclusion, privacy-safe athlete context,
+  private-note exclusion, drill-note exclusion, and raw video/landmark exclusion.
 - `tests/coachLibrary.test.ts`: passed and covers active consent filtering, revoked/orphan consent skipping, review
   priority, low-signal status, athlete context counts, and private-note exclusion.
 - `tests/coachTeamTemplates.test.ts`: passed and covers high-priority, follow-through, signal-retake, privacy-safe

@@ -59,7 +59,11 @@ import {
   type ReportAnnotation,
 } from '@/movement/reportAnnotationRepository';
 import { buildCoachTeamTemplates } from '@/movement/coachTeamTemplates';
-import { buildCoachValidationWorkflow, type CoachValidationWorkflow } from '@/movement/coachValidationWorkflow';
+import {
+  buildCoachValidationWorkflow,
+  buildCueTrustValidationEvidenceForReport,
+  type CoachValidationWorkflow,
+} from '@/movement/coachValidationWorkflow';
 
 const scoreOptions = [1, 2, 3, 4, 5] as const;
 
@@ -726,6 +730,7 @@ export function SessionsScreen() {
       consent: consentRecordToPrivacyConsent(consentRecord),
       consentGrantedAt: consentRecord.grantedAt,
       drillPractice: await drillPracticeRepository.listRecordsForReport(reportId),
+      validation: buildCueTrustValidationEvidenceForReport(coachValidationWorkflow, report),
     });
     assertCoachPacketIsPrivacySafe(packet);
     setPreparedExport({ body: JSON.stringify(packet, null, 2), title: 'Prepared coach packet' });

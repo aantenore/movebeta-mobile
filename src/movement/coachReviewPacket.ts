@@ -10,7 +10,7 @@ import {
   TimelineEventSchema,
   type LocalAnalysisReport,
 } from './contracts';
-import { buildCueTrustReport, CueTrustReportSchema } from './cueTrust';
+import { buildCueTrustReport, CueTrustReportSchema, type CueTrustValidationEvidence } from './cueTrust';
 import { drillPracticeStatuses, type DrillPracticeRecord } from './drillPracticeRepository';
 import {
   cueFeedbackRatings,
@@ -195,6 +195,7 @@ export function buildCoachReviewPacket(
     consentGrantedAt?: string;
     createdAt?: string;
     drillPractice?: DrillPracticeRecord[];
+    validation?: CueTrustValidationEvidence;
   } = {},
 ): CoachReviewPacket {
   const consent = options.consent ?? defaultPrivacyConsent;
@@ -204,7 +205,7 @@ export function buildCoachReviewPacket(
   return CoachReviewPacketSchema.parse({
     analysis: {
       cues: report.cues,
-      cueTrust: buildCueTrustReport(report, { generatedAt: createdAt }),
+      cueTrust: buildCueTrustReport(report, { generatedAt: createdAt, validation: options.validation }),
       engine: {
         model: report.engine.model,
         processedFrames: report.engine.processedFrames,

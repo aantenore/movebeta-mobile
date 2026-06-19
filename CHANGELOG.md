@@ -97,6 +97,8 @@
 - Local beta replay plan in Analyze with setup, crux, and exit actions derived from cue and metric evidence.
 - Local movement phase breakdown for launch, crux, and finish rehearsal priorities.
 - Local cue trust scoring in Analyze and coach packet exports, with privacy-safe signal factors and validation-readiness status.
+- Validation-aware coach packet cue trust that uses completed real-review campaign evidence when available without exposing
+  reviewer identities or raw artifacts.
 - Private repeat-outcome logging in Sessions and Progress insights for success rate, stalled repeats, resolved cues, and
   next-repeat action.
 - Local beta memory in Progress that turns improved and sent repeat outcomes into reusable privacy-safe beta cues.

@@ -80,6 +80,7 @@
 - Vitest beta replay plan tests for setup/crux/exit action generation, timestamp ordering, and no-cue metric fallback.
 - Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.
 - Vitest cue trust tests for signal-factor scoring, low-quality degradation, and real validation evidence downgrade.
+- Vitest coach packet tests for validation-aware cue trust, failed-cue downgrade, and reviewer/raw-artifact exclusion.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
 - Vitest store-readiness tests for bundle/package identifiers, permission copy, privacy declaration, listing copy, and

@@ -104,3 +104,4 @@
 | T100 | Add model evidence sync command from machine-readable model reports | Done |
 | T101 | Add native QA evidence JSON import preview to the Plan tab | Done |
 | T102 | Add real-world validation campaign tracker from cue-validation contracts | Done |
+| T103 | Feed completed validation campaign evidence into coach packet cue trust | Done |
