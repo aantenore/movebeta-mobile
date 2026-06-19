@@ -6,6 +6,7 @@ describe('app config', () => {
   it('keeps launch readiness optional while exposing default model evidence', () => {
     expect(appConfig.launchReadinessEvidence).toBeUndefined();
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
+    expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
   });
 
   it('parses launch readiness evidence from Expo extra objects', () => {
@@ -52,14 +53,14 @@ describe('app config', () => {
         modelName: 'MoveNet SinglePose Lightning',
         provider: 'web-tfjs-movenet',
         readiness: {
-          averageInferenceMs: 326,
+          averageInferenceMs: 334,
           budget: {
             averageInferenceMs: 1500,
             loadMs: 25000,
             maxInferenceMs: 3000,
           },
-          loadMs: 4433,
-          maxInferenceMs: 331,
+          loadMs: 3779,
+          maxInferenceMs: 351,
           status: 'ready',
         },
         realWorldValidation: {

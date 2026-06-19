@@ -15,6 +15,7 @@ import { buildNativeQaRunbookPacket } from '@/core/nativeQaRunbookPacket';
 import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/core/nativeQaEvidenceValidation';
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
+import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
@@ -62,6 +63,12 @@ function readinessStatusLabel(status: LaunchReadinessTrack['status']) {
   if (status === 'ready') return 'Ready';
   if (status === 'blocked') return 'Blocked';
   return 'Action';
+}
+
+function providerStatusLabel(status: ProviderReadinessStatus) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'blocked') return 'Blocked';
+  return 'Review';
 }
 
 function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
@@ -326,6 +333,54 @@ function ModelEvidenceCard({ evidence }: { evidence: ReturnType<typeof buildMode
   );
 }
 
+function ProviderReadinessCard({ readiness }: { readiness: ReturnType<typeof buildProviderReadinessSummary> }) {
+  const isReady = readiness.status === 'ready';
+  const isBlocked = readiness.status === 'blocked';
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>{readiness.title}</Text>
+          <Text style={styles.qaKitText}>{readiness.action}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {providerStatusLabel(readiness.status)}
+        </Text>
+      </View>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{readiness.primaryProvider}</Text>
+          <Text style={styles.qaKitMetricLabel}>primary</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{readiness.fallbackProvider}</Text>
+          <Text style={styles.qaKitMetricLabel}>fallback</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{readiness.nativeProvider ?? 'not-set'}</Text>
+          <Text style={styles.qaKitMetricLabel}>native target</Text>
+        </View>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {readiness.checks.map((check) => (
+          <View key={check.id} style={styles.qaWorkflowRow}>
+            {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>{check.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvidenceCollectionPlan> }) {
   return (
     <View style={styles.evidencePlan}>
@@ -549,6 +604,7 @@ export function PlanScreen() {
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
   const nativeQaImportPreview = buildNativeQaEvidenceImportPreview(nativeQaEvidenceJson);
+  const providerReadiness = buildProviderReadinessSummary(appConfig);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
@@ -673,6 +729,10 @@ export function PlanScreen() {
 
       <Section title="Model evidence" caption="Local model proof with real-world validation kept explicit.">
         <ModelEvidenceCard evidence={modelEvidence} />
+      </Section>
+
+      <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">
+        <ProviderReadinessCard readiness={providerReadiness} />
       </Section>
 
       <Section title="Native QA evidence kit" caption="Physical-device evidence checklist for internal beta and store readiness.">
@@ -960,6 +1020,12 @@ const styles = StyleSheet.create({
   },
   planUpgrade: {
     borderColor: theme.colors.brand,
+  },
+  providerMetricValue: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    lineHeight: 15,
   },
   planAction: {
     alignItems: 'center',
