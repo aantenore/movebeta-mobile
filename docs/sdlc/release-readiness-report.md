@@ -50,7 +50,8 @@ platforms are validated on physical climbing videos and devices.
 - User can select bundled local attempts and get distinct local analysis reports.
 - Reports are persisted locally, refreshed on Sessions focus, exported as full JSON, and deleted with their private
   training log, drill practice log, and coach consent record.
-- Prepared Sessions exports expose an explicit native share action after the payload is generated.
+- Prepared Sessions exports expose an explicit native share action after the payload is generated, write local
+  `.json`/`.csv`/`.txt` files to cache when native file sharing is available, and fall back to text sharing otherwise.
 - Sessions lets the user select a local report review with quality facts, performance facts, focus metric, primary cue,
   timeline markers, and local privacy evidence.
 - Sessions lets the user keep private per-report training notes with cue usefulness, project status, perceived effort,
@@ -129,14 +130,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 71 test files and 279 tests.
+- `npm test`: passed, 72 test files and 284 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4065ms load time, 328ms average inference, and 330ms max inference in the latest run.
+  CPU backend, 3574ms load time, 342ms average inference, and 345ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -216,6 +217,8 @@ platforms are validated on physical climbing videos and devices.
   evidence, run summaries, and raw local artifact rejection.
 - `tests/nativeQaEvidenceImport.test.ts`: passed and covers empty paste state, invalid JSON, ready native QA evidence
   summaries, blocking-check counts, and raw local artifact rejection.
+- `tests/preparedExportShare.test.ts`: passed and covers stable file names, JSON/CSV content types, native file-share
+  writes, unavailable sharing fallback, and write-failure fallback.
 - `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
   workflow checks, configurable acceptance thresholds, and privacy-safe collection planning.
 - `tests/releaseUnblockChecklist.test.ts`: passed and covers default external blockers, launch-readiness label/action
