@@ -23,8 +23,9 @@
 - Vitest privacy deletion tests for report, private training-log, drill-practice, coach-consent cleanup, orphan cleanup,
   and receipt copy.
 - Vitest data portability tests for privacy-safe backup JSON, cue feedback backup/restore, non-mutating restore preview,
-  existing-record conflict preview, content-checksum verification and tamper rejection, legacy backup compatibility,
-  restore into empty repositories, drill practice backup/restore, orphan skipping, and URI-like artifact rejection.
+  existing-record conflict preview, restore receipt checksum copy, content-checksum verification and tamper rejection,
+  legacy backup compatibility, restore into empty repositories, drill practice backup/restore, orphan skipping, and
+  URI-like artifact rejection.
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest technique readiness tests for baseline, repeat, and recovery next-session recommendations.
@@ -157,7 +158,8 @@
   cue trust, and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
 - Privacy data portability prepares a backup JSON with an offline checksum, previews restore, new, existing, skipped, and
-  integrity status, and restores it locally without raw video leaving the device.
+  integrity status, writes checksum state into the restore receipt, and restores it locally without raw video leaving the
+  device.
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.
 - Cue validation rubric can score coach reviews once consented clip packets are available.
 - Cue validation dataset gate can reject incomplete studies before production movement-quality claims.
