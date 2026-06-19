@@ -48,3 +48,4 @@
 | R44 recurring cue patterns | `docs/requirements.md` | `tests/cuePatterns.test.ts`, browser smoke | Progress tab Cue patterns panel | Covered |
 | R45 private cue usefulness feedback | `docs/requirements.md` | `tests/reportAnnotationRepository.test.ts`, `tests/dataPortability.test.ts`, browser smoke | Sessions tab Cue feedback controls | Covered |
 | R46 cue usefulness insights | `docs/requirements.md` | `tests/cueFeedbackInsights.test.ts`, browser smoke | Progress tab Cue usefulness panel | Covered |
+| R47 feedback-adapted drill plans | `docs/requirements.md` | `tests/drillPlanner.test.ts`, browser smoke | Drills tab Feedback row | Covered |
