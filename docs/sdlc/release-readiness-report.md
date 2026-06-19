@@ -45,6 +45,8 @@ platforms are validated on physical climbing videos and devices.
 - Native report persistence uses SQLite behind the same repository contract, with browser/local fallback storage.
 - Sessions persists explicit per-report consent before preparing a coach review packet without raw video, URI, key-frame, or landmark artifacts.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
+- Privacy can prepare and restore a versioned local backup JSON without raw video, video URI, audio, account identifiers,
+  or secrets.
 - Privacy shows an airplane-mode readiness self-check for local provider, storage, cloud sync, raw export, and report history.
 - Store readiness manifest validates bundle identifier, Android package, permission copy, privacy declarations, listing
   copy, and screenshot plan.
@@ -61,7 +63,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 29 test files and 107 tests.
+- `npm test`: passed, 30 test files and 111 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -80,6 +82,8 @@ platforms are validated on physical climbing videos and devices.
   active filter counting.
 - `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, coach-consent cleanup, orphan cleanup,
   and privacy-safe deletion receipt copy.
+- `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, restore into empty repositories, orphan
+  skipping, and URI-like artifact rejection.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
@@ -87,7 +91,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, the Drills weekly plan, the Progress attempt comparison, the Progress history preview,
   Plan access cards, Progress history filters, the Sessions review detail, the Sessions private training log, the
   Progress project queue, the Sessions coach packet consent gate and export, the Sessions deletion receipt, the Privacy
-  diagnostics packet, and the Privacy airplane-mode readiness self-check.
+  diagnostics packet, Privacy data portability backup/restore, and the Privacy airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
