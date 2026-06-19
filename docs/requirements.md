@@ -151,6 +151,8 @@
 - Launch-readiness reports must mark configured-but-missing machine evidence as drift.
 - Launch-readiness detection must validate native QA evidence and cue-validation dataset content before marking either
   artifact as verified.
+- Launch-readiness detection must validate the model-analysis replay report before marking model-shaped cue evidence as
+  verified.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

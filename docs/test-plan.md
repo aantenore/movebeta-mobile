@@ -88,6 +88,8 @@
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
+- Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
+  blocking before launch tracks are ready.
 - Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
   commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state

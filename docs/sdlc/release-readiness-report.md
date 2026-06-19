@@ -98,8 +98,8 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab shows the configured current tier, upgrade path, capability matrix, and billing-provider readiness from the
   shared entitlement catalog.
 - Plan tab shows launch-readiness tracks for stakeholder demo, internal native beta, and store submission, keeping
-  MoveNet model readiness, full-Xcode, physical-device QA, real cue-validation data, and EAS/store credentials visible
-  as explicit blockers.
+  MoveNet model readiness, model-analysis replay evidence, full-Xcode, physical-device QA, real cue-validation data, and
+  EAS/store credentials visible as explicit blockers.
 - Plan tab shows a release unblock checklist that derives external blockers from launch readiness and lists proof
   artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
 - `npm run release:handoff` writes JSON and Markdown handoff packets with repo, commit, product identity, gate status,
@@ -112,8 +112,8 @@ platforms are validated on physical climbing videos and devices.
   MoveNet readiness, model-analysis replay, native QA runbook, web export, EAS standard check, and high-severity audit.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
-- Launch-readiness detection validates native QA evidence and cue-validation datasets with their production validators
-  before marking those artifacts verified.
+- Launch-readiness detection validates model-analysis replay, native QA evidence, and cue-validation datasets with their
+  production validators before marking those artifacts verified.
 - Exported reports expose privacy-safe metadata and do not include raw video URIs.
 - Drills, Progress, Sessions, Plan, and Privacy tabs navigate successfully.
 - Mobile viewport at 390x844 and desktop viewport at 1280x900 render without smoke failures.
@@ -121,13 +121,13 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 62 test files and 235 tests.
+- `npm test`: passed, 62 test files and 236 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3865ms load time, 351ms average inference, and 375ms max inference in the latest run.
+  CPU backend, 3719ms load time, 409ms average inference, and 446ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -241,9 +241,9 @@ platforms are validated on physical climbing videos and devices.
   gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
 - `npm run release:readiness`: passed and generated `docs/sdlc/launch-readiness-report.json` with stakeholder demo ready,
-  model readiness and native QA runbook verified, internal native beta blocked by missing physical-device QA evidence, and
-  store submission blocked by missing full Xcode, physical-device QA, real cue-validation data, EAS project binding, and
-  store credentials.
+  MoveNet readiness, model-analysis replay, and native QA runbook verified, internal native beta blocked by missing
+  physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
+  data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
   `docs/sdlc/release-handoff-packet.md` with 7/7 screenshots, 5 external blockers, release archive artifacts, current
   artifacts, and verification commands.
