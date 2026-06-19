@@ -24,6 +24,8 @@ platforms are validated on physical climbing videos and devices.
 - Reports show analysis quality, frame coverage, landmark coverage, visibility, and weak-input warnings.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
+- Analyze turns the current cue and metric evidence into a local setup, crux, and exit beta replay plan before movement
+  metrics.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
   personal benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt comparison, and
   trend deltas.
@@ -95,7 +97,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 47 test files and 182 tests.
+- `npm test`: passed, 48 test files and 185 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -143,6 +145,8 @@ platforms are validated on physical climbing videos and devices.
   evidence, partial evidence overrides, and launch evidence parsing from Expo/env configuration.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
   durable launch readiness report writes.
+- `tests/betaReplayPlan.test.ts`: passed and covers setup/crux/exit action generation, timestamp ordering, and weakest
+  metric fallback when no cue crosses threshold.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
@@ -150,7 +154,7 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated six 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
+  capture-readiness guidance, beta replay plan, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
