@@ -27,6 +27,8 @@ platforms are validated on physical climbing videos and devices.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
   personal benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt comparison, and
   trend deltas.
+- Progress lowers the next-session plan to a practice reset when private drill logs show skipped drills exceeding
+  completed drills.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
   practice logging, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
@@ -66,7 +68,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 37 test files and 139 tests.
+- `npm test`: passed, 37 test files and 140 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -95,7 +97,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `tests/personalBenchmarks.test.ts`: passed and covers best overall, wall-angle, grade, gym, latest-vs-best deltas,
   and empty local history behavior.
-- `tests/sessionPlan.test.ts`: passed and covers baseline blocks, recovery intensity caps, and repeat-project planning.
+- `tests/sessionPlan.test.ts`: passed and covers baseline blocks, recovery intensity caps, repeat-project planning, and
+  practice-reset planning from skipped drill logs.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
@@ -103,7 +106,7 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, the Progress technique readiness
+  capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the

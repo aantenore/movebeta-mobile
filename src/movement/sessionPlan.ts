@@ -1,5 +1,7 @@
 import type { LocalAnalysisReport } from './contracts';
 import { buildDrillPlan } from './drillPlanner';
+import { summarizeDrillPracticeInsights } from './drillPracticeInsights';
+import type { DrillPracticeRecord } from './drillPracticeRepository';
 import { summarizePersonalBenchmarks } from './personalBenchmarks';
 import { summarizeProjectQueue } from './projectQueue';
 import type { ReportAnnotation } from './reportAnnotationRepository';
@@ -34,9 +36,14 @@ function latestReport(reports: LocalAnalysisReport[]) {
   return [...reports].sort((a, b) => b.session.createdAt.localeCompare(a.session.createdAt))[0] ?? null;
 }
 
-export function buildSessionPlan(reports: LocalAnalysisReport[], annotations: ReportAnnotation[]): SessionPlan {
+export function buildSessionPlan(
+  reports: LocalAnalysisReport[],
+  annotations: ReportAnnotation[],
+  drillPractice: DrillPracticeRecord[] = [],
+): SessionPlan {
   const readiness = buildTechniqueReadinessPlan(reports, annotations);
-  const drillPlan = buildDrillPlan(reports);
+  const drillPlan = buildDrillPlan(reports, annotations);
+  const practiceInsights = summarizeDrillPracticeInsights(reports, drillPractice);
   const projectQueue = summarizeProjectQueue(reports, annotations);
   const benchmarks = summarizePersonalBenchmarks(reports);
   const latest = latestReport(reports);
@@ -115,6 +122,49 @@ export function buildSessionPlan(reports: LocalAnalysisReport[], annotations: Re
       status: 'recover',
       target: readiness.focus,
       title: 'Recovery technique session',
+    };
+  }
+
+  if (practiceInsights.status === 'blocked') {
+    const skippedDrill =
+      drillPlan.items.find((item) => item.cueId === practiceInsights.skippedCue?.cueId) ?? drill ?? drillPlan.items[0] ?? null;
+    const phases: SessionPlanPhase[] = [
+      {
+        durationMinutes: 10,
+        evidence: practiceInsights.recommendation,
+        id: 'practice-reset-warmup',
+        instruction: 'Warm up on easier terrain and keep the first repeat intentionally low effort.',
+        title: 'Reset warm-up',
+      },
+      {
+        durationMinutes: 12,
+        evidence: practiceInsights.skippedCue
+          ? `${practiceInsights.skippedCue.skippedCount}/${practiceInsights.skippedCue.total} practice logs skipped.`
+          : 'Practice consistency shows skipped drills.',
+        id: 'practice-reset-drill',
+        instruction: skippedDrill
+          ? `${skippedDrill.drill} Use an easier hold option or lower wall angle before repeating.`
+          : 'Choose one skipped drill and make it easier before adding volume.',
+        title: skippedDrill?.title ?? practiceInsights.skippedCue?.title ?? 'Easier drill variant',
+      },
+      {
+        durationMinutes: 10,
+        evidence: 'Practice follow-through should recover before adding intensity.',
+        id: 'practice-reset-log',
+        instruction: 'Mark the drill as Done or Skip and keep one short note about why.',
+        title: 'Log follow-through',
+      },
+    ];
+
+    return {
+      anchor,
+      durationMinutes: totalDuration(phases),
+      intensityCap: 'easy',
+      phases,
+      safetyNote: 'Reduce complexity until the suggested drill is repeatable and logged.',
+      status: 'recover',
+      target: practiceInsights.skippedCue?.title ?? readiness.focus,
+      title: 'Practice reset session',
     };
   }
 

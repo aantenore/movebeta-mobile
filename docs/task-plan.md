@@ -61,3 +61,4 @@
 | T57 | Adapt drill plans from private cue feedback | Done |
 | T58 | Add private drill practice logging with backup, restore, and deletion coverage | Done |
 | T59 | Add Progress practice consistency insights from private drill logs | Done |
+| T60 | Make next-session planning adapt to blocked practice consistency | Done |

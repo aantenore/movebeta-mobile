@@ -62,3 +62,4 @@
 - Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
 - Private drill practice logging for completed or skipped suggested drills with backup, restore, and deletion coverage.
 - Practice consistency insights from private drill logs with completion rate, latest status, and skipped-cue review.
+- Practice-aware next-session planning that lowers intensity and prescribes easier variants when drills are repeatedly skipped.
