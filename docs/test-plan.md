@@ -12,7 +12,9 @@
 - Vitest session detail tests for focus metric selection, primary cue selection, quality/performance/privacy facts,
   normalized timeline markers, and weak-report risk status.
 - Vitest report annotation tests for private training-log defaults, cue usefulness feedback, legacy migration, updates,
-  tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage tolerance.
+  repeat outcome logging/clearing, tag normalization, local persistence, SQLite persistence, delete behavior, and
+  corrupted-storage tolerance.
+- Vitest repeat outcome insight tests for progressing, stalled, orphan-skipping, and empty states.
 - Vitest drill practice repository tests for private completion/skipped records, local persistence, SQLite persistence,
   report-scoped deletion, and corrupted-storage tolerance.
 - Vitest drill practice insight tests for completion rate, blocked/skipped state, orphan skipping, and empty state.
@@ -71,6 +73,8 @@
 - Vitest native QA evidence tests for platform coverage, muted recording, metadata reads, workflow pass/fail state,
   latency budgets, battery budget, and thermal state.
 - Web export with `npm run export:web`.
+- MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
+  Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
 - Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.
@@ -128,6 +132,8 @@
 - Progress tab shows personal benchmarks for best overall and filtered style segments.
 - Progress tab shows recurring cue patterns with latest cue count, total patterns, cleared count, and drill evidence.
 - Progress tab shows cue usefulness insights from private Sessions feedback.
+- Progress tab shows repeat-outcome success, improved/sent/stalled counts, and next-repeat action after a Sessions repeat
+  outcome is logged.
 - Progress tab shows practice consistency from private Drills completion/skipped logs.
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.

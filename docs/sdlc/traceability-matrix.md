@@ -68,3 +68,6 @@
 | R64 beta replay plan | `docs/requirements.md` | `tests/betaReplayPlan.test.ts`, browser smoke | Analyze tab Beta replay plan | Covered |
 | R65 movement phase breakdown | `docs/requirements.md` | `tests/movementPhaseBreakdown.test.ts`, browser smoke | Analyze tab Movement phases | Covered |
 | R66 cue trust scoring | `docs/requirements.md` | `tests/cueTrust.test.ts`, `tests/coachReviewPacket.test.ts`, browser smoke | Analyze tab Cue trust and Sessions coach packet JSON | Covered |
+| R67 repeat outcome loop | `docs/requirements.md` | `tests/reportAnnotationRepository.test.ts`, `tests/repeatOutcomeInsights.test.ts`, `tests/sessionPlan.test.ts`, browser smoke | Sessions repeat outcome controls and Progress repeat outcome panel | Covered |
+| R68 MoveNet model execution smoke | `docs/requirements.md` | `npm run model:movenet:smoke` | Real climbing-video QA with consented clips | Execution covered; video validation needed |
+| R69 screenshot documentation | `docs/screenshots.md`, `docs/store/screenshot-plan.md` | `npm run store:screenshots` | Documentation gallery review | Covered |

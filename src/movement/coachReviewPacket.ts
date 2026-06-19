@@ -12,7 +12,12 @@ import {
 } from './contracts';
 import { buildCueTrustReport, CueTrustReportSchema } from './cueTrust';
 import { drillPracticeStatuses, type DrillPracticeRecord } from './drillPracticeRepository';
-import { cueFeedbackRatings, reportProjectStatuses, type ReportAnnotation } from './reportAnnotationRepository';
+import {
+  cueFeedbackRatings,
+  repeatOutcomeStatuses,
+  reportProjectStatuses,
+  type ReportAnnotation,
+} from './reportAnnotationRepository';
 
 export const CoachReviewRubricItemSchema = z.object({
   id: z.string(),
@@ -43,6 +48,14 @@ export const CoachAthleteContextSchema = z.object({
     perceivedEffort: z.number().int().min(1).max(5).nullable(),
     privateNoteIncluded: z.literal(false),
     projectStatus: z.enum(reportProjectStatuses).nullable(),
+    repeatOutcome: z
+      .object({
+        attempts: z.number().int().min(0).max(20),
+        resolvedCueIds: z.array(z.string()),
+        status: z.enum(repeatOutcomeStatuses),
+        updatedAt: z.string(),
+      })
+      .nullable(),
     tags: z.array(z.string()),
     updatedAt: z.string().nullable(),
   }),
@@ -158,6 +171,16 @@ function buildAthleteContext(
       perceivedEffort: trainingLog?.perceivedEffort ?? null,
       privateNoteIncluded: false,
       projectStatus: trainingLog?.projectStatus ?? null,
+      repeatOutcome: trainingLog?.repeatOutcome
+        ? {
+            attempts: trainingLog.repeatOutcome.attempts,
+            resolvedCueIds: uniqueSorted(
+              trainingLog.repeatOutcome.resolvedCueIds.filter((cueId) => reportCueIds.has(cueId)),
+            ),
+            status: trainingLog.repeatOutcome.status,
+            updatedAt: trainingLog.repeatOutcome.updatedAt,
+          }
+        : null,
       tags: trainingLog?.tags ?? [],
       updatedAt: trainingLog?.updatedAt ?? null,
     },

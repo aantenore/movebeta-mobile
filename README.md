@@ -21,6 +21,11 @@ practice log, and coach-consent record from the Sessions tab.
 - Freemium model: free local analysis and trend preview, paid deeper history, advanced drills, team tools, and optional
   encrypted sync.
 
+## Screenshots
+
+Current app screenshots are documented in [`docs/screenshots.md`](docs/screenshots.md) and generated from the exported
+web build with `npm run store:screenshots`.
+
 ## Stack
 
 - Expo SDK 56 and Expo Router.
@@ -77,6 +82,9 @@ practice log, and coach-consent record from the Sessions tab.
 - Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
 - Recurring cue pattern tracking for persistent, emerging, and cleared technique issues.
 - Cue usefulness insights that turn private cue feedback into useful, unclear, and review signals.
+- Repeat-outcome logging for comparable attempts after applying a beta plan, including repeat status, attempts, and
+  resolved cue tracking.
+- Repeat-outcome Progress insights for success rate, stalled repeat detection, resolved cues, and next-repeat action.
 - Technique readiness scoring that turns local trends and private training logs into next-session guidance.
 - Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
 - Evidence-based weekly drill plans generated from local report cues.
@@ -85,6 +93,7 @@ practice log, and coach-consent record from the Sessions tab.
 - Practice consistency insights from private drill completion and skip history.
 - Practice-aware next-session planning that lowers intensity when suggested drills are repeatedly skipped.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
+- MoveNet model execution smoke for verifying that the local TensorFlow.js model loads and runs inference.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -92,6 +101,7 @@ practice log, and coach-consent record from the Sessions tab.
 ```bash
 npm install
 npm run quality
+npm run model:movenet:smoke
 npm run export:web
 npm run preview:web
 npm run store:manifest
