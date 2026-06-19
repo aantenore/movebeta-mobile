@@ -1,6 +1,6 @@
 # Release Readiness Report
 
-Date: 2026-06-19
+Date: 2026-06-20
 Version: 1.0.0
 
 ## Status
@@ -126,8 +126,10 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
-  MoveNet readiness, model-analysis replay, native QA runbook, web export, EAS standard check, and moderate-or-higher
-  dependency audit.
+  MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, web export, EAS standard check, and
+  moderate-or-higher dependency audit.
+- `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
+  `docs/sdlc/ios-toolchain-report.md`, so full-Xcode blockers are captured as release evidence.
 - `npm run release:archives` writes source and web-dist zip archives plus JSON and Markdown manifests with byte sizes,
   SHA-256 checksums, repository metadata, and worktree-state evidence.
 - Launch-readiness detection validates model-analysis replay, native QA evidence, and cue-validation datasets with their
@@ -139,23 +141,25 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 77 test files and 298 tests.
+- `npm test`: passed, 78 test files and 302 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3779ms load time, 334ms average inference, and 351ms max inference in the latest run.
+  CPU backend, 6145ms load time, 329ms average inference, and 336ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
   model-analysis replay reports while preserving real-world validation targets.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
+- `npm run native:ios:doctor`: passed as a command and wrote `docs/sdlc/ios-toolchain-report.json` with status `blocked`
+  because this machine has Command Line Tools selected instead of full Xcode.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
   for the Expo `xcode` tooling chain.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 7/7 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 8/8 release steps passing.
 - `npm run release:archives`: passed and wrote `../movebeta-mobile-source.zip`, `../movebeta-mobile-web-dist.zip`,
   `../movebeta-mobile-release-archives.json`, and `../movebeta-mobile-release-archives.md`.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
@@ -216,12 +220,14 @@ platforms are validated on physical climbing videos and devices.
   evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, and launch evidence parsing
   from Expo/env configuration.
 - `tests/releaseGateReport.test.ts`: passed and covers release gate pass/fail aggregation plus ordered gate step evidence.
+- `tests/iosToolchainDoctor.test.ts`: passed and covers Command Line Tools-only blocker detection, full-Xcode ready
+  detection, and durable JSON/Markdown artifact writes.
 - `tests/ciWorkflow.test.ts`: passed and covers GitHub Actions template trigger coverage, deferred active-workflow
   activation, Node version sourcing from `package.json`, lockfile installs, shared `npm run ci` execution, and release
   evidence artifact upload.
-- `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, and
-  durable launch readiness report writes, including machine release-gate report detection and content validation for native
-  QA evidence and cue-validation datasets.
+- `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, iOS
+  toolchain report detection, and durable launch readiness report writes, including machine release-gate report detection
+  and content validation for native QA evidence and cue-validation datasets.
 - `tests/nativeQaRunbook.test.ts`: passed and covers platform workflow instructions, generated evidence drafts, and the
   expected validator failure until real physical-device values are entered.
 - `tests/nativeQaEvidenceKit.test.ts`: passed and covers Plan-tab native QA workflows, shared budgets, placeholder
@@ -294,6 +300,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueValidationGateParity.test.ts`: passed and covers app/CLI parity for ready datasets, production evidence
   gaps, and raw-artifact rejection.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
+- `npm run native:ios:doctor`: passed as a command and reports Developer directory `/Library/Developer/CommandLineTools`,
+  workspace ready, Pods ready, full Xcode missing, and build-settings probe skipped until full Xcode is installed.
 - `tests/nativePoseBridge.test.ts`: passed and covers the optional JavaScript native module boundary, Expo module
   registration, Apple Vision iOS provider, local Photos resolution, and Android ML Kit frame extraction.
 - `npm run release:readiness`: passed and generated `docs/sdlc/launch-readiness-report.json` with stakeholder demo ready,
@@ -305,12 +313,12 @@ platforms are validated on physical climbing videos and devices.
   artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
-- iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
+- iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.
 
 ## Known Residual Risks
 
-- iOS build verification is blocked on this machine because full Xcode is not installed. CocoaPods is now verified with a
-  local modern Ruby toolchain.
+- iOS build verification is blocked on this machine because full Xcode is not installed or selected. CocoaPods is verified
+  with a local modern Ruby toolchain, and `npm run native:ios:doctor` now preserves the blocker as JSON/Markdown evidence.
 - Native release requires custom Expo development build validation on physical iOS and Android devices with real climbing
   clips. The validator, template, and runbook now exist, but `docs/sdlc/native-qa-evidence.json` must be filled from real
   devices.

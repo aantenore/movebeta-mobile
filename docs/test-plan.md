@@ -102,6 +102,8 @@
   token-like value rejection before sharing.
 - Vitest provider readiness tests for configured web MoveNet path, native platform provider review state, reserved
   provider blocking, fallback provider availability, and privacy-safe output.
+- Vitest iOS toolchain doctor tests for Command Line Tools-only blocker detection, full-Xcode ready detection, and durable
+  JSON/Markdown report writes.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
@@ -142,6 +144,8 @@
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.
 - iOS Pods install with `npm run native:ios:pods`.
+- iOS toolchain doctor with `npm run native:ios:doctor`, which writes `docs/sdlc/ios-toolchain-report.json` and is
+  included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.
 - Native QA evidence validation with `npm run native:qa:validate` after real device runs are captured.
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are

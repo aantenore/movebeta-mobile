@@ -188,6 +188,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const appConfig = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
   const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
   const releaseGateReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/release-gate-report.json')) ?? {};
+  const iosToolchainReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/ios-toolchain-report.json')) ?? {};
   const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
   const modelAnalysisReplayReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json')) ?? {};
   const nativeQaRunbook = readJsonIfExists(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json')) ?? {};
@@ -200,7 +201,10 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       hasAnyEnv(env, ['MOVEBETA_ASC_APP_ID', 'ASC_API_KEY_ID']) &&
       hasAnyEnv(env, ['GOOGLE_SERVICE_ACCOUNT_JSON', 'GOOGLE_SERVICE_ACCOUNT_KEY_PATH', 'MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64']),
     easProject: typeof appConfig.extra?.eas?.projectId === 'string' && appConfig.extra.eas.projectId.trim().length > 0,
-    iosBuild: exists(rootDir, '/Applications/Xcode.app') || fs.existsSync('/Applications/Xcode.app'),
+    iosBuild:
+      iosToolchainReport.schemaVersion === 'movebeta.ios-toolchain-report.v1'
+        ? iosToolchainReport.status === 'ready'
+        : fs.existsSync('/Applications/Xcode.app'),
     iosPods: exists(rootDir, 'ios/Pods/Manifest.lock') && exists(rootDir, 'ios/Pods/Local Podspecs/MoveBetaPose.podspec.json'),
     modelReadiness:
       moveNetReadinessReport.schemaVersion === 'movebeta.movenet-readiness-report.v1' &&
@@ -213,8 +217,9 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       releaseGateReport.schemaVersion === 'movebeta.release-gate-report.v1' &&
       releaseGateReport.status === 'pass' &&
       Array.isArray(releaseGateReport.steps) &&
-      releaseGateReport.steps.length >= 7 &&
+      releaseGateReport.steps.length >= 8 &&
       releaseGateReport.steps.some((step) => step.key === 'modelAnalysisReplay') &&
+      releaseGateReport.steps.some((step) => step.key === 'iosToolchainDoctor') &&
       releaseGateReport.steps.every((step) => step.status === 'pass'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),
     webSmoke: exists(rootDir, 'dist/index.html') && releaseReport.includes('Playwright exported-bundle smoke: passed'),

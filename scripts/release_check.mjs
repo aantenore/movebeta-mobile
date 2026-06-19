@@ -11,6 +11,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'model:movenet:readiness'], key: 'modelReadiness', label: 'MoveNet readiness report' },
   { command: ['npm', 'run', 'model:analysis:replay'], key: 'modelAnalysisReplay', label: 'Model-shaped analysis replay' },
   { command: ['npm', 'run', 'native:qa:runbook'], key: 'nativeQaRunbook', label: 'Native QA runbook generation' },
+  { command: ['npm', 'run', 'native:ios:doctor'], key: 'iosToolchainDoctor', label: 'iOS toolchain doctor' },
   { command: ['npm', 'run', 'export:web'], key: 'webExport', label: 'Expo web export' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },
   { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },

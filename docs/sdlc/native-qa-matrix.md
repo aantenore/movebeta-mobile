@@ -13,7 +13,7 @@
 | Android debug build | N/A | Verified locally | `:app:assembleDebug` completes successfully |
 | Android merged manifest | N/A | Verified locally | `CAMERA` and `READ_MEDIA_VIDEO` present, `RECORD_AUDIO` absent, `allowBackup=false` |
 | iOS Pods | Verified locally with Ruby 3.3.11 and CocoaPods 1.16.2 | N/A | `npm run native:ios:pods` completes and installs `MoveBetaPose` |
-| iOS simulator/device build | Blocked until full Xcode is installed | N/A | `npx expo run:ios` or Xcode workspace build completes |
+| iOS simulator/device build | Blocked until full Xcode is installed | N/A | `npm run native:ios:doctor` reports `ready`, then `npx expo run:ios` or Xcode workspace build completes |
 | Latency | iPhone 13+, older supported device | mid-range Android, older supported device | 10s clips <= 8s analysis, 45s clips <= 25s, 60s clips <= 35s |
 | Report evidence | Required | Required | Saved report performance fields match the measured device run |
 | Thermal/battery | 5 repeated analyses | 5 repeated analyses | Thermal state nominal/fair and battery drop <= 4% per evidence run |

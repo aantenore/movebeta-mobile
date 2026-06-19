@@ -12,6 +12,7 @@
 - [x] Android merged manifest validation passes with camera/import permissions, no audio permission, and backup disabled.
 - [x] Native QA runbook is generated with `npm run native:qa:runbook`.
 - [x] `npm run native:ios:pods` passes with local Ruby/CocoaPods.
+- [x] `npm run native:ios:doctor` generates the current full-Xcode blocker report.
 - [x] Versioning is aligned across `package.json`, `app.json`, and native build numbers.
 - [x] Browser smoke passes on desktop and 390px mobile viewport.
 - [x] Privacy review confirms raw video is not uploaded by default.
@@ -24,6 +25,7 @@
 ## Native Release Additions
 
 - [x] Android dev build compiles with local on-device pose module.
+- [ ] `npm run native:ios:doctor` reports `ready` after full Xcode is installed and selected.
 - [ ] iOS dev build runs local analysis after full Xcode is installed.
 - [x] Camera permissions and import permissions are reviewed.
 - [x] Bundle identifier, Android package, and store metadata are confirmed by `tests/storeReadiness.test.ts` and `docs/store/store-manifest.json`.

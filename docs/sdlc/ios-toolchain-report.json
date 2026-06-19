@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "action": "Install Xcode and select it with sudo xcode-select -s /Applications/Xcode.app/Contents/Developer.",
+      "detail": "/Library/Developer/CommandLineTools",
+      "id": "xcode-select",
+      "label": "Developer directory",
+      "status": "pass"
+    },
+    {
+      "action": "Install full Xcode from Apple, open it once, accept licenses, then select its Developer directory.",
+      "detail": "Only Command Line Tools are selected; iOS simulator/device builds require full Xcode.",
+      "id": "full-xcode",
+      "label": "Full Xcode",
+      "status": "fail"
+    },
+    {
+      "action": "Run xcodebuild -version after installing Xcode.",
+      "detail": "Command failed: xcodebuild -version\nxcode-select: error: tool 'xcodebuild' requires Xcode, but active developer directory '/Library/Developer/CommandLineTools' is a command line tools instance\n",
+      "id": "xcodebuild-version",
+      "label": "xcodebuild availability",
+      "status": "fail"
+    },
+    {
+      "action": "Run npx expo prebuild --platform ios or npm run native:ios:pods to regenerate the workspace.",
+      "detail": "ios/MoveBeta.xcworkspace exists.",
+      "id": "workspace",
+      "label": "iOS workspace",
+      "status": "pass"
+    },
+    {
+      "action": "Run npm run native:ios:pods.",
+      "detail": "Pods are installed and include MoveBetaPose.",
+      "id": "pods",
+      "label": "CocoaPods install",
+      "status": "pass"
+    },
+    {
+      "action": "Run xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings.",
+      "detail": "Skipped until full Xcode, workspace, and pods are all ready.",
+      "id": "build-settings",
+      "label": "Build settings probe",
+      "status": "warn"
+    }
+  ],
+  "developerPath": "/Library/Developer/CommandLineTools",
+  "generatedAt": "2026-06-19T22:55:58.535Z",
+  "nextAction": "Install full Xcode from Apple, open it once, accept licenses, then select its Developer directory.",
+  "schemaVersion": "movebeta.ios-toolchain-report.v1",
+  "status": "blocked",
+  "summary": {
+    "buildSettingsProbe": "skipped",
+    "commandLineToolsOnly": true,
+    "fullXcode": false,
+    "podsInstalled": true,
+    "workspaceExists": true,
+    "xcodebuildAvailable": false
+  }
+}
