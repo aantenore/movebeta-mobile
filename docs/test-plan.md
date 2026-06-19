@@ -65,6 +65,8 @@
 - Vitest cue validation dataset tests for schema version, production thresholds, wall-angle coverage, reviewer coverage,
   raw-artifact exclusion, and weak-score failures.
 - Vitest performance-budget tests for local analysis duration thresholds, frame-rate evidence, and over-budget status.
+- Vitest analysis evidence tests for versioned report timelines, pass/review/blocked summaries, legacy report fallback,
+  and raw artifact rejection.
 - Vitest entitlement tests for Free, Pro, Coach capabilities, upgrade paths, and history limits.
 - Vitest plan catalog tests for current tier status, highlighted upgrade unlocks, coach tier capabilities, and
   provider-agnostic recommendations.
@@ -158,6 +160,8 @@
 - Selecting each bundled local attempt runs analysis and updates pose overlay, metrics, cues, and timeline.
 - Sessions tab refreshes on focus and shows the latest local attempts.
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
+- Sessions tab shows the analysis evidence timeline for local report input, pose provider, quality, cue generation,
+  runtime budget, and privacy boundary.
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
   coach consent record from local storage with a deletion receipt.

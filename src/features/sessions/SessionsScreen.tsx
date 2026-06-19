@@ -46,6 +46,7 @@ import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedE
 import { selectionFeedback } from '@/core/haptics';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
+import { summarizeAnalysisEvidence } from '@/movement/analysisEvidence';
 import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
@@ -137,6 +138,50 @@ function TimelineMarkerRow({ marker }: { marker: SessionTimelineMarker }) {
   );
 }
 
+function evidenceStatusStyle(status: LocalAnalysisReport['analysisEvidence']['steps'][number]['status']) {
+  if (status === 'blocked') return styles.evidenceStatusBlocked;
+  if (status === 'review') return styles.evidenceStatusReview;
+  return styles.evidenceStatusPass;
+}
+
+function AnalysisEvidencePanel({ report }: { report: LocalAnalysisReport }) {
+  const summary = summarizeAnalysisEvidence(report.analysisEvidence);
+  const hasSteps = report.analysisEvidence.steps.length > 0;
+
+  return (
+    <Section
+      title="Analysis evidence"
+      caption={
+        hasSteps
+          ? `${summary.pass}/${summary.total} checks pass · ${summary.review} review · ${summary.blocked} blocked`
+          : 'Legacy report without generated evidence steps.'
+      }
+    >
+      {hasSteps ? (
+        <View style={styles.evidenceList}>
+          {report.analysisEvidence.steps.map((step) => (
+            <View key={step.id} style={styles.evidenceRow}>
+              <View style={[styles.evidenceStatus, evidenceStatusStyle(step.status)]}>
+                <Text style={styles.evidenceStatusText}>{step.status}</Text>
+              </View>
+              <View style={styles.evidenceCopy}>
+                <Text style={styles.evidenceTitle}>{step.label}</Text>
+                <Text style={styles.evidenceDetail}>{step.detail}</Text>
+                <Text style={styles.evidenceMeta}>{step.evidence}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.empty}>
+          <Text style={styles.emptyTitle}>Evidence timeline not generated</Text>
+          <Text style={styles.emptyText}>Run the analysis again to attach the local execution evidence timeline.</Text>
+        </View>
+      )}
+    </Section>
+  );
+}
+
 function SessionReviewPanel({ detail, report }: { detail: SessionReviewDetail; report: LocalAnalysisReport }) {
   const reviewStyles = statusStyles(detail.status);
 
@@ -189,6 +234,8 @@ function SessionReviewPanel({ detail, report }: { detail: SessionReviewDetail; r
       <Section title="Local evidence" caption="Release-safe facts included in export and coach review decisions.">
         <SessionFactGrid facts={detail.privacyFacts} />
       </Section>
+
+      <AnalysisEvidencePanel report={report} />
     </Section>
   );
 }
@@ -1421,6 +1468,61 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+  evidenceCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  evidenceDetail: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  evidenceList: {
+    gap: theme.spacing.sm,
+  },
+  evidenceMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  evidenceRow: {
+    alignItems: 'flex-start',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  evidenceStatus: {
+    borderRadius: theme.radius.sm,
+    minWidth: 68,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  evidenceStatusBlocked: {
+    backgroundColor: '#FFF0EC',
+  },
+  evidenceStatusPass: {
+    backgroundColor: '#E6F3EC',
+  },
+  evidenceStatusReview: {
+    backgroundColor: '#FFF5E7',
+  },
+  evidenceStatusText: {
+    color: theme.colors.brandDark,
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  evidenceTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
   },
   saveAction: {
     alignItems: 'center',

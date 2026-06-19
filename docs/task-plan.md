@@ -106,3 +106,4 @@
 | T102 | Add real-world validation campaign tracker from cue-validation contracts | Done |
 | T103 | Feed completed validation campaign evidence into coach packet cue trust | Done |
 | T104 | Add file-based native sharing for prepared Sessions exports | Done |
+| T105 | Add versioned analysis evidence timeline to local reports | Done |

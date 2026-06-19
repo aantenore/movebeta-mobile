@@ -55,6 +55,9 @@ describe('local movement analyzer', () => {
     expect(report.engine.processedFrames).toBe(samplePoseFrames.length);
     expect(report.analysisQuality.score).toBeGreaterThanOrEqual(95);
     expect(report.analysisQuality.warnings).toEqual([]);
+    expect(report.analysisEvidence.schemaVersion).toBe('movebeta.analysis-evidence.v1');
+    expect(report.analysisEvidence.steps.map((step) => step.id)).toContain('privacy-boundary');
+    expect(report.analysisEvidence.steps.find((step) => step.id === 'privacy-boundary')?.status).toBe('pass');
     expect(report.metrics.map((metric) => metric.id)).toEqual([
       'flow',
       'pause-time',

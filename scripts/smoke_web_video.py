@@ -136,6 +136,8 @@ def main() -> None:
         expect(page.get_by_text("Primary cue")).to_be_visible()
         expect(page.get_by_text("Timeline", exact=True).first).to_be_visible()
         expect(page.get_by_text("Local evidence")).to_be_visible()
+        expect(page.get_by_text("Analysis evidence", exact=True)).to_be_visible()
+        expect(page.get_by_text("Privacy boundary")).to_be_visible()
         expect(page.get_by_text("Training log", exact=True)).to_be_visible()
         expect(page.get_by_text("Repeat outcome", exact=True)).to_be_visible()
         expect(page.get_by_text("Cue feedback", exact=True)).to_be_visible()
