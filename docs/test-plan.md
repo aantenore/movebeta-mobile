@@ -14,6 +14,8 @@
 - Vitest report annotation tests for private training-log defaults, updates, tag normalization, local persistence, SQLite
   persistence, delete behavior, and corrupted-storage tolerance.
 - Vitest privacy deletion tests for report, private training-log, coach-consent cleanup, orphan cleanup, and receipt copy.
+- Vitest data portability tests for privacy-safe backup JSON, restore into empty repositories, orphan skipping, and
+  URI-like artifact rejection.
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest progress filter tests for wall-angle, grade, and gym option derivation, report filtering, and active filter count.
@@ -62,6 +64,7 @@
   from local storage with a deletion receipt.
 - Coach packet export requires persisted explicit consent and then renders review JSON without raw video artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
+- Privacy data portability prepares a backup JSON and restores it locally without raw video leaving the device.
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.
 - Cue validation rubric can score coach reviews once consented clip packets are available.
 - Cue validation dataset gate can reject incomplete studies before production movement-quality claims.

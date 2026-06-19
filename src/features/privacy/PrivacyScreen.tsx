@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Cpu, Database, ShieldCheck, WifiOff } from 'lucide-react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Cpu, Database, FileJson, ShieldCheck, Upload, WifiOff } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
@@ -21,6 +21,14 @@ import {
   defaultPrivacyConsent,
 } from '@/core/privacy';
 import { theme } from '@/core/theme';
+import {
+  createLocalDataBackup,
+  formatLocalDataRestoreResult,
+  restoreLocalDataBackup,
+  summarizeLocalDataBackup,
+  type LocalDataBackup,
+  type LocalDataRestoreResult,
+} from '@/movement/dataPortability';
 import { listReports } from '@/movement/repository';
 
 const items = [
@@ -56,6 +64,9 @@ const items = [
 ] as const;
 
 export function PrivacyScreen() {
+  const [backup, setBackup] = useState<LocalDataBackup | null>(null);
+  const [restoreInput, setRestoreInput] = useState('');
+  const [restoreMessage, setRestoreMessage] = useState('');
   const [diagnostics, setDiagnostics] = useState<DiagnosticSupportPacket | null>(null);
   const [offlineReportCount, setOfflineReportCount] = useState(0);
   const offlineReadiness = assessOfflineReadiness({
@@ -108,6 +119,24 @@ export function PrivacyScreen() {
 
     setDiagnostics(assertDiagnosticPacketIsPrivacySafe(packet));
   }
+
+  async function prepareBackup() {
+    const nextBackup = await createLocalDataBackup();
+    setBackup(nextBackup);
+    setRestoreInput(JSON.stringify(nextBackup, null, 2));
+    setRestoreMessage('');
+  }
+
+  async function restoreBackup() {
+    try {
+      const result: LocalDataRestoreResult = await restoreLocalDataBackup(restoreInput);
+      setRestoreMessage(formatLocalDataRestoreResult(result));
+    } catch (error) {
+      setRestoreMessage(error instanceof Error ? error.message : 'Backup restore failed.');
+    }
+  }
+
+  const backupSummary = backup ? summarizeLocalDataBackup(backup) : null;
 
   return (
     <Screen>
@@ -194,6 +223,72 @@ export function PrivacyScreen() {
           {diagnostics ? (
             <View style={styles.payloadBox}>
               <Text style={styles.payloadText}>{JSON.stringify(diagnostics, null, 2)}</Text>
+            </View>
+          ) : null}
+        </View>
+      </Section>
+
+      <Section
+        title="Data portability"
+        caption="Export and restore local reports, training logs, and consent records without raw video."
+        trailing={
+          <Pressable onPress={() => void prepareBackup()} style={styles.action}>
+            <Text style={styles.actionText}>Backup</Text>
+          </Pressable>
+        }
+      >
+        <View style={styles.diagnosticsCard}>
+          <View style={styles.diagnosticsTop}>
+            <FileJson color={theme.colors.brand} size={18} />
+            <Text style={styles.diagnosticsTitle}>Local backup JSON</Text>
+          </View>
+          <Text style={styles.diagnosticsBody}>
+            The backup is versioned and schema-validated. It includes local analysis reports, private training logs, and
+            coach consent records, but no raw video, video URI, audio, account identifiers, or secrets.
+          </Text>
+          {backupSummary ? (
+            <View style={styles.portabilityStats}>
+              <View style={styles.portabilityStat}>
+                <Text style={styles.portabilityValue}>{backupSummary.reports}</Text>
+                <Text style={styles.portabilityLabel}>Reports</Text>
+              </View>
+              <View style={styles.portabilityStat}>
+                <Text style={styles.portabilityValue}>{backupSummary.annotations}</Text>
+                <Text style={styles.portabilityLabel}>Logs</Text>
+              </View>
+              <View style={styles.portabilityStat}>
+                <Text style={styles.portabilityValue}>{backupSummary.consents}</Text>
+                <Text style={styles.portabilityLabel}>Consents</Text>
+              </View>
+            </View>
+          ) : null}
+          {backup ? (
+            <View style={styles.payloadBox}>
+              <Text style={styles.payloadText}>{JSON.stringify(backup, null, 2)}</Text>
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.diagnosticsCard}>
+          <View style={styles.diagnosticsTop}>
+            <Upload color={theme.colors.brand} size={18} />
+            <Text style={styles.diagnosticsTitle}>Restore from JSON</Text>
+          </View>
+          <TextInput
+            accessibilityLabel="Local backup JSON"
+            multiline
+            onChangeText={setRestoreInput}
+            placeholder="Paste a MoveBeta local backup JSON payload."
+            placeholderTextColor={theme.colors.muted}
+            style={styles.restoreInput}
+            value={restoreInput}
+          />
+          <Pressable onPress={() => void restoreBackup()} style={styles.restoreAction}>
+            <Text style={styles.restoreActionText}>Restore backup</Text>
+          </Pressable>
+          {restoreMessage ? (
+            <View style={styles.payloadBox}>
+              <Text style={styles.payloadText}>{restoreMessage}</Text>
             </View>
           ) : null}
         </View>
@@ -325,6 +420,52 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 11,
     lineHeight: 15,
+  },
+  portabilityLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  portabilityStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    padding: theme.spacing.sm,
+  },
+  portabilityStats: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  portabilityValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  restoreAction: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  restoreActionText: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  restoreInput: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    color: theme.colors.text,
+    fontFamily: 'monospace',
+    fontSize: 12,
+    minHeight: 118,
+    padding: theme.spacing.sm,
+    textAlignVertical: 'top',
   },
   statusBadge: {
     backgroundColor: '#E8F4EE',

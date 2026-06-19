@@ -25,6 +25,7 @@
 | Coach packet prepared without athlete consent | Trust and policy risk | Explicit per-report coach review and cue validation consent gate |
 | Gym bystanders captured | Consent and policy risk | Capture setup blockers, capture reminders, and export controls |
 | Deletion does not remove all local report-adjacent data | Trust and compliance risk | Privacy deletion bundle removes reports, private training logs, and coach consent records together |
+| Backup reintroduces raw video references | Privacy leakage | Versioned backup schema rejects URI-like artifacts and excludes raw video by contract |
 | Consent state lost between sessions | Trust and auditability risk | Durable local consent records with grant, revoke, and report-delete cleanup |
 
 ## Open Items
