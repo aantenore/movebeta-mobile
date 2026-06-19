@@ -83,3 +83,4 @@
 - Sessions UI for pasting completed cue-validation worksheet CSV and preparing gate-compatible dataset JSON locally.
 - Versioned cue-validation dataset JSON contract required by the production validation gate.
 - Native share action for prepared Sessions exports.
+- In-app cue-validation gate preview for completed validation datasets.

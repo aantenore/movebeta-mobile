@@ -33,6 +33,7 @@ behavior alongside report history.
 - Completed worksheet CSV files must remain local until the user explicitly validates and shares the resulting dataset.
 - Sessions dataset preparation must keep the completed CSV and generated dataset in local UI state unless the user exports it.
 - Prepared export sharing must be an explicit user action through the local device share sheet.
+- Cue-validation gate previews must be computed from the local completed dataset and must not fetch remote evidence.
 
 ## Sensitive Data
 
