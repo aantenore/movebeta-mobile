@@ -169,6 +169,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Requirement-to-test traceability: `docs/sdlc/traceability-matrix.md`.
 - Release checklist and operational runbook: `docs/sdlc/release-checklist.md`, `docs/sdlc/runbook.md`.
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
+- Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,

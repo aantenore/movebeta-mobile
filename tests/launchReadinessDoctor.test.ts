@@ -47,6 +47,22 @@ function makeProjectRoot() {
     '- `npm run release:check`: passed.',
     '- Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`.',
   ].join('\n'));
+  writeJson(path.join(root, 'docs/sdlc/release-gate-report.json'), {
+    completedAt: '2026-06-20T08:00:00.000Z',
+    schemaVersion: 'movebeta.release-gate-report.v1',
+    startedAt: '2026-06-20T07:59:00.000Z',
+    status: 'pass',
+    steps: ['quality', 'modelReadiness', 'nativeQaRunbook', 'webExport', 'easStandard', 'securityAudit'].map((key) => ({
+      command: `npm run ${key}`,
+      completedAt: '2026-06-20T08:00:00.000Z',
+      durationMs: 100,
+      exitCode: 0,
+      key,
+      label: key,
+      startedAt: '2026-06-20T07:59:00.000Z',
+      status: 'pass',
+    })),
+  });
   writeText(path.join(root, 'dist/index.html'), '<!doctype html>');
   writeText(path.join(root, 'docs/store/privacy-declarations.md'), '# Privacy');
   writeJson(path.join(root, 'docs/store/store-manifest.json'), { ok: true });
@@ -231,6 +247,37 @@ describe('launch readiness doctor', () => {
     expect(report.checks.find((check) => check.key === 'nativeQaRunbook')?.status).toBe('verified');
     expect(report.summary.status).toBe('blocked');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('ready');
+  });
+
+  it('uses the machine release gate report instead of trusting stale release markdown', () => {
+    const rootDir = makeProjectRoot();
+    writeJson(path.join(rootDir, 'docs/sdlc/release-gate-report.json'), {
+      completedAt: '2026-06-20T08:00:00.000Z',
+      schemaVersion: 'movebeta.release-gate-report.v1',
+      startedAt: '2026-06-20T07:59:00.000Z',
+      status: 'fail',
+      steps: [
+        {
+          command: 'npm run quality',
+          completedAt: '2026-06-20T08:00:00.000Z',
+          durationMs: 100,
+          exitCode: 1,
+          key: 'quality',
+          label: 'quality',
+          startedAt: '2026-06-20T07:59:00.000Z',
+          status: 'fail',
+        },
+      ],
+    });
+
+    const report = buildLaunchReadinessDoctorReport({
+      env: { NODE_ENV: 'test' },
+      generatedAt: '2026-06-20T08:05:00.000Z',
+      rootDir,
+    });
+
+    expect(report.checks.find((check) => check.key === 'releaseGate')?.status).toBe('drift');
+    expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('drift');
   });
 
   it('blocks demo readiness when the MoveNet model report is missing', () => {
