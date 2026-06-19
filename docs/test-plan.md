@@ -61,6 +61,7 @@
 - Vitest launch-readiness and config tests for default blockers, all-ready evidence, partial evidence overrides, and
   Expo/env launch evidence parsing.
 - Vitest launch-readiness doctor tests for artifact detection, configured-evidence drift, and durable report writes.
+- Vitest MoveNet readiness report tests for ready/degraded budget checks without loading the model in unit tests.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest beta replay plan tests for setup/crux/exit action generation, timestamp ordering, and no-cue metric fallback.
 - Vitest movement phase breakdown tests for launch/crux/finish scoring, primary phase selection, and smooth fallback.
@@ -75,6 +76,8 @@
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
+- MoveNet readiness report with `npm run model:movenet:readiness`, which writes
+  `docs/sdlc/movenet-readiness-report.json` and is included in `npm run release:check`.
 - Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.

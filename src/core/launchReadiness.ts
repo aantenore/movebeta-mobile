@@ -9,6 +9,7 @@ export const LaunchReadinessCheckKeySchema = z.enum([
   'storeListing',
   'androidDebugBuild',
   'iosPods',
+  'modelReadiness',
   'iosBuild',
   'nativeDeviceQa',
   'cueValidationDataset',
@@ -23,6 +24,7 @@ export const LaunchReadinessEvidenceSchema = z.object({
   easProject: z.boolean().optional(),
   iosBuild: z.boolean().optional(),
   iosPods: z.boolean().optional(),
+  modelReadiness: z.boolean().optional(),
   nativeDeviceQa: z.boolean().optional(),
   privacyManifest: z.boolean().optional(),
   releaseGate: z.boolean().optional(),
@@ -107,6 +109,12 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
     label: 'iOS pods install',
     owner: 'engineering',
   },
+  modelReadiness: {
+    action: 'Run the MoveNet readiness report and keep local model load plus inference inside budget.',
+    key: 'modelReadiness',
+    label: 'MoveNet model readiness',
+    owner: 'engineering',
+  },
   nativeDeviceQa: {
     action: 'Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.',
     blockingForStore: true,
@@ -141,9 +149,20 @@ const checkDefinitions: Record<z.infer<typeof LaunchReadinessCheckKeySchema>, Ch
 };
 
 const trackRequirements: Record<z.infer<typeof LaunchTrackSchema>, Array<z.infer<typeof LaunchReadinessCheckKeySchema>>> = {
-  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing'],
-  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'nativeDeviceQa'],
-  store: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'iosBuild', 'nativeDeviceQa', 'cueValidationDataset', 'easProject', 'easCredentials'],
+  demo: ['releaseGate', 'webSmoke', 'privacyManifest', 'storeListing', 'modelReadiness'],
+  internal: ['releaseGate', 'webSmoke', 'androidDebugBuild', 'iosPods', 'modelReadiness', 'nativeDeviceQa'],
+  store: [
+    'releaseGate',
+    'webSmoke',
+    'privacyManifest',
+    'storeListing',
+    'modelReadiness',
+    'iosBuild',
+    'nativeDeviceQa',
+    'cueValidationDataset',
+    'easProject',
+    'easCredentials',
+  ],
 };
 
 const trackLabels: Record<z.infer<typeof LaunchTrackSchema>, string> = {
@@ -159,6 +178,7 @@ export const defaultLaunchReadinessEvidence: LaunchReadinessEvidence = {
   cueValidationDataset: false,
   iosBuild: false,
   iosPods: true,
+  modelReadiness: true,
   nativeDeviceQa: false,
   privacyManifest: true,
   releaseGate: true,

@@ -1,0 +1,73 @@
+{
+  "averageInferenceMs": 359,
+  "backend": "cpu",
+  "budget": {
+    "averageInferenceMs": 1500,
+    "loadMs": 25000,
+    "maxInferenceMs": 3000
+  },
+  "checks": [
+    {
+      "detail": "4084ms / 25000ms",
+      "key": "model-load",
+      "label": "Model loads inside budget",
+      "status": "pass"
+    },
+    {
+      "detail": "poseArrayReturned=true",
+      "key": "inference-array",
+      "label": "Inference returns a pose array",
+      "status": "pass"
+    },
+    {
+      "detail": "359ms / 1500ms",
+      "key": "average-inference-budget",
+      "label": "Average inference stays inside budget",
+      "status": "pass"
+    },
+    {
+      "detail": "367ms / 3000ms",
+      "key": "max-inference-budget",
+      "label": "Worst inference stays inside budget",
+      "status": "pass"
+    }
+  ],
+  "generatedAt": "2026-06-19T15:28:36.016Z",
+  "input": {
+    "kind": "synthetic-blank-frame",
+    "shape": [
+      192,
+      192,
+      3
+    ]
+  },
+  "inferenceRunsMs": [
+    367,
+    356,
+    353
+  ],
+  "limitations": [
+    "Synthetic blank-frame inference proves local model execution only.",
+    "Real climbing-video accuracy still requires consented clips, coach scores, and physical-device QA."
+  ],
+  "loadMs": 4084,
+  "maxInferenceMs": 367,
+  "memory": {
+    "unreliable": true,
+    "reasons": [
+      "The reported memory is an upper bound. Due to automatic garbage collection, the true allocated memory may be less."
+    ],
+    "numTensors": 181,
+    "numDataBuffers": 181,
+    "numBytes": 9742376
+  },
+  "model": "MoveNet SinglePose Lightning",
+  "output": {
+    "maxKeypoints": 0,
+    "maxPoses": 0,
+    "poseArrayReturned": true
+  },
+  "schemaVersion": "movebeta.movenet-readiness-report.v1",
+  "status": "ready",
+  "warmupMs": 431
+}
