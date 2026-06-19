@@ -13,6 +13,7 @@ import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/co
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
+import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
 
 function statusLabel(status: PlanCatalogItem['status']) {
   if (status === 'current') return 'Current';
@@ -302,6 +303,109 @@ function ReleaseUnblockChecklistCard({ checklist }: { checklist: ReturnType<type
   );
 }
 
+function SafetyLanguageGuardCard({ guard }: { guard: ReturnType<typeof buildSafetyLanguageGuard> }) {
+  const isClear = guard.status === 'clear';
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{guard.scannedSourceCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>sources</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{guard.blockerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blockers</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{guard.warningCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>warnings</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Copy risk status</Text>
+          <Text style={styles.qaKitText}>{guard.recommendation}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isClear ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isClear ? 'Clear' : 'Review'}
+        </Text>
+      </View>
+      {guard.issues.length > 0 ? (
+        <View style={styles.qaPlatformList}>
+          {guard.issues.map((issue) => (
+            <View key={issue.key} style={styles.releaseUnblockItem}>
+              <View style={styles.releaseUnblockTop}>
+                <View style={styles.launchTrackTitleGroup}>
+                  <Text style={styles.releaseUnblockTitle}>{issue.label}</Text>
+                  <Text style={styles.releaseUnblockMeta}>{issue.sourceLabel}</Text>
+                </View>
+                <Text style={[styles.launchStatus, issue.severity === 'blocker' ? styles.launchStatusBlocked : null]}>
+                  {issue.severity}
+                </Text>
+              </View>
+              <Text style={styles.qaKitText}>{issue.guidance}</Text>
+              <Text style={styles.qaPlatformMore}>{issue.excerpt}</Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={styles.releaseReadyRow}>
+          <CheckCircle2 color={theme.colors.success} size={15} />
+          <Text style={styles.qaWorkflowText}>No medical, injury-prevention, or route-safety claims found in checked Plan copy.</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function buildPlanSafetySources({
+  evidencePlan,
+  launchReadiness,
+  modelEvidence,
+  recommendation,
+  releaseUnblockChecklist,
+}: {
+  evidencePlan: ReturnType<typeof buildEvidenceCollectionPlan>;
+  launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
+  modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
+  recommendation: ReturnType<typeof buildPlanRecommendation>;
+  releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
+}): SafetyLanguageSource[] {
+  return [
+    {
+      key: 'plan-recommendation',
+      label: 'Plan recommendation',
+      text: `${recommendation.title} ${recommendation.action}`,
+    },
+    {
+      key: 'launch-readiness',
+      label: 'Launch readiness',
+      text: [
+        launchReadiness.nextAction,
+        ...launchReadiness.tracks.flatMap((track) => [track.summary, track.action, ...track.checks.map((check) => check.action)]),
+      ].join(' '),
+    },
+    {
+      key: 'model-evidence',
+      label: 'Model evidence',
+      text: [modelEvidence.action, modelEvidence.limitation, ...modelEvidence.checks.map((check) => check.detail)].join(' '),
+    },
+    {
+      key: 'evidence-collection',
+      label: 'Evidence collection',
+      text: `${evidencePlan.summary.action} ${evidencePlan.externalEvidence.map((item) => item.label).join(' ')}`,
+    },
+    {
+      key: 'release-unblock',
+      label: 'Release unblock',
+      text: releaseUnblockChecklist.items
+        .flatMap((item) => [item.action, item.secretPolicy, ...item.acceptance, ...item.proof])
+        .join(' '),
+    },
+  ];
+}
+
 export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
@@ -310,6 +414,15 @@ export function PlanScreen() {
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
+  const safetyLanguageGuard = buildSafetyLanguageGuard(
+    buildPlanSafetySources({
+      evidencePlan,
+      launchReadiness,
+      modelEvidence,
+      recommendation,
+      releaseUnblockChecklist,
+    }),
+  );
   const groupedCapabilities = catalog
     .find((item) => item.key === 'coach')
     ?.capabilities.reduce<Record<string, PlanCatalogItem['capabilities']>>((groups, capability) => {
@@ -403,6 +516,10 @@ export function PlanScreen() {
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
         <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} />
+      </Section>
+
+      <Section title="Safety language guard" caption="Checks product and release copy for medical or route-safety guarantees.">
+        <SafetyLanguageGuardCard guard={safetyLanguageGuard} />
       </Section>
 
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">

@@ -73,15 +73,15 @@
         "readiness": {
           "status": "ready",
           "backend": "cpu",
-          "loadMs": 3720,
-          "averageInferenceMs": 337,
-          "maxInferenceMs": 341,
+          "loadMs": 3451,
+          "averageInferenceMs": 327,
+          "maxInferenceMs": 335,
           "budget": {
             "loadMs": 25000,
             "averageInferenceMs": 1500,
             "maxInferenceMs": 3000
           },
-          "generatedAt": "2026-06-19T21:29:24.609Z"
+          "generatedAt": "2026-06-19T21:36:52.766Z"
         },
         "analysisReplay": {
           "status": "pass",

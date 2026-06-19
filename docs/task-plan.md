@@ -100,3 +100,4 @@
 | T96 | Add local pre-send guard from readiness, cue, practice, and repeat evidence | Done |
 | T97 | Add local beta memory from improved and sent repeat outcomes | Done |
 | T98 | Add configurable in-app model evidence for local readiness and real-video validation gaps | Done |
+| T99 | Add configurable safety-language guard for product and release copy | Done |
