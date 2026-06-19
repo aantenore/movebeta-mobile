@@ -32,4 +32,4 @@ These screenshots are generated from the exported web build with `npm run store:
 
 ## Data Portability
 
-![Privacy tab showing local backup restore preview with restore and skipped orphan counts](store/screenshots/08-data-portability.png)
+![Privacy tab showing local backup restore preview with restore, new, existing, and skipped counts](store/screenshots/08-data-portability.png)
