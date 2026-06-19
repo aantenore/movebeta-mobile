@@ -1,0 +1,230 @@
+import { z } from 'zod';
+
+import { type buildEvidenceCollectionPlan } from './evidenceCollectionPlan';
+import { type LaunchReadinessCheck, type LaunchReadinessSummary } from './launchReadiness';
+import { type buildModelEvidenceSummary } from './modelEvidence';
+import { NativeQaRunbookPacketSchema, type NativeQaRunbookPacket } from './nativeQaRunbookPacket';
+import { type ProviderReadinessSummary } from './providerReadiness';
+import { ReleaseUnblockPacketSchema, type ReleaseUnblockPacket } from './releaseUnblockPacket';
+
+export const releaseEvidencePacketSchemaVersion = 'movebeta.release-evidence-packet.v1';
+
+type EvidenceCollectionPlan = ReturnType<typeof buildEvidenceCollectionPlan>;
+type ModelEvidenceSummary = ReturnType<typeof buildModelEvidenceSummary>;
+
+const ReleaseEvidenceCommandSchema = z.object({
+  command: z.string(),
+  key: z.string(),
+  label: z.string(),
+  owner: z.enum(['engineering', 'qa', 'product', 'release']),
+  purpose: z.string(),
+});
+
+const ReleaseEvidenceArtifactSchema = z.object({
+  command: z.string(),
+  key: z.string(),
+  label: z.string(),
+  path: z.string(),
+  status: z.enum(['ready', 'needed', 'blocked']),
+});
+
+export const ReleaseEvidencePacketSchema = z.object({
+  artifacts: z.array(ReleaseEvidenceArtifactSchema),
+  commands: z.array(ReleaseEvidenceCommandSchema),
+  evidenceCollectionPlan: z.custom<EvidenceCollectionPlan>(),
+  generatedAt: z.string(),
+  launchReadiness: z.custom<LaunchReadinessSummary>(),
+  modelEvidence: z.custom<ModelEvidenceSummary>(),
+  nativeQaRunbookPacket: NativeQaRunbookPacketSchema,
+  privacy: z.object({
+    credentialValuesIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    secretsIncluded: z.literal(false),
+  }),
+  providerReadiness: z.custom<ProviderReadinessSummary>(),
+  releaseUnblockPacket: ReleaseUnblockPacketSchema,
+  schemaVersion: z.literal(releaseEvidencePacketSchemaVersion),
+  summary: z.object({
+    artifactCount: z.number().int().nonnegative(),
+    blockerCount: z.number().int().nonnegative(),
+    commandCount: z.number().int().nonnegative(),
+    externalEvidenceCount: z.number().int().nonnegative(),
+    nextAction: z.string(),
+    readyTracks: z.number().int().nonnegative(),
+    status: z.enum(['ready', 'needs-external-evidence']),
+    totalTracks: z.number().int().nonnegative(),
+  }),
+});
+
+export type ReleaseEvidencePacket = z.infer<typeof ReleaseEvidencePacketSchema>;
+
+const forbiddenReleaseEvidenceValuePattern =
+  /(file:\/\/|content:\/\/|ph:\/\/|\/users\/|\/private\/|\/var\/|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9_]+|pat_[A-Za-z0-9_]+|sk_live_[A-Za-z0-9_]+|sk_test_[A-Za-z0-9_]+|eyJ[A-Za-z0-9_-]{20,})/i;
+
+function containsForbiddenValue(value: unknown): boolean {
+  if (typeof value === 'string') return forbiddenReleaseEvidenceValuePattern.test(value);
+  if (Array.isArray(value)) return value.some(containsForbiddenValue);
+  if (value && typeof value === 'object') return Object.values(value).some(containsForbiddenValue);
+  return false;
+}
+
+function uniqueCommands(commands: Array<z.infer<typeof ReleaseEvidenceCommandSchema>>) {
+  const seen = new Set<string>();
+  return commands.filter((command) => {
+    if (seen.has(command.key)) return false;
+    seen.add(command.key);
+    return true;
+  });
+}
+
+function findCheck(launchReadiness: LaunchReadinessSummary, key: LaunchReadinessCheck['key']) {
+  return launchReadiness.tracks.flatMap((track) => track.checks).find((check) => check.key === key);
+}
+
+function artifactStatus(check?: LaunchReadinessCheck): z.infer<typeof ReleaseEvidenceArtifactSchema>['status'] {
+  if (check?.status === 'ready') return 'ready';
+  if (check?.status === 'blocked') return 'blocked';
+  return 'needed';
+}
+
+export function assertReleaseEvidencePacketIsShareSafe(packet: ReleaseEvidencePacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Release evidence packet contains credential values, local paths, raw artifacts, or token-like data.');
+  }
+  return packet;
+}
+
+export function buildReleaseEvidencePacket({
+  evidenceCollectionPlan,
+  generatedAt = new Date().toISOString(),
+  launchReadiness,
+  modelEvidence,
+  nativeQaRunbookPacket,
+  providerReadiness,
+  releaseUnblockPacket,
+}: {
+  evidenceCollectionPlan: EvidenceCollectionPlan;
+  generatedAt?: string;
+  launchReadiness: LaunchReadinessSummary;
+  modelEvidence: ModelEvidenceSummary;
+  nativeQaRunbookPacket: NativeQaRunbookPacket;
+  providerReadiness: ProviderReadinessSummary;
+  releaseUnblockPacket: ReleaseUnblockPacket;
+}): ReleaseEvidencePacket {
+  const commands = uniqueCommands([
+    {
+      command: 'npm run release:check',
+      key: 'release-check',
+      label: 'Local release gate',
+      owner: 'engineering',
+      purpose: 'Refresh typecheck, tests, model reports, native runbook, iOS toolchain report, web export, EAS standard check, and audit evidence.',
+    },
+    {
+      command: 'npm run native:ios:doctor',
+      key: 'ios-toolchain-doctor',
+      label: 'iOS toolchain doctor',
+      owner: 'engineering',
+      purpose: 'Refresh full-Xcode, workspace, Pods, and build-settings readiness before iOS beta or store work.',
+    },
+    {
+      command: 'npm run native:qa:runbook',
+      key: 'native-qa-runbook',
+      label: 'Native QA runbook',
+      owner: 'qa',
+      purpose: 'Generate the physical-device workflow packet and blocked draft evidence template.',
+    },
+    {
+      command: 'npm run native:qa:validate',
+      key: 'native-qa-validate',
+      label: 'Native QA validator',
+      owner: 'qa',
+      purpose: 'Validate measured iOS and Android device evidence after real runs are captured.',
+    },
+    {
+      command: 'npm run validation:cue',
+      key: 'cue-validation',
+      label: 'Cue validation gate',
+      owner: 'product',
+      purpose: 'Validate real consented climbing clips and coach review rows before production movement-quality claims.',
+    },
+    {
+      command: 'npm run release:eas:strict',
+      key: 'eas-strict',
+      label: 'Strict EAS release gate',
+      owner: 'release',
+      purpose: 'Verify Expo, Apple, and Google submission credentials before TestFlight, Play, or production submission.',
+    },
+  ]);
+  const artifacts = [
+    {
+      command: 'npm run release:check',
+      key: 'release-gate-report',
+      label: 'Release gate report',
+      path: 'docs/sdlc/release-gate-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'releaseGate')),
+    },
+    {
+      command: 'npm run native:ios:doctor',
+      key: 'ios-toolchain-report',
+      label: 'iOS toolchain report',
+      path: 'docs/sdlc/ios-toolchain-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'iosBuild')),
+    },
+    {
+      command: 'npm run native:qa:validate',
+      key: 'native-qa-evidence',
+      label: 'Native QA evidence',
+      path: 'docs/sdlc/native-qa-evidence.json',
+      status: artifactStatus(findCheck(launchReadiness, 'nativeDeviceQa')),
+    },
+    {
+      command: 'npm run validation:cue',
+      key: 'cue-validation-dataset',
+      label: 'Cue validation dataset',
+      path: 'docs/validation/cue-validation-dataset.json',
+      status: artifactStatus(findCheck(launchReadiness, 'cueValidationDataset')),
+    },
+    {
+      command: 'npm run release:readiness',
+      key: 'launch-readiness-report',
+      label: 'Launch readiness report',
+      path: 'docs/sdlc/launch-readiness-report.json',
+      status: launchReadiness.status === 'ready' ? 'ready' : 'blocked',
+    },
+  ];
+  const status =
+    launchReadiness.status === 'ready' && releaseUnblockPacket.summary.status === 'ready' ? 'ready' : 'needs-external-evidence';
+  const packet = ReleaseEvidencePacketSchema.parse({
+    artifacts,
+    commands,
+    evidenceCollectionPlan,
+    generatedAt,
+    launchReadiness,
+    modelEvidence,
+    nativeQaRunbookPacket,
+    privacy: {
+      credentialValuesIncluded: false,
+      localPathsIncluded: false,
+      rawArtifactsIncluded: false,
+      rawVideoIncluded: false,
+      secretsIncluded: false,
+    },
+    providerReadiness,
+    releaseUnblockPacket,
+    schemaVersion: releaseEvidencePacketSchemaVersion,
+    summary: {
+      artifactCount: artifacts.length,
+      blockerCount: releaseUnblockPacket.summary.blockedItems,
+      commandCount: commands.length,
+      externalEvidenceCount: evidenceCollectionPlan.externalEvidence.length,
+      nextAction: launchReadiness.nextAction,
+      readyTracks: launchReadiness.readyTracks,
+      status,
+      totalTracks: launchReadiness.tracks.length,
+    },
+  });
+
+  return assertReleaseEvidencePacketIsShareSafe(packet);
+}

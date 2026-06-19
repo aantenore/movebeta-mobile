@@ -16,6 +16,7 @@ import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/co
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
+import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
@@ -491,6 +492,65 @@ function ReleaseUnblockChecklistCard({
   );
 }
 
+function ReleaseEvidencePacketCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: ReleaseEvidencePacket;
+}) {
+  const isReady = packet.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.blockerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blockers</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.artifactCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>artifacts</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.commandCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>commands</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release evidence packet</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'Collect'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release evidence packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Evidence packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {packet.artifacts.map((artifact) => (
+          <View key={artifact.key} style={styles.qaWorkflowRow}>
+            {artifact.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={artifact.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{artifact.label}</Text>
+              <Text style={styles.qaPlatformMore}>{artifact.command}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function SafetyLanguageGuardCard({ guard }: { guard: ReturnType<typeof buildSafetyLanguageGuard> }) {
   const isClear = guard.status === 'clear';
 
@@ -606,6 +666,18 @@ export function PlanScreen() {
   const nativeQaImportPreview = buildNativeQaEvidenceImportPreview(nativeQaEvidenceJson);
   const providerReadiness = buildProviderReadinessSummary(appConfig);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
+  const nativeQaRunbookPacket = buildNativeQaRunbookPacket();
+  const releaseUnblockPacket = buildReleaseUnblockPacket({
+    checklist: releaseUnblockChecklist,
+  });
+  const releaseEvidencePacket = buildReleaseEvidencePacket({
+    evidenceCollectionPlan: evidencePlan,
+    launchReadiness,
+    modelEvidence,
+    nativeQaRunbookPacket,
+    providerReadiness,
+    releaseUnblockPacket,
+  });
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
       evidencePlan,
@@ -624,21 +696,25 @@ export function PlanScreen() {
 
   function prepareReleaseUnblockPacket() {
     selectionFeedback();
-    const packet = buildReleaseUnblockPacket({
-      checklist: releaseUnblockChecklist,
-    });
     setPreparedPlanExport({
-      body: JSON.stringify(packet, null, 2),
+      body: JSON.stringify(releaseUnblockPacket, null, 2),
       title: 'Prepared release unblock packet',
     });
   }
 
   function prepareNativeQaRunbookPacket() {
     selectionFeedback();
-    const packet = buildNativeQaRunbookPacket();
     setPreparedPlanExport({
-      body: JSON.stringify(packet, null, 2),
+      body: JSON.stringify(nativeQaRunbookPacket, null, 2),
       title: 'Prepared native QA runbook',
+    });
+  }
+
+  function prepareReleaseEvidencePacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseEvidencePacket, null, 2),
+      title: 'Prepared release evidence packet',
     });
   }
 
@@ -752,6 +828,10 @@ export function PlanScreen() {
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
         <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} onPreparePacket={prepareReleaseUnblockPacket} />
+      </Section>
+
+      <Section title="Release evidence packet" caption="One share-safe packet for QA, product validation, and release owners.">
+        <ReleaseEvidencePacketCard packet={releaseEvidencePacket} onPreparePacket={prepareReleaseEvidencePacket} />
       </Section>
 
       {preparedPlanExport ? (
@@ -1226,6 +1306,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 6,
+  },
+  releaseEvidencePacket: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
   },
   releaseUnblock: {
     backgroundColor: theme.colors.surface,
