@@ -59,8 +59,8 @@ describe('app config', () => {
             loadMs: 25000,
             maxInferenceMs: 3000,
           },
-          loadMs: 6145,
-          maxInferenceMs: 336,
+          loadMs: 4322,
+          maxInferenceMs: 334,
           status: 'ready',
         },
         realWorldValidation: {

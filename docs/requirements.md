@@ -121,6 +121,9 @@
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
   expectations, owners, affected tracks, acceptance criteria, and env key names without credential values.
+- Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
+  provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
+  local artifacts.
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
@@ -222,6 +225,8 @@
   Expo `extra.modelEvidence` from machine-readable release reports.
 - Safety-language checks must use replaceable rules, ignore explicit negated policy/disclaimer copy, limit visible
   findings, and keep recommendations framed as educational movement feedback.
+- Release evidence packets must use relative repository artifact names only, exclude credential values, raw video, raw
+  local artifact references, local filesystem paths, and token-like strings, and remain schema-versioned.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA runbook packets must be schema-versioned, generated from the same native QA evidence kit shown in the app,

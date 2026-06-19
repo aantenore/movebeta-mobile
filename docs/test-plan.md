@@ -114,6 +114,8 @@
   name disclosure without secret values, and all-ready evidence state.
 - Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
   token/local-path rejection before sharing.
+- Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
+  status mapping, and token/local-path rejection before sharing.
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
@@ -231,6 +233,8 @@
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.
+- Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
+  evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.
