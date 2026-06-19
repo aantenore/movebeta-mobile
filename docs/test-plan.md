@@ -27,7 +27,8 @@
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
 - Vitest progress insights tests for report ordering, trend deltas, and empty-history handling.
 - Vitest attempt comparison tests for latest-vs-baseline ordering, metric deltas, cue status, and insufficient history.
-- Vitest drill planner tests for cue deduplication, priority ordering, dosage, and empty cue reports.
+- Vitest drill planner tests for cue deduplication, feedback-adapted reinforcement or variants, priority ordering,
+  dosage, and empty cue reports.
 - Vitest coach review packet tests for consent metadata, review rubric, and raw video/landmark exclusion.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
 - Vitest cue validation dataset tests for production thresholds, wall-angle coverage, reviewer coverage, raw-artifact
@@ -73,7 +74,7 @@
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.
 - Cue validation rubric can score coach reviews once consented clip packets are available.
 - Cue validation dataset gate can reject incomplete studies before production movement-quality claims.
-- Drills tab shows weekly drill plan, priority dosage, evidence, and coach pack preview.
+- Drills tab shows weekly drill plan, priority dosage, report evidence, private cue feedback adaptation, and coach pack preview.
 - Progress tab shows movement score bars.
 - Progress tab shows local history summary, current trend, and Pro history preview.
 - Progress tab shows attempt comparison after at least two local reports.

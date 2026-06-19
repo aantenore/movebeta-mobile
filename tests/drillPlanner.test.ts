@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { MovementCue } from '../src/movement/contracts';
 import { buildDrillPlan } from '../src/movement/drillPlanner';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
+import { createReportAnnotation, updateCueFeedback } from '../src/movement/reportAnnotationRepository';
 import { sampleAttempts } from '../src/movement/sampleSession';
 
 async function buildReports() {
@@ -55,6 +56,66 @@ describe('drill planner', () => {
     expect(plan.items).toHaveLength(1);
     expect(plan.items[0].priority).toBe('high');
     expect(plan.items[0].title).toBe('Higher priority duplicate');
+  });
+
+  it('adapts drill evidence from private useful cue feedback', async () => {
+    const reports = await buildReports();
+    const cueId = reports[0].cues[0].id;
+    const annotations = [
+      updateCueFeedback(createReportAnnotation(reports[0].id), {
+        cueId,
+        rating: 'useful',
+        updatedAt: '2026-06-19T11:00:00.000Z',
+      }),
+    ];
+
+    const plan = buildDrillPlan(reports, annotations);
+    const item = plan.items.find((drill) => drill.cueId === cueId);
+
+    expect(item?.feedbackStatus).toBe('reinforce');
+    expect(item?.feedbackEvidence).toContain('marked useful');
+  });
+
+  it('flags drill variants when private cue feedback needs review', async () => {
+    const reports = await buildReports();
+    const cueId = reports[0].cues[0].id;
+    const annotations = [
+      updateCueFeedback(createReportAnnotation(reports[0].id), {
+        cueId,
+        rating: 'unclear',
+        updatedAt: '2026-06-19T11:00:00.000Z',
+      }),
+      updateCueFeedback(createReportAnnotation(reports[1].id), {
+        cueId,
+        rating: 'not-useful',
+        updatedAt: '2026-06-19T12:00:00.000Z',
+      }),
+    ];
+
+    const plan = buildDrillPlan(reports, annotations);
+    const item = plan.items.find((drill) => drill.cueId === cueId);
+
+    expect(item?.feedbackStatus).toBe('variant');
+    expect(item?.feedbackEvidence).toContain('need review');
+    expect(plan.weeklyLoad).toContain('need variants');
+  });
+
+  it('ignores orphan feedback when adapting drill plans', async () => {
+    const reports = await buildReports();
+    const cueId = reports[0].cues[0].id;
+    const annotations = [
+      updateCueFeedback(createReportAnnotation('deleted-report'), {
+        cueId,
+        rating: 'not-useful',
+        updatedAt: '2026-06-19T11:00:00.000Z',
+      }),
+    ];
+
+    const plan = buildDrillPlan(reports, annotations);
+    const item = plan.items.find((drill) => drill.cueId === cueId);
+
+    expect(item?.feedbackStatus).toBe('untested');
+    expect(item?.feedbackEvidence).toContain('No private feedback');
   });
 
   it('returns an empty plan when no report has coach cues', async () => {

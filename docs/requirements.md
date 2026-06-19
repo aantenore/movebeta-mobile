@@ -22,6 +22,8 @@
 - Validate consented cue-review datasets with configurable thresholds for clip count, wall-angle coverage, reviewer
   coverage, review mode, score quality, and raw-artifact exclusion.
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
+- Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
+  for variants.
 - Show a key-frame pose overlay and timeline events.
 - Show analysis quality, frame coverage, landmark coverage, visibility, and warnings before coaching cues.
 - Convert analysis quality into capture-readiness guidance so users know when to trust cues or retake the clip.
@@ -78,6 +80,8 @@
 - Cue pattern summaries must return an empty state without local cues and must keep cleared counts independent of UI
   display limits.
 - Cue usefulness summaries must ignore orphan training logs and return an empty state before feedback exists.
+- Adaptive drill plans must ignore orphan training logs and keep producing untested drill feedback when no cue feedback
+  exists.
 - Video analysis performance budgets must be testable without a native runtime and visible in local reports.
 - Video metadata extraction must degrade to picker/timer values when native or browser metadata is unavailable.
 - Pose providers should skip incomplete per-frame detections and fail only when too few complete frames remain.

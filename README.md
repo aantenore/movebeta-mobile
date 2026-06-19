@@ -62,6 +62,7 @@ with their private training log plus coach-consent record from the Sessions tab.
 - Technique readiness scoring that turns local trends and private training logs into next-session guidance.
 - Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
 - Evidence-based weekly drill plans generated from local report cues.
+- Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
 - Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
 - Vitest for domain tests.
 

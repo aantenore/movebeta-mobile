@@ -10,6 +10,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { theme } from '@/core/theme';
 import { buildDrillPlan, type DrillPlan } from '@/movement/drillPlanner';
+import { reportAnnotationRepository } from '@/movement/reportAnnotationRepository';
 import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
 
 function emptyPlan(): DrillPlan {
@@ -31,7 +32,8 @@ export function DrillsScreen() {
       reports = await listReports();
     }
 
-    setPlan(buildDrillPlan(reports));
+    const nextAnnotations = await reportAnnotationRepository.listAnnotations();
+    setPlan(buildDrillPlan(reports, nextAnnotations));
   }
 
   useFocusEffect(
@@ -76,6 +78,12 @@ export function DrillsScreen() {
                 <Text style={styles.detailLabel}>Evidence</Text>
                 <Text style={styles.detailValue}>{item.evidence}</Text>
               </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Feedback</Text>
+                <Text style={styles.detailValue}>
+                  {item.feedbackStatus} · {item.feedbackEvidence}
+                </Text>
+              </View>
             </View>
           ))
         ) : (
@@ -90,7 +98,7 @@ export function DrillsScreen() {
         <View style={styles.preview}>
           <Text style={styles.previewTitle}>Next unlock</Text>
           <Text style={styles.previewText}>
-            Save plan variants by grade, wall angle, and athlete goal while keeping report data local by default.
+            Save plan variants by grade, wall angle, athlete goal, and private cue feedback while keeping report data local by default.
           </Text>
         </View>
       </Section>
@@ -114,7 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '900',
     textTransform: 'uppercase',
-    width: 70,
+    width: 78,
   },
   detailRow: {
     alignItems: 'flex-start',
