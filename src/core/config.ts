@@ -53,7 +53,8 @@ export const appConfig = ConfigSchema.parse({
     'web-tfjs-movenet',
   nativeVideoAnalysisProvider:
     process.env.EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER ??
-    expoExtra.nativeVideoAnalysisProvider,
+    expoExtra.nativeVideoAnalysisProvider ??
+    'native-platform-pose',
   privacyMode:
     process.env.EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE ??
     expoExtra.privacyMode ??
