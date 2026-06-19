@@ -22,6 +22,7 @@ import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/re
 import { summarizeProgress } from '@/movement/progressInsights';
 import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
+import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
 import { theme } from '@/core/theme';
 
@@ -76,6 +77,7 @@ export function ProgressScreen() {
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
+  const sessionPlan = useMemo(() => buildSessionPlan(filteredReports, annotations), [annotations, filteredReports]);
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
 
@@ -133,6 +135,41 @@ export function ProgressScreen() {
           </View>
         </View>
       ) : null}
+
+      <Section title="Next session plan" caption="A local training block assembled from readiness, benchmarks, and private project notes.">
+        <View style={styles.sessionPlanCard}>
+          <View style={styles.sessionPlanHeader}>
+            <View style={styles.sessionPlanCopy}>
+              <Text style={styles.sessionPlanKicker}>{sessionPlan.status}</Text>
+              <Text style={styles.sessionPlanTitle}>{sessionPlan.title}</Text>
+              <Text style={styles.sessionPlanMeta}>
+                {sessionPlan.durationMinutes} min · cap {sessionPlan.intensityCap} · anchor {sessionPlan.anchor}
+              </Text>
+            </View>
+            <View style={styles.sessionPlanTarget}>
+              <Text style={styles.sessionPlanTargetLabel}>Target</Text>
+              <Text style={styles.sessionPlanTargetText}>{sessionPlan.target}</Text>
+            </View>
+          </View>
+
+          <View style={styles.sessionPlanPhases}>
+            {sessionPlan.phases.map((phase, index) => (
+              <View key={phase.id} style={styles.sessionPlanPhase}>
+                <Text style={styles.sessionPlanPhaseStep}>{index + 1}</Text>
+                <View style={styles.sessionPlanPhaseCopy}>
+                  <Text style={styles.sessionPlanPhaseTitle}>
+                    {phase.title} · {phase.durationMinutes} min
+                  </Text>
+                  <Text style={styles.sessionPlanPhaseText}>{phase.instruction}</Text>
+                  <Text style={styles.sessionPlanPhaseEvidence}>{phase.evidence}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <Text style={styles.sessionPlanSafety}>{sessionPlan.safetyNote}</Text>
+        </View>
+      </Section>
 
       <Section
         title="Technique readiness"
@@ -630,6 +667,111 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: theme.spacing.md,
     padding: theme.spacing.md,
+  },
+  sessionPlanCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  sessionPlanCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  sessionPlanHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  sessionPlanKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionPlanMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  sessionPlanPhases: {
+    gap: theme.spacing.sm,
+  },
+  sessionPlanPhase: {
+    alignItems: 'flex-start',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  sessionPlanPhaseCopy: {
+    flex: 1,
+    gap: 3,
+  },
+  sessionPlanPhaseEvidence: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  sessionPlanPhaseStep: {
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.sm,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+    minWidth: 26,
+    overflow: 'hidden',
+    paddingVertical: 6,
+    textAlign: 'center',
+  },
+  sessionPlanPhaseText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  sessionPlanPhaseTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  sessionPlanSafety: {
+    color: theme.colors.coral,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  sessionPlanTarget: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    maxWidth: 180,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  sessionPlanTargetLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionPlanTargetText: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 16,
+  },
+  sessionPlanTitle: {
+    color: theme.colors.ink,
+    fontSize: 19,
+    fontWeight: '900',
+    lineHeight: 23,
   },
   readinessBadge: {
     backgroundColor: theme.colors.brandSoft,

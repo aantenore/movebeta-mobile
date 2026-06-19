@@ -63,6 +63,8 @@ def main() -> None:
         page.get_by_role("tab", name="Progress").click()
         page.wait_for_load_state("networkidle")
         expect(page.get_by_text("Technique trends")).to_be_visible()
+        expect(page.get_by_text("Next session plan")).to_be_visible()
+        expect(page.get_by_text("Target", exact=True).first).to_be_visible()
         expect(page.get_by_text("Technique readiness")).to_be_visible()
         expect(page.get_by_text("Next action")).to_be_visible()
         expect(page.get_by_text("Personal benchmarks")).to_be_visible()
