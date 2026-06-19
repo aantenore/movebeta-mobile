@@ -1,10 +1,11 @@
 import { coachConsentRepository, type CoachConsentRepository } from './coachConsentRepository';
+import { drillPracticeRepository, type DrillPracticeRepository } from './drillPracticeRepository';
 import { reportAnnotationRepository, type ReportAnnotationRepository } from './reportAnnotationRepository';
 import { reportRepository, type ReportRepository } from './reportRepository';
 
 export type AnalysisBundleDeletionArtifact = {
   deleted: boolean;
-  id: 'report' | 'training-log' | 'coach-consent';
+  id: 'report' | 'training-log' | 'coach-consent' | 'drill-practice';
   label: string;
   wasPresent: boolean;
 };
@@ -23,6 +24,7 @@ export type AnalysisBundleDeletionResult = {
 export type AnalysisBundleDeletionRepositories = {
   annotations: Pick<ReportAnnotationRepository, 'deleteAnnotation' | 'getAnnotation'>;
   consents: Pick<CoachConsentRepository, 'deleteConsent' | 'getConsent'>;
+  drillPractice: Pick<DrillPracticeRepository, 'deleteRecordsForReport' | 'listRecordsForReport'>;
   now?: () => string;
   reports: Pick<ReportRepository, 'deleteReport' | 'getReport'>;
 };
@@ -30,6 +32,7 @@ export type AnalysisBundleDeletionRepositories = {
 const defaultRepositories: AnalysisBundleDeletionRepositories = {
   annotations: reportAnnotationRepository,
   consents: coachConsentRepository,
+  drillPractice: drillPracticeRepository,
   reports: reportRepository,
 };
 
@@ -46,16 +49,18 @@ export async function deleteAnalysisBundle(
     throw new Error('Report id is required for local deletion.');
   }
 
-  const [report, annotation, consent] = await Promise.all([
+  const [report, annotation, consent, drillPractice] = await Promise.all([
     repositories.reports.getReport(normalizedReportId),
     repositories.annotations.getAnnotation(normalizedReportId),
     repositories.consents.getConsent(normalizedReportId),
+    repositories.drillPractice.listRecordsForReport(normalizedReportId),
   ]);
 
-  const [reportDeleted, annotationDeleted, consentDeleted] = await Promise.all([
+  const [reportDeleted, annotationDeleted, consentDeleted, drillPracticeDeleted] = await Promise.all([
     repositories.reports.deleteReport(normalizedReportId),
     repositories.annotations.deleteAnnotation(normalizedReportId),
     repositories.consents.deleteConsent(normalizedReportId),
+    repositories.drillPractice.deleteRecordsForReport(normalizedReportId),
   ]);
 
   const artifacts: AnalysisBundleDeletionArtifact[] = [
@@ -76,6 +81,12 @@ export async function deleteAnalysisBundle(
       id: 'coach-consent',
       label: 'Coach consent record',
       wasPresent: Boolean(consent),
+    },
+    {
+      deleted: drillPracticeDeleted > 0,
+      id: 'drill-practice',
+      label: 'Drill practice log',
+      wasPresent: drillPractice.length > 0,
     },
   ];
 

@@ -24,6 +24,7 @@
 - Generate a weekly drill plan from local report cues with priority, dosage, and evidence.
 - Adapt weekly drill plans from private cue feedback by reinforcing useful cues and flagging unclear or not-useful cues
   for variants.
+- Let users mark generated drills as completed or skipped in a private on-device practice log.
 - Show a key-frame pose overlay and timeline events.
 - Show analysis quality, frame coverage, landmark coverage, visibility, and warnings before coaching cues.
 - Convert analysis quality into capture-readiness guidance so users know when to trust cues or retake the clip.
@@ -31,10 +32,10 @@
 - Measure local video analysis duration, budget status, and processed frame rate in each report.
 - Keep raw video on-device by default.
 - Persist local reports with native SQLite or browser/local fallback storage and support refresh, JSON export, and deletion.
-- Delete a local analysis bundle as one privacy action, covering the report, private training log, and coach consent record
-  while confirming that raw video was not included or uploaded.
-- Export and restore a versioned local backup JSON containing reports, private training logs, and coach consent records
-  without raw video, video URI, audio, account identifiers, or secrets.
+- Delete a local analysis bundle as one privacy action, covering the report, private training log, drill practice log, and
+  coach consent record while confirming that raw video was not included or uploaded.
+- Export and restore a versioned local backup JSON containing reports, private training logs, drill practice logs, and
+  coach consent records without raw video, video URI, audio, account identifiers, or secrets.
 - Show a selectable session review for local reports with quality, performance, focus metric, primary cue, timeline, and
   privacy evidence.
 - Let users keep private per-report training notes with project status, perceived effort, confidence, and local tags.
@@ -68,10 +69,12 @@
 - Corrupted local report storage must not block app startup.
 - Corrupted local consent storage must not block app startup or session history.
 - Corrupted local training-log storage must not block app startup or session history.
+- Corrupted local drill-practice storage must not block app startup or drill planning.
 - Legacy training logs without cue feedback must remain readable and default to an empty feedback list.
-- Local deletion must clean orphaned training-log and consent records even when the report record is already missing.
-- Backup restore must validate schema version, reject URI-like raw-video artifacts, and skip orphan training-log or
-  consent records whose reports are not present in the backup.
+- Local deletion must clean orphaned training-log, drill-practice, and consent records even when the report record is
+  already missing.
+- Backup restore must validate schema version, reject URI-like raw-video artifacts, and skip orphan training-log,
+  drill-practice, or consent records whose reports are not present in the backup.
 - Technique readiness must degrade to a baseline recommendation when no local reports exist.
 - Personal benchmarks must return an empty state when no local reports exist and keep at least one top benchmark per
   supported segment when reports are present.

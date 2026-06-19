@@ -13,9 +13,12 @@
   normalized timeline markers, and weak-report risk status.
 - Vitest report annotation tests for private training-log defaults, cue usefulness feedback, legacy migration, updates,
   tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage tolerance.
-- Vitest privacy deletion tests for report, private training-log, coach-consent cleanup, orphan cleanup, and receipt copy.
+- Vitest drill practice repository tests for private completion/skipped records, local persistence, SQLite persistence,
+  report-scoped deletion, and corrupted-storage tolerance.
+- Vitest privacy deletion tests for report, private training-log, drill-practice, coach-consent cleanup, orphan cleanup,
+  and receipt copy.
 - Vitest data portability tests for privacy-safe backup JSON, cue feedback backup/restore, restore into empty repositories,
-  orphan skipping, and URI-like artifact rejection.
+  drill practice backup/restore, orphan skipping, and URI-like artifact rejection.
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest technique readiness tests for baseline, repeat, and recovery next-session recommendations.
@@ -66,15 +69,16 @@
 - Sessions tab refreshes on focus and shows the latest local attempts.
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
-- Report export renders privacy-safe JSON and Delete removes the report, private training log, and coach consent record
-  from local storage with a deletion receipt.
+- Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
+  coach consent record from local storage with a deletion receipt.
 - Coach packet export requires persisted explicit consent and then renders review JSON without raw video artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.
 - Privacy data portability prepares a backup JSON and restores it locally without raw video leaving the device.
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.
 - Cue validation rubric can score coach reviews once consented clip packets are available.
 - Cue validation dataset gate can reject incomplete studies before production movement-quality claims.
-- Drills tab shows weekly drill plan, priority dosage, report evidence, private cue feedback adaptation, and coach pack preview.
+- Drills tab shows weekly drill plan, priority dosage, report evidence, private cue feedback adaptation, private practice
+  logging, and coach pack preview.
 - Progress tab shows movement score bars.
 - Progress tab shows local history summary, current trend, and Pro history preview.
 - Progress tab shows attempt comparison after at least two local reports.

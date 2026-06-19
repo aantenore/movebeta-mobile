@@ -26,7 +26,8 @@ platforms are validated on physical climbing videos and devices.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
   personal benchmarks, recurring cue patterns, cue usefulness insights, attempt comparison, and trend deltas.
-- Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, and coach pack preview.
+- Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
+  practice logging, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
 - iOS native source includes Apple Vision pose extraction, local video metadata reads, and local Photos asset resolution
@@ -35,7 +36,7 @@ platforms are validated on physical climbing videos and devices.
   implemented.
 - User can select bundled local attempts and get distinct local analysis reports.
 - Reports are persisted locally, refreshed on Sessions focus, exported as full JSON, and deleted with their private
-  training log plus coach consent record.
+  training log, drill practice log, and coach consent record.
 - Sessions lets the user select a local report review with quality facts, performance facts, focus metric, primary cue,
   timeline markers, and local privacy evidence.
 - Sessions lets the user keep private per-report training notes with cue usefulness, project status, perceived effort,
@@ -46,8 +47,8 @@ platforms are validated on physical climbing videos and devices.
 - Native report persistence uses SQLite behind the same repository contract, with browser/local fallback storage.
 - Sessions persists explicit per-report consent before preparing a coach review packet without raw video, URI, key-frame, or landmark artifacts.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
-- Privacy can prepare and restore a versioned local backup JSON without raw video, video URI, audio, account identifiers,
-  or secrets.
+- Privacy can prepare and restore a versioned local backup JSON with reports, training logs, drill practice, and consent
+  records without raw video, video URI, audio, account identifiers, or secrets.
 - Privacy shows an airplane-mode readiness self-check for local provider, storage, cloud sync, raw export, and report history.
 - Store readiness manifest validates bundle identifier, Android package, permission copy, privacy declarations, listing
   copy, and screenshot plan.
@@ -64,7 +65,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 35 test files and 131 tests.
+- `npm test`: passed, 36 test files and 135 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -78,14 +79,16 @@ platforms are validated on physical climbing videos and devices.
 - `tests/reportAnnotationRepository.test.ts`: passed and covers private training-log creation, cue usefulness feedback,
   legacy migration, updates, tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage
   tolerance.
+- `tests/drillPracticeRepository.test.ts`: passed and covers private completion/skipped records, local persistence,
+  SQLite persistence, report-scoped deletion, and corrupted-storage tolerance.
 - `tests/projectQueue.test.ts`: passed and covers active/repeat/sent counts, average effort, next-repeat priority,
   missing-report tolerance, and action generation.
 - `tests/progressFilters.test.ts`: passed and covers wall-angle, grade, and gym option derivation, report filtering, and
   active filter counting.
-- `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, coach-consent cleanup, orphan cleanup,
-  and privacy-safe deletion receipt copy.
+- `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, drill-practice, coach-consent cleanup,
+  orphan cleanup, and privacy-safe deletion receipt copy.
 - `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, cue feedback backup/restore, restore into
-  empty repositories, orphan skipping, and URI-like artifact rejection.
+  empty repositories, drill practice backup/restore, orphan skipping, and URI-like artifact rejection.
 - `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `tests/personalBenchmarks.test.ts`: passed and covers best overall, wall-angle, grade, gym, latest-vs-best deltas,
   and empty local history behavior.
@@ -97,7 +100,7 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, the Progress next-session plan, the Progress technique readiness
+  capture-readiness guidance, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the

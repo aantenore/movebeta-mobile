@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Target } from 'lucide-react-native';
 
@@ -8,8 +8,14 @@ import { PlanStatusCard } from '@/components/PlanStatusCard';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
+import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
-import { buildDrillPlan, type DrillPlan } from '@/movement/drillPlanner';
+import { buildDrillPlan, type DrillPlan, type DrillPlanItem } from '@/movement/drillPlanner';
+import {
+  createDrillPracticeRecord,
+  drillPracticeRepository,
+  type DrillPracticeRecord,
+} from '@/movement/drillPracticeRepository';
 import { reportAnnotationRepository } from '@/movement/reportAnnotationRepository';
 import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
 
@@ -23,6 +29,7 @@ function emptyPlan(): DrillPlan {
 
 export function DrillsScreen() {
   const [plan, setPlan] = useState<DrillPlan>(emptyPlan);
+  const [practiceByDrill, setPracticeByDrill] = useState<Record<string, DrillPracticeRecord>>({});
 
   async function refresh() {
     let reports = await listReports();
@@ -33,12 +40,33 @@ export function DrillsScreen() {
     }
 
     const nextAnnotations = await reportAnnotationRepository.listAnnotations();
+    const nextPractice = await drillPracticeRepository.listRecords();
+    setPracticeByDrill(Object.fromEntries(nextPractice.map((record) => [record.drillId, record])));
     setPlan(buildDrillPlan(reports, nextAnnotations));
+  }
+
+  async function savePractice(item: DrillPlanItem, status: DrillPracticeRecord['status']) {
+    selectionFeedback();
+    const record = await drillPracticeRepository.saveRecord(
+      createDrillPracticeRecord({
+        cueId: item.cueId,
+        drillId: item.id,
+        reportId: item.sourceReportId,
+        status,
+      }),
+    );
+    setPracticeByDrill((current) => ({
+      ...current,
+      [record.drillId]: record,
+    }));
   }
 
   useFocusEffect(
     useCallback(() => {
-      void refresh().catch(() => setPlan(emptyPlan()));
+      void refresh().catch(() => {
+        setPracticeByDrill({});
+        setPlan(emptyPlan());
+      });
     }, []),
   );
 
@@ -83,6 +111,48 @@ export function DrillsScreen() {
                 <Text style={styles.detailValue}>
                   {item.feedbackStatus} · {item.feedbackEvidence}
                 </Text>
+              </View>
+              <View style={styles.practiceRow}>
+                <View style={styles.practiceCopy}>
+                  <Text style={styles.practiceLabel}>Practice log</Text>
+                  <Text style={styles.practiceValue}>{practiceByDrill[item.id]?.status ?? 'not logged'}</Text>
+                </View>
+                <View style={styles.practiceActions}>
+                  <Pressable
+                    accessibilityLabel={`Mark ${item.title} done`}
+                    onPress={() => void savePractice(item, 'completed')}
+                    style={[
+                      styles.practiceButton,
+                      practiceByDrill[item.id]?.status === 'completed' ? styles.practiceButtonSelected : null,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.practiceButtonText,
+                        practiceByDrill[item.id]?.status === 'completed' ? styles.practiceButtonTextSelected : null,
+                      ]}
+                    >
+                      Done
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel={`Skip ${item.title}`}
+                    onPress={() => void savePractice(item, 'skipped')}
+                    style={[
+                      styles.practiceButton,
+                      practiceByDrill[item.id]?.status === 'skipped' ? styles.practiceButtonSelectedMuted : null,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.practiceButtonText,
+                        practiceByDrill[item.id]?.status === 'skipped' ? styles.practiceButtonTextSelected : null,
+                      ]}
+                    >
+                      Skip
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
           ))
@@ -198,6 +268,60 @@ const styles = StyleSheet.create({
   previewTitle: {
     color: theme.colors.brand,
     fontSize: 14,
+    fontWeight: '900',
+  },
+  practiceActions: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  practiceButton: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    minWidth: 68,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 8,
+  },
+  practiceButtonSelected: {
+    backgroundColor: theme.colors.success,
+    borderColor: theme.colors.success,
+  },
+  practiceButtonSelectedMuted: {
+    backgroundColor: theme.colors.brandDark,
+    borderColor: theme.colors.brandDark,
+  },
+  practiceButtonText: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  practiceButtonTextSelected: {
+    color: '#FFFFFF',
+  },
+  practiceCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  practiceLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  practiceRow: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+    padding: theme.spacing.sm,
+  },
+  practiceValue: {
+    color: theme.colors.ink,
+    fontSize: 13,
     fontWeight: '900',
   },
   priority: {
