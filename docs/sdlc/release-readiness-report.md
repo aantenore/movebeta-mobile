@@ -25,7 +25,7 @@ platforms are validated on physical climbing videos and devices.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
-  personal benchmarks, recurring cue patterns, attempt comparison, and trend deltas.
+  personal benchmarks, recurring cue patterns, cue usefulness insights, attempt comparison, and trend deltas.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -64,7 +64,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 34 test files and 123 tests.
+- `npm test`: passed, 35 test files and 128 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -91,12 +91,14 @@ platforms are validated on physical climbing videos and devices.
   and empty local history behavior.
 - `tests/sessionPlan.test.ts`: passed and covers baseline blocks, recovery intensity caps, and repeat-project planning.
 - `tests/cuePatterns.test.ts`: passed and covers persistent, emerging, cleared, and empty cue-history states.
+- `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
+  empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated five 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, the Drills weekly plan, the Progress next-session plan, the Progress technique readiness
-  panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress attempt
+  panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
   Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
