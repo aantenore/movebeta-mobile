@@ -6,7 +6,9 @@ import {
 } from '../src/movement/coachConsentRepository';
 import {
   createLocalDataBackup,
+  formatLocalDataRestorePreview,
   formatLocalDataRestoreResult,
+  previewLocalDataRestore,
   restoreLocalDataBackup,
   summarizeLocalDataBackup,
 } from '../src/movement/dataPortability';
@@ -166,6 +168,34 @@ describe('local data portability', () => {
     expect(formatLocalDataRestoreResult(result)).toContain('Drill practice records restored: 1');
   });
 
+  it('previews a restore without writing local repositories', async () => {
+    const source = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations: source.annotations,
+      consents: source.consents,
+      drillPractice: source.drillPractice,
+      now: () => '2026-06-19T15:30:00.000Z',
+      reports: source.reports,
+    });
+    const destinationReports = new InMemoryReportRepository();
+
+    const preview = previewLocalDataRestore(JSON.stringify(backup));
+
+    expect(preview).toEqual({
+      annotationsToRestore: 1,
+      consentsToRestore: 1,
+      drillPracticeToRestore: 1,
+      generatedAt: '2026-06-19T15:30:00.000Z',
+      reportsToRestore: 1,
+      skippedAnnotations: 0,
+      skippedConsents: 0,
+      skippedDrillPractice: 0,
+      status: 'ready-to-restore',
+    });
+    expect(formatLocalDataRestorePreview(preview)).toContain('Reports ready: 1');
+    expect(await destinationReports.listReports()).toEqual([]);
+  });
+
   it('skips orphan annotations and consent records during restore', async () => {
     const { annotations, consents, drillPractice, reports } = await createPortabilityFixture();
     const backup = await createLocalDataBackup({
@@ -205,6 +235,41 @@ describe('local data portability', () => {
     expect(result.skippedDrillPractice).toBe(1);
   });
 
+  it('previews skipped orphan records before restore', async () => {
+    const { annotations, consents, drillPractice, reports } = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations,
+      consents,
+      drillPractice,
+      now: () => '2026-06-19T15:30:00.000Z',
+      reports,
+    });
+
+    const preview = previewLocalDataRestore({
+      ...backup,
+      annotations: [...backup.annotations, createReportAnnotation('missing-report')],
+      consents: [...backup.consents, createCoachReviewConsentRecord('missing-report')],
+      drillPractice: [
+        ...backup.drillPractice,
+        createDrillPracticeRecord({
+          cueId: 'cue-missing',
+          drillId: 'cue-missing-missing-report',
+          reportId: 'missing-report',
+          status: 'completed',
+        }),
+      ],
+    });
+
+    expect(preview).toMatchObject({
+      annotationsToRestore: 1,
+      consentsToRestore: 1,
+      drillPracticeToRestore: 1,
+      skippedAnnotations: 1,
+      skippedConsents: 1,
+      skippedDrillPractice: 1,
+    });
+  });
+
   it('rejects backups that contain raw video or URI-like artifacts', async () => {
     const { annotations, consents, drillPractice, reports } = await createPortabilityFixture();
     const backup = await createLocalDataBackup({
@@ -237,5 +302,19 @@ describe('local data portability', () => {
         },
       ),
     ).rejects.toThrow('raw video');
+    expect(() =>
+      previewLocalDataRestore({
+        ...backup,
+        reports: [
+          {
+            ...backup.reports[0],
+            privacy: {
+              ...backup.reports[0].privacy,
+              retention: 'debug content://private/video.mov',
+            },
+          },
+        ],
+      }),
+    ).toThrow('raw video');
   });
 });

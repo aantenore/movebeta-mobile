@@ -134,6 +134,12 @@ export const defaultStoreScreenshots = [
     route: 'privacy',
     viewport: { height: 844, width: 390 },
   },
+  {
+    fileName: '08-data-portability.png',
+    label: 'Local backup restore preview',
+    route: 'privacy',
+    viewport: { height: 844, width: 390 },
+  },
 ] satisfies z.infer<typeof StoreScreenshotSchema>[];
 
 function pass(id: string, label: string, detail: string): StoreReadinessCheck {

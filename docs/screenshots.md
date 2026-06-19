@@ -29,3 +29,7 @@ These screenshots are generated from the exported web build with `npm run store:
 ## Privacy
 
 ![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)
+
+## Data Portability
+
+![Privacy tab showing local backup restore preview with restore and skipped orphan counts](store/screenshots/08-data-portability.png)

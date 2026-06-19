@@ -37,6 +37,7 @@ const manifest = {
     { fileName: '05-plan.png', label: 'Freemium plan catalog', route: 'plan', viewport: { height: 844, width: 390 } },
     { fileName: '06-privacy.png', label: 'Privacy and offline readiness', route: 'privacy', viewport: { height: 844, width: 390 } },
     { fileName: '07-release-unblock.png', label: 'Release unblock checklist', route: 'plan', viewport: { height: 844, width: 390 } },
+    { fileName: '08-data-portability.png', label: 'Local backup restore preview', route: 'privacy', viewport: { height: 844, width: 390 } },
   ],
   version: appJson.version ?? '',
 };

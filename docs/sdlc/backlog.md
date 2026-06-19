@@ -49,3 +49,4 @@
 | MB-008J | Release archive integrity | As a release owner, I can verify delivered zip archives before handoff | Done | `npm run release:archives` writes source/web zip archives plus SHA-256 JSON and Markdown manifests in the output directory |
 | MB-009 | Privacy-safe observability | As a maintainer, I can inspect diagnostics without leaking sensitive data | Done | Redaction utilities, aggregate support packet, Privacy UI, and smoke coverage |
 | MB-010 | Screenshot documentation | As a stakeholder, I can inspect generated product screenshots from the docs | Done | `docs/screenshots.md` references generated screenshots from `npm run store:screenshots` |
+| MB-011 | Restore preview | As a climber, I can validate a local backup before writing it into storage | Done | Privacy tab previews restore counts and skipped orphan records with the same schema/privacy validation as restore |
