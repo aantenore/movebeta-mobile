@@ -99,8 +99,7 @@ platforms are validated on physical climbing videos and devices.
   review modes, score quality, and raw-artifact exclusion.
 - `npm run native:ios:pods`: passed with local Ruby 3.3.11 and CocoaPods 1.16.2; `MoveBetaPose` is installed as an iOS pod.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
-- Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed at commit
-  `d57d0eb7f3453479a6ad5797d20d76018effec02`.
+- Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked because this machine has Command Line Tools, not full Xcode.
 
 ## Known Residual Risks
