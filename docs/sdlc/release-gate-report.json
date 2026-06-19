@@ -1,0 +1,68 @@
+{
+  "completedAt": "2026-06-19T16:02:59.313Z",
+  "schemaVersion": "movebeta.release-gate-report.v1",
+  "startedAt": "2026-06-19T16:02:42.292Z",
+  "status": "pass",
+  "steps": [
+    {
+      "command": "npm run quality",
+      "completedAt": "2026-06-19T16:02:47.231Z",
+      "durationMs": 4938,
+      "exitCode": 0,
+      "key": "quality",
+      "label": "TypeScript and Vitest quality gate",
+      "startedAt": "2026-06-19T16:02:42.293Z",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:movenet:readiness",
+      "completedAt": "2026-06-19T16:02:52.522Z",
+      "durationMs": 5291,
+      "exitCode": 0,
+      "key": "modelReadiness",
+      "label": "MoveNet readiness report",
+      "startedAt": "2026-06-19T16:02:47.231Z",
+      "status": "pass"
+    },
+    {
+      "command": "npm run native:qa:runbook",
+      "completedAt": "2026-06-19T16:02:52.651Z",
+      "durationMs": 129,
+      "exitCode": 0,
+      "key": "nativeQaRunbook",
+      "label": "Native QA runbook generation",
+      "startedAt": "2026-06-19T16:02:52.522Z",
+      "status": "pass"
+    },
+    {
+      "command": "npm run export:web",
+      "completedAt": "2026-06-19T16:02:55.817Z",
+      "durationMs": 3166,
+      "exitCode": 0,
+      "key": "webExport",
+      "label": "Expo web export",
+      "startedAt": "2026-06-19T16:02:52.651Z",
+      "status": "pass"
+    },
+    {
+      "command": "npm run release:eas:check",
+      "completedAt": "2026-06-19T16:02:56.075Z",
+      "durationMs": 258,
+      "exitCode": 0,
+      "key": "easStandard",
+      "label": "EAS standard release check",
+      "startedAt": "2026-06-19T16:02:55.817Z",
+      "status": "pass"
+    },
+    {
+      "command": "npm run security:audit",
+      "completedAt": "2026-06-19T16:02:59.313Z",
+      "durationMs": 3237,
+      "exitCode": 0,
+      "key": "securityAudit",
+      "label": "High-severity dependency audit",
+      "startedAt": "2026-06-19T16:02:56.075Z",
+      "status": "pass"
+    }
+  ]
+}

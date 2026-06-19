@@ -150,8 +150,8 @@ function getConfiguredEvidence(rootDir, env = process.env) {
  */
 export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const appConfig = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
-  const packageJson = readJsonIfExists(path.join(rootDir, 'package.json')) ?? {};
   const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
+  const releaseGateReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/release-gate-report.json')) ?? {};
   const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
   const nativeQaRunbook = readJsonIfExists(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json')) ?? {};
 
@@ -171,7 +171,12 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
     nativeDeviceQa: validatedJsonFile(rootDir, 'docs/sdlc/native-qa-evidence.json', validateNativeQaEvidence),
     nativeQaRunbook: nativeQaRunbook.schemaVersion === 'movebeta.native-qa-runbook.v1',
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
-    releaseGate: typeof packageJson.scripts?.['release:check'] === 'string' && releaseReport.includes('`npm run release:check`: passed'),
+    releaseGate:
+      releaseGateReport.schemaVersion === 'movebeta.release-gate-report.v1' &&
+      releaseGateReport.status === 'pass' &&
+      Array.isArray(releaseGateReport.steps) &&
+      releaseGateReport.steps.length >= 6 &&
+      releaseGateReport.steps.every((step) => step.status === 'pass'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),
     webSmoke: exists(rootDir, 'dist/index.html') && releaseReport.includes('Playwright exported-bundle smoke: passed'),
   };

@@ -6,7 +6,7 @@
 | R2 provider boundary | `docs/architecture.md` | provider tests | architecture review | Covered |
 | R3 no upload by default | `docs/data-governance.md` | privacy assertions | Privacy tab smoke | Covered |
 | R4 coaching cues | `docs/requirements.md` | cue generation tests | Coach and Drills tabs | Covered |
-| R5 release quality gate | `docs/sdlc/delivery-contract.md` | `npm run release:check` | CI workflow review | Covered |
+| R5 release quality gate | `docs/sdlc/delivery-contract.md` | `tests/releaseGateReport.test.ts`, `npm run release:check` | CI workflow review | Covered with machine-readable gate report |
 | R6 video record/import workflow | `docs/requirements.md` | `tests/videoWorkflow.test.ts` | native QA checklist | Contract covered |
 | R7 report storage/delete/export contract | `docs/task-plan.md` | `tests/reportRepository.test.ts` | native SQLite QA | Covered |
 | R8 real-clip validation | `docs/discovery.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDataset.test.ts`, `tests/cueValidation.test.ts` | `npm run validation:cue` with real consented dataset | Gate covered; data needed |
