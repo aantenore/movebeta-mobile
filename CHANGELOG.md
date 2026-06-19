@@ -80,3 +80,4 @@
 - Privacy-safe cue-validation worksheet CSV export with stable headers, blank reviewer/score cells, and CSV escaping.
 - Completed cue-validation worksheet CSV parser and dataset composer with row matching, 1-5 score validation, and
   compatibility with the production validation gate.
+- Sessions UI for pasting completed cue-validation worksheet CSV and preparing gate-compatible dataset JSON locally.

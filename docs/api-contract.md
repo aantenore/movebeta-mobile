@@ -91,6 +91,22 @@ type CoachReviewConsentRecord = {
 Coach packets can be prepared only from active consent records. Revoked records are kept as local audit evidence and do
 not authorize export.
 
+## Cue Validation Dataset Builder
+
+The default cue-validation workflow is local:
+
+```ts
+type CompletedWorksheetCsv = string;
+
+type CueValidationDatasetBuilder = {
+  build(seed: CueValidationStudySeed, csv: CompletedWorksheetCsv): CueValidationCompletedDataset;
+};
+```
+
+The builder accepts only completed worksheet rows that match the current study seed. Reviewer IDs must be present, all
+scores must be integers from 1 to 5, duplicate or unknown rows are rejected, and the resulting JSON is compatible with
+the `npm run validation:cue` production gate.
+
 ## Optional Future Sync API
 
 Any server-side API should accept reports and user-approved exports only. Raw video upload should be a separate explicit

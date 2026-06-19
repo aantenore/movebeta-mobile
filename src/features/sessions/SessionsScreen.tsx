@@ -28,9 +28,11 @@ import {
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
+  buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
+  formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
 } from '@/movement/cueValidationStudy';
@@ -471,6 +473,7 @@ export function SessionsScreen() {
   const [coachConsentByReport, setCoachConsentByReport] = useState<Record<string, CoachReviewConsentRecord>>({});
   const [annotationByReport, setAnnotationByReport] = useState<Record<string, ReportAnnotation>>({});
   const [coachLibrary, setCoachLibrary] = useState<CoachLibrary>(() => buildCoachLibrary([], []));
+  const [completedWorksheetCsv, setCompletedWorksheetCsv] = useState('');
   const [preparedExport, setPreparedExport] = useState<{ body: string; title: string } | null>(null);
   const [draftAnnotation, setDraftAnnotation] = useState<ReportAnnotation | null>(null);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
@@ -607,10 +610,29 @@ export function SessionsScreen() {
     assertCueValidationReviewWorksheetIsPrivacySafe(worksheet);
     const csv = buildCueValidationReviewWorksheetCsv(worksheet);
     assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv);
+    setCompletedWorksheetCsv(csv);
     setPreparedExport({
       body: `${formatCueValidationReviewWorksheetSummary(worksheet)}\n\n${csv}`,
       title: 'Prepared cue validation worksheet CSV',
     });
+  }
+
+  async function prepareCueValidationDatasetFromCompletedWorksheetCsv() {
+    selectionFeedback();
+    try {
+      const seed = await buildCurrentCueValidationStudySeed();
+      assertCueValidationStudySeedIsPrivacySafe(seed);
+      const dataset = buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedWorksheetCsv);
+      setPreparedExport({
+        body: `${formatCueValidationCompletedDatasetSummary(dataset)}\n\n${JSON.stringify(dataset, null, 2)}`,
+        title: 'Prepared cue validation dataset',
+      });
+    } catch (error) {
+      setPreparedExport({
+        body: error instanceof Error ? error.message : 'Completed cue validation worksheet CSV could not be parsed.',
+        title: 'Validation dataset blocked',
+      });
+    }
   }
 
   async function saveTrainingLog(annotation: ReportAnnotation) {
@@ -717,6 +739,28 @@ export function SessionsScreen() {
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
             onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}
           />
+
+          {coachLibrary.entries.length > 0 ? (
+            <Section title="Validation dataset" caption="Completed worksheet CSV to gate-ready JSON.">
+              <TextInput
+                accessibilityLabel="Completed cue validation worksheet CSV"
+                multiline
+                onChangeText={setCompletedWorksheetCsv}
+                placeholder="worksheetRowId,clipId,packetReportId,..."
+                placeholderTextColor={theme.colors.muted}
+                style={styles.csvInput}
+                value={completedWorksheetCsv}
+              />
+              <Pressable
+                accessibilityLabel="Build cue validation dataset"
+                onPress={() => void prepareCueValidationDatasetFromCompletedWorksheetCsv()}
+                style={styles.action}
+              >
+                <ShieldCheck color={theme.colors.brand} size={16} />
+                <Text style={styles.actionText}>Build dataset</Text>
+              </Pressable>
+            </Section>
+          ) : null}
 
           {selectedReport && selectedReview ? <SessionReviewPanel detail={selectedReview} report={selectedReport} /> : null}
 
@@ -1261,6 +1305,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     minHeight: 104,
+    padding: theme.spacing.md,
+    textAlignVertical: 'top',
+  },
+  csvInput: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    color: theme.colors.text,
+    fontFamily: 'monospace',
+    fontSize: 11,
+    lineHeight: 16,
+    minHeight: 152,
     padding: theme.spacing.md,
     textAlignVertical: 'top',
   },

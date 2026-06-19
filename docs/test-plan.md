@@ -94,6 +94,7 @@
 - Sessions tab prepares a cue-validation study seed with packet-only review tasks and no invented scores after consent.
 - Sessions tab prepares a cue-validation review worksheet with blank coach score rows after consent.
 - Sessions tab prepares a cue-validation worksheet CSV for spreadsheet-based coach review collection after consent.
+- Sessions tab builds a cue-validation dataset JSON from a completed worksheet CSV after reviewer IDs and scores are filled.
 - Coach packet export requires persisted explicit consent and then renders review JSON with privacy-safe athlete context
   and without raw video or private-note artifacts.
 - Privacy diagnostics prepare a support packet without raw video, video URI, key-frame, landmark, account, or secret artifacts.

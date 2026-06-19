@@ -71,3 +71,4 @@
 | T67 | Add local cue-validation review worksheet export | Done |
 | T68 | Add privacy-safe cue-validation worksheet CSV export | Done |
 | T69 | Add completed cue-validation worksheet dataset composer | Done |
+| T70 | Add Sessions UI for completed worksheet CSV to validation dataset JSON | Done |
