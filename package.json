@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/node": "^25.9.3",
     "@types/react": "~19.2.2",
+    "tsx": "^4.22.4",
     "typescript": "~6.0.3",
     "vitest": "^4.1.9"
   },
@@ -59,6 +60,7 @@
     "native:qa:runbook": "node scripts/native_qa_packet.mjs --stable-date",
     "model:movenet:smoke": "node scripts/smoke_movenet_model.mjs",
     "model:movenet:readiness": "node scripts/movenet_readiness_report.mjs",
+    "model:analysis:replay": "tsx scripts/model_analysis_replay.ts",
     "validation:cue": "node scripts/validate_cue_validation_dataset.mjs",
     "native:ios:pods": "bash scripts/ios-pods.sh",
     "handoff:git": "bash scripts/git-handoff-check.sh",

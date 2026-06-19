@@ -1,25 +1,17 @@
 import Constants from 'expo-constants';
 import { z } from 'zod';
 
+import { AnalysisProviderSchema, PrivacyModeSchema } from '@/movement/contracts';
+
 import { PlanKeySchema } from './entitlements';
 import { LaunchReadinessEvidenceSchema, type LaunchReadinessEvidence } from './launchReadiness';
-
-const AnalysisProviderSchema = z.enum([
-  'local-fixture',
-  'local-video-fallback',
-  'web-tfjs-movenet',
-  'native-platform-pose',
-  'native-mediapipe',
-  'native-coreml',
-  'native-tflite',
-]);
 
 const ConfigSchema = z.object({
   activePlan: PlanKeySchema,
   analysisProvider: AnalysisProviderSchema,
   videoAnalysisProvider: AnalysisProviderSchema,
   nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
-  privacyMode: z.enum(['on-device', 'cloud-assisted']),
+  privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
   launchReadinessEvidence: LaunchReadinessEvidenceSchema.optional(),
 });

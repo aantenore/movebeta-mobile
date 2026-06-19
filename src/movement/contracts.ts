@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+export const AnalysisProviderSchema = z.enum([
+  'local-fixture',
+  'local-video-fallback',
+  'web-tfjs-movenet',
+  'native-platform-pose',
+  'native-mediapipe',
+  'native-coreml',
+  'native-tflite',
+]);
+
+export const PrivacyModeSchema = z.enum(['on-device', 'cloud-assisted']);
+
 export const LandmarkNameSchema = z.enum([
   'nose',
   'leftShoulder',
@@ -95,15 +107,7 @@ export const LocalAnalysisReportSchema = z.object({
   id: z.string(),
   session: ClimbSessionSchema,
   engine: z.object({
-    provider: z.enum([
-      'local-fixture',
-      'local-video-fallback',
-      'web-tfjs-movenet',
-      'native-platform-pose',
-      'native-mediapipe',
-      'native-coreml',
-      'native-tflite',
-    ]),
+    provider: AnalysisProviderSchema,
     model: z.string(),
     runsOnDevice: z.boolean(),
     uploadsVideo: z.boolean(),
@@ -129,6 +133,8 @@ export const LocalAnalysisReportSchema = z.object({
 });
 
 export type LandmarkName = z.infer<typeof LandmarkNameSchema>;
+export type AnalysisProvider = z.infer<typeof AnalysisProviderSchema>;
+export type PrivacyMode = z.infer<typeof PrivacyModeSchema>;
 export type PoseLandmark = z.infer<typeof PoseLandmarkSchema>;
 export type PoseFrame = z.infer<typeof PoseFrameSchema>;
 export type VideoAsset = z.infer<typeof VideoAssetSchema>;
@@ -150,6 +156,9 @@ export type AnalyzerThresholds = {
 export type LocalAnalyzerInput = {
   session: ClimbSession;
   frames: PoseFrame[];
+  model?: string;
+  privacyMode?: PrivacyMode;
+  provider?: AnalysisProvider;
   thresholds?: Partial<AnalyzerThresholds>;
 };
 

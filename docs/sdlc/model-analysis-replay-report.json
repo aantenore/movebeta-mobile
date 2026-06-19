@@ -1,0 +1,88 @@
+{
+  "attempts": [
+    {
+      "analysisQualityScore": 100,
+      "cueIds": [
+        "cue-pause",
+        "cue-lockoff",
+        "cue-hip"
+      ],
+      "frameCount": 35,
+      "metricIds": [
+        "flow",
+        "pause-time",
+        "lock-off",
+        "hip-drift",
+        "foot-cuts"
+      ],
+      "passed": true,
+      "privacySafe": true,
+      "provider": "web-tfjs-movenet",
+      "sessionId": "session-board-001",
+      "title": "Overhang board attempt",
+      "wallAngle": "overhang"
+    },
+    {
+      "analysisQualityScore": 100,
+      "cueIds": [
+        "cue-pause",
+        "cue-lockoff"
+      ],
+      "frameCount": 35,
+      "metricIds": [
+        "flow",
+        "pause-time",
+        "lock-off",
+        "hip-drift",
+        "foot-cuts"
+      ],
+      "passed": true,
+      "privacySafe": true,
+      "provider": "web-tfjs-movenet",
+      "sessionId": "session-vertical-001",
+      "title": "Vertical sequence repeat",
+      "wallAngle": "vertical"
+    },
+    {
+      "analysisQualityScore": 100,
+      "cueIds": [
+        "cue-pause",
+        "cue-lockoff"
+      ],
+      "frameCount": 35,
+      "metricIds": [
+        "flow",
+        "pause-time",
+        "lock-off",
+        "hip-drift",
+        "foot-cuts"
+      ],
+      "passed": true,
+      "privacySafe": true,
+      "provider": "web-tfjs-movenet",
+      "sessionId": "session-slab-001",
+      "title": "Slab balance drill",
+      "wallAngle": "slab"
+    }
+  ],
+  "dimensions": {
+    "height": 1920,
+    "width": 1080
+  },
+  "generatedAt": "2026-06-19T19:58:06.963Z",
+  "limitations": [
+    "Uses deterministic MoveNet-shaped fixture keypoints to verify app analysis integration.",
+    "Does not replace physical-device validation with real climbing videos and coach-reviewed labels."
+  ],
+  "minQualityScore": 90,
+  "schemaVersion": "movebeta.model-analysis-replay-report.v1",
+  "status": "pass",
+  "summary": {
+    "averageQualityScore": 100,
+    "failedAttempts": 0,
+    "maxQualityScore": 100,
+    "minQualityScore": 100,
+    "passedAttempts": 3,
+    "totalAttempts": 3
+  }
+}
