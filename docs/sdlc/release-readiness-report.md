@@ -107,6 +107,8 @@ platforms are validated on physical climbing videos and devices.
   EAS/store credentials visible as explicit blockers.
 - Plan tab shows a release unblock checklist that derives external blockers from launch readiness and lists proof
   artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
+- Plan tab shows a configurable safety-language guard for medical, injury-prevention, route-safety, and
+  guaranteed-outcome copy risks across product and release copy.
 - `npm run release:handoff` writes JSON and Markdown handoff packets with repo, commit, product identity, gate status,
   blockers, screenshots, artifacts, and verification commands.
 - Launch-readiness evidence can come from Expo `extra.launchReadinessEvidence` or
@@ -127,14 +129,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 67 test files and 263 tests.
+- `npm test`: passed, 68 test files and 267 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3720ms load time, 337ms average inference, and 341ms max inference in the latest run.
+  CPU backend, 3451ms load time, 327ms average inference, and 335ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
@@ -217,6 +219,8 @@ platforms are validated on physical climbing videos and devices.
   the model in unit tests.
 - `tests/modelEvidence.test.ts`: passed and covers technical-ready, validated, degraded, missing, environment JSON, and
   privacy-safe model evidence states.
+- `tests/safetyLanguage.test.ts`: passed and covers clear copy, risky claim detection, negated policy/disclaimer copy,
+  replaceable rules, and visible issue limits.
 - `tests/movenetPoseMapper.test.ts`: passed and covers MoveNet required keypoint mapping, missing-keypoint failure, and
   mapped-frame compatibility with the local movement analyzer report contract.
 - `tests/betaReplayPlan.test.ts`: passed and covers setup/crux/exit action generation, timestamp ordering, and weakest
@@ -241,7 +245,7 @@ platforms are validated on physical climbing videos and devices.
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, native QA evidence kit, native QA
-  validator preview, evidence collection plan, release unblock checklist, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
+  validator preview, evidence collection plan, release unblock checklist, safety-language guard, and provider readiness, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.

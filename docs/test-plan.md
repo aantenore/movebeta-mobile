@@ -99,6 +99,8 @@
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
 - Vitest model evidence tests for technical-ready, validated, degraded, missing, environment JSON, and privacy-safe states.
+- Vitest safety language tests for clear copy, risky claim detection, negated policy/disclaimer copy, replaceable rules,
+  and visible issue limits.
 - Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
   commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
@@ -198,6 +200,8 @@
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, and owner targets.
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
+- Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
+  risks.
 - Privacy tab confirms no-upload default behavior.
 
 Command used for local smoke:
