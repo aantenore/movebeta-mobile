@@ -72,6 +72,8 @@
 - Prepare a coach review packet only after explicit athlete consent, without raw video, video URI, or key-frame landmarks.
 - Add privacy-safe athlete context to coach review packets from local training-log scores, cue feedback ratings, and drill
   practice counts while excluding private note text and drill notes.
+- Add completed real-review validation evidence to coach packet cue trust when a local validation campaign dataset exists,
+  without exposing reviewer identities, raw video references, or private notes.
 - Show a local coach library queue from active consented reports with review priority, signal status, feedback counts,
   practice counts, and no raw video artifacts.
 - Generate reusable local coach team templates from consented review signals for high-priority review, follow-through,
@@ -164,6 +166,8 @@
   drill-practice notes.
 - Coach review packets must include cue trust summaries without exposing raw video, key frames, landmarks, private notes,
   or drill-practice notes.
+- Coach review packet cue trust must accept optional validation evidence from completed local campaign datasets, reduce
+  trust for failed or unreviewed cues, and keep reviewer identities out of the packet.
 - Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.

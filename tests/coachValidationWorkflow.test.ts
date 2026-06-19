@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createCoachReviewConsentRecord } from '../src/movement/coachConsentRepository';
 import {
   buildCoachValidationWorkflow,
+  buildCueTrustValidationEvidenceForReport,
   coachValidationWorkflowSchemaVersion,
 } from '../src/movement/coachValidationWorkflow';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
@@ -165,6 +166,14 @@ describe('coach validation workflow', () => {
     });
     expect(readyWorkflow.shareableDatasetJson).toContain('"schemaVersion": "movebeta.cue-validation-dataset.v1"');
     expect(readyWorkflow.shareableStatusJson).not.toMatch(/rawVideoUri|videoUri|file:\/\//i);
+
+    expect(buildCueTrustValidationEvidenceForReport(readyWorkflow, report)).toMatchObject({
+      acceptance: 'pass',
+      averageScore: 5,
+      failingCueIds: [],
+      reviewedCueCount: report.cues.length,
+      unreviewedCueIds: [],
+    });
   });
 
   it('blocks raw artifact text in completed worksheet CSV without throwing', async () => {
