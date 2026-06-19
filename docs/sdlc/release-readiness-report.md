@@ -38,8 +38,8 @@ platforms are validated on physical climbing videos and devices.
   training log plus coach consent record.
 - Sessions lets the user select a local report review with quality facts, performance facts, focus metric, primary cue,
   timeline markers, and local privacy evidence.
-- Sessions lets the user keep private per-report training notes with project status, perceived effort, confidence, and
-  local tags behind browser/local or native SQLite persistence.
+- Sessions lets the user keep private per-report training notes with cue usefulness, project status, perceived effort,
+  confidence, and local tags behind browser/local or native SQLite persistence.
 - Progress converts private training logs into a local project queue with active project count, repeat count, sent count,
   effort, and next-repeat action.
 - Progress filters local report history and the project queue by wall angle, grade, and gym.
@@ -64,7 +64,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 34 test files and 122 tests.
+- `npm test`: passed, 34 test files and 123 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run security:audit`: passed at `--audit-level=high`.
@@ -75,16 +75,17 @@ platforms are validated on physical climbing videos and devices.
   build drift, and committed submit-secret rejection.
 - `tests/sessionDetail.test.ts`: passed and covers session review status, focus metric, primary cue, quality facts,
   performance facts, timeline marker bounds, and privacy evidence.
-- `tests/reportAnnotationRepository.test.ts`: passed and covers private training-log creation, updates, tag normalization,
-  local persistence, SQLite persistence, delete behavior, and corrupted-storage tolerance.
+- `tests/reportAnnotationRepository.test.ts`: passed and covers private training-log creation, cue usefulness feedback,
+  legacy migration, updates, tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage
+  tolerance.
 - `tests/projectQueue.test.ts`: passed and covers active/repeat/sent counts, average effort, next-repeat priority,
   missing-report tolerance, and action generation.
 - `tests/progressFilters.test.ts`: passed and covers wall-angle, grade, and gym option derivation, report filtering, and
   active filter counting.
 - `tests/privacyDeletion.test.ts`: passed and covers report, private training-log, coach-consent cleanup, orphan cleanup,
   and privacy-safe deletion receipt copy.
-- `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, restore into empty repositories, orphan
-  skipping, and URI-like artifact rejection.
+- `tests/dataPortability.test.ts`: passed and covers privacy-safe backup JSON, cue feedback backup/restore, restore into
+  empty repositories, orphan skipping, and URI-like artifact rejection.
 - `tests/techniqueReadiness.test.ts`: passed and covers baseline, repeat, and recovery next-session recommendations.
 - `tests/personalBenchmarks.test.ts`: passed and covers best overall, wall-angle, grade, gym, latest-vs-best deltas,
   and empty local history behavior.
@@ -97,7 +98,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, the Drills weekly plan, the Progress next-session plan, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
+  Sessions cue feedback controls, the Sessions private training log, the Progress project queue, the Sessions coach packet consent gate and export, the
   Sessions deletion receipt, the Privacy diagnostics packet, Privacy data portability backup/restore, and the Privacy
   airplane-mode readiness self-check.
 - `npx expo prebuild --no-install`: passed.

@@ -4,9 +4,18 @@ import { openSQLiteDatabase } from './sqliteOpen';
 import type { OpenSQLiteDatabase, SQLiteDatabaseLike } from './reportRepository';
 
 export const reportProjectStatuses = ['project', 'repeat', 'sent', 'archived'] as const;
+export const cueFeedbackRatings = ['useful', 'unclear', 'not-useful'] as const;
+
+export const CueFeedbackSchema = z.object({
+  cueId: z.string(),
+  note: z.string().max(240).default(''),
+  rating: z.enum(cueFeedbackRatings),
+  updatedAt: z.string(),
+});
 
 export const ReportAnnotationSchema = z.object({
   confidence: z.number().int().min(1).max(5),
+  cueFeedback: z.array(CueFeedbackSchema).max(12).default([]),
   perceivedEffort: z.number().int().min(1).max(5),
   privateNote: z.string().max(1200),
   projectStatus: z.enum(reportProjectStatuses),
@@ -16,6 +25,7 @@ export const ReportAnnotationSchema = z.object({
 });
 
 export type ReportAnnotation = z.infer<typeof ReportAnnotationSchema>;
+export type CueFeedback = z.infer<typeof CueFeedbackSchema>;
 
 export type ReportAnnotationRepository = {
   deleteAnnotation(reportId: string): Promise<boolean>;
@@ -47,12 +57,26 @@ function normalizeTags(tags: string[] = []) {
   return [...new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean))].slice(0, 8);
 }
 
+function normalizeCueFeedback(feedback: CueFeedback[] = []) {
+  const byCue = new Map<string, CueFeedback>();
+  for (const item of feedback) {
+    const parsed = CueFeedbackSchema.parse({
+      ...item,
+      cueId: item.cueId.trim(),
+      note: item.note.trim(),
+    });
+    if (parsed.cueId) byCue.set(parsed.cueId, parsed);
+  }
+  return [...byCue.values()].slice(0, 12);
+}
+
 export function createReportAnnotation(
   reportId: string,
   updates: Partial<Omit<ReportAnnotation, 'reportId' | 'updatedAt'>> & { updatedAt?: string } = {},
 ): ReportAnnotation {
   return ReportAnnotationSchema.parse({
     confidence: updates.confidence ?? 3,
+    cueFeedback: normalizeCueFeedback(updates.cueFeedback),
     perceivedEffort: updates.perceivedEffort ?? 3,
     privateNote: updates.privateNote ?? '',
     projectStatus: updates.projectStatus ?? 'project',
@@ -69,8 +93,28 @@ export function updateReportAnnotation(
   return ReportAnnotationSchema.parse({
     ...annotation,
     ...updates,
+    cueFeedback: normalizeCueFeedback(updates.cueFeedback ?? annotation.cueFeedback),
     tags: normalizeTags(updates.tags ?? annotation.tags),
     updatedAt: updates.updatedAt ?? now(),
+  });
+}
+
+export function updateCueFeedback(
+  annotation: ReportAnnotation,
+  feedback: Omit<CueFeedback, 'note' | 'updatedAt'> & { note?: string; updatedAt?: string },
+): ReportAnnotation {
+  const existing = annotation.cueFeedback.filter((item) => item.cueId !== feedback.cueId);
+  return updateReportAnnotation(annotation, {
+    cueFeedback: [
+      ...existing,
+      CueFeedbackSchema.parse({
+        cueId: feedback.cueId,
+        note: feedback.note ?? '',
+        rating: feedback.rating,
+        updatedAt: feedback.updatedAt ?? now(),
+      }),
+    ],
+    updatedAt: feedback.updatedAt,
   });
 }
 
@@ -80,6 +124,7 @@ export class InMemoryReportAnnotationRepository implements ReportAnnotationRepos
   async saveAnnotation(annotation: ReportAnnotation) {
     const parsed = ReportAnnotationSchema.parse({
       ...annotation,
+      cueFeedback: normalizeCueFeedback(annotation.cueFeedback),
       tags: normalizeTags(annotation.tags),
     });
     this.annotations.set(parsed.reportId, parsed);
@@ -203,6 +248,7 @@ export class SQLiteReportAnnotationRepository implements ReportAnnotationReposit
   async saveAnnotation(annotation: ReportAnnotation) {
     const parsed = ReportAnnotationSchema.parse({
       ...annotation,
+      cueFeedback: normalizeCueFeedback(annotation.cueFeedback),
       tags: normalizeTags(annotation.tags),
     });
     const db = await this.getDb();
