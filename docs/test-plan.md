@@ -8,6 +8,8 @@
   fallback, editable session metadata persistence, local report persistence, SQLite report storage, export/delete behavior,
   corrupted storage handling, analysis quality warnings, and privacy metadata.
 - Vitest video metadata tests for native metadata reads, browser fallback, and final picker/timer/default fallback.
+- Vitest native pose bridge contract tests for the optional JavaScript module boundary, Expo module registration, Apple
+  Vision iOS provider, and Android ML Kit provider.
 - Vitest coach consent repository tests for local persistence, SQLite storage, revocation, deletion, and corrupted storage.
 - Vitest session detail tests for focus metric selection, primary cue selection, quality/performance/privacy facts,
   normalized timeline markers, and weak-report risk status.

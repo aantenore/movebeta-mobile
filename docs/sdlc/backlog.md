@@ -2,7 +2,7 @@
 
 | ID | Epic | User story | Priority | Acceptance notes |
 | --- | --- | --- | --- | --- |
-| MB-001 | Native inference | As a climber, I can analyze an imported clip on my phone without cloud upload | Must | Custom native provider returns pose frames |
+| MB-001 | Native inference | As a climber, I can analyze an imported clip on my phone without cloud upload | Done | Custom native provider returns pose frames through the MoveBetaPose bridge, with Apple Vision on iOS, ML Kit on Android, and static bridge contract tests |
 | MB-002 | Local storage | As a climber, I can keep and delete local reports | Done | SQLite native repository plus web/local fallback |
 | MB-003 | Real clip validation | As a product team, we can measure cue usefulness on consented clips | Must | Dataset contract, template, CLI gate, scoring harness, and rubric ready; needs real consented clip set |
 | MB-003A | Validation study seed | As a product team, I can prepare a privacy-safe study seed from consented local packets | Done | Sessions exports packet-only review tasks from active cue-validation consent without raw artifacts or invented reviewer scores |

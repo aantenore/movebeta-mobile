@@ -13,7 +13,7 @@
 | R9 consent gate defaults | `docs/data-governance.md` | `tests/privacyConsent.test.ts` | Privacy tab smoke | Covered |
 | R10 provider failure clarity | `docs/architecture.md` | `tests/onDevicePipeline.failure.test.ts` | native adapter review | Covered |
 | R11 privacy-safe diagnostics | `docs/sdlc/privacy-threat-model.md` | `tests/observability.test.ts` | Privacy diagnostics smoke | Covered |
-| R12 native pose model adapter | `docs/architecture.md` | provider contract tests, Android debug build, iOS Pods | native adapter QA | Contract covered |
+| R12 native pose model adapter | `docs/architecture.md` | `tests/nativePoseBridge.test.ts`, Android debug build, iOS Pods | native adapter QA | Bridge contract covered; physical-device evidence still needed |
 | R13 web MoveNet pose extraction provider | `docs/architecture.md` | `tests/videoWorkflow.test.ts` | browser local-video QA | Contract covered |
 | R14 analysis quality warnings | `docs/requirements.md` | `tests/localMovementAnalyzer.test.ts` | Coach tab quality panel | Covered |
 | R15 local progress history | `docs/requirements.md` | `tests/progressInsights.test.ts` | Progress tab smoke | Covered |
