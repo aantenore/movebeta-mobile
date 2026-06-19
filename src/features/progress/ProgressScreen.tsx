@@ -25,6 +25,7 @@ import {
 import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
 import { summarizeProgress } from '@/movement/progressInsights';
 import { summarizeProjectQueue } from '@/movement/projectQueue';
+import { summarizeRepeatOutcomes } from '@/movement/repeatOutcomeInsights';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
@@ -88,6 +89,7 @@ export function ProgressScreen() {
   );
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
+  const repeatOutcomeInsights = useMemo(() => summarizeRepeatOutcomes(filteredReports, annotations), [annotations, filteredReports]);
   const drillPracticeInsights = useMemo(
     () => summarizeDrillPracticeInsights(filteredReports, drillPractice),
     [drillPractice, filteredReports],
@@ -436,6 +438,55 @@ export function ProgressScreen() {
           <View style={styles.preview}>
             <Text style={styles.previewTitle}>No cue feedback yet</Text>
             <Text style={styles.previewText}>Mark cues as useful, unclear, or not useful in Sessions to tune future repeats.</Text>
+          </View>
+        )}
+      </Section>
+
+      <Section title="Repeat outcomes" caption="Private repeat results from Sessions after applying the beta plan.">
+        {repeatOutcomeInsights.totalLogged > 0 ? (
+          <View style={styles.repeatOutcomeCard}>
+            <View style={styles.repeatOutcomeSummary}>
+              <View
+                style={[
+                  styles.repeatOutcomeScore,
+                  repeatOutcomeInsights.status === 'stalled' ? styles.repeatOutcomeScoreBlocked : null,
+                  repeatOutcomeInsights.status === 'progressing' ? styles.repeatOutcomeScoreReady : null,
+                ]}
+              >
+                <Text style={styles.repeatOutcomeScoreValue}>{repeatOutcomeInsights.successRate}%</Text>
+                <Text style={styles.repeatOutcomeScoreLabel}>Success</Text>
+              </View>
+              <View style={styles.repeatOutcomeCounts}>
+                <Text style={styles.repeatOutcomeCountText}>Improved {repeatOutcomeInsights.improvedCount}</Text>
+                <Text style={styles.repeatOutcomeCountText}>Sent {repeatOutcomeInsights.sentCount}</Text>
+                <Text style={styles.repeatOutcomeCountText}>Stalled {repeatOutcomeInsights.stalledCount}</Text>
+              </View>
+            </View>
+
+            <Text style={styles.repeatOutcomeAction}>{repeatOutcomeInsights.action}</Text>
+
+            <View style={styles.repeatOutcomeGrid}>
+              {repeatOutcomeInsights.latest ? (
+                <View style={styles.repeatOutcomeItem}>
+                  <Text style={styles.repeatOutcomeItemLabel}>Latest</Text>
+                  <Text style={styles.repeatOutcomeItemTitle}>{repeatOutcomeInsights.latest.title}</Text>
+                  <Text style={styles.repeatOutcomeItemMeta}>
+                    {repeatOutcomeInsights.latest.status} · {repeatOutcomeInsights.latest.attempts} repeat attempts
+                  </Text>
+                </View>
+              ) : null}
+
+              <View style={styles.repeatOutcomeItem}>
+                <Text style={styles.repeatOutcomeItemLabel}>Resolved</Text>
+                <Text style={styles.repeatOutcomeItemTitle}>{repeatOutcomeInsights.resolvedCueCount} cues</Text>
+                <Text style={styles.repeatOutcomeItemMeta}>{repeatOutcomeInsights.attemptedCount} attempted repeats logged</Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.preview}>
+            <Text style={styles.previewTitle}>No repeat outcome yet</Text>
+            <Text style={styles.previewText}>Mark the repeat result in Sessions after trying the beta plan.</Text>
           </View>
         )}
       </Section>
@@ -994,6 +1045,94 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   cueUsefulnessSummary: {
+    alignItems: 'stretch',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  repeatOutcomeAction: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  repeatOutcomeCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  repeatOutcomeCountText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  repeatOutcomeCounts: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  repeatOutcomeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  repeatOutcomeItem: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 146,
+    padding: theme.spacing.sm,
+  },
+  repeatOutcomeItemLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  repeatOutcomeItemMeta: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  repeatOutcomeItemTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  repeatOutcomeScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 104,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  repeatOutcomeScoreBlocked: {
+    backgroundColor: theme.colors.coral,
+  },
+  repeatOutcomeScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  repeatOutcomeScoreReady: {
+    backgroundColor: theme.colors.success,
+  },
+  repeatOutcomeScoreValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  repeatOutcomeSummary: {
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,

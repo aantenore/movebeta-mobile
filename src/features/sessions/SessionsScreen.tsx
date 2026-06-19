@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Trash2, UserCheck } from 'lucide-react-native';
+import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Target, Trash2, UserCheck } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { MovementCueCard } from '@/components/MovementCueCard';
@@ -49,9 +49,12 @@ import { drillPracticeRepository } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
   cueFeedbackRatings,
+  repeatAttemptOptions,
+  repeatOutcomeStatuses,
   reportAnnotationRepository,
   reportProjectStatuses,
   updateCueFeedback,
+  updateRepeatOutcome,
   updateReportAnnotation,
   type ReportAnnotation,
 } from '@/movement/reportAnnotationRepository';
@@ -70,6 +73,14 @@ const cueFeedbackLabels: Record<ReportAnnotation['cueFeedback'][number]['rating'
   'not-useful': 'Not useful',
   unclear: 'Unclear',
   useful: 'Useful',
+};
+
+const repeatOutcomeLabels: Record<NonNullable<ReportAnnotation['repeatOutcome']>['status'], string> = {
+  fell: 'Fell',
+  improved: 'Improved',
+  'not-tried': 'Not tried',
+  regressed: 'Regressed',
+  sent: 'Sent',
 };
 
 function statusStyles(status: SessionReviewDetail['status']) {
@@ -218,6 +229,22 @@ function TrainingLogPanel({
   onSave: () => void;
   report: LocalAnalysisReport;
 }) {
+  const repeatOutcome =
+    annotation.repeatOutcome ?? {
+      attempts: 0,
+      resolvedCueIds: [],
+      status: 'not-tried' as const,
+      updatedAt: annotation.updatedAt,
+    };
+  const resolvedCueIds = new Set(repeatOutcome.resolvedCueIds);
+  const updateOutcome = (updates: Partial<typeof repeatOutcome>) =>
+    onChange(
+      updateRepeatOutcome(annotation, {
+        ...repeatOutcome,
+        ...updates,
+      }),
+    );
+
   return (
     <Section
       caption="Private on-device notes stay with the local report and are deleted with it."
@@ -267,6 +294,74 @@ function TrainingLogPanel({
             onChange={(confidence) => onChange(updateReportAnnotation(annotation, { confidence }))}
             value={annotation.confidence}
           />
+        </View>
+
+        <View style={styles.logGroup}>
+          <View style={styles.logTitleRow}>
+            <Target color={theme.colors.brand} size={18} />
+            <Text style={styles.logTitle}>Repeat outcome</Text>
+          </View>
+          <View style={styles.logOptions}>
+            {repeatOutcomeStatuses.map((status) => {
+              const selected = repeatOutcome.status === status;
+              return (
+                <Pressable
+                  accessibilityLabel={`Repeat outcome ${repeatOutcomeLabels[status]}`}
+                  key={status}
+                  onPress={() => updateOutcome({ status })}
+                  style={[styles.statusChip, selected ? styles.statusChipSelected : null]}
+                >
+                  <Text style={[styles.statusChipText, selected ? styles.statusChipTextSelected : null]}>
+                    {repeatOutcomeLabels[status]}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text style={styles.logLabel}>Repeat attempts</Text>
+          <View style={styles.logOptions}>
+            {repeatAttemptOptions.map((attempts) => {
+              const selected = repeatOutcome.attempts === attempts;
+              return (
+                <Pressable
+                  accessibilityLabel={`Repeat attempts ${attempts}`}
+                  key={`attempts-${attempts}`}
+                  onPress={() => updateOutcome({ attempts })}
+                  style={[styles.scoreChip, selected ? styles.scoreChipSelected : null]}
+                >
+                  <Text style={[styles.scoreChipText, selected ? styles.scoreChipTextSelected : null]}>{attempts}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {report.cues.length > 0 ? (
+            <>
+              <Text style={styles.logLabel}>Resolved cues</Text>
+              <View style={styles.resolvedCueList}>
+                {report.cues.map((cue) => {
+                  const selected = resolvedCueIds.has(cue.id);
+                  const nextCueIds = selected
+                    ? repeatOutcome.resolvedCueIds.filter((cueId) => cueId !== cue.id)
+                    : [...repeatOutcome.resolvedCueIds, cue.id];
+
+                  return (
+                    <Pressable
+                      accessibilityLabel={`Resolved cue ${cue.title}`}
+                      key={`resolved-${cue.id}`}
+                      onPress={() => updateOutcome({ resolvedCueIds: nextCueIds })}
+                      style={[styles.resolvedCueChip, selected ? styles.resolvedCueChipSelected : null]}
+                    >
+                      <Text style={[styles.resolvedCueText, selected ? styles.resolvedCueTextSelected : null]}>
+                        {cue.title}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </>
+          ) : null}
         </View>
 
         {report.cues.length > 0 ? (
@@ -1249,6 +1344,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.sm,
+  },
+  resolvedCueChip: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  resolvedCueChipSelected: {
+    backgroundColor: '#E8F4EE',
+    borderColor: '#BAD7C8',
+  },
+  resolvedCueList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  resolvedCueText: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  resolvedCueTextSelected: {
+    color: theme.colors.success,
   },
   statusChip: {
     backgroundColor: theme.colors.surfaceAlt,

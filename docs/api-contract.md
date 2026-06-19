@@ -100,6 +100,23 @@ The current coach packet schema is `movebeta.coach-review.v2` and includes `anal
 confidence signal for product and coach review workflows, not a guarantee that a cue is correct. When no real
 cue-validation dataset is available, the validation factor is marked as pending.
 
+## Private Repeat Outcome
+
+Repeat outcomes live in the local training-log repository. They close the loop between a cue and the next comparable
+attempt without uploading raw video or private notes.
+
+```ts
+type RepeatOutcome = {
+  status: 'not-tried' | 'improved' | 'sent' | 'fell' | 'regressed';
+  attempts: number;
+  resolvedCueIds: string[];
+  updatedAt: string;
+};
+```
+
+Progress summaries aggregate only local report ids that still exist. Consented coach packets can include repeat outcome
+status, attempt count, and resolved cue ids for cues that belong to the exported report.
+
 ## Coach Consent
 
 ```ts

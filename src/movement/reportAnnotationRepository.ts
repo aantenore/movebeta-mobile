@@ -5,11 +5,20 @@ import type { OpenSQLiteDatabase, SQLiteDatabaseLike } from './reportRepository'
 
 export const reportProjectStatuses = ['project', 'repeat', 'sent', 'archived'] as const;
 export const cueFeedbackRatings = ['useful', 'unclear', 'not-useful'] as const;
+export const repeatOutcomeStatuses = ['not-tried', 'improved', 'sent', 'fell', 'regressed'] as const;
+export const repeatAttemptOptions = [0, 1, 2, 3, 5] as const;
 
 export const CueFeedbackSchema = z.object({
   cueId: z.string(),
   note: z.string().max(240).default(''),
   rating: z.enum(cueFeedbackRatings),
+  updatedAt: z.string(),
+});
+
+export const RepeatOutcomeSchema = z.object({
+  attempts: z.number().int().min(0).max(20),
+  resolvedCueIds: z.array(z.string().min(1)).max(12).default([]),
+  status: z.enum(repeatOutcomeStatuses),
   updatedAt: z.string(),
 });
 
@@ -20,12 +29,14 @@ export const ReportAnnotationSchema = z.object({
   privateNote: z.string().max(1200),
   projectStatus: z.enum(reportProjectStatuses),
   reportId: z.string(),
+  repeatOutcome: RepeatOutcomeSchema.nullable().default(null),
   tags: z.array(z.string().min(1).max(24)).max(8),
   updatedAt: z.string(),
 });
 
 export type ReportAnnotation = z.infer<typeof ReportAnnotationSchema>;
 export type CueFeedback = z.infer<typeof CueFeedbackSchema>;
+export type RepeatOutcome = z.infer<typeof RepeatOutcomeSchema>;
 
 export type ReportAnnotationRepository = {
   deleteAnnotation(reportId: string): Promise<boolean>;
@@ -70,6 +81,14 @@ function normalizeCueFeedback(feedback: CueFeedback[] = []) {
   return [...byCue.values()].slice(0, 12);
 }
 
+function normalizeRepeatOutcome(outcome: RepeatOutcome | null | undefined) {
+  if (!outcome) return null;
+  return RepeatOutcomeSchema.parse({
+    ...outcome,
+    resolvedCueIds: [...new Set(outcome.resolvedCueIds.map((cueId) => cueId.trim()).filter(Boolean))].slice(0, 12),
+  });
+}
+
 export function createReportAnnotation(
   reportId: string,
   updates: Partial<Omit<ReportAnnotation, 'reportId' | 'updatedAt'>> & { updatedAt?: string } = {},
@@ -81,6 +100,7 @@ export function createReportAnnotation(
     privateNote: updates.privateNote ?? '',
     projectStatus: updates.projectStatus ?? 'project',
     reportId,
+    repeatOutcome: normalizeRepeatOutcome(updates.repeatOutcome),
     tags: normalizeTags(updates.tags),
     updatedAt: updates.updatedAt ?? now(),
   });
@@ -90,12 +110,32 @@ export function updateReportAnnotation(
   annotation: ReportAnnotation,
   updates: Partial<Omit<ReportAnnotation, 'reportId' | 'updatedAt'>> & { updatedAt?: string },
 ): ReportAnnotation {
+  const nextRepeatOutcome = Object.prototype.hasOwnProperty.call(updates, 'repeatOutcome')
+    ? updates.repeatOutcome
+    : annotation.repeatOutcome;
+
   return ReportAnnotationSchema.parse({
     ...annotation,
     ...updates,
     cueFeedback: normalizeCueFeedback(updates.cueFeedback ?? annotation.cueFeedback),
+    repeatOutcome: normalizeRepeatOutcome(nextRepeatOutcome),
     tags: normalizeTags(updates.tags ?? annotation.tags),
     updatedAt: updates.updatedAt ?? now(),
+  });
+}
+
+export function updateRepeatOutcome(
+  annotation: ReportAnnotation,
+  outcome: Omit<RepeatOutcome, 'updatedAt'> & { updatedAt?: string },
+): ReportAnnotation {
+  return updateReportAnnotation(annotation, {
+    repeatOutcome: normalizeRepeatOutcome({
+      attempts: outcome.attempts,
+      resolvedCueIds: outcome.resolvedCueIds,
+      status: outcome.status,
+      updatedAt: outcome.updatedAt ?? now(),
+    }),
+    updatedAt: outcome.updatedAt,
   });
 }
 
@@ -125,6 +165,7 @@ export class InMemoryReportAnnotationRepository implements ReportAnnotationRepos
     const parsed = ReportAnnotationSchema.parse({
       ...annotation,
       cueFeedback: normalizeCueFeedback(annotation.cueFeedback),
+      repeatOutcome: normalizeRepeatOutcome(annotation.repeatOutcome),
       tags: normalizeTags(annotation.tags),
     });
     this.annotations.set(parsed.reportId, parsed);
@@ -249,6 +290,7 @@ export class SQLiteReportAnnotationRepository implements ReportAnnotationReposit
     const parsed = ReportAnnotationSchema.parse({
       ...annotation,
       cueFeedback: normalizeCueFeedback(annotation.cueFeedback),
+      repeatOutcome: normalizeRepeatOutcome(annotation.repeatOutcome),
       tags: normalizeTags(annotation.tags),
     });
     const db = await this.getDb();

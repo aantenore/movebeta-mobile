@@ -6,6 +6,7 @@ import {
   LocalReportAnnotationRepository,
   SQLiteReportAnnotationRepository,
   updateCueFeedback,
+  updateRepeatOutcome,
   updateReportAnnotation,
 } from '../src/movement/reportAnnotationRepository';
 import type { SQLiteDatabaseLike } from '../src/movement/reportRepository';
@@ -73,6 +74,7 @@ describe('report annotation repository', () => {
     await repository.saveAnnotation(annotation);
 
     expect(annotation.tags).toEqual(['board', 'crux']);
+    expect(annotation.repeatOutcome).toBeNull();
     expect(await repository.getAnnotation('analysis-1')).toEqual(annotation);
     expect(await repository.listAnnotations()).toEqual([annotation]);
 
@@ -91,7 +93,31 @@ describe('report annotation repository', () => {
       },
     ]);
 
-    const updated = updateReportAnnotation(withCueFeedback, {
+    const withRepeatOutcome = updateRepeatOutcome(withCueFeedback, {
+      attempts: 2,
+      resolvedCueIds: ['cue-lockoff', 'cue-lockoff', ' cue-hip '],
+      status: 'improved',
+      updatedAt: '2026-06-19T12:20:00.000Z',
+    });
+
+    await repository.saveAnnotation(withRepeatOutcome);
+
+    expect((await repository.getAnnotation('analysis-1'))?.repeatOutcome).toMatchObject({
+      attempts: 2,
+      resolvedCueIds: ['cue-lockoff', 'cue-hip'],
+      status: 'improved',
+    });
+
+    const withoutRepeatOutcome = updateReportAnnotation(withRepeatOutcome, {
+      repeatOutcome: null,
+      updatedAt: '2026-06-19T12:25:00.000Z',
+    });
+
+    await repository.saveAnnotation(withoutRepeatOutcome);
+
+    expect((await repository.getAnnotation('analysis-1'))?.repeatOutcome).toBeNull();
+
+    const updated = updateReportAnnotation(withoutRepeatOutcome, {
       confidence: 5,
       privateNote: 'Ready for a send try.',
       projectStatus: 'sent',
@@ -124,6 +150,7 @@ describe('report annotation repository', () => {
     expect(await repository.getAnnotation('legacy-analysis')).toMatchObject({
       cueFeedback: [],
       privateNote: 'Legacy note.',
+      repeatOutcome: null,
     });
   });
 

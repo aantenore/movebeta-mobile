@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
-import { createReportAnnotation } from '../src/movement/reportAnnotationRepository';
+import { createReportAnnotation, updateRepeatOutcome } from '../src/movement/reportAnnotationRepository';
 import { sampleAttempts } from '../src/movement/sampleSession';
 import { buildSessionPlan } from '../src/movement/sessionPlan';
 
@@ -92,5 +92,29 @@ describe('session plan', () => {
     expect(plan.intensityCap).toBe('easy');
     expect(plan.phases.map((phase) => phase.id)).toContain('practice-reset-drill');
     expect(plan.safetyNote).toContain('Reduce complexity');
+  });
+
+  it('lowers intensity when repeat outcomes stall after comparable attempts', async () => {
+    const reports = await buildSampleReports();
+    const plan = buildSessionPlan(reports, [
+      updateRepeatOutcome(createReportAnnotation(reports[0].id), {
+        attempts: 2,
+        resolvedCueIds: [],
+        status: 'fell',
+        updatedAt: '2026-06-19T18:00:00.000Z',
+      }),
+      updateRepeatOutcome(createReportAnnotation(reports[1].id), {
+        attempts: 2,
+        resolvedCueIds: [],
+        status: 'regressed',
+        updatedAt: '2026-06-19T19:00:00.000Z',
+      }),
+    ]);
+
+    expect(plan.title).toBe('Repeat outcome reset');
+    expect(plan.status).toBe('recover');
+    expect(plan.intensityCap).toBe('easy');
+    expect(plan.phases.map((phase) => phase.id)).toContain('repeat-outcome-reset-drill');
+    expect(plan.safetyNote).toContain('repeat outcome improves');
   });
 });

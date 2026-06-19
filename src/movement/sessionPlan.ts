@@ -4,6 +4,7 @@ import { summarizeDrillPracticeInsights } from './drillPracticeInsights';
 import type { DrillPracticeRecord } from './drillPracticeRepository';
 import { summarizePersonalBenchmarks } from './personalBenchmarks';
 import { summarizeProjectQueue } from './projectQueue';
+import { summarizeRepeatOutcomes } from './repeatOutcomeInsights';
 import type { ReportAnnotation } from './reportAnnotationRepository';
 import { buildTechniqueReadinessPlan } from './techniqueReadiness';
 
@@ -45,6 +46,7 @@ export function buildSessionPlan(
   const drillPlan = buildDrillPlan(reports, annotations);
   const practiceInsights = summarizeDrillPracticeInsights(reports, drillPractice);
   const projectQueue = summarizeProjectQueue(reports, annotations);
+  const repeatOutcomes = summarizeRepeatOutcomes(reports, annotations);
   const benchmarks = summarizePersonalBenchmarks(reports);
   const latest = latestReport(reports);
   const drill = readiness.drill ?? drillPlan.items[0] ?? null;
@@ -165,6 +167,43 @@ export function buildSessionPlan(
       status: 'recover',
       target: practiceInsights.skippedCue?.title ?? readiness.focus,
       title: 'Practice reset session',
+    };
+  }
+
+  if (repeatOutcomes.status === 'stalled') {
+    const phases: SessionPlanPhase[] = [
+      {
+        durationMinutes: 10,
+        evidence: repeatOutcomes.action,
+        id: 'repeat-outcome-reset-warmup',
+        instruction: 'Warm up below project intensity and repeat the easiest version of the same movement.',
+        title: 'Outcome reset warm-up',
+      },
+      {
+        durationMinutes: 12,
+        evidence: `${repeatOutcomes.stalledCount} repeat outcomes stalled against ${repeatOutcomes.improvedCount + repeatOutcomes.sentCount} positive outcomes.`,
+        id: 'repeat-outcome-reset-drill',
+        instruction: drill ? `${drill.drill} Stop after one clean improved rep.` : 'Repeat one cue slowly and stop before fatigue hides the beta.',
+        title: drill?.title ?? 'Repeat reset drill',
+      },
+      {
+        durationMinutes: 8,
+        evidence: 'Repeat outcome logs should improve before adding intensity.',
+        id: 'repeat-outcome-reset-log',
+        instruction: 'Mark the repeat as Improved, Sent, Fell, or Regressed in Sessions after the next comparable try.',
+        title: 'Log repeat outcome',
+      },
+    ];
+
+    return {
+      anchor: repeatOutcomes.latest?.title ?? anchor,
+      durationMinutes: totalDuration(phases),
+      intensityCap: 'easy',
+      phases,
+      safetyNote: 'Keep the next attempt comparable and easier until the repeat outcome improves.',
+      status: 'recover',
+      target: repeatOutcomes.latest?.title ?? readiness.focus,
+      title: 'Repeat outcome reset',
     };
   }
 

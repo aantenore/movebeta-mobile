@@ -91,3 +91,8 @@
 - Local beta replay plan in Analyze with setup, crux, and exit actions derived from cue and metric evidence.
 - Local movement phase breakdown for launch, crux, and finish rehearsal priorities.
 - Local cue trust scoring in Analyze and coach packet exports, with privacy-safe signal factors and validation-readiness status.
+- Private repeat-outcome logging in Sessions and Progress insights for success rate, stalled repeats, resolved cues, and
+  next-repeat action.
+- MoveNet model execution smoke that loads TensorFlow.js MoveNet SinglePose Lightning and runs local inference on a
+  synthetic frame.
+- Documentation screenshot gallery generated from the exported web build.

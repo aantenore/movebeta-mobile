@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
@@ -31,6 +32,19 @@ def reset_scroll(page) -> None:
     )
 
 
+def seed_repeat_outcome(page) -> None:
+    page.get_by_role("tab", name="Sessions").click()
+    page.wait_for_load_state("networkidle")
+    expect(page.get_by_text("Training log", exact=True)).to_be_visible()
+    page.get_by_label("Project status Repeat").click()
+    page.get_by_label("Repeat outcome Improved").click()
+    page.get_by_label("Repeat attempts 2").click()
+    page.get_by_label(re.compile("Resolved cue")).first.click()
+    page.get_by_text("Save", exact=True).click()
+    page.get_by_role("tab", name="Analyze").click()
+    page.wait_for_load_state("networkidle")
+
+
 def main() -> None:
     base_url = os.environ.get("MOVEBETA_SMOKE_URL", "http://127.0.0.1:8082")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -44,13 +58,18 @@ def main() -> None:
         expect(page.get_by_text("On-device climbing coach")).to_be_visible()
         page.get_by_text("Vertical sequence repeat").click()
         page.wait_for_load_state("networkidle")
+        seed_repeat_outcome(page)
 
         for file_name, tab_name, expected_text in SCREENSHOTS:
             if tab_name != "Analyze":
                 page.get_by_role("tab", name=tab_name).click()
                 page.wait_for_load_state("networkidle")
             expect(page.get_by_text(expected_text).first).to_be_visible()
-            reset_scroll(page)
+            if tab_name == "Progress":
+                page.get_by_text("Repeat outcomes").scroll_into_view_if_needed()
+                expect(page.get_by_text("Repeat outcomes")).to_be_visible()
+            else:
+                reset_scroll(page)
             page.screenshot(path=str(OUTPUT_DIR / file_name), full_page=True)
 
         browser.close()

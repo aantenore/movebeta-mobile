@@ -50,6 +50,10 @@ platforms are validated on physical climbing videos and devices.
   confidence, and local tags behind browser/local or native SQLite persistence.
 - Progress converts private training logs into a local project queue with active project count, repeat count, sent count,
   effort, and next-repeat action.
+- Sessions lets the user log comparable repeat outcomes after applying a beta plan, including improved/sent/fell/regressed
+  state, attempt count, and resolved cues.
+- Progress converts private repeat outcomes into success rate, improved/sent/stalled counts, resolved cue count, and
+  next-repeat action.
 - Progress filters local report history and the project queue by wall angle, grade, and gym.
 - Native report persistence uses SQLite behind the same repository contract, with browser/local fallback storage.
 - Sessions persists explicit per-report consent before preparing a coach review packet with privacy-safe athlete context
@@ -98,9 +102,11 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 49 test files and 188 tests.
+- `npm test`: passed, 51 test files and 195 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run export:web`: passed, generated `dist`.
+- `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
+  inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run security:audit`: passed at `--audit-level=high`.
 - `npm run release:check`: passed.
 - `npm run release:eas:check`: passed, with warnings for account-bound EAS project id, `EXPO_TOKEN`, App Store Connect,
@@ -110,8 +116,10 @@ platforms are validated on physical climbing videos and devices.
 - `tests/sessionDetail.test.ts`: passed and covers session review status, focus metric, primary cue, quality facts,
   performance facts, timeline marker bounds, and privacy evidence.
 - `tests/reportAnnotationRepository.test.ts`: passed and covers private training-log creation, cue usefulness feedback,
-  legacy migration, updates, tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage
-  tolerance.
+  repeat outcome logging/clearing, legacy migration, updates, tag normalization, local persistence, SQLite persistence,
+  delete behavior, and corrupted-storage tolerance.
+- `tests/repeatOutcomeInsights.test.ts`: passed and covers progressing outcomes, stalled outcomes, orphan skipping, and
+  empty state behavior.
 - `tests/drillPracticeRepository.test.ts`: passed and covers private completion/skipped records, local persistence,
   SQLite persistence, report-scoped deletion, and corrupted-storage tolerance.
 - `tests/drillPracticeInsights.test.ts`: passed and covers completion rate, blocked/skipped state, orphan skipping, and
@@ -163,7 +171,8 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions cue feedback controls, the Sessions private training log, the Sessions coach library queue, team templates,
+  Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
+  repeat outcome panel, the Sessions coach library queue, team templates,
   coach library export, cue-validation study seed, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, and export, the
@@ -197,6 +206,8 @@ platforms are validated on physical climbing videos and devices.
   local modern Ruby toolchain.
 - Native release requires custom Expo development build validation on physical iOS and Android devices with real climbing
   clips. The validator and template now exist, but `docs/sdlc/native-qa-evidence.json` must be filled from real devices.
+- The MoveNet smoke verifies model load and inference execution on a synthetic local frame only. Real climbing-video
+  model validation still requires physical-device QA plus consented climbing clips.
 - Store-bound EAS submission requires `npx eas-cli@latest init` on the target Expo account, `extra.eas.projectId`,
   `EXPO_TOKEN`, App Store Connect credentials, and Google Play service account credentials before
   `npm run release:eas:strict` can pass.
