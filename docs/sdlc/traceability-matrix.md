@@ -63,3 +63,4 @@
 | R59 completed cue-validation dataset composer | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationStudy.test.ts`, `tests/cueValidationDataset.test.ts`, browser smoke | Sessions completed worksheet CSV to dataset JSON | Covered |
 | R60 native prepared export share | `docs/requirements.md`, `docs/data-governance.md` | browser smoke | Sessions prepared export share action | Covered |
 | R61 in-app cue-validation gate preview | `docs/requirements.md`, `docs/validation/cue-validation-rubric.md` | `tests/cueValidationDatasetGate.test.ts`, `tests/cueValidationGateParity.test.ts`, browser smoke | Sessions completed dataset gate preview | Covered |
+| R62 launch-readiness cockpit | `docs/requirements.md`, `docs/sdlc/release-readiness-report.md` | `tests/launchReadiness.test.ts`, browser smoke | Plan tab Launch readiness | Covered |

@@ -26,4 +26,5 @@
 | MB-006E | Native export share | As a coach or product reviewer, I can share a prepared local export through the device share sheet | Done | Sessions exposes a share action only after a prepared export exists and keeps payload preparation local |
 | MB-007 | Dependency hygiene | As a maintainer, I receive dependency update PRs | Done | Dependabot configured for npm and GitHub Actions; `npm ci` and CI gate pass |
 | MB-008 | Native release readiness | As a maintainer, I can create internal test builds | Should | EAS profiles, app identifiers, and standard validator are configured; strict gate needs real Expo, Apple, and Google credentials |
+| MB-008A | Launch readiness cockpit | As a maintainer, I can see which launch tracks are ready without digging through release docs | Done | Plan tab summarizes stakeholder demo, internal native beta, and store-submission readiness from configurable evidence |
 | MB-009 | Privacy-safe observability | As a maintainer, I can inspect diagnostics without leaking sensitive data | Done | Redaction utilities, aggregate support packet, Privacy UI, and smoke coverage |

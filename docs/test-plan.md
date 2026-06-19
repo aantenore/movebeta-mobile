@@ -56,6 +56,7 @@
 - Vitest entitlement tests for Free, Pro, Coach capabilities, upgrade paths, and history limits.
 - Vitest plan catalog tests for current tier status, highlighted upgrade unlocks, coach tier capabilities, and
   provider-agnostic recommendations.
+- Vitest launch-readiness tests for default blockers, all-ready evidence, and partial evidence overrides.
 - Vitest capture-readiness tests for ready, review, and retake recommendations from video signal quality.
 - Vitest observability tests for sanitized diagnostic events and aggregate support packets without raw video artifacts.
 - Vitest offline-readiness tests for ready, review, and blocked airplane-mode states.
@@ -122,6 +123,7 @@
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Plan tab shows current tier, upgrade path, capability matrix, and provider readiness from the shared plan catalog.
+- Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Privacy tab confirms no-upload default behavior.
 
 Command used for local smoke:
