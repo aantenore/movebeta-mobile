@@ -15,6 +15,7 @@
   tag normalization, local persistence, SQLite persistence, delete behavior, and corrupted-storage tolerance.
 - Vitest drill practice repository tests for private completion/skipped records, local persistence, SQLite persistence,
   report-scoped deletion, and corrupted-storage tolerance.
+- Vitest drill practice insight tests for completion rate, blocked/skipped state, orphan skipping, and empty state.
 - Vitest privacy deletion tests for report, private training-log, drill-practice, coach-consent cleanup, orphan cleanup,
   and receipt copy.
 - Vitest data portability tests for privacy-safe backup JSON, cue feedback backup/restore, restore into empty repositories,
@@ -88,6 +89,7 @@
 - Progress tab shows personal benchmarks for best overall and filtered style segments.
 - Progress tab shows recurring cue patterns with latest cue count, total patterns, cleared count, and drill evidence.
 - Progress tab shows cue usefulness insights from private Sessions feedback.
+- Progress tab shows practice consistency from private Drills completion/skipped logs.
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Privacy tab confirms no-upload default behavior.
