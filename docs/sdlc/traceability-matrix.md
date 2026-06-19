@@ -67,3 +67,4 @@
 | R63 machine-detected launch readiness | `docs/requirements.md`, `docs/sdlc/mobile-release-process.md` | `tests/launchReadinessDoctor.test.ts`, `npm run release:readiness` | `docs/sdlc/launch-readiness-report.json` | Covered |
 | R64 beta replay plan | `docs/requirements.md` | `tests/betaReplayPlan.test.ts`, browser smoke | Analyze tab Beta replay plan | Covered |
 | R65 movement phase breakdown | `docs/requirements.md` | `tests/movementPhaseBreakdown.test.ts`, browser smoke | Analyze tab Movement phases | Covered |
+| R66 cue trust scoring | `docs/requirements.md` | `tests/cueTrust.test.ts`, `tests/coachReviewPacket.test.ts`, browser smoke | Analyze tab Cue trust and Sessions coach packet JSON | Covered |

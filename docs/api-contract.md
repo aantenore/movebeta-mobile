@@ -74,6 +74,32 @@ Reports contain:
 - Analysis performance evidence: elapsed analysis time, budget status, and processed frame rate.
 - Privacy metadata confirming whether video left the device.
 
+## Cue Trust
+
+Cue trust is derived locally from a report and does not require a remote service:
+
+```ts
+type CueTrustReport = {
+  schemaVersion: 'movebeta.cue-trust.v1';
+  averageScore: number;
+  validationStatus: 'validated' | 'needs-review' | 'insufficient-data' | 'pending';
+  signals: Array<{
+    cueId: string;
+    level: 'high' | 'medium' | 'low' | 'review';
+    score: number;
+    factors: Array<{
+      id: 'pose-quality' | 'timing' | 'performance' | 'validation' | string;
+      score: number;
+      status: 'strong' | 'caution' | 'weak';
+    }>;
+  }>;
+};
+```
+
+The current coach packet schema is `movebeta.coach-review.v2` and includes `analysis.cueTrust`. The trust score is a
+confidence signal for product and coach review workflows, not a guarantee that a cue is correct. When no real
+cue-validation dataset is available, the validation factor is marked as pending.
+
 ## Coach Consent
 
 ```ts

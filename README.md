@@ -69,6 +69,7 @@ practice log, and coach-consent record from the Sessions tab.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
 - Beta replay plan that turns local cue and metric evidence into setup, crux, and exit actions for the next attempt.
 - Movement phase breakdown that scores launch, crux, and finish phases from local cues and timeline events.
+- Cue trust scoring that grades each coaching cue from pose quality, timing evidence, runtime budget, and validation readiness.
 - Report-level video analysis performance evidence with local duration, frame rate, and budget status.
 - Local progress insights for best signal, next focus metric, and attempt-to-attempt trend deltas.
 - Local progress filters for wall angle, grade, and gym.

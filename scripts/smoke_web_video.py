@@ -57,6 +57,8 @@ def main() -> None:
         expect(page.get_by_text("Reduce bent-arm time").first).to_be_visible()
         expect(page.get_by_text("Movement phases")).to_be_visible()
         expect(page.get_by_text("Primary phase:")).to_be_visible()
+        expect(page.get_by_text("Cue trust")).to_be_visible()
+        expect(page.get_by_text("Validation: pending")).to_be_visible()
         expect(page.get_by_text("Movement metrics")).to_be_visible()
         expect(page.get_by_text("Coach cues")).to_be_visible()
 
@@ -96,6 +98,7 @@ def main() -> None:
         expect(page.get_by_text("Ready for coaching")).to_be_visible()
         expect(page.get_by_text("Beta replay plan")).to_be_visible()
         expect(page.get_by_text("Movement phases")).to_be_visible()
+        expect(page.get_by_text("Cue trust")).to_be_visible()
         expect(page.get_by_text("Movement metrics")).to_be_visible()
 
         page.get_by_role("tab", name="Progress").click()
@@ -197,6 +200,8 @@ def main() -> None:
         expect(page.get_by_text('"drillPractice"')).to_be_visible()
         expect(page.get_by_text('"privateNoteIncluded": false')).to_be_visible()
         expect(page.get_by_text('"noteIncluded": false')).to_be_visible()
+        expect(page.get_by_text('"schemaVersion": "movebeta.coach-review.v2"')).to_be_visible()
+        expect(page.get_by_text('"cueTrust"')).to_be_visible()
 
         page.get_by_role("tab", name="Plan").click()
         page.wait_for_load_state("networkidle")
