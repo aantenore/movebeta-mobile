@@ -179,6 +179,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
 - Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
 - Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
+- Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -196,6 +197,7 @@ The local release gate is:
 
 ```bash
 npm run release:check
+npm run model:analysis:replay
 npm run release:readiness
 npm run release:archives
 npm run release:handoff

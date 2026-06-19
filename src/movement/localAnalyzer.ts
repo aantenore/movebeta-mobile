@@ -1,7 +1,6 @@
-import { appConfig } from '@/core/config';
-
 import {
   type AnalysisQuality,
+  type AnalysisProvider,
   type AnalyzerThresholds,
   type LandmarkName,
   LocalAnalysisReportSchema,
@@ -11,6 +10,7 @@ import {
   type OnDeviceAnalyzer,
   type PoseFrame,
   type PoseLandmark,
+  type PrivacyMode,
   type TimelineEvent,
 } from './contracts';
 
@@ -115,7 +115,23 @@ function buildAnalysisQuality(frames: PoseFrame[], durationMs: number): Analysis
   };
 }
 
+export type LocalMovementAnalyzerOptions = {
+  model?: string;
+  privacyMode?: PrivacyMode;
+  provider?: AnalysisProvider;
+};
+
 export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
+  private readonly model: string;
+  private readonly privacyMode: PrivacyMode;
+  private readonly provider: AnalysisProvider;
+
+  constructor(options: LocalMovementAnalyzerOptions = {}) {
+    this.model = options.model ?? 'sample-pose-rules-v1';
+    this.privacyMode = options.privacyMode ?? 'on-device';
+    this.provider = options.provider ?? 'local-fixture';
+  }
+
   async analyze(input: LocalAnalyzerInput) {
     const thresholds = { ...defaultThresholds, ...input.thresholds };
     const frames = input.frames;
@@ -234,10 +250,10 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       analysisQuality,
       cues,
       engine: {
-        model: 'sample-pose-rules-v1',
+        model: input.model ?? this.model,
         processedFrames: frames.length,
-        provider: appConfig.analysisProvider,
-        runsOnDevice: appConfig.privacyMode === 'on-device',
+        provider: input.provider ?? this.provider,
+        runsOnDevice: (input.privacyMode ?? this.privacyMode) === 'on-device',
         uploadsVideo: false,
       },
       id: `analysis-${input.session.id}`,

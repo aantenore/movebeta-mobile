@@ -92,11 +92,15 @@
   commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
   metadata, Markdown rendering, and durable JSON/Markdown writes.
+- Vitest model-analysis replay tests for MoveNet-shaped keypoint conversion, bundled attempt coverage, privacy-safe
+  outputs, metric/cue generation, and failing quality thresholds.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
 - MoveNet readiness report with `npm run model:movenet:readiness`, which writes
   `docs/sdlc/movenet-readiness-report.json` and is included in `npm run release:check`.
+- Model-analysis replay with `npm run model:analysis:replay`, which writes
+  `docs/sdlc/model-analysis-replay-report.json` and is included in `npm run release:check`.
 - Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.

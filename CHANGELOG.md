@@ -100,6 +100,8 @@
 - MoveNet readiness report with load/inference budgets, memory evidence, launch-readiness detection, and release-gate
   integration.
 - Reusable MoveNet pose mapper with contract tests that replay model-shaped keypoints through the movement analyzer.
+- Deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through metrics, cues, quality checks,
+  and privacy-safe output checks across bundled slab, vertical, and overhang attempts.
 - Native QA runbook generator with platform workflow steps, shared performance budgets, privacy instructions, and blocked
   evidence drafts for physical-device validation.
 - Native QA evidence validator now rejects placeholder device/build/clip values instead of accepting filled-out templates.

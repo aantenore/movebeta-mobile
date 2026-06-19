@@ -6,6 +6,7 @@
 - [x] `CHANGELOG.md` has user-facing release notes.
 - [x] `npm ci` succeeds from the lockfile.
 - [x] `npm run release:check` passes.
+- [x] `npm run model:analysis:replay` writes model-shaped analysis evidence.
 - [x] `npm run release:eas:check` passes with account-bound store prerequisites reported as warnings.
 - [x] `npm run native:android:debug` passes.
 - [x] Android merged manifest validation passes with camera/import permissions, no audio permission, and backup disabled.
