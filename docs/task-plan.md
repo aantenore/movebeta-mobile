@@ -135,3 +135,4 @@
 | T131 | Add share-safe field validation ops packet | Done |
 | T132 | Add share-safe release blocker issue packet and template | Done |
 | T133 | Add local capture prep protocol before recording | Done |
+| T134 | Add smart repeat matching for comparable attempt baselines | Done |

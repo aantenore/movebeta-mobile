@@ -1,4 +1,10 @@
 import type { LocalAnalysisReport, MovementCue, MovementMetric } from './contracts';
+import type { ReportAnnotation } from './reportAnnotationRepository';
+import {
+  buildManualRepeatMatch,
+  findBestRepeatMatch,
+  type RepeatMatchSummary,
+} from './repeatMatcher';
 
 export type ComparisonDirection = 'improved' | 'regressed' | 'flat' | 'new';
 
@@ -21,6 +27,7 @@ export type CueComparison = {
 };
 
 export type AttemptComparison = {
+  baselineMatch: RepeatMatchSummary;
   currentReport: LocalAnalysisReport;
   baselineReport: LocalAnalysisReport;
   overallScoreDelta: number;
@@ -119,7 +126,11 @@ function buildRecommendation(
   return 'Add one more repeat of the same climb to build a stronger comparison window.';
 }
 
-export function compareAttempts(currentReport: LocalAnalysisReport, baselineReport: LocalAnalysisReport): AttemptComparison {
+export function compareAttempts(
+  currentReport: LocalAnalysisReport,
+  baselineReport: LocalAnalysisReport,
+  baselineMatch: RepeatMatchSummary = buildManualRepeatMatch(currentReport, baselineReport),
+): AttemptComparison {
   const baselineMetrics = metricById(baselineReport.metrics);
   const metrics = currentReport.metrics.map((metric) => {
     const baselineMetric = baselineMetrics.get(metric.id);
@@ -143,6 +154,7 @@ export function compareAttempts(currentReport: LocalAnalysisReport, baselineRepo
   const cueComparison = buildCueComparison(currentReport, baselineReport);
 
   return {
+    baselineMatch,
     baselineReport,
     cueComparison,
     currentReport,
@@ -160,8 +172,18 @@ export function compareAttempts(currentReport: LocalAnalysisReport, baselineRepo
   };
 }
 
-export function compareLatestAttempts(reports: LocalAnalysisReport[]): AttemptComparison | null {
-  const [currentReport, baselineReport] = sortReports(reports);
-  if (!currentReport || !baselineReport) return null;
-  return compareAttempts(currentReport, baselineReport);
+export function compareLatestAttempts(
+  reports: LocalAnalysisReport[],
+  annotations: ReportAnnotation[] = [],
+): AttemptComparison | null {
+  const [currentReport, ...candidateReports] = sortReports(reports);
+  if (!currentReport || candidateReports.length === 0) return null;
+  const match = findBestRepeatMatch(currentReport, candidateReports, annotations);
+  if (!match) return null;
+  return compareAttempts(currentReport, match.report, {
+    confidence: match.confidence,
+    reasons: match.reasons,
+    score: match.score,
+    strategy: match.strategy,
+  });
 }

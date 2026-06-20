@@ -103,7 +103,8 @@
 - Summarize private cue usefulness feedback into useful rate, top useful cue, and review cue signals.
 - Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,
   and drill evidence.
-- Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
+- Compare the latest local attempt with the best matching local baseline using configurable smart repeat matching across
+  wall angle, gym, grade, title, cue overlap, recency, and private local annotation signals.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
 - Show a configurable Plan tab with current plan, upgrade path, capability matrix, and provider-agnostic billing readiness.
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
@@ -342,6 +343,8 @@
   absolute local paths or secret-like values.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
+- Smart repeat matching must stay local, ignore private note text, expose match confidence and reasons, and fall back to
+  chronological comparison only when no stronger comparable baseline exists.
 - Beta memory must ignore orphan annotations, remain useful without resolved cue ids, limit visible entries through a
   replaceable option, and exclude private note text.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete

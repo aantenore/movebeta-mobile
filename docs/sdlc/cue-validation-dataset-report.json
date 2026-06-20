@@ -8,7 +8,7 @@
       "status": "fail"
     }
   ],
-  "generatedAt": "2026-06-20T01:49:27.449Z",
+  "generatedAt": "2026-06-20T01:58:33.239Z",
   "nextAction": "Prepare a cue-validation study seed, collect real coach worksheet scores, compose the dataset JSON, then rerun this doctor.",
   "privacy": {
     "datasetIncluded": false,

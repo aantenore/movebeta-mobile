@@ -31,9 +31,48 @@ describe('attempt comparison', () => {
     expect(comparison).not.toBeNull();
     expect(comparison?.currentReport.session.id).toBe('session-slab-001');
     expect(comparison?.baselineReport.session.id).toBe('session-vertical-001');
+    expect(comparison?.baselineMatch.strategy).toBe('smart-match');
+    expect(comparison?.baselineMatch.score).toBeGreaterThan(0);
     expect(comparison?.metrics).toHaveLength(comparison?.currentReport.metrics.length ?? 0);
     expect(comparison?.headline).toContain('Movement quality');
     expect(comparison?.recommendation.length).toBeGreaterThan(20);
+  });
+
+  it('compares the latest attempt against the best matching baseline, not only the nearest report', async () => {
+    const [overhang, vertical, slab] = await buildSampleReports();
+    const current: LocalAnalysisReport = {
+      ...overhang,
+      id: 'current-overhang-repeat',
+      session: {
+        ...overhang.session,
+        createdAt: '2026-06-17T11:00:00+02:00',
+        id: 'session-current-overhang-repeat',
+        title: 'Overhang board repeat',
+      },
+    };
+    const chronologicalPrevious: LocalAnalysisReport = {
+      ...slab,
+      id: 'chronological-slab',
+      session: {
+        ...slab.session,
+        createdAt: '2026-06-17T10:59:00+02:00',
+        id: 'session-chronological-slab',
+      },
+    };
+    const comparableBaseline: LocalAnalysisReport = {
+      ...overhang,
+      id: 'baseline-overhang',
+      session: {
+        ...overhang.session,
+        createdAt: '2026-06-17T10:00:00+02:00',
+        id: 'session-baseline-overhang',
+      },
+    };
+    const comparison = compareLatestAttempts([vertical, chronologicalPrevious, comparableBaseline, current]);
+
+    expect(comparison?.currentReport.id).toBe('current-overhang-repeat');
+    expect(comparison?.baselineReport.id).toBe('baseline-overhang');
+    expect(comparison?.baselineMatch.confidence).toBe('high');
   });
 
   it('classifies metric improvements and regressions from score deltas', async () => {
