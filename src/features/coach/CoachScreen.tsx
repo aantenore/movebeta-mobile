@@ -16,6 +16,7 @@ import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
+import { buildCapturePrepProtocol, type CapturePrepProtocol } from '@/movement/capturePrepProtocol';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
 import { buildCueTrustReport, type CueTrustReport, type CueTrustSignal } from '@/movement/cueTrust';
 import { buildMovementPhaseBreakdown, type MovementPhaseBreakdown } from '@/movement/movementPhaseBreakdown';
@@ -526,6 +527,50 @@ function CaptureCalibrationPanel({
   );
 }
 
+function CapturePrepProtocolPanel({ protocol }: { protocol: CapturePrepProtocol }) {
+  const isBlocked = protocol.status === 'blocked';
+  const isReady = protocol.status === 'ready';
+
+  return (
+    <Section title="Capture prep protocol" caption="A local pre-recording plan from setup, latest quality, and movement evidence.">
+      <View style={[styles.prepProtocol, isBlocked ? styles.prepProtocolBlocked : isReady ? styles.prepProtocolReady : null]}>
+        <View style={styles.prepTop}>
+          <View style={styles.prepTitleGroup}>
+            <Text style={styles.prepTitle}>{protocol.title}</Text>
+            <Text style={styles.prepMeta}>
+              Focus: {protocol.focus} · {protocol.totalMinutes} min
+            </Text>
+          </View>
+          <Text style={[styles.prepBadge, isBlocked ? styles.prepBadgeBlocked : isReady ? styles.prepBadgeReady : null]}>
+            {protocol.status}
+          </Text>
+        </View>
+        <Text style={styles.prepPrivacy}>{protocol.privacyNote}</Text>
+        <View style={styles.prepPhaseList}>
+          {protocol.phases.map((phase) => (
+            <View key={phase.id} style={styles.prepPhase}>
+              <View style={styles.prepPhaseTop}>
+                <Text style={styles.prepPhaseKind}>{phase.kind}</Text>
+                <Text style={styles.prepPhaseTime}>{phase.durationMinutes} min</Text>
+              </View>
+              <Text style={styles.prepPhaseTitle}>{phase.title}</Text>
+              <Text style={styles.prepPhaseInstruction}>{phase.instruction}</Text>
+              <Text style={styles.prepPhaseEvidence}>{phase.evidence}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.prepCriteria}>
+          {protocol.retakeCriteria.map((criterion) => (
+            <Text key={criterion} style={styles.prepCriterion}>
+              {criterion}
+            </Text>
+          ))}
+        </View>
+      </View>
+    </Section>
+  );
+}
+
 export function CoachScreen() {
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
@@ -542,6 +587,11 @@ export function CoachScreen() {
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const intakeSource = activeSource ?? getDemoVideoSource(selectedAttemptId);
   const captureSetupAssessment = assessCaptureCalibration(captureCalibration);
+  const capturePrepProtocol = buildCapturePrepProtocol({
+    calibration: captureSetupAssessment,
+    report,
+    session: intakeSource.session,
+  });
   const cueTrust = report ? buildCueTrustReport(report) : null;
   const cueTrustById = new Map(cueTrust?.signals.map((signal) => [signal.cueId, signal]) ?? []);
 
@@ -763,6 +813,7 @@ export function CoachScreen() {
         disabled={loading || recording}
         onChange={setCaptureCalibration}
       />
+      <CapturePrepProtocolPanel protocol={capturePrepProtocol} />
       <SessionMetadataEditor disabled={loading || recording} metadata={sessionMetadata} onChange={updateSessionMetadata} />
 
       {cameraOpen ? (
@@ -1337,6 +1388,118 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
     fontSize: 15,
     fontWeight: '900',
+  },
+  prepBadge: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  prepBadgeBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  prepBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  prepCriteria: {
+    gap: 5,
+  },
+  prepCriterion: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  prepMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  prepPhase: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 5,
+    padding: theme.spacing.sm,
+  },
+  prepPhaseEvidence: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    lineHeight: 15,
+  },
+  prepPhaseInstruction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  prepPhaseKind: {
+    color: theme.colors.brandDark,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  prepPhaseList: {
+    gap: 7,
+  },
+  prepPhaseTime: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+  },
+  prepPhaseTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  prepPhaseTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  prepPrivacy: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  prepProtocol: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  prepProtocolBlocked: {
+    borderColor: theme.colors.coral,
+  },
+  prepProtocolReady: {
+    borderColor: theme.colors.success,
+  },
+  prepTitle: {
+    color: theme.colors.ink,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  prepTitleGroup: {
+    flex: 1,
+    gap: 3,
+  },
+  prepTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   intake: {
     backgroundColor: theme.colors.surface,
