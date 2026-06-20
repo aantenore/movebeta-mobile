@@ -83,6 +83,8 @@ web build with `npm run store:screenshots`.
 - Local progress filters for wall angle, grade, and gym.
 - Personal benchmarks for best overall, wall angle, grade, and gym attempts after the active local filters.
 - Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
+- Session closeout checklist that turns the plan, pre-send guard, drill logs, repeat outcomes, and privacy boundary into
+  the next local logging actions.
 - Recurring cue pattern tracking for persistent, emerging, and cleared technique issues.
 - Cue usefulness insights that turn private cue feedback into useful, unclear, and review signals.
 - Repeat-outcome logging for comparable attempts after applying a beta plan, including repeat status, attempts, and

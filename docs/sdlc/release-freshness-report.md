@@ -1,13 +1,13 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-20T03:31:39.518Z
+Generated: 2026-06-20T03:42:38.124Z
 
 - Status: ready
 - Fresh artifacts: 13/13
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
-- Oldest artifact: movenet-readiness-report
+- Oldest artifact: launch-readiness-report
 - Next action: All tracked release evidence artifacts are fresh.
 - Credential values included: no
 - Local paths included: no
@@ -19,7 +19,7 @@ Generated: 2026-06-20T03:31:39.518Z
 | Launch readiness report | fresh | 0h | 24h | `npm run release:readiness` |
 | Feature completion report | fresh | 0h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0h | 24h | `npm run release:blocker-issues` |
-| MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
+| MoveNet readiness report | fresh | 0h | 24h | `npm run model:movenet:readiness` |
 | Model-analysis replay report | fresh | 0h | 24h | `npm run model:analysis:replay` |
 | Model verification suite report | fresh | 0h | 24h | `npm run model:verification:suite` |
 | iOS toolchain report | fresh | 0h | 24h | `npm run native:ios:doctor` |
