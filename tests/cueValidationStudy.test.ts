@@ -6,18 +6,23 @@ import {
   assertCueValidationClipIntakeManifestIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
+  assertCueValidationReviewerOnboardingPacketIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationClipIntakeManifest,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
+  buildCueValidationReviewerOnboardingPacket,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationStudySeed,
   cueValidationClipIntakeManifestSchemaVersion,
+  cueValidationReviewerOnboardingPacketSchemaVersion,
   formatCueValidationClipIntakeManifestSummary,
   formatCueValidationCompletedDatasetSummary,
+  formatCueValidationReviewerOnboardingPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
   type CueValidationClipIntakeManifest,
+  type CueValidationReviewerOnboardingPacket,
   type CueValidationReviewWorksheet,
 } from '../src/movement/cueValidationStudy';
 import { validateCueValidationDataset } from '../scripts/cue_validation_dataset_checks.mjs';
@@ -188,6 +193,7 @@ describe('cue validation study seed', () => {
       [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:07:00.000Z' })],
       {
         acceptance: {
+          minAverageCueScore: 4.5,
           minClips: 1,
           requiredWallAngles: [report.session.wallAngle],
         },
@@ -263,6 +269,89 @@ describe('cue validation study seed', () => {
     } as unknown as CueValidationClipIntakeManifest;
 
     expect(() => assertCueValidationClipIntakeManifestIsPrivacySafe(unsafeManifest)).toThrow(/raw artifact text/i);
+  });
+
+  it('builds a privacy-safe coach reviewer onboarding packet from the study seed', async () => {
+    const report = await buildReport('reviewer-onboarding-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:17:00.000Z' })],
+      {
+        acceptance: {
+          minAverageCueScore: 4.5,
+          minClips: 1,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        generatedAt: '2026-06-20T00:18:00.000Z',
+      },
+    );
+
+    const packet = buildCueValidationReviewerOnboardingPacket(seed, {
+      generatedAt: '2026-06-20T00:19:00.000Z',
+      reviewerCount: 2,
+    });
+    const serialized = JSON.stringify(packet);
+
+    expect(() => assertCueValidationReviewerOnboardingPacketIsPrivacySafe(packet)).not.toThrow();
+    expect(packet).toMatchObject({
+      generatedAt: '2026-06-20T00:19:00.000Z',
+      privacy: {
+        coachPacketsIncluded: false,
+        credentialValuesIncluded: false,
+        keyFramesIncluded: false,
+        landmarksIncluded: false,
+        localPathsIncluded: false,
+        privateNotesIncluded: false,
+        rawArtifactsIncluded: false,
+        rawUrisIncluded: false,
+        rawVideoIncluded: false,
+        reviewerIdentitiesIncluded: false,
+        reviewerScoresInvented: false,
+        videoLeavesDevice: false,
+      },
+      schemaVersion: cueValidationReviewerOnboardingPacketSchemaVersion,
+      sourceSeedGeneratedAt: seed.generatedAt,
+      summary: {
+        estimatedReviewRows: seed.cueCount * 2,
+        missingWallAngles: [],
+        reviewerSlotsNeeded: 2,
+        sourceClipCount: 1,
+        sourceCueCount: seed.cueCount,
+        status: 'ready-for-review',
+        targetClipCount: 1,
+      },
+    });
+    expect(packet.commands.map((command) => command.key)).toEqual([
+      'prepare-seed',
+      'review-packet-only',
+      'complete-worksheet',
+      'run-validation-gate',
+    ]);
+    expect(packet.reviewCriteria.map((criterion) => criterion.id)).toEqual([
+      'relevance',
+      'timingAccuracy',
+      'drillFit',
+      'safetyLanguage',
+    ]);
+    expect(packet.reviewCriteria.every((criterion) => criterion.passingScore === 4.5)).toBe(true);
+    expect(formatCueValidationReviewerOnboardingPacketSummary(packet)).toBe(
+      `1/1 consented clips · ${seed.cueCount * 2} expected review rows · 2 coach slots target · status ready-for-review · raw video: no`,
+    );
+    expect(serialized).not.toMatch(/file:\/\/|\/Users\/|ghp_|pat_|BEGIN PRIVATE KEY|rawVideoUri|videoUri/i);
+  });
+
+  it('rejects reviewer onboarding packets with raw artifact or credential text', () => {
+    const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:20:00.000Z' });
+    const packet = buildCueValidationReviewerOnboardingPacket(seed, { generatedAt: '2026-06-20T00:21:00.000Z' });
+    const unsafePacket: CueValidationReviewerOnboardingPacket = {
+      ...packet,
+      instructions: [
+        ...packet.instructions,
+        'Open file:///private/raw-video.mov with token ghp_1234567890abcdefTOKENVALUE.',
+      ],
+    };
+
+    expect(() => assertCueValidationReviewerOnboardingPacketIsPrivacySafe(unsafePacket)).toThrow(/raw artifact or credential/i);
   });
 
   it('builds a blank review worksheet without inventing coach identities or scores', async () => {

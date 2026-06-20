@@ -25,6 +25,9 @@
   thresholds, and no invented reviewer scores.
 - Prepare a local cue-validation clip intake manifest from the study seed with consented clip coverage, wall-angle gaps,
   required coach review rows, and no packet payloads or raw artifacts.
+- Prepare a share-safe cue-validation reviewer onboarding packet from the study seed with coach instructions, review
+  criteria, command checklist, collection summary, and explicit exclusion of raw artifacts, local paths, credentials,
+  reviewer identities, and invented scores.
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
