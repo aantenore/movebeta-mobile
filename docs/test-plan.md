@@ -46,6 +46,8 @@
 - Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
   exclusion, and empty candidate handling.
 - Vitest attempt comparison tests for smart-baseline selection, metric deltas, cue status, and insufficient history.
+- Vitest advanced drill pack tests for versioned schema output, practice-log intensity adaptation, cue-feedback variants,
+  private-note/tag exclusion, privacy flags, and empty-cue handling.
 - Vitest drill planner tests for cue deduplication, feedback-adapted reinforcement or variants, priority ordering,
   dosage, and empty cue reports.
 - Vitest coach review packet tests for consent metadata, review rubric, privacy-safe athlete context, and raw
@@ -244,8 +246,10 @@
 - Privacy airplane-mode readiness check confirms local workflow readiness after reports exist.
 - Cue validation rubric can score coach reviews once consented clip packets are available.
 - Cue validation dataset gate can reject incomplete studies before production movement-quality claims.
-- Drills tab shows weekly drill plan, priority dosage, report evidence, private cue feedback adaptation, private practice
-  logging, and coach pack preview.
+- Drills tab shows weekly drill plan, priority dosage, report evidence, private cue feedback adaptation, and private
+  practice logging.
+- Drills tab shows an advanced drill pack with readiness, wall-angle focus, local signal count, block progression, and
+  plan access gating.
 - Progress tab shows movement score bars.
 - Progress tab shows local history summary, current trend, and Pro history preview.
 - Progress tab shows attempt comparison after at least two local reports.
