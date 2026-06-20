@@ -62,6 +62,11 @@
     },
     {
       "exists": true,
+      "label": "Release critical path screenshot",
+      "path": "docs/store/screenshots/09-release-critical-path.png"
+    },
+    {
+      "exists": true,
       "label": "Source archive",
       "path": "../movebeta-mobile-source.zip"
     },
@@ -220,7 +225,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T02:40:25.499Z",
+  "generatedAt": "2026-06-20T02:50:53.596Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -230,9 +235,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "92b08e74225cd48660897696984a565c9ac9b21a",
+    "baseCommitSha": "ada1136a36afc363756477c5e8c6eb76d188459c",
     "changedPaths": [],
-    "commitSha": "92b08e74225cd48660897696984a565c9ac9b21a",
+    "commitSha": "ada1136a36afc363756477c5e8c6eb76d188459c",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -282,6 +287,12 @@
     },
     {
       "exists": true,
+      "fileName": "09-release-critical-path.png",
+      "label": "Release critical path",
+      "path": "docs/store/screenshots/09-release-critical-path.png"
+    },
+    {
+      "exists": true,
       "fileName": "08-data-portability.png",
       "label": "Local backup restore preview",
       "path": "docs/store/screenshots/08-data-portability.png"
@@ -289,12 +300,12 @@
   ],
   "summary": {
     "blockerCount": 5,
-    "existingScreenshots": 8,
-    "expectedScreenshots": 8,
+    "existingScreenshots": 9,
+    "expectedScreenshots": 9,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 338,
-    "moveNetLoadMs": 5389,
+    "moveNetAverageInferenceMs": 332,
+    "moveNetLoadMs": 4491,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",
