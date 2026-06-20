@@ -14,8 +14,9 @@ import {
   type TimelineEvent,
 } from './contracts';
 import { attachAnalysisEvidence } from './analysisEvidence';
+import { coachLensMetadata, coachLensThresholds, sortCuesForCoachLens } from './coachLens';
 
-const defaultThresholds: AnalyzerThresholds = {
+export const defaultAnalyzerThresholds: AnalyzerThresholds = {
   footCutVelocity: 0.12,
   hipDrift: 0.08,
   lockOffAngle: 112,
@@ -134,7 +135,12 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
   }
 
   async analyze(input: LocalAnalyzerInput) {
-    const thresholds = { ...defaultThresholds, ...input.thresholds };
+    const thresholds = {
+      ...defaultAnalyzerThresholds,
+      ...coachLensThresholds(input.coachLens),
+      ...input.thresholds,
+    };
+    const coachLens = coachLensMetadata(input.coachLens);
     const frames = input.frames;
     if (frames.length < 2) {
       throw new Error('At least two pose frames are required for local movement analysis.');
@@ -249,8 +255,9 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
 
     const report = LocalAnalysisReportSchema.parse({
       analysisQuality,
-      cues,
+      cues: sortCuesForCoachLens(cues, coachLens.key),
       engine: {
+        coachLens,
         model: input.model ?? this.model,
         processedFrames: frames.length,
         provider: input.provider ?? this.provider,

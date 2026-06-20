@@ -155,6 +155,8 @@
   package handling plus durable JSON/Markdown writes and path/token exclusion.
 - Vitest model-analysis replay tests for MoveNet-shaped keypoint conversion, bundled attempt coverage, privacy-safe
   outputs, metric/cue generation, and failing quality thresholds.
+- Vitest coach lens tests for supported lens config, safe default parsing, threshold overrides, cue sorting, local analyzer
+  metadata, beta replay focus, drill dosage hints, evidence exports, and coach packet metadata.
 - GitHub Actions quality workflow template with `npm run ci` on pushes to `main` and pull requests; activate after the
   GitHub token has `workflow` scope.
 - GitHub workflow activation doctor with `npm run release:github:doctor`, which writes
@@ -276,6 +278,8 @@
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Plan tab shows model evidence for MoveNet execution, model-shaped replay, and remaining real-video validation without
   production accuracy claims.
+- Analyze tab shows the Coach lens selector, default Balanced metadata, and lens options for footwork, body position, and
+  power conservation before local camera, import, or demo analysis.
 - Plan tab shows provider readiness for primary video provider, fallback provider, native target, and device-proof state.
 - Plan tab shows the native QA evidence kit for Android/iOS physical-device runs, workflow count, placeholder policy, and
   validator command.

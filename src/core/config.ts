@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import { z } from 'zod';
 
-import { AnalysisProviderSchema, PrivacyModeSchema } from '@/movement/contracts';
+import { AnalysisProviderSchema, CoachLensKeySchema, PrivacyModeSchema } from '@/movement/contracts';
+import { resolveCoachLensKey } from '@/movement/coachLens';
 
 import {
   BillingReadinessConfigSchema,
@@ -23,6 +24,7 @@ const ConfigSchema = z.object({
   analysisProvider: AnalysisProviderSchema,
   videoAnalysisProvider: AnalysisProviderSchema,
   nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
+  coachLens: CoachLensKeySchema,
   privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
   billingReadiness: BillingReadinessConfigSchema,
@@ -49,6 +51,10 @@ export function resolveBillingReadinessConfig(value: unknown): BillingReadinessC
   return parseBillingReadinessConfig(value);
 }
 
+export function resolveConfiguredCoachLens(value: unknown) {
+  return resolveCoachLensKey(value);
+}
+
 export const appConfig = ConfigSchema.parse({
   activePlan:
     process.env.EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN ??
@@ -66,6 +72,7 @@ export const appConfig = ConfigSchema.parse({
     process.env.EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER ??
     expoExtra.nativeVideoAnalysisProvider ??
     'native-platform-pose',
+  coachLens: resolveConfiguredCoachLens(process.env.EXPO_PUBLIC_MOVEBETA_COACH_LENS ?? expoExtra.coachLens ?? 'balanced'),
   privacyMode:
     process.env.EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE ??
     expoExtra.privacyMode ??

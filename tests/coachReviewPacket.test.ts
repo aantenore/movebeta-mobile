@@ -39,6 +39,7 @@ describe('coach review packet', () => {
     expect(packet.consent.grantedAt).toBe('2026-06-19T11:55:00+02:00');
     expect(packet.consent.rawVideoIncluded).toBe(false);
     expect(packet.consent.videoLeavesDevice).toBe(false);
+    expect(packet.analysis.engine.coachLens.key).toBe('balanced');
     expect(packet.analysis.performance.budgetStatus).toBe('not-measured');
     expect(packet.analysis.metrics.length).toBeGreaterThan(0);
     expect(packet.analysis.cueTrust.schemaVersion).toBe('movebeta.cue-trust.v1');

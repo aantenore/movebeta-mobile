@@ -181,6 +181,8 @@
   video URI, key frames, pose landmark payloads, local paths, and secrets.
 - Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
   real climbing-video validation evidence without claiming production accuracy early.
+- Let the athlete choose a configurable coach lens for local analysis, including balanced, footwork, body-position, and
+  power-conservation modes, with lens metadata saved in reports, exports, replay plans, drill plans, and coach packets.
 - Sync in-app model evidence from the latest MoveNet readiness and model-analysis replay reports, and promote real-world
   validation only when the cue-validation dataset doctor report is ready and share-safe.
 - Show a configurable safety-language guard that checks product and release copy for medical, injury-prevention,
@@ -212,6 +214,8 @@
   include checksum verification state in the restore receipt after writing.
 - Technique readiness must degrade to a baseline recommendation when no local reports exist.
 - Beta replay plans must degrade to weakest-metric guidance when no cue crosses a coaching threshold.
+- Coach lenses must be config-driven, default safely to balanced, stay compatible with legacy reports, and change only
+  local thresholds, cue priority, beta-replay emphasis, and drill dosage guidance without sending video to cloud services.
 - Movement phase breakdowns must degrade to smooth phase guidance when no disruptive cue or timeline event is present.
 - Cue trust scoring must downgrade cue confidence when pose quality, timing evidence, runtime budget, or validation
   readiness is weak.
