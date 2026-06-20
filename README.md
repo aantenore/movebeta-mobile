@@ -111,6 +111,8 @@ web build with `npm run store:screenshots`.
   local privacy boundary.
 - Provider-agnostic commercial readiness cockpit in the Plan tab for billing adapter selection, paid plan mappings,
   receipt-validation mode, sandbox proof, and credential-free configuration hygiene.
+- Share-safe commercial readiness packet from the Plan tab for founder, product, engineering, and release handoff
+  without payment data, receipt values, secrets, local paths, or raw artifacts.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret

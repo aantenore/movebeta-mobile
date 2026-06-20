@@ -110,6 +110,8 @@ platforms are validated on physical climbing videos and devices.
   runtime proof status, and local privacy boundary.
 - Plan tab shows configurable commercial readiness for billing adapter status, paid plan mapping ratio,
   receipt-validation mode, sandbox proof, movement-domain isolation, and config hygiene without credential values.
+- Plan tab prepares a share-safe commercial readiness packet with billing readiness summary, owner actions, and explicit
+  payment-data, receipt-value, credential, local-path, raw-video, and raw-artifact exclusion flags.
 - Plan tab prepares a share-safe native QA runbook packet with physical-device workflows, budgets, blocked draft
   evidence, validator command, and explicit credential/local-path/raw-video exclusion flags.
 - Plan tab composes native QA evidence from structured Android/iOS physical-run measurements and reuses the same local
@@ -168,14 +170,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 87 test files and 341 tests.
+- `npm test`: passed, 88 test files and 344 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4353ms load time, 339ms average inference, and 356ms max inference in the latest run.
+  CPU backend, 4476ms load time, 318ms average inference, and 319ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -305,6 +307,8 @@ platforms are validated on physical climbing videos and devices.
   state, artifact status mapping, and credential/local-path rejection before sharing.
 - `tests/storeSubmissionPacket.test.ts`: passed and covers versioned store metadata packets, risky-copy review state,
   command checklist, negative privacy flags, and token/local-path rejection before sharing.
+- `tests/commercialReadinessPacket.test.ts`: passed and covers versioned commercial readiness packets, ready-state action
+  reduction, negative privacy flags, and credential/local-path/payment-data rejection before sharing.
 - `tests/storeCredentialsDoctor.test.ts`: passed and covers blocked local credentials, injected ready credentials,
   durable JSON/Markdown writes, and credential value exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
@@ -342,7 +346,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, and provider-agnostic commercial readiness, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
