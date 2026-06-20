@@ -30,16 +30,20 @@
     },
     {
       "action": "Run gh auth refresh -h github.com -s workflow, then copy the template to .github/workflows/quality.yml and push.",
-      "detail": "github.com\n  X Failed to log in to github.com account aantenore (keyring)\n  - Active account: true\n  - The token in keyring is invalid.\n  - To re-authenticate, run: gh auth refresh -h github.com\n  - To forget about this account, run: gh auth logout -h github.com -u aantenore",
+      "detail": "Authenticated GitHub token scopes do not include workflow. Present scopes: gist, read:org, repo.",
       "id": "gh-workflow-scope",
       "label": "GitHub workflow OAuth scope",
       "status": "fail"
     }
   ],
-  "generatedAt": "2026-06-20T02:06:46.680Z",
+  "generatedAt": "2026-06-20T02:16:53.543Z",
   "nextAction": "Copy the quality workflow template to .github/workflows/quality.yml after the GitHub token has workflow scope.",
   "privacy": {
-    "checkedOauthScopes": [],
+    "checkedOauthScopes": [
+      "gist",
+      "read:org",
+      "repo"
+    ],
     "credentialValuesIncluded": false,
     "secretsIncluded": false,
     "tokenIncluded": false
@@ -49,7 +53,7 @@
   "summary": {
     "activeMatchesTemplate": false,
     "activeWorkflowExists": false,
-    "ghAuthenticated": false,
+    "ghAuthenticated": true,
     "ghCliAvailable": true,
     "templateExists": true,
     "workflowScopeReady": false

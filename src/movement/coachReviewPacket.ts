@@ -5,6 +5,7 @@ import { assertCoachReviewConsent, defaultPrivacyConsent, type PrivacyConsent } 
 import {
   AnalysisQualitySchema,
   ClimbSessionSchema,
+  CoachLensMetadataSchema,
   MovementCueSchema,
   MovementMetricSchema,
   TimelineEventSchema,
@@ -66,6 +67,7 @@ export const CoachReviewPacketSchema = z.object({
     cues: z.array(MovementCueSchema),
     cueTrust: CueTrustReportSchema,
     engine: z.object({
+      coachLens: CoachLensMetadataSchema,
       model: z.string(),
       processedFrames: z.number().int().nonnegative(),
       provider: z.string(),
@@ -207,6 +209,7 @@ export function buildCoachReviewPacket(
       cues: report.cues,
       cueTrust: buildCueTrustReport(report, { generatedAt: createdAt, validation: options.validation }),
       engine: {
+        coachLens: report.engine.coachLens,
         model: report.engine.model,
         processedFrames: report.engine.processedFrames,
         provider: report.engine.provider,

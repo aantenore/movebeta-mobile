@@ -51,6 +51,7 @@ describe('local movement analyzer', () => {
     expect(parsed).toEqual(report);
     expect(report.engine.runsOnDevice).toBe(true);
     expect(report.engine.uploadsVideo).toBe(false);
+    expect(report.engine.coachLens.key).toBe('balanced');
     expect(report.privacy.videoLeavesDevice).toBe(false);
     expect(report.engine.processedFrames).toBe(samplePoseFrames.length);
     expect(report.analysisQuality.score).toBeGreaterThanOrEqual(95);
@@ -97,6 +98,26 @@ describe('local movement analyzer', () => {
 
     expect(LocalAnalysisReportSchema.parse(report)).toEqual(report);
     expect(report.metrics).toHaveLength(5);
+  });
+
+  it('applies the selected coach lens to thresholds, metadata, and cue ordering', async () => {
+    const balancedReport = await localMovementAnalyzer.analyze({
+      frames: samplePoseFrames,
+      session: sampleSession,
+    });
+    const footworkReport = await localMovementAnalyzer.analyze({
+      coachLens: 'footwork',
+      frames: samplePoseFrames,
+      session: sampleSession,
+    });
+    const balancedFootCuts = balancedReport.metrics.find((metric) => metric.id === 'foot-cuts');
+    const footworkFootCuts = footworkReport.metrics.find((metric) => metric.id === 'foot-cuts');
+
+    expect(LocalAnalysisReportSchema.parse(footworkReport)).toEqual(footworkReport);
+    expect(footworkReport.engine.coachLens.key).toBe('footwork');
+    expect(footworkReport.engine.coachLens.label).toBe('Footwork');
+    expect(footworkReport.cues[0].id).toBe('cue-foot-cut');
+    expect(footworkFootCuts?.score).toBeLessThan(balancedFootCuts?.score ?? 0);
   });
 
   it('flags low-confidence analysis when landmark visibility is poor', async () => {

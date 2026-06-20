@@ -4,6 +4,7 @@ import { buildVideoAnalysisPerformance } from '@/video/performanceBudget';
 import {
   LocalAnalysisReportSchema,
   type AnalysisProvider,
+  type CoachLensKey,
   type ClimbSession,
   type LocalAnalysisReport,
   type OnDeviceAnalyzer,
@@ -27,6 +28,7 @@ export type PoseEstimator = {
 
 export type OnDeviceMovementPipelineOptions = {
   analyzer?: OnDeviceAnalyzer;
+  coachLens?: CoachLensKey;
   poseEstimator?: PoseEstimator;
 };
 
@@ -51,10 +53,12 @@ export function createPoseEstimator(provider: AnalysisProvider = appConfig.analy
 
 export class OnDeviceMovementPipeline {
   private readonly analyzer: OnDeviceAnalyzer;
+  private readonly coachLens: CoachLensKey;
   private readonly poseEstimator: PoseEstimator;
 
   constructor(options: OnDeviceMovementPipelineOptions = {}) {
     this.analyzer = options.analyzer ?? localMovementAnalyzer;
+    this.coachLens = options.coachLens ?? appConfig.coachLens;
     this.poseEstimator = options.poseEstimator ?? createPoseEstimator();
   }
 
@@ -62,11 +66,12 @@ export class OnDeviceMovementPipeline {
     return this.poseEstimator.isAvailable();
   }
 
-  async analyze(video: VideoAsset, session: ClimbSession): Promise<LocalAnalysisReport> {
+  async analyze(video: VideoAsset, session: ClimbSession, options: { coachLens?: CoachLensKey } = {}): Promise<LocalAnalysisReport> {
     const startedAt = Date.now();
     const frames = await this.poseEstimator.estimate(video);
     const report = await this.analyzer.analyze({
       frames,
+      coachLens: options.coachLens ?? this.coachLens,
       privacyMode: appConfig.privacyMode,
       provider: this.poseEstimator.provider,
       session,

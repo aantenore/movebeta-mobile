@@ -25,6 +25,15 @@ describe('beta replay plan', () => {
     expect(plan.steps.every((step) => step.timestampMs >= 0)).toBe(true);
   });
 
+  it('uses the selected coach lens when choosing beta replay focus', async () => {
+    const report = await analyzeSampleSession('footwork');
+    const plan = buildBetaReplayPlan(report);
+
+    expect(plan.primaryFocus).toBe('Keep feet engaged after the reach');
+    expect(plan.focusCueIds[0]).toBe('cue-foot-cut');
+    expect(plan.summary).toContain('Prioritize quiet feet');
+  });
+
   it('falls back to weak metrics when no cue crosses a coaching threshold', async () => {
     const report = await analyzeSampleSession();
     const plan = buildBetaReplayPlan({
