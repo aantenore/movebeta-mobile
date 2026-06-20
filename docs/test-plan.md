@@ -119,6 +119,8 @@
 - Vitest native QA evidence composer export tests for versioned share-safe payloads and raw URI/path/token rejection.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, balanced wall-angle batches, review-row distribution, and raw-artifact exclusion.
+- Vitest validation collection packet tests for schema version, balanced batch derivation, reviewer slot templates,
+  configurable acceptance thresholds, and raw path/token rejection.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
 - Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
@@ -255,6 +257,8 @@
   sharing.
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, owner targets, balanced
   clip batches, and privacy-first collection checklist.
+- Plan tab prepares a validation collection packet with balanced batches, reviewer slots, collection commands, and
+  credential/local-path/raw-video flags excluded before sharing.
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.

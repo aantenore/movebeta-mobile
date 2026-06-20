@@ -30,6 +30,7 @@ import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
 import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
 import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
+import { buildValidationCollectionPacket } from '@/core/validationCollectionPacket';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
 
@@ -616,9 +617,25 @@ function ProviderReadinessCard({ readiness }: { readiness: ReturnType<typeof bui
   );
 }
 
-function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvidenceCollectionPlan> }) {
+function EvidenceCollectionPlanCard({
+  onPreparePacket,
+  plan,
+}: {
+  onPreparePacket: () => void;
+  plan: ReturnType<typeof buildEvidenceCollectionPlan>;
+}) {
   return (
     <View style={styles.evidencePlan}>
+      <View style={styles.evidencePlanTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.evidencePlanTitle}>Validation collection</Text>
+          <Text style={styles.qaPlatformMore}>Share-safe packet for product and coach reviewers.</Text>
+        </View>
+        <Pressable accessibilityLabel="Prepare validation collection packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={15} />
+          <Text style={styles.planActionText}>Packet</Text>
+        </Pressable>
+      </View>
       <View style={styles.evidencePlanHero}>
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{plan.cueValidation.minClips}</Text>
@@ -1058,6 +1075,17 @@ export function PlanScreen() {
     });
   }
 
+  function prepareValidationCollectionPacket() {
+    selectionFeedback();
+    const packet = buildValidationCollectionPacket({
+      plan: evidencePlan,
+    });
+    setPreparedPlanExport({
+      body: JSON.stringify(packet, null, 2),
+      title: 'Prepared validation collection packet',
+    });
+  }
+
   function prepareStoreSubmissionPacket() {
     selectionFeedback();
     setPreparedPlanExport({
@@ -1206,7 +1234,7 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
-        <EvidenceCollectionPlanCard plan={evidencePlan} />
+        <EvidenceCollectionPlanCard onPreparePacket={prepareValidationCollectionPacket} plan={evidencePlan} />
       </Section>
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
@@ -1270,6 +1298,12 @@ const styles = StyleSheet.create({
   evidencePlanHero: {
     flexDirection: 'row',
     gap: theme.spacing.sm,
+  },
+  evidencePlanTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   evidencePlanItem: {
     backgroundColor: theme.colors.surfaceAlt,

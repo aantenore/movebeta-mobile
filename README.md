@@ -121,6 +121,8 @@ web build with `npm run store:screenshots`.
   device checks, and external evidence owners derived from release contracts.
 - Balanced validation collection batches in the Plan tab, with per-wall-angle clip targets, review-row estimates, and
   privacy-first capture checklist derived from acceptance thresholds.
+- Share-safe validation collection packet from the Plan tab, with balanced batches, reviewer slot templates, workflow
+  commands, and explicit raw-video/path/credential exclusion flags.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
