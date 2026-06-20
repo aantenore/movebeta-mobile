@@ -141,6 +141,8 @@ web build with `npm run store:screenshots`.
   owners, affected tracks, and credential key names without secret values.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
+- Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers
+  would clear, and prepares a versioned no-secret reconciliation packet.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth

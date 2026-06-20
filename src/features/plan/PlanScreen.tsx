@@ -29,6 +29,11 @@ import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
 import { buildReleaseBlockerIssuePacket, type ReleaseBlockerIssuePacket } from '@/core/releaseBlockerIssuePacket';
+import {
+  buildReleaseEvidenceReconciliation,
+  parseReleaseEvidenceReconciliationInput,
+  type ReleaseEvidenceReconciliation,
+} from '@/core/releaseEvidenceReconciliation';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
@@ -96,6 +101,13 @@ function featureCompletionStatusLabel(status: FeatureCompletionReport['status'])
   if (status === 'ready') return 'Ready';
   if (status === 'external-blocked') return 'External';
   return 'Gaps';
+}
+
+function reconciliationStatusLabel(status: ReleaseEvidenceReconciliation['summary']['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'would-improve') return 'Improves';
+  if (status === 'invalid-evidence') return 'Invalid';
+  return 'Blocked';
 }
 
 const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
@@ -918,6 +930,118 @@ function ReleaseUnblockChecklistCard({
   );
 }
 
+function ReleaseEvidenceReconciliationCard({
+  input,
+  onChange,
+  onClear,
+  onPreparePacket,
+  reconciliation,
+}: {
+  input: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
+  onPreparePacket: () => void;
+  reconciliation: ReleaseEvidenceReconciliation;
+}) {
+  const isReady = reconciliation.summary.status === 'ready';
+  const isInvalid = reconciliation.summary.status === 'invalid-evidence';
+  const wouldImprove = reconciliation.summary.status === 'would-improve';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{reconciliation.summary.clearedBlockerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>would clear</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {reconciliation.summary.projectedReadyTracks}/{reconciliation.summary.totalTracks}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>projected tracks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{reconciliation.summary.missingProofCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>proof gaps</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release evidence reconciliation</Text>
+          <Text style={styles.qaKitText}>{reconciliation.summary.nextAction}</Text>
+        </View>
+        <Text
+          style={[
+            styles.launchStatus,
+            isReady ? styles.launchStatusReady : isInvalid ? styles.launchStatusBlocked : wouldImprove ? null : styles.launchStatusBlocked,
+          ]}
+        >
+          {reconciliationStatusLabel(reconciliation.summary.status)}
+        </Text>
+      </View>
+      <TextInput
+        accessibilityLabel="Paste release evidence JSON"
+        multiline
+        onChangeText={onChange}
+        placeholder='{"cueValidationDatasetReport":{...},"nativeQaEvidence":{...},"iosToolchainReport":{...},"storeCredentialsReport":{...}}'
+        placeholderTextColor={theme.colors.muted}
+        style={styles.nativeEvidenceInput}
+        value={input}
+      />
+      <View style={styles.qaValidationStats}>
+        <Text style={styles.qaValidationStat}>
+          {reconciliation.summary.currentReadyTracks}/{reconciliation.summary.totalTracks} current tracks
+        </Text>
+        <Text style={styles.qaValidationStat}>{reconciliation.summary.blockerCount} current blockers</Text>
+        <Text style={styles.qaValidationStat}>Share-safe only</Text>
+      </View>
+      {reconciliation.parseError ? <Text style={styles.nativeEvidenceError}>{reconciliation.parseError}</Text> : null}
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release evidence reconciliation packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Reconciliation packet</Text>
+        </Pressable>
+        {input.trim().length > 0 ? (
+          <Pressable accessibilityLabel="Clear release evidence JSON" onPress={onClear} style={styles.planAction}>
+            <Circle color={theme.colors.brand} size={16} />
+            <Text style={styles.planActionText}>Clear</Text>
+          </Pressable>
+        ) : null}
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {reconciliation.items.map((item) => (
+          <View key={item.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{item.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {item.source} · {item.tracks.join(', ')}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  item.importedStatus === 'ready'
+                    ? styles.launchStatusReady
+                    : item.importedStatus === 'missing'
+                      ? null
+                      : styles.launchStatusBlocked,
+                ]}
+              >
+                {item.importedStatus}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{item.detail}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {item.command} · {item.proof[0]}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseBlockerIssueCard({
   onPreparePacket,
   packet,
@@ -1251,6 +1375,7 @@ function buildPlanSafetySources({
   launchReadiness,
   modelEvidence,
   recommendation,
+  releaseEvidenceReconciliation,
   releaseUnblockChecklist,
 }: {
   commercialReadiness: ReturnType<typeof buildBillingReadinessSummary>;
@@ -1258,6 +1383,7 @@ function buildPlanSafetySources({
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
+  releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
 }): SafetyLanguageSource[] {
   return [
@@ -1301,6 +1427,14 @@ function buildPlanSafetySources({
         .flatMap((item) => [item.action, item.secretPolicy, ...item.acceptance, ...item.proof])
         .join(' '),
     },
+    {
+      key: 'release-evidence-reconciliation',
+      label: 'Release evidence reconciliation',
+      text: [
+        releaseEvidenceReconciliation.summary.nextAction,
+        ...releaseEvidenceReconciliation.items.flatMap((item) => [item.label, item.detail, item.command, ...item.proof]),
+      ].join(' '),
+    },
   ];
 }
 
@@ -1311,6 +1445,7 @@ export function PlanScreen() {
   );
   const [nativeQaEvidenceJson, setNativeQaEvidenceJson] = useState('');
   const [preparedPlanExport, setPreparedPlanExport] = useState<{ body: string; title: string } | null>(null);
+  const [releaseEvidenceReconciliationJson, setReleaseEvidenceReconciliationJson] = useState('');
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
@@ -1327,6 +1462,12 @@ export function PlanScreen() {
   const providerReadiness = buildProviderReadinessSummary(appConfig);
   const commercialReadiness = buildBillingReadinessSummary(appConfig.billingReadiness);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
+  const releaseEvidenceReconciliationInput = parseReleaseEvidenceReconciliationInput(releaseEvidenceReconciliationJson);
+  const releaseEvidenceReconciliation = buildReleaseEvidenceReconciliation({
+    currentEvidence: appConfig.launchReadinessEvidence,
+    importedEvidence: releaseEvidenceReconciliationInput.bundle,
+    parseError: releaseEvidenceReconciliationInput.parseError,
+  });
   const nativeQaRunbookPacket = buildNativeQaRunbookPacket();
   const releaseUnblockPacket = buildReleaseUnblockPacket({
     checklist: releaseUnblockChecklist,
@@ -1365,6 +1506,7 @@ export function PlanScreen() {
       launchReadiness,
       modelEvidence,
       recommendation,
+      releaseEvidenceReconciliation,
       releaseUnblockChecklist,
     }),
   );
@@ -1404,6 +1546,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseEvidencePacket, null, 2),
       title: 'Prepared release evidence packet',
+    });
+  }
+
+  function prepareReleaseEvidenceReconciliationPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseEvidenceReconciliation, null, 2),
+      title: 'Prepared release evidence reconciliation',
     });
   }
 
@@ -1619,6 +1769,16 @@ export function PlanScreen() {
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
         <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} onPreparePacket={prepareReleaseUnblockPacket} />
+      </Section>
+
+      <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">
+        <ReleaseEvidenceReconciliationCard
+          input={releaseEvidenceReconciliationJson}
+          onChange={setReleaseEvidenceReconciliationJson}
+          onClear={() => setReleaseEvidenceReconciliationJson('')}
+          onPreparePacket={prepareReleaseEvidenceReconciliationPacket}
+          reconciliation={releaseEvidenceReconciliation}
+        />
       </Section>
 
       <Section title="Release blocker issues" caption="Issue-ready external blocker drafts for GitHub tracking without secrets.">
