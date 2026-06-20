@@ -139,6 +139,8 @@ web build with `npm run store:screenshots`.
   commands, and explicit raw-video/path/credential exclusion flags.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
+- Release critical path in the Plan tab that sequences external blockers across real-world validation, native build/QA,
+  and store-account lanes with dependencies and share-safe packet export.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
 - Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers

@@ -26,6 +26,10 @@ These screenshots are generated from the exported web build with `npm run store:
 
 ![Plan tab release unblock checklist showing external blockers, commands, proof artifacts, and credential key names](store/screenshots/07-release-unblock.png)
 
+## Release Critical Path
+
+![Plan tab release critical path showing parallel owner lanes, dependencies, commands, and proof artifacts](store/screenshots/09-release-critical-path.png)
+
 ## Privacy
 
 ![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)

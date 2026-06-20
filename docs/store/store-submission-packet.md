@@ -1,6 +1,6 @@
 # Store Submission Packet
 
-Generated: 2026-06-20T02:37:54.170Z
+Generated: 2026-06-20T02:49:40.477Z
 
 ## Summary
 
@@ -8,7 +8,7 @@ Generated: 2026-06-20T02:37:54.170Z
 - iOS bundle: com.movebeta.mobile
 - Android package: com.movebeta.mobile
 - Store checks: 9/9
-- Screenshots: 8
+- Screenshots: 9
 - Copy issues: 0
 - Next action: Store metadata packet is ready for account-bound credential and native QA gates.
 
