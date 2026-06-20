@@ -101,6 +101,15 @@
       }
     },
     {
+      "fileName": "09-release-critical-path.png",
+      "label": "Release critical path",
+      "route": "plan",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      }
+    },
+    {
       "fileName": "08-data-portability.png",
       "label": "Local backup restore preview",
       "route": "privacy",

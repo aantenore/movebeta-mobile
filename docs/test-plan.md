@@ -133,6 +133,8 @@
   name disclosure without secret values, and all-ready evidence state.
 - Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
   token/local-path rejection before sharing.
+- Vitest release critical path tests for blocker dependency sequencing, parallel owner lanes, ready-to-start state,
+  all-ready state, and raw artifact/path/token rejection.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
 - Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
@@ -303,6 +305,10 @@
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.
+- Plan tab shows the release critical path with ready, ready-to-start, lane, dependency, command, and proof information
+  for the remaining external launch blockers.
+- Plan tab prepares a release critical path packet with raw videos, local paths, credential values, and token-like
+  strings excluded before sharing.
 - Plan tab shows release blocker issue drafts with issue count, owners, credential key names, titles, labels, commands,
   proof expectations, and the repository GitHub issue template path.
 - Plan tab prepares a release blocker issue packet with credential values, raw video, raw artifacts, and local paths

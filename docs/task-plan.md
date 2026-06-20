@@ -140,3 +140,4 @@
 | T136 | Add configurable local coach lenses for analysis focus | Done |
 | T137 | Add reviewer consensus gate for cue-validation datasets | Done |
 | T138 | Add release evidence reconciliation intake to Plan | Done |
+| T139 | Add release critical path planner to Plan | Done |

@@ -53,6 +53,8 @@ secret-like values into `eas.json`.
 
 The Plan tab release unblock checklist mirrors these strict prerequisites. It lists the required proof artifacts,
 commands, affected release tracks, owners, and credential key names while deliberately excluding credential values.
+Use the Plan tab release critical path to decide which blockers can run in parallel and which work must wait for iOS
+build or EAS project evidence.
 Use the Plan tab evidence reconciliation panel before flipping launch evidence flags: paste only share-safe generated
 reports, confirm which blockers would clear, and reject any JSON that contains raw video paths, credential values, or
 token-like strings.

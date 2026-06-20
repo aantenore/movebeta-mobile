@@ -141,6 +141,12 @@ export const defaultStoreScreenshots = [
     viewport: { height: 844, width: 390 },
   },
   {
+    fileName: '09-release-critical-path.png',
+    label: 'Release critical path',
+    route: 'plan',
+    viewport: { height: 844, width: 390 },
+  },
+  {
     fileName: '08-data-portability.png',
     label: 'Checksum-aware local backup restore preview',
     route: 'privacy',

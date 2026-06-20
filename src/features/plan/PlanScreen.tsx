@@ -29,6 +29,7 @@ import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
 import { buildReleaseBlockerIssuePacket, type ReleaseBlockerIssuePacket } from '@/core/releaseBlockerIssuePacket';
+import { buildReleaseCriticalPath, type ReleaseCriticalPath } from '@/core/releaseCriticalPath';
 import {
   buildReleaseEvidenceReconciliation,
   parseReleaseEvidenceReconciliationInput,
@@ -107,6 +108,12 @@ function reconciliationStatusLabel(status: ReleaseEvidenceReconciliation['summar
   if (status === 'ready') return 'Ready';
   if (status === 'would-improve') return 'Improves';
   if (status === 'invalid-evidence') return 'Invalid';
+  return 'Blocked';
+}
+
+function criticalPathStatusLabel(status: ReleaseCriticalPath['steps'][number]['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'ready-to-start') return 'Start';
   return 'Blocked';
 }
 
@@ -930,6 +937,85 @@ function ReleaseUnblockChecklistCard({
   );
 }
 
+function ReleaseCriticalPathCard({
+  onPreparePacket,
+  path,
+}: {
+  onPreparePacket: () => void;
+  path: ReleaseCriticalPath;
+}) {
+  const isReady = path.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {path.summary.readySteps}/{path.summary.stepCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>ready steps</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{path.summary.readyToStartSteps}</Text>
+          <Text style={styles.qaKitMetricLabel}>can start</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{path.summary.laneCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>lanes</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release critical path</Text>
+          <Text style={styles.qaKitText}>{path.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'Blocked'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release critical path packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Critical path packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {path.steps.map((step) => (
+          <View key={step.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>
+                  {step.sequence}. {step.label}
+                </Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {step.lane} · {step.owner} · {step.tracks.join(', ')}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  step.status === 'ready'
+                    ? styles.launchStatusReady
+                    : step.status === 'blocked'
+                      ? styles.launchStatusBlocked
+                      : null,
+                ]}
+              >
+                {criticalPathStatusLabel(step.status)}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{step.action}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {step.commands[0]} · {step.proof[0]}
+            </Text>
+            {step.blockedBy.length > 0 ? <Text style={styles.qaPlatformMore}>Blocked by: {step.blockedBy.join(', ')}</Text> : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseEvidenceReconciliationCard({
   input,
   onChange,
@@ -1375,6 +1461,7 @@ function buildPlanSafetySources({
   launchReadiness,
   modelEvidence,
   recommendation,
+  releaseCriticalPath,
   releaseEvidenceReconciliation,
   releaseUnblockChecklist,
 }: {
@@ -1383,6 +1470,7 @@ function buildPlanSafetySources({
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
+  releaseCriticalPath: ReleaseCriticalPath;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
 }): SafetyLanguageSource[] {
@@ -1435,6 +1523,14 @@ function buildPlanSafetySources({
         ...releaseEvidenceReconciliation.items.flatMap((item) => [item.label, item.detail, item.command, ...item.proof]),
       ].join(' '),
     },
+    {
+      key: 'release-critical-path',
+      label: 'Release critical path',
+      text: [
+        releaseCriticalPath.summary.nextAction,
+        ...releaseCriticalPath.steps.flatMap((step) => [step.label, step.action, ...step.acceptance, ...step.commands]),
+      ].join(' '),
+    },
   ];
 }
 
@@ -1462,6 +1558,10 @@ export function PlanScreen() {
   const providerReadiness = buildProviderReadinessSummary(appConfig);
   const commercialReadiness = buildBillingReadinessSummary(appConfig.billingReadiness);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
+  const releaseCriticalPath = buildReleaseCriticalPath({
+    checklist: releaseUnblockChecklist,
+    evidence: appConfig.launchReadinessEvidence,
+  });
   const releaseEvidenceReconciliationInput = parseReleaseEvidenceReconciliationInput(releaseEvidenceReconciliationJson);
   const releaseEvidenceReconciliation = buildReleaseEvidenceReconciliation({
     currentEvidence: appConfig.launchReadinessEvidence,
@@ -1506,6 +1606,7 @@ export function PlanScreen() {
       launchReadiness,
       modelEvidence,
       recommendation,
+      releaseCriticalPath,
       releaseEvidenceReconciliation,
       releaseUnblockChecklist,
     }),
@@ -1530,6 +1631,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseBlockerIssuePacket, null, 2),
       title: 'Prepared release blocker issue packet',
+    });
+  }
+
+  function prepareReleaseCriticalPathPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseCriticalPath, null, 2),
+      title: 'Prepared release critical path',
     });
   }
 
@@ -1769,6 +1878,10 @@ export function PlanScreen() {
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
         <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} onPreparePacket={prepareReleaseUnblockPacket} />
+      </Section>
+
+      <Section title="Release critical path" caption="Parallel owner lanes and dependencies for clearing external launch blockers.">
+        <ReleaseCriticalPathCard onPreparePacket={prepareReleaseCriticalPathPacket} path={releaseCriticalPath} />
       </Section>
 
       <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">
