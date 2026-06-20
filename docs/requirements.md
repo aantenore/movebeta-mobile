@@ -140,6 +140,9 @@
 - Prepare a share-safe validation pilot kit from the Plan tab with consent principles, wall-angle pilot sprints, capture
   setup guidance, coach review rules, closeout commands, and no raw video, identities, local paths, credentials, or
   invented scores.
+- Prepare a share-safe field validation ops packet from the Plan tab that sequences consented packet preparation, real
+  clip collection, coach worksheet review, physical-device QA, validation commands, and release promotion without raw
+  video, identities, local paths, credentials, or invented scores.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
@@ -308,6 +311,9 @@
 - Validation collection packets must be schema-versioned, generated from the current evidence collection plan, keep
   reviewer identities as empty slots until real coaches are assigned, and reject raw video URIs, local paths, credential
   values, and token-like strings before sharing.
+- Field validation ops packets must be generated from existing evidence collection, validation pilot, and release unblock
+  contracts; phase order, owners, commands, and artifact names must remain share-safe and reject raw video references,
+  local paths, credential values, token-like strings, and invented reviewer data.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
 - Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit

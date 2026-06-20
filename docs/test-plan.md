@@ -180,6 +180,9 @@
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
   video, athlete/coach identities, local paths, credential values, or invented scores.
+- Field validation ops packet from the Plan tab, which composes evidence collection, validation pilot, and release unblock
+  contracts into ordered real-world collection, validation, and promotion phases without raw video, identities, local
+  paths, credential values, or invented scores.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.
