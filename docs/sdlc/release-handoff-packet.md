@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T00:00:08.378Z
+Generated: 2026-06-20T00:07:45.079Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 06b3a84857cc287966a5648177fd89fe6a4fd676
+- Base commit at generation: bac998f228ceb550ae19f3cb5d62fb7f34d2b16f
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4572ms; average inference 323ms
+- MoveNet readiness: ready; load 6170ms; average inference 327ms
 - Screenshots: 8/8
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
@@ -34,6 +34,7 @@ Generated: 2026-06-20T00:00:08.378Z
 - Store screenshot capture: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Coach cue-validation gate: `npm run validation:cue`
+- GitHub workflow doctor: `npm run release:github:doctor`
 - Strict EAS store gate: `npm run release:eas:strict`
 
 ## Artifacts
@@ -44,6 +45,7 @@ Generated: 2026-06-20T00:00:08.378Z
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
+- [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`
