@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   buildModelEvidenceFromReports,
   MODEL_EVIDENCE_SYNC_SCHEMA_VERSION,
+  realWorldValidationFromCueDatasetReport,
   syncModelEvidence,
 } from '../scripts/sync_model_evidence.mjs';
 
@@ -57,6 +58,29 @@ const modelAnalysisReplayReport = {
   },
 };
 
+const readyCueValidationDatasetReport = {
+  generatedAt: '2026-06-20T10:02:00.000Z',
+  nextAction: 'Cue-validation dataset is ready for production movement-quality claim review.',
+  privacy: {
+    datasetIncluded: false,
+    rawArtifactsIncluded: false,
+    reviewerIdentitiesIncluded: false,
+  },
+  schemaVersion: 'movebeta.cue-validation-dataset-report.v1',
+  status: 'ready',
+  summary: {
+    averageScore: 4.7,
+    clipCount: 21,
+    cueCount: 63,
+    fileExists: true,
+    failedChecks: 0,
+    ready: true,
+    reviewCount: 126,
+    totalChecks: 9,
+    wallAngles: ['slab', 'vertical', 'overhang'],
+  },
+};
+
 afterEach(() => {
   for (const root of tmpRoots.splice(0)) {
     fs.rmSync(root, { force: true, recursive: true });
@@ -88,9 +112,59 @@ describe('model evidence sync', () => {
     expect(evidence.realWorldValidation.status).toBe('needs-real-video');
   });
 
+  it('promotes real-world model validation from a ready cue-validation dataset doctor report', () => {
+    const realWorldValidation = realWorldValidationFromCueDatasetReport({
+      cueValidationDatasetReport: readyCueValidationDatasetReport,
+      existingRealWorldValidation: undefined,
+    });
+
+    expect(realWorldValidation).toEqual({
+      estimatedReviewRows: 126,
+      nextAction: 'Keep cue-validation dataset, model readiness, and physical-device evidence fresh before production movement-quality claims.',
+      requiredClips: 21,
+      requiredWallAngles: ['slab', 'vertical', 'overhang'],
+      status: 'ready',
+    });
+
+    const evidence = buildModelEvidenceFromReports({
+      cueValidationDatasetReport: readyCueValidationDatasetReport,
+      existingModelEvidence: undefined,
+      modelAnalysisReplayReport,
+      moveNetReadinessReport,
+    });
+
+    expect(evidence.realWorldValidation.status).toBe('ready');
+    expect(evidence.realWorldValidation.estimatedReviewRows).toBe(126);
+  });
+
+  it('does not promote real-world validation from cue reports that include raw or reviewer artifacts', () => {
+    const existingRealWorldValidation = {
+      estimatedReviewRows: 40,
+      nextAction: 'Collect real review evidence.',
+      requiredClips: 20,
+      requiredWallAngles: ['slab', 'vertical', 'overhang'],
+      status: 'needs-real-video',
+    };
+    const unsafeReport = {
+      ...readyCueValidationDatasetReport,
+      privacy: {
+        ...readyCueValidationDatasetReport.privacy,
+        reviewerIdentitiesIncluded: true,
+      },
+    };
+
+    expect(
+      realWorldValidationFromCueDatasetReport({
+        cueValidationDatasetReport: unsafeReport,
+        existingRealWorldValidation,
+      }),
+    ).toEqual(existingRealWorldValidation);
+  });
+
   it('updates app.json extra.modelEvidence while preserving release configuration', () => {
     const root = makeTempDir();
     const appConfigPath = path.join(root, 'app.json');
+    const cueReportPath = path.join(root, 'cue-validation-dataset-report.json');
     const readinessPath = path.join(root, 'movenet.json');
     const replayPath = path.join(root, 'replay.json');
     const realWorldValidation = {
@@ -114,9 +188,11 @@ describe('model evidence sync', () => {
     });
     writeJson(readinessPath, moveNetReadinessReport);
     writeJson(replayPath, modelAnalysisReplayReport);
+    writeJson(cueReportPath, readyCueValidationDatasetReport);
 
     const result = syncModelEvidence({
       appConfigPath,
+      cueValidationDatasetReportPath: cueReportPath,
       modelAnalysisReplayPath: replayPath,
       moveNetReadinessPath: readinessPath,
     });
@@ -125,7 +201,11 @@ describe('model evidence sync', () => {
     expect(result.schemaVersion).toBe(MODEL_EVIDENCE_SYNC_SCHEMA_VERSION);
     expect(result.changed).toBe(true);
     expect(appConfig.expo.extra.activePlan).toBe('free');
-    expect(appConfig.expo.extra.modelEvidence.realWorldValidation).toEqual(realWorldValidation);
+    expect(appConfig.expo.extra.modelEvidence.realWorldValidation).toMatchObject({
+      estimatedReviewRows: 126,
+      requiredClips: 21,
+      status: 'ready',
+    });
     expect(appConfig.expo.extra.modelEvidence.readiness.generatedAt).toBe('2026-06-20T10:00:00.000Z');
     expect(appConfig.expo.extra.modelEvidence.analysisReplay.generatedAt).toBe('2026-06-20T10:01:00.000Z');
   });

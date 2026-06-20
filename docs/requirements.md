@@ -161,8 +161,8 @@
   video URI, key frames, pose landmark payloads, local paths, and secrets.
 - Show configurable in-app model evidence that summarizes local MoveNet readiness, model-shaped replay, and remaining
   real climbing-video validation evidence without claiming production accuracy early.
-- Sync in-app model evidence from the latest MoveNet readiness and model-analysis replay reports without overwriting
-  real-world validation targets.
+- Sync in-app model evidence from the latest MoveNet readiness and model-analysis replay reports, and promote real-world
+  validation only when the cue-validation dataset doctor report is ready and share-safe.
 - Show a configurable safety-language guard that checks product and release copy for medical, injury-prevention,
   route-safety, and guaranteed-outcome claims before stakeholder handoff.
 - Provide a GitHub Actions quality workflow template for pushes to `main` and pull requests, using lockfile-based
@@ -259,8 +259,9 @@
   flags, reject URI/path/secret-like evidence, and use the same local prepared-export share flow as other Sessions exports.
 - In-app model evidence must be driven by replaceable configuration, keep local technical readiness distinct from
   real-world validation, and avoid raw video, URI, local-path, or secret-like evidence fields.
-- Model evidence sync must preserve existing real-world validation thresholds, support dry-run output, and update only
-  Expo `extra.modelEvidence` from machine-readable release reports.
+- Model evidence sync must preserve existing real-world validation thresholds until a ready, share-safe cue-validation
+  dataset doctor report exists, support dry-run output, and update only Expo `extra.modelEvidence` from machine-readable
+  release reports.
 - Safety-language checks must use replaceable rules, ignore explicit negated policy/disclaimer copy, limit visible
   findings, and keep recommendations framed as educational movement feedback.
 - Release evidence packets must use relative repository artifact names only, exclude credential values, raw video, raw
