@@ -147,6 +147,9 @@
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
   expectations, owners, affected tracks, acceptance criteria, and env key names without credential values.
+- Prepare a share-safe release blocker issue packet from the Plan tab that turns every external blocker into a GitHub
+  issue draft with title, labels, owner, affected tracks, acceptance criteria, required proof, commands, env key names,
+  and no credential values.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
@@ -319,6 +322,9 @@
 - Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit
   negative flags for credential values, local paths, and raw artifacts, and reject token-like or local-path evidence before
   sharing.
+- Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
+  repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
+  absolute local paths, raw artifacts, or raw video references before sharing.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret
   values, and fail screenshot completeness when the manifest declares a missing screenshot.
 - Release archive manifests must include file size, SHA-256 digest, repository commit, branch, remote URL, and worktree
