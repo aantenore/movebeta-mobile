@@ -1,9 +1,9 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-20T03:14:53.607Z
+Generated: 2026-06-20T03:24:36.229Z
 
 - Status: ready
-- Fresh artifacts: 11/11
+- Fresh artifacts: 12/12
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
@@ -17,13 +17,14 @@ Generated: 2026-06-20T03:14:53.607Z
 | Artifact | Status | Age | Window | Refresh |
 | --- | --- | ---: | ---: | --- |
 | Launch readiness report | fresh | 0h | 24h | `npm run release:readiness` |
-| Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
-| MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
-| Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
-| iOS toolchain report | fresh | 0.01h | 24h | `npm run native:ios:doctor` |
-| Cue-validation dataset report | fresh | 0.01h | 24h | `npm run validation:cue:doctor` |
-| Store credentials report | fresh | 0.01h | 24h | `npm run release:credentials:doctor` |
-| GitHub workflow report | fresh | 0.01h | 168h | `npm run release:github:doctor` |
-| Dependency license report | fresh | 0h | 168h | `npm run security:licenses` |
-| Environment template report | fresh | 0.01h | 168h | `npm run release:env:doctor` |
-| Store submission packet | fresh | 0.01h | 72h | `npm run store:submission` |
+| Feature completion report | fresh | 0.02h | 24h | `npm run feature:doctor` |
+| MoveNet readiness report | fresh | 0.02h | 24h | `npm run model:movenet:readiness` |
+| Model-analysis replay report | fresh | 0.02h | 24h | `npm run model:analysis:replay` |
+| Model verification suite report | fresh | 0.02h | 24h | `npm run model:verification:suite` |
+| iOS toolchain report | fresh | 0.02h | 24h | `npm run native:ios:doctor` |
+| Cue-validation dataset report | fresh | 0.02h | 24h | `npm run validation:cue:doctor` |
+| Store credentials report | fresh | 0.02h | 24h | `npm run release:credentials:doctor` |
+| GitHub workflow report | fresh | 0.02h | 168h | `npm run release:github:doctor` |
+| Dependency license report | fresh | 0.02h | 168h | `npm run security:licenses` |
+| Environment template report | fresh | 0.02h | 168h | `npm run release:env:doctor` |
+| Store submission packet | fresh | 0h | 72h | `npm run store:submission` |

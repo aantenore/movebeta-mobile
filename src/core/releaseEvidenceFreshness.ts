@@ -62,6 +62,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
   modelAnalysisReplayReport?: unknown;
+  modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
@@ -114,6 +115,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run model:analysis:replay',
     reportKey: 'modelAnalysisReplayReport',
     requiredFor: ['demo', 'internal', 'store'],
+  },
+  {
+    key: 'model-verification-suite-report',
+    label: 'Model verification suite report',
+    maxAgeHours: 24,
+    owner: 'engineering',
+    path: 'docs/sdlc/model-verification-suite-report.json',
+    refreshCommand: 'npm run model:verification:suite',
+    reportKey: 'modelVerificationSuiteReport',
+    requiredFor: ['demo', 'internal', 'store', 'handoff'],
   },
   {
     key: 'ios-toolchain-report',

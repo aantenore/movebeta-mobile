@@ -29,6 +29,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     iosToolchainReport: readJsonIfExists(rootDir, 'docs/sdlc/ios-toolchain-report.json'),
     launchReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/launch-readiness-report.json'),
     modelAnalysisReplayReport: readJsonIfExists(rootDir, 'docs/sdlc/model-analysis-replay-report.json'),
+    modelVerificationSuiteReport: readJsonIfExists(rootDir, 'docs/sdlc/model-verification-suite-report.json'),
     moveNetReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-readiness-report.json'),
     storeCredentialsReport: readJsonIfExists(rootDir, 'docs/sdlc/store-credentials-report.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),

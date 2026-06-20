@@ -84,6 +84,7 @@ export function buildReleaseHandoffPacket({
   const appJson = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
   const launchReadiness = readJsonIfExists(path.join(rootDir, 'docs/sdlc/launch-readiness-report.json')) ?? {};
   const releaseGate = readJsonIfExists(path.join(rootDir, 'docs/sdlc/release-gate-report.json')) ?? {};
+  const modelVerificationSuite = readJsonIfExists(path.join(rootDir, 'docs/sdlc/model-verification-suite-report.json')) ?? {};
   const moveNetReadiness = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
   const storeManifest = readJsonIfExists(path.join(rootDir, 'docs/store/store-manifest.json')) ?? {};
   const expectedScreenshots = Array.isArray(storeManifest.screenshots) ? storeManifest.screenshots : [];
@@ -118,6 +119,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Feature completion report', 'docs/sdlc/feature-completion-report.json'),
       artifact(rootDir, 'MoveNet readiness report', 'docs/sdlc/movenet-readiness-report.json'),
       artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
+      artifact(rootDir, 'Model verification suite report', 'docs/sdlc/model-verification-suite-report.json'),
       artifact(rootDir, 'Native QA runbook', 'docs/sdlc/native-qa-runbook.json'),
       artifact(rootDir, 'GitHub workflow report', 'docs/sdlc/github-workflow-report.json'),
       artifact(rootDir, 'Dependency license report', 'docs/sdlc/dependency-license-report.json'),
@@ -143,6 +145,11 @@ export function buildReleaseHandoffPacket({
       ]),
       command('store-screenshots', 'Store screenshot capture', 'MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots', [
         'demo',
+        'store',
+      ]),
+      command('model-verification-suite', 'Model verification suite', 'npm run model:verification:suite', [
+        'demo',
+        'internal',
         'store',
       ]),
       command('native-qa', 'Physical-device QA validator', 'npm run native:qa:validate', ['internal', 'store']),
@@ -184,6 +191,7 @@ export function buildReleaseHandoffPacket({
       moveNetAverageInferenceMs: moveNetReadiness.averageInferenceMs ?? null,
       moveNetLoadMs: moveNetReadiness.loadMs ?? null,
       moveNetStatus: moveNetReadiness.status ?? 'unknown',
+      modelVerificationStatus: modelVerificationSuite.status ?? 'unknown',
       readyTracks: launchReadiness.summary?.readyTracks ?? 0,
       releaseGateStatus: releaseGate.status ?? 'unknown',
       totalTracks: launchReadiness.summary?.totalTracks ?? 0,
@@ -220,6 +228,7 @@ Generated: ${packet.generatedAt}
 - Release gate: ${packet.summary.releaseGateStatus}
 - Launch readiness: ${packet.summary.launchStatus} (${packet.summary.readyTracks}/${packet.summary.totalTracks} tracks ready)
 - MoveNet readiness: ${packet.summary.moveNetStatus}; load ${packet.summary.moveNetLoadMs ?? 'n/a'}ms; average inference ${packet.summary.moveNetAverageInferenceMs ?? 'n/a'}ms
+- Model verification suite: ${packet.summary.modelVerificationStatus}
 - Screenshots: ${packet.summary.existingScreenshots}/${packet.summary.expectedScreenshots}
 - Blockers: ${packet.summary.blockerCount}
 - Next action: ${packet.summary.launchNextAction}
