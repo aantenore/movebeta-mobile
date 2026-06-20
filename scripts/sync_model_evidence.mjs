@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const MODEL_EVIDENCE_SYNC_SCHEMA_VERSION = 'movebeta.model-evidence-sync.v1';
+export const defaultCueValidationDatasetReportPath = 'docs/sdlc/cue-validation-dataset-report.json';
 
 export const defaultRealWorldValidation = {
   estimatedReviewRows: 40,
@@ -33,12 +34,54 @@ function replayPrivacySafe(replayReport) {
   return (replayReport.attempts ?? []).every((attempt) => attempt.privacySafe === true);
 }
 
+function isShareSafeCueDatasetReport(report) {
+  return (
+    report?.privacy?.datasetIncluded === false &&
+    report?.privacy?.rawArtifactsIncluded === false &&
+    report?.privacy?.reviewerIdentitiesIncluded === false
+  );
+}
+
+/**
+ * @param {{ cueValidationDatasetReport?: any, existingRealWorldValidation?: any }} options
+ */
+export function realWorldValidationFromCueDatasetReport({ cueValidationDatasetReport, existingRealWorldValidation }) {
+  if (!cueValidationDatasetReport || cueValidationDatasetReport.status !== 'ready') {
+    return existingRealWorldValidation ?? defaultRealWorldValidation;
+  }
+
+  if (!isShareSafeCueDatasetReport(cueValidationDatasetReport)) {
+    return existingRealWorldValidation ?? defaultRealWorldValidation;
+  }
+
+  const summary = cueValidationDatasetReport.summary ?? {};
+  const clipCount = Math.max(0, Number(summary.clipCount ?? 0));
+  const reviewCount = Math.max(0, Number(summary.reviewCount ?? 0));
+  const wallAngles = Array.isArray(summary.wallAngles) ? summary.wallAngles.filter(Boolean).map(String) : [];
+
+  return {
+    estimatedReviewRows: reviewCount,
+    nextAction: 'Keep cue-validation dataset, model readiness, and physical-device evidence fresh before production movement-quality claims.',
+    requiredClips: clipCount,
+    requiredWallAngles: wallAngles,
+    status: 'ready',
+  };
+}
+
+/**
+ * @param {{ cueValidationDatasetReport?: any, existingModelEvidence?: any, moveNetReadinessReport: any, modelAnalysisReplayReport: any }} options
+ */
 export function buildModelEvidenceFromReports({
+  cueValidationDatasetReport,
   existingModelEvidence,
   moveNetReadinessReport,
   modelAnalysisReplayReport,
 }) {
   const provider = providerFromReplay(modelAnalysisReplayReport);
+  const realWorldValidation = realWorldValidationFromCueDatasetReport({
+    cueValidationDatasetReport,
+    existingRealWorldValidation: existingModelEvidence?.realWorldValidation,
+  });
 
   return {
     analysisReplay: {
@@ -61,12 +104,16 @@ export function buildModelEvidenceFromReports({
       maxInferenceMs: moveNetReadinessReport.maxInferenceMs,
       status: moveNetReadinessReport.status === 'ready' ? 'ready' : 'degraded',
     },
-    realWorldValidation: existingModelEvidence?.realWorldValidation ?? defaultRealWorldValidation,
+    realWorldValidation,
   };
 }
 
+/**
+ * @param {{ appConfigPath: string, cueValidationDatasetReportPath?: string, modelAnalysisReplayPath: string, moveNetReadinessPath: string, write?: boolean }} options
+ */
 export function syncModelEvidence({
   appConfigPath,
+  cueValidationDatasetReportPath,
   modelAnalysisReplayPath,
   moveNetReadinessPath,
   write = true,
@@ -74,9 +121,14 @@ export function syncModelEvidence({
   const appConfig = readJson(appConfigPath);
   const moveNetReadinessReport = readJson(moveNetReadinessPath);
   const modelAnalysisReplayReport = readJson(modelAnalysisReplayPath);
+  const cueValidationDatasetReport =
+    cueValidationDatasetReportPath && fs.existsSync(cueValidationDatasetReportPath)
+      ? readJson(cueValidationDatasetReportPath)
+      : undefined;
   const extra = appConfig.expo.extra ?? {};
   const previousEvidence = extra.modelEvidence;
   const nextEvidence = buildModelEvidenceFromReports({
+    cueValidationDatasetReport,
     existingModelEvidence: previousEvidence,
     modelAnalysisReplayReport,
     moveNetReadinessReport,
@@ -98,6 +150,7 @@ export function syncModelEvidence({
     schemaVersion: MODEL_EVIDENCE_SYNC_SCHEMA_VERSION,
     sources: {
       appConfigPath,
+      cueValidationDatasetReportPath,
       modelAnalysisReplayPath,
       moveNetReadinessPath,
     },
@@ -118,6 +171,10 @@ function readCliOptions(argv, rootDir = resolveProjectRoot()) {
 
   return {
     appConfigPath: optionValue('--app-config', path.join(rootDir, 'app.json')),
+    cueValidationDatasetReportPath: optionValue(
+      '--cue-validation-report',
+      path.join(rootDir, defaultCueValidationDatasetReportPath),
+    ),
     dryRun: argv.includes('--dry-run'),
     modelAnalysisReplayPath: optionValue('--model-analysis-replay', path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json')),
     moveNetReadinessPath: optionValue('--movenet-readiness', path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')),
@@ -129,6 +186,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const options = readCliOptions(process.argv.slice(2));
   const result = syncModelEvidence({
     appConfigPath: options.appConfigPath,
+    cueValidationDatasetReportPath: options.cueValidationDatasetReportPath,
     modelAnalysisReplayPath: options.modelAnalysisReplayPath,
     moveNetReadinessPath: options.moveNetReadinessPath,
     write: !options.dryRun,
