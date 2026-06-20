@@ -8,8 +8,10 @@ import { PlanStatusCard } from '@/components/PlanStatusCard';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
+import { hasCapability } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
+import { buildAdvancedDrillPack, type AdvancedDrillPack } from '@/movement/drillPackPlanner';
 import { buildDrillPlan, type DrillPlan, type DrillPlanItem } from '@/movement/drillPlanner';
 import {
   createDrillPracticeRecord,
@@ -27,8 +29,16 @@ function emptyPlan(): DrillPlan {
   };
 }
 
+function emptyAdvancedPack(): AdvancedDrillPack {
+  return buildAdvancedDrillPack([], [], [], {
+    generatedAt: '1970-01-01T00:00:00.000Z',
+  });
+}
+
 export function DrillsScreen() {
+  const advancedPackIncluded = hasCapability(appConfig.activePlan, 'advanced-drill-packs');
   const [plan, setPlan] = useState<DrillPlan>(emptyPlan);
+  const [advancedPack, setAdvancedPack] = useState<AdvancedDrillPack>(emptyAdvancedPack);
   const [practiceByDrill, setPracticeByDrill] = useState<Record<string, DrillPracticeRecord>>({});
 
   async function refresh() {
@@ -43,6 +53,7 @@ export function DrillsScreen() {
     const nextPractice = await drillPracticeRepository.listRecords();
     setPracticeByDrill(Object.fromEntries(nextPractice.map((record) => [record.drillId, record])));
     setPlan(buildDrillPlan(reports, nextAnnotations));
+    setAdvancedPack(buildAdvancedDrillPack(reports, nextAnnotations, nextPractice));
   }
 
   async function savePractice(item: DrillPlanItem, status: DrillPracticeRecord['status']) {
@@ -64,6 +75,7 @@ export function DrillsScreen() {
   useFocusEffect(
     useCallback(() => {
       void refresh().catch(() => {
+        setAdvancedPack(emptyAdvancedPack());
         setPracticeByDrill({});
         setPlan(emptyPlan());
       });
@@ -164,13 +176,72 @@ export function DrillsScreen() {
         )}
       </Section>
 
-      <Section title="Coach pack preview" caption="Advanced packs can later layer benchmarks and coach-approved variants on top.">
-        <View style={styles.preview}>
-          <Text style={styles.previewTitle}>Next unlock</Text>
-          <Text style={styles.previewText}>
-            Save plan variants by grade, wall angle, athlete goal, and private cue feedback while keeping report data local by default.
-          </Text>
+      <Section
+        title="Advanced drill pack"
+        caption={
+          advancedPackIncluded
+            ? 'Pro blocks built from local reports, cue feedback, and practice logs.'
+            : 'Pro preview from local evidence.'
+        }
+      >
+        <View style={styles.packSummary}>
+          <View style={styles.packSummaryTop}>
+            <Text style={styles.packLabel}>Pack status</Text>
+            <Text style={styles.packBadge}>{advancedPackIncluded ? advancedPack.status : 'preview'}</Text>
+          </View>
+          <Text style={styles.packTitle}>{advancedPack.primaryFocus}</Text>
+          <Text style={styles.packText}>{advancedPack.summary}</Text>
+          <View style={styles.packMetaGrid}>
+            <View style={styles.packMetaItem}>
+              <Text style={styles.packMetaLabel}>Readiness</Text>
+              <Text style={styles.packMetaValue}>{advancedPack.readinessScore}/100</Text>
+            </View>
+            <View style={styles.packMetaItem}>
+              <Text style={styles.packMetaLabel}>Angle</Text>
+              <Text style={styles.packMetaValue}>{advancedPack.wallAngleFocus ?? 'none'}</Text>
+            </View>
+            <View style={styles.packMetaItem}>
+              <Text style={styles.packMetaLabel}>Signals</Text>
+              <Text style={styles.packMetaValue}>
+                {advancedPack.annotationSignalCount + advancedPack.practiceSignalCount}
+              </Text>
+            </View>
+          </View>
         </View>
+
+        {advancedPack.blocks.length > 0 ? (
+          advancedPack.blocks.map((block) => (
+            <View key={block.id} style={styles.packBlock}>
+              <View style={styles.packBlockTop}>
+                <Text style={styles.packBlockTitle}>{block.title}</Text>
+                <Text style={styles.packBlockBadge}>{block.intensity}</Text>
+              </View>
+              <Text style={styles.packBlockText}>{block.adaptation}</Text>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Dose</Text>
+                <Text style={styles.detailValue}>
+                  {block.durationMinutes} min · {block.wallAngle} · {block.gradeBand}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Criteria</Text>
+                <Text style={styles.detailValue}>{block.successCriteria}</Text>
+              </View>
+              <View style={styles.progressionList}>
+                {block.progression.map((step, index) => (
+                  <Text key={`${block.id}-step-${index}`} style={styles.progressionItem}>
+                    {index + 1}. {step}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          ))
+        ) : (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>No advanced pack yet</Text>
+            <Text style={styles.emptyText}>Run an analysis that produces coach cues, then return here.</Text>
+          </View>
+        )}
       </Section>
 
       <Section title="Plan access" caption="Freemium gates are capability-based and can be swapped behind config.">
@@ -252,21 +323,104 @@ const styles = StyleSheet.create({
   highPriority: {
     borderColor: theme.colors.coral,
   },
-  preview: {
+  packBadge: {
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.sm,
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  packBlock: {
     backgroundColor: theme.colors.surface,
     borderColor: theme.colors.line,
     borderRadius: theme.radius.md,
     borderWidth: 1,
-    gap: 5,
+    gap: theme.spacing.sm,
     padding: theme.spacing.md,
   },
-  previewText: {
+  packBlockBadge: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brandDark,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  packBlockText: {
     color: theme.colors.text,
     fontSize: 13,
     lineHeight: 18,
   },
-  previewTitle: {
+  packBlockTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '900',
+    lineHeight: 20,
+  },
+  packBlockTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  packLabel: {
     color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  packMetaGrid: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  packMetaItem: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flex: 1,
+    gap: 2,
+    padding: theme.spacing.sm,
+  },
+  packMetaLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  packMetaValue: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'capitalize',
+  },
+  packSummary: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.md,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  packSummaryTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  packText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  packTitle: {
+    color: theme.colors.ink,
     fontSize: 14,
     fontWeight: '900',
   },
@@ -338,6 +492,18 @@ const styles = StyleSheet.create({
   priorityHigh: {
     backgroundColor: '#FFF0EC',
     color: theme.colors.coral,
+  },
+  progressionItem: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  progressionList: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 4,
+    padding: theme.spacing.sm,
   },
   summary: {
     alignItems: 'center',
