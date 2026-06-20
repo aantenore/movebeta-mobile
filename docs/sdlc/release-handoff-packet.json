@@ -32,6 +32,11 @@
     },
     {
       "exists": true,
+      "label": "Model verification suite report",
+      "path": "docs/sdlc/model-verification-suite-report.json"
+    },
+    {
+      "exists": true,
       "label": "Native QA runbook",
       "path": "docs/sdlc/native-qa-runbook.json"
     },
@@ -185,6 +190,16 @@
       ]
     },
     {
+      "command": "npm run model:verification:suite",
+      "key": "model-verification-suite",
+      "label": "Model verification suite",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run native:qa:validate",
       "key": "native-qa",
       "label": "Physical-device QA validator",
@@ -250,7 +265,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T03:15:55.939Z",
+  "generatedAt": "2026-06-20T03:25:52.284Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -260,9 +275,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "273f93dcd35bbb872c5220c5e70ba720faac90be",
+    "baseCommitSha": "2afe78fa996775bd3068659add6ef45a3c731d39",
     "changedPaths": [],
-    "commitSha": "273f93dcd35bbb872c5220c5e70ba720faac90be",
+    "commitSha": "2afe78fa996775bd3068659add6ef45a3c731d39",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -341,9 +356,10 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 328,
-    "moveNetLoadMs": 3879,
+    "moveNetAverageInferenceMs": 326,
+    "moveNetLoadMs": 4256,
     "moveNetStatus": "ready",
+    "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",
     "totalTracks": 3
