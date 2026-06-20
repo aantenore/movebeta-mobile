@@ -142,6 +142,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh Expo, App Store Connect, and Google Play credential presence without exposing secret values.',
     },
     {
+      command: 'npm run feature:doctor',
+      key: 'feature-completion-doctor',
+      label: 'Feature completion doctor',
+      owner: 'engineering',
+      purpose: 'Refresh task, backlog, traceability, and launch-readiness drift while separating internal gaps from external blockers.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -225,6 +232,13 @@ export function buildReleaseEvidencePacket({
       key: 'launch-readiness-report',
       label: 'Launch readiness report',
       path: 'docs/sdlc/launch-readiness-report.json',
+      status: launchReadiness.status === 'ready' ? 'ready' : 'blocked',
+    },
+    {
+      command: 'npm run feature:doctor',
+      key: 'feature-completion-report',
+      label: 'Feature completion report',
+      path: 'docs/sdlc/feature-completion-report.json',
       status: launchReadiness.status === 'ready' ? 'ready' : 'blocked',
     },
   ];

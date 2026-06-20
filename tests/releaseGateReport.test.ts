@@ -36,6 +36,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationDatasetDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('githubWorkflowDoctor');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('featureCompletionDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeSubmissionPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('dependencyLicenses');
   });

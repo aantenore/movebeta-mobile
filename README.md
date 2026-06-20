@@ -121,6 +121,8 @@ web build with `npm run store:screenshots`.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
   values.
+- Machine-readable feature completion doctor for task, backlog, traceability, and launch-readiness drift, separating
+  internal gaps from external data, device, account, and credential blockers.
 - Store submission packet for metadata, privacy declarations, screenshots, copy-risk scan, and store commands without
   credentials or raw artifacts.
 - Store credentials setup packet in the Plan tab for EAS project binding, Expo token, App Store Connect, and Play Console
