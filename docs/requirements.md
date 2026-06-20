@@ -153,6 +153,8 @@
   key presence, and Google Play credential key presence without exposing any secret values.
 - Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store
   Connect, and Google Play key names, commands, readiness summary, and no credential values.
+- Generate a machine-readable feature completion report that audits task plan, backlog, traceability, and launch-readiness
+  evidence while separating internal implementation gaps from external data, device, account, and credential blockers.
 - Generate a cue-validation dataset report that checks missing, malformed, ready, or failed real-review dataset evidence
   without embedding dataset rows or reviewer identities.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
@@ -218,6 +220,8 @@
 - Coach library entries must ignore revoked or orphan consent records and expose only privacy-safe review metadata.
 - Coach team templates must not include private notes, drill notes, raw video URIs, key frames, or landmarks.
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
+- Feature completion reports must exclude credential values, raw artifacts, raw video, secrets, and local paths, and must
+  fail closed when tracked open work lacks an explicit external-blocker reason.
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Prepared export file sharing must write only to app cache, infer stable file names and content types, avoid cloud
   dependencies, and fall back to text sharing if file sharing or file writes are unavailable.

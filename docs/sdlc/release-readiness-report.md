@@ -134,6 +134,8 @@ platforms are validated on physical climbing videos and devices.
   scan, submission commands, and explicit credential/raw-artifact exclusion flags.
 - Plan tab prepares a share-safe store credentials setup packet with EAS project binding, Expo token, App Store Connect,
   and Google Play key names, release commands, and explicit credential/raw-artifact exclusion flags.
+- Plan tab shows a machine-readable feature completion audit with task, backlog, traceability, internal-gap, and external
+  blocker counts derived from release evidence.
 - Plan tab shows balanced validation collection batches with per-wall-angle clip targets, review-row estimates, capture
   focus, and a privacy-first collection checklist derived from cue-validation acceptance thresholds.
 - Plan tab prepares a share-safe validation collection packet with balanced batches, reviewer slot templates, collection
@@ -153,8 +155,8 @@ platforms are validated on physical climbing videos and devices.
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, store
-  credential readiness, GitHub workflow activation, store submission packet generation, web export, EAS standard check,
-  moderate-or-higher dependency audit, and dependency license inventory.
+  credential readiness, GitHub workflow activation, feature completion, store submission packet generation, web export,
+  EAS standard check, moderate-or-higher dependency audit, and dependency license inventory.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
@@ -162,6 +164,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:credentials:doctor` writes `docs/sdlc/store-credentials-report.json` and
   `docs/sdlc/store-credentials-report.md`, so account-bound EAS/App Store/Play Store blockers are captured without
   exposing credential values.
+- `npm run feature:doctor` writes `docs/sdlc/feature-completion-report.json` and
+  `docs/sdlc/feature-completion-report.md`, so tracked work completion is separated from external data, device, account,
+  and credential blockers.
 - `npm run validation:cue:doctor` writes `docs/sdlc/cue-validation-dataset-report.json` and
   `docs/sdlc/cue-validation-dataset-report.md`, so real-review dataset blockers are captured without embedding dataset
   rows or reviewer identities.
@@ -176,14 +181,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 89 test files and 351 tests.
+- `npm test`: passed, 90 test files and 354 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 5151ms load time, 339ms average inference, and 340ms max inference in the latest run.
+  CPU backend, 4594ms load time, 344ms average inference, and 349ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
@@ -199,6 +204,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:github:doctor`: passed as a command and wrote `docs/sdlc/github-workflow-report.json` with status
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
+- `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
+  `external-blocked`, 0 internal gaps, and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -206,7 +213,7 @@ platforms are validated on physical climbing videos and devices.
   for the Expo `xcode` tooling chain.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 13/13 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 14/14 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -320,6 +327,8 @@ platforms are validated on physical climbing videos and devices.
   durable JSON/Markdown writes, and credential value exclusion.
 - `tests/storeCredentialsSetupPacket.test.ts`: passed and covers blocked/ready setup packets, required credential key names,
   and credential/local-path/service-account body rejection before sharing.
+- `tests/featureCompletionDoctor.test.ts`: passed and covers external-blocker classification, internal-gap detection,
+  durable JSON/Markdown writes, and secret/local-artifact exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
@@ -355,7 +364,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, evidence collection plan, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
