@@ -37,6 +37,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('githubWorkflowDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeSubmissionPacket');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('dependencyLicenses');
   });
 
   it('marks the release gate fail when any executed step fails', () => {

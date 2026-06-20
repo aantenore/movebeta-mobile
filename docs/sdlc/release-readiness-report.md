@@ -139,8 +139,8 @@ platforms are validated on physical climbing videos and devices.
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, store
-  credential readiness, store submission packet generation, web export, EAS standard check, and moderate-or-higher
-  dependency audit.
+  credential readiness, GitHub workflow activation, store submission packet generation, web export, EAS standard check,
+  moderate-or-higher dependency audit, and dependency license inventory.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
@@ -162,14 +162,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 84 test files and 326 tests.
+- `npm test`: passed, 85 test files and 329 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 6170ms load time, 327ms average inference, and 340ms max inference in the latest run.
+  CPU backend, 6195ms load time, 327ms average inference, and 338ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -189,7 +189,9 @@ platforms are validated on physical climbing videos and devices.
   is not present.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
   for the Expo `xcode` tooling chain.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 12/12 release steps passing.
+- `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
+  `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 13/13 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -262,6 +264,8 @@ platforms are validated on physical climbing videos and devices.
   evidence artifact upload.
 - `tests/githubWorkflowDoctor.test.ts`: passed and covers OAuth scope parsing, missing workflow-scope blocker evidence,
   active workflow/template parity, durable JSON/Markdown writes, and token-value exclusion.
+- `tests/dependencyLicenseDoctor.test.ts`: passed and covers permissive, dual, missing, restricted, review, and local
+  linked package license handling plus durable JSON/Markdown writes and secret/path exclusion.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, iOS
   toolchain report detection, and durable launch readiness report writes, including machine release-gate report detection
   and content validation for native QA evidence and cue-validation datasets.
