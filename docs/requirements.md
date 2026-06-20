@@ -156,6 +156,8 @@
 - Provide a GitHub Actions quality workflow template for pushes to `main` and pull requests, using lockfile-based
   dependency installation, the shared local release gate, and downloadable machine-readable release evidence after
   activation.
+- Generate a GitHub workflow activation report that checks template presence, active workflow status, template parity,
+  GitHub CLI availability, and OAuth `workflow` scope without exposing token values.
 
 ## Non-Functional
 
@@ -275,6 +277,8 @@
   state for every generated delivery archive.
 - CI workflow template configuration must use the repository `ci` script, derive the Node version from `package.json`,
   target `main` and pull requests, and upload release evidence without committing CI-generated outputs.
+- GitHub workflow activation evidence must be generated without committing active workflow files when the current token
+  lacks `workflow` scope, and must not include OAuth token values.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Beta memory must ignore orphan annotations, remain useful without resolved cue ids, limit visible entries through a

@@ -138,10 +138,14 @@
   metadata, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest CI workflow template tests for GitHub Actions trigger coverage, deferred active-workflow activation, Node
   version sourcing, lockfile install, shared release gate execution, and release evidence artifact upload.
+- Vitest GitHub workflow doctor tests for OAuth scope parsing, blocked activation evidence, active workflow/template
+  parity, durable JSON/Markdown writes, and token-value exclusion.
 - Vitest model-analysis replay tests for MoveNet-shaped keypoint conversion, bundled attempt coverage, privacy-safe
   outputs, metric/cue generation, and failing quality thresholds.
 - GitHub Actions quality workflow template with `npm run ci` on pushes to `main` and pull requests; activate after the
   GitHub token has `workflow` scope.
+- GitHub workflow activation doctor with `npm run release:github:doctor`, which writes
+  `docs/sdlc/github-workflow-report.json` and is included in `npm run release:check`.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.

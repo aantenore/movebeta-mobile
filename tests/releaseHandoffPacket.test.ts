@@ -72,6 +72,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.movenet-readiness-report.v1',
     status: 'ready',
   });
+  writeJson(path.join(root, 'docs/sdlc/github-workflow-report.json'), {
+    schemaVersion: 'movebeta.github-workflow-report.v1',
+    status: 'blocked',
+  });
   writeJson(path.join(root, 'docs/store/store-manifest.json'), {
     screenshots: [
       { fileName: '01-analyze.png', label: 'Analyze' },
@@ -124,6 +128,8 @@ describe('release handoff packet', () => {
       tracks: ['internal', 'store'],
     });
     expect(packet.commands.map((item) => item.key)).toContain('eas-strict');
+    expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
+    expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
   });
 
   it('renders a markdown handoff without leaking secret values', () => {
@@ -138,6 +144,7 @@ describe('release handoff packet', () => {
 
     expect(markdown).toContain('MoveBeta Release Handoff Packet');
     expect(markdown).toContain('Native device QA evidence');
+    expect(markdown).toContain('GitHub workflow doctor');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);
   });

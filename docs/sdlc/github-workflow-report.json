@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "action": "Restore docs/sdlc/ci-templates/github-actions-quality.yml before CI activation.",
+      "detail": "docs/sdlc/ci-templates/github-actions-quality.yml exists.",
+      "id": "workflow-template",
+      "label": "Workflow template",
+      "status": "pass"
+    },
+    {
+      "action": "Copy the quality workflow template to .github/workflows/quality.yml after the GitHub token has workflow scope.",
+      "detail": ".github/workflows/quality.yml is not committed.",
+      "id": "active-workflow",
+      "label": "Active workflow file",
+      "status": "fail"
+    },
+    {
+      "action": "Keep .github/workflows/quality.yml byte-for-byte aligned with docs/sdlc/ci-templates/github-actions-quality.yml.",
+      "detail": "Skipped until the active workflow file is committed.",
+      "id": "workflow-template-parity",
+      "label": "Workflow/template parity",
+      "status": "warn"
+    },
+    {
+      "action": "Install GitHub CLI and authenticate before activating repository workflows.",
+      "detail": "gh version 2.95.0 (2026-06-17)",
+      "id": "gh-cli",
+      "label": "GitHub CLI",
+      "status": "pass"
+    },
+    {
+      "action": "Run gh auth refresh -h github.com -s workflow, then copy the template to .github/workflows/quality.yml and push.",
+      "detail": "Authenticated GitHub token scopes do not include workflow. Present scopes: gist, read:org, repo.",
+      "id": "gh-workflow-scope",
+      "label": "GitHub workflow OAuth scope",
+      "status": "fail"
+    }
+  ],
+  "generatedAt": "2026-06-20T00:05:55.616Z",
+  "nextAction": "Copy the quality workflow template to .github/workflows/quality.yml after the GitHub token has workflow scope.",
+  "privacy": {
+    "checkedOauthScopes": [
+      "gist",
+      "read:org",
+      "repo"
+    ],
+    "credentialValuesIncluded": false,
+    "secretsIncluded": false,
+    "tokenIncluded": false
+  },
+  "schemaVersion": "movebeta.github-workflow-report.v1",
+  "status": "blocked",
+  "summary": {
+    "activeMatchesTemplate": false,
+    "activeWorkflowExists": false,
+    "ghAuthenticated": true,
+    "ghCliAvailable": true,
+    "templateExists": true,
+    "workflowScopeReady": false
+  }
+}
