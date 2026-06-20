@@ -47,6 +47,11 @@
     },
     {
       "exists": true,
+      "label": "Release evidence freshness report",
+      "path": "docs/sdlc/release-freshness-report.json"
+    },
+    {
+      "exists": true,
       "label": "Store manifest",
       "path": "docs/store/store-manifest.json"
     },
@@ -69,6 +74,11 @@
       "exists": true,
       "label": "Release evidence scenarios screenshot",
       "path": "docs/store/screenshots/10-release-evidence-scenarios.png"
+    },
+    {
+      "exists": true,
+      "label": "Release evidence freshness screenshot",
+      "path": "docs/store/screenshots/11-release-freshness.png"
     },
     {
       "exists": true,
@@ -222,6 +232,16 @@
       ]
     },
     {
+      "command": "npm run release:freshness:doctor",
+      "key": "release-freshness",
+      "label": "Release evidence freshness doctor",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run release:eas:strict",
       "key": "eas-strict",
       "label": "Strict EAS store gate",
@@ -230,7 +250,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T03:01:15.826Z",
+  "generatedAt": "2026-06-20T03:15:55.939Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -240,9 +260,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "692d864650862661bcbc79b4020c5d043e573fa2",
+    "baseCommitSha": "273f93dcd35bbb872c5220c5e70ba720faac90be",
     "changedPaths": [],
-    "commitSha": "692d864650862661bcbc79b4020c5d043e573fa2",
+    "commitSha": "273f93dcd35bbb872c5220c5e70ba720faac90be",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -304,6 +324,12 @@
     },
     {
       "exists": true,
+      "fileName": "11-release-freshness.png",
+      "label": "Release evidence freshness",
+      "path": "docs/store/screenshots/11-release-freshness.png"
+    },
+    {
+      "exists": true,
       "fileName": "08-data-portability.png",
       "label": "Local backup restore preview",
       "path": "docs/store/screenshots/08-data-portability.png"
@@ -311,12 +337,12 @@
   ],
   "summary": {
     "blockerCount": 5,
-    "existingScreenshots": 10,
-    "expectedScreenshots": 10,
+    "existingScreenshots": 11,
+    "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
     "moveNetAverageInferenceMs": 328,
-    "moveNetLoadMs": 5707,
+    "moveNetLoadMs": 3879,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",

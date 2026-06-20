@@ -1,21 +1,21 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T03:01:15.826Z
+Generated: 2026-06-20T03:15:55.939Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 692d864650862661bcbc79b4020c5d043e573fa2
+- Base commit at generation: 273f93dcd35bbb872c5220c5e70ba720faac90be
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 5707ms; average inference 328ms
-- Screenshots: 10/10
+- MoveNet readiness: ready; load 3879ms; average inference 328ms
+- Screenshots: 11/11
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
@@ -37,6 +37,7 @@ Generated: 2026-06-20T03:01:15.826Z
 - GitHub workflow doctor: `npm run release:github:doctor`
 - Dependency license report: `npm run security:licenses`
 - Feature completion doctor: `npm run feature:doctor`
+- Release evidence freshness doctor: `npm run release:freshness:doctor`
 - Strict EAS store gate: `npm run release:eas:strict`
 
 ## Artifacts
@@ -50,11 +51,13 @@ Generated: 2026-06-20T03:01:15.826Z
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
+- [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`
 - [x] Release critical path screenshot: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Release evidence scenarios screenshot: `docs/store/screenshots/10-release-evidence-scenarios.png`
+- [x] Release evidence freshness screenshot: `docs/store/screenshots/11-release-freshness.png`
 - [x] Source archive: `../movebeta-mobile-source.zip`
 - [x] Web dist archive: `../movebeta-mobile-web-dist.zip`
 - [x] Release archives manifest: `../movebeta-mobile-release-archives.json`
@@ -71,4 +74,5 @@ Generated: 2026-06-20T03:01:15.826Z
 - [x] Release unblock checklist: `docs/store/screenshots/07-release-unblock.png`
 - [x] Release critical path: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Release evidence scenarios: `docs/store/screenshots/10-release-evidence-scenarios.png`
+- [x] Release evidence freshness: `docs/store/screenshots/11-release-freshness.png`
 - [x] Local backup restore preview: `docs/store/screenshots/08-data-portability.png`
