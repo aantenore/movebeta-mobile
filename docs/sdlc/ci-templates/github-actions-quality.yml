@@ -51,4 +51,5 @@ jobs:
             docs/sdlc/store-credentials-report.json
             docs/sdlc/cue-validation-dataset-report.json
             docs/sdlc/launch-readiness-report.json
+            docs/sdlc/release-blocker-issues-report.json
             docs/store/store-submission-packet.json

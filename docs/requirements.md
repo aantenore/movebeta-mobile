@@ -159,6 +159,8 @@
 - Prepare a share-safe release blocker issue packet from the Plan tab that turns every external blocker into a GitHub
   issue draft with title, labels, owner, affected tracks, acceptance criteria, required proof, commands, env key names,
   and no credential values.
+- Generate a durable release blocker issue report from app launch evidence so release owners can track issue-ready
+  external blockers from CLI, handoff packets, and release gates without filing issues automatically.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
@@ -362,6 +364,9 @@
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.
+- Release blocker issue reports must write JSON and Markdown artifacts from current launch evidence, preserve the same
+  share-safe issue draft contract, stay fresh through release evidence freshness checks, and be included in release
+  handoff evidence.
 - Release evidence reconciliation must infer supported report schemas from pasted JSON, reject malformed, raw-artifact,
   local-path, credential-value, or token-like evidence, and project launch readiness without mutating current evidence.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret

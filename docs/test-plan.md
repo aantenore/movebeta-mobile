@@ -200,6 +200,9 @@
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
 - Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.
+- Release blocker issue report with `npm run release:blocker-issues`, which writes
+  `docs/sdlc/release-blocker-issues-report.json` and `docs/sdlc/release-blocker-issues-report.md`, keeps GitHub issue
+  drafts share-safe, and is included in `npm run release:check`.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
@@ -322,6 +325,8 @@
   proof expectations, and the repository GitHub issue template path.
 - Plan tab prepares a release blocker issue packet with credential values, raw video, raw artifacts, and local paths
   excluded before sharing.
+- CLI release blocker issue report generates the same issue-ready external blocker drafts for handoff evidence without
+  filing GitHub issues automatically.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,
