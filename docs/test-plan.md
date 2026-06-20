@@ -40,6 +40,8 @@
 - Vitest cue feedback insight tests for useful rate, top useful cue, review cue, orphan skipping, and empty state.
 - Vitest progress filter tests for wall-angle, grade, and gym option derivation, report filtering, and active filter count.
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
+- Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
+  and local privacy copy.
 - Vitest progress insights tests for report ordering, trend deltas, and empty-history handling.
 - Vitest attempt comparison tests for latest-vs-baseline ordering, metric deltas, cue status, and insufficient history.
 - Vitest drill planner tests for cue deduplication, feedback-adapted reinforcement or variants, priority ordering,
@@ -201,6 +203,7 @@
 - Record and Import actions are visible on the Analyze tab.
 - Session metadata inputs are visible on the Analyze tab.
 - Capture setup calibration is visible on the Analyze tab and updates readiness state from ready to review.
+- Capture prep protocol is visible on the Analyze tab with setup, warm-up, record, verify, privacy, and retake guidance.
 - Imported/recorded videos render a preview card before metrics.
 - Selected videos render clip-readiness status before analysis-dependent coaching output.
 - Analysis quality renders before coaching cues and warns on weak pose confidence.
