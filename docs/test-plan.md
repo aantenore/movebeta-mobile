@@ -170,6 +170,9 @@
 - iOS Pods install with `npm run native:ios:pods`.
 - iOS toolchain doctor with `npm run native:ios:doctor`, which writes `docs/sdlc/ios-toolchain-report.json` and is
   included in `npm run release:check`.
+- Environment template doctor with `npm run release:env:doctor`, which writes
+  `docs/sdlc/env-template-report.json`, verifies `.env.example` covers runtime/smoke/release key names, and rejects
+  credential values, token-like strings, and local paths.
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
 - Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.

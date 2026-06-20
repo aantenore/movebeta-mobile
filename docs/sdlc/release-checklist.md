@@ -13,6 +13,7 @@
 - [x] Native QA runbook is generated with `npm run native:qa:runbook`.
 - [x] `npm run native:ios:pods` passes with local Ruby/CocoaPods.
 - [x] `npm run native:ios:doctor` generates the current full-Xcode blocker report.
+- [x] `npm run release:env:doctor` verifies `.env.example` covers runtime, smoke, and release key names without values.
 - [x] `npm run release:credentials:doctor` generates the current store credential blocker report without values.
 - [x] Versioning is aligned across `package.json`, `app.json`, and native build numbers.
 - [x] Browser smoke passes on desktop and 390px mobile viewport.

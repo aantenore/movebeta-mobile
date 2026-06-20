@@ -165,6 +165,7 @@ npm run toolchain:ios
 npm run native:android:debug
 npm run native:android:manifest
 npm run native:ios:doctor
+npm run release:env:doctor
 npm run release:credentials:doctor
 npm run native:qa:runbook
 npm run ci
@@ -225,6 +226,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - iOS toolchain report: `docs/sdlc/ios-toolchain-report.json`, `docs/sdlc/ios-toolchain-report.md`.
 - Cue validation dataset report: `docs/sdlc/cue-validation-dataset-report.json`,
   `docs/sdlc/cue-validation-dataset-report.md`.
+- Environment template report: `docs/sdlc/env-template-report.json`, `docs/sdlc/env-template-report.md`.
 - Store credentials report: `docs/sdlc/store-credentials-report.json`, `docs/sdlc/store-credentials-report.md`.
 - GitHub workflow report: `docs/sdlc/github-workflow-report.json`, `docs/sdlc/github-workflow-report.md`.
 - Dependency license report: `docs/sdlc/dependency-license-report.json`,
@@ -251,6 +253,7 @@ npm run release:check
 npm run model:analysis:replay
 npm run model:evidence:sync
 npm run native:ios:doctor
+npm run release:env:doctor
 npm run release:credentials:doctor
 npm run release:readiness
 npm run release:archives

@@ -131,3 +131,4 @@
 | T127 | Add share-safe store credentials setup packet | Done |
 | T128 | Add machine-readable feature completion audit | Done |
 | T129 | Add share-safe validation pilot kit | Done |
+| T130 | Add share-safe environment template doctor | Done |

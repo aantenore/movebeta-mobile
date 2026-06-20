@@ -67,6 +67,7 @@
     "native:qa:runbook": "node scripts/native_qa_packet.mjs --stable-date",
     "native:ios:doctor": "node scripts/ios_toolchain_doctor.mjs",
     "validation:cue:doctor": "node scripts/cue_validation_dataset_doctor.mjs",
+    "release:env:doctor": "node scripts/env_template_doctor.mjs",
     "release:credentials:doctor": "node scripts/store_credentials_doctor.mjs",
     "release:github:doctor": "node scripts/github_workflow_doctor.mjs",
     "feature:doctor": "node scripts/feature_completion_doctor.mjs",
