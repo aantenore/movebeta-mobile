@@ -105,6 +105,8 @@
   and drill evidence.
 - Compare the latest local attempt with the best matching local baseline using configurable smart repeat matching across
   wall angle, gym, grade, title, cue overlap, recency, and private local annotation signals.
+- Generate advanced drill packs locally from report cues, cue feedback, practice logs, wall angle, grade band, and
+  pack-readiness scoring without exposing private notes or raw video artifacts.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
 - Show a configurable Plan tab with current plan, upgrade path, capability matrix, and provider-agnostic billing readiness.
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
@@ -345,6 +347,8 @@
   and degrade to an empty state before data exists.
 - Smart repeat matching must stay local, ignore private note text, expose match confidence and reasons, and fall back to
   chronological comparison only when no stronger comparable baseline exists.
+- Advanced drill packs must stay local, include privacy flags, exclude private note text and raw artifacts, and adapt
+  intensity or variants from private cue feedback and practice follow-through.
 - Beta memory must ignore orphan annotations, remain useful without resolved cue ids, limit visible entries through a
   replaceable option, and exclude private note text.
 - Cue validation datasets must reject missing schema versions, raw video URIs, key frames, pose landmarks, and incomplete
