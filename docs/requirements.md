@@ -150,6 +150,10 @@
   video, identities, local paths, credentials, or invented scores.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
+- Show a release critical path in the Plan tab that sequences launch blockers by owner lane, dependency, command, proof
+  artifact, and affected launch track.
+- Prepare a share-safe release critical path packet from the Plan tab with ready, ready-to-start, blocked step counts,
+  dependency keys, lane counts, commands, proof expectations, and explicit negative privacy flags.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
   expectations, owners, affected tracks, acceptance criteria, and env key names without credential values.
 - Prepare a share-safe release blocker issue packet from the Plan tab that turns every external blocker into a GitHub
@@ -341,6 +345,9 @@
 - Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit
   negative flags for credential values, local paths, and raw artifacts, and reject token-like or local-path evidence before
   sharing.
+- Release critical path packets must be schema-versioned, derived from launch-readiness and release-unblock contracts,
+  preserve dependency order without mutating evidence, and reject raw videos, local paths, credential values, and
+  token-like strings before sharing.
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.

@@ -127,6 +127,10 @@ platforms are validated on physical climbing videos and devices.
   artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
 - Plan tab prepares a share-safe release unblock packet with commands, proof expectations, owners, tracks, acceptance
   criteria, env key names, and explicit credential/raw-artifact exclusion flags.
+- Plan tab shows a release critical path that sequences external blockers across real-world validation, native build/QA,
+  and store-account lanes, including dependency keys and ready-to-start states.
+- Plan tab prepares a share-safe release critical path packet with commands, proof expectations, dependencies, lane
+  summaries, and explicit credential/local-path/raw-artifact exclusion flags.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
   QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
   flags.
@@ -324,6 +328,8 @@ platforms are validated on physical climbing videos and devices.
   parity, credential key-name disclosure without secret values, and all-ready evidence state.
 - `tests/releaseUnblockPacket.test.ts`: passed and covers versioned packet generation, ready packet generation, and
   injected token/local-path rejection before sharing.
+- `tests/releaseCriticalPath.test.ts`: passed and covers external blocker dependency sequencing, parallel lane grouping,
+  upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
 - `tests/releaseEvidencePacket.test.ts`: passed and covers aggregated launch/model/provider/native QA evidence, all-ready
   state, artifact status mapping, and credential/local-path rejection before sharing.
 - `tests/releaseEvidenceReconciliation.test.ts`: passed and covers report inference, projected launch readiness,
@@ -373,7 +379,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
@@ -400,7 +406,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 8/8 screenshots, 5 external blockers, release archive artifacts, current
+  `docs/sdlc/release-handoff-packet.md` with 9/9 screenshots, 5 external blockers, release archive artifacts, current
   artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.

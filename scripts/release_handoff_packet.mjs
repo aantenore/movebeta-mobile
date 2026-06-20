@@ -124,6 +124,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Store manifest', 'docs/store/store-manifest.json'),
       artifact(rootDir, 'Screenshot gallery', 'docs/screenshots.md'),
       artifact(rootDir, 'Release unblock screenshot', 'docs/store/screenshots/07-release-unblock.png'),
+      artifact(rootDir, 'Release critical path screenshot', 'docs/store/screenshots/09-release-critical-path.png'),
       artifact(rootDir, 'Source archive', '../movebeta-mobile-source.zip'),
       artifact(rootDir, 'Web dist archive', '../movebeta-mobile-web-dist.zip'),
       artifact(rootDir, 'Release archives manifest', '../movebeta-mobile-release-archives.json'),
