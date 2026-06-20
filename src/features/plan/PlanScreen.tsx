@@ -792,8 +792,8 @@ function EvidenceCollectionPlanCard({
         <View style={styles.evidencePlanItem}>
           <Text style={styles.evidencePlanTitle}>Cue validation</Text>
           <Text style={styles.qaKitText}>
-            {plan.cueValidation.minDistinctReviewersPerClip} coach reviewers per clip · average score at least{' '}
-            {plan.cueValidation.minAverageCueScore}/5
+            {plan.cueValidation.minDistinctReviewersPerCue} coach reviewers per cue · average score at least{' '}
+            {plan.cueValidation.minAverageCueScore}/5 · max spread {plan.cueValidation.maxReviewerScoreSpreadPerCriterion}/4
           </Text>
           <Text style={styles.qaPlatformMore}>Angles: {plan.cueValidation.requiredWallAngles.join(', ')}</Text>
         </View>

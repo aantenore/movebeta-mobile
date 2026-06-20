@@ -59,8 +59,10 @@ export function buildEvidenceCollectionPlan({
     cueValidation: {
       averageCuesPerClip,
       estimatedReviewRows,
+      maxReviewerScoreSpreadPerCriterion: cueAcceptance.maxReviewerScoreSpreadPerCriterion,
       minAverageCueScore: cueAcceptance.minAverageCueScore,
       minClips: cueAcceptance.minClips,
+      minDistinctReviewersPerCue: cueAcceptance.minDistinctReviewersPerCue,
       minDistinctReviewersPerClip: cueAcceptance.minDistinctReviewersPerClip,
       minReviewsPerCue: cueAcceptance.minReviewsPerCue,
       requiredReviewModes: cueAcceptance.requiredReviewModes,
@@ -71,6 +73,7 @@ export function buildEvidenceCollectionPlan({
         'Capture only consented indoor climbing attempts with bystanders out of frame or consent handled.',
         'Keep raw video local; share packet-only review worksheets with coaches.',
         'Balance the first collection sprint across required wall angles before adding more clips to a single style.',
+        'Adjudicate cue rows whose reviewer score spread exceeds the configured consensus threshold.',
         'Record reviewer ids and 1-5 scores only after a real coach completes the worksheet.',
       ],
     },

@@ -57,6 +57,29 @@ function completeWorksheetCsv(csv: string) {
   ].join('\n') + '\n';
 }
 
+function lowerSecondReviewerForFirstCue(csv: string) {
+  const [headerLine, ...rows] = csv.trimEnd().split('\n');
+  const headers = headerLine.split(',');
+  const indexes = Object.fromEntries(headers.map((header, index) => [header, index]));
+  const firstCueId = rows[0].split(',')[indexes.cueId];
+  let changed = false;
+
+  return [
+    headerLine,
+    ...rows.map((row) => {
+      const cells = row.split(',');
+      if (!changed && cells[indexes.cueId] === firstCueId && cells[indexes.reviewerSlot] === '2') {
+        cells[indexes.relevance] = '3';
+        cells[indexes.timingAccuracy] = '3';
+        cells[indexes.drillFit] = '3';
+        cells[indexes.safetyLanguage] = '5';
+        changed = true;
+      }
+      return cells.join(',');
+    }),
+  ].join('\n') + '\n';
+}
+
 async function buildCompletedDataset(reportId: string, productionLike = false) {
   const report = await buildReport(reportId);
   const seed = buildCueValidationStudySeed(
@@ -107,6 +130,40 @@ describe('cue validation completed dataset gate', () => {
     expect(failedCheckIds.filter((id) => id.startsWith('wall-angle-'))).toHaveLength(2);
     expect(formatCueValidationGateSummary(result)).toContain('Validation gate: needs data');
     expect(formatCueValidationGateFailures(result)).toContain('At least 20 consented clips are required.');
+  });
+
+  it('fails reviewer consensus when score spread is too high even if the average passes', async () => {
+    const report = await buildReport('gate-low-consensus');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T08:20:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          minDistinctReviewersPerClip: 2,
+          minReviewsPerCue: 2,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        generatedAt: '2026-06-20T08:25:00.000Z',
+      },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T08:30:00.000Z' });
+    const dataset = buildCueValidationDatasetFromCompletedWorksheetCsv(
+      seed,
+      lowerSecondReviewerForFirstCue(completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet))),
+      {
+        generatedAt: '2026-06-20T08:35:00.000Z',
+      },
+    );
+
+    const result = validateCueValidationCompletedDataset(dataset);
+
+    expect(result.ready).toBe(false);
+    expect(result.summary.maxReviewerScoreSpreadPerCriterion).toBe(2);
+    expect(result.checks.find((check) => check.id.endsWith('reviewer-consensus'))).toMatchObject({
+      status: 'fail',
+    });
+    expect(formatCueValidationGateSummary(result)).toContain('max spread 2/4');
   });
 
   it('rejects raw artifact keys before presenting a dataset as gate-ready', async () => {

@@ -201,6 +201,16 @@ function validationClip(wallAngle: 'slab' | 'vertical' | 'overhang') {
         safetyLanguage: 5,
         timingAccuracy: 5,
       },
+      {
+        cueId: `cue-${wallAngle}`,
+        drillFit: 5,
+        relevance: 5,
+        reviewMode: 'packet-only',
+        reviewerId: `coach-${wallAngle}-b`,
+        reviewerRole: 'coach',
+        safetyLanguage: 5,
+        timingAccuracy: 5,
+      },
     ],
   };
 }
@@ -209,8 +219,9 @@ function writeValidCueValidationDataset(rootDir: string) {
   writeJson(path.join(rootDir, 'docs/validation/cue-validation-dataset.json'), {
     acceptance: {
       minClips: 3,
-      minDistinctReviewersPerClip: 1,
-      minReviewsPerCue: 1,
+      minDistinctReviewersPerClip: 2,
+      minDistinctReviewersPerCue: 2,
+      minReviewsPerCue: 2,
     },
     appVersion: '1.0.0',
     clips: [validationClip('slab'), validationClip('vertical'), validationClip('overhang')],

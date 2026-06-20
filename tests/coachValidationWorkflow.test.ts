@@ -54,6 +54,29 @@ function completeWorksheetCsv(csv: string, score = 5) {
   ].join('\n') + '\n';
 }
 
+function lowerSecondReviewerForFirstCue(csv: string) {
+  const [headerLine, ...rows] = csv.trimEnd().split('\n');
+  const headers = headerLine.split(',');
+  const indexes = Object.fromEntries(headers.map((header, index) => [header, index]));
+  const firstCueId = rows[0].split(',')[indexes.cueId];
+  let changed = false;
+
+  return [
+    headerLine,
+    ...rows.map((row) => {
+      const cells = row.split(',');
+      if (!changed && cells[indexes.cueId] === firstCueId && cells[indexes.reviewerSlot] === '2') {
+        cells[indexes.relevance] = '3';
+        cells[indexes.timingAccuracy] = '3';
+        cells[indexes.drillFit] = '3';
+        cells[indexes.safetyLanguage] = '5';
+        changed = true;
+      }
+      return cells.join(',');
+    }),
+  ].join('\n') + '\n';
+}
+
 describe('coach validation workflow', () => {
   it('reports needs-consent before active cue-validation consent exists', async () => {
     const report = await buildReport('workflow-no-consent');
@@ -162,6 +185,11 @@ describe('coach validation workflow', () => {
         consentedClipCount: 1,
         reviewCount: report.cues.length * 2,
       },
+      reliabilityReport: {
+        summary: {
+          status: 'ready',
+        },
+      },
       status: 'ready',
     });
     expect(readyWorkflow.shareableDatasetJson).toContain('"schemaVersion": "movebeta.cue-validation-dataset.v1"');
@@ -174,6 +202,47 @@ describe('coach validation workflow', () => {
       reviewedCueCount: report.cues.length,
       unreviewedCueIds: [],
     });
+  });
+
+  it('blocks promotion when reviewer consensus is weak', async () => {
+    const report = await buildReport('workflow-low-consensus');
+    const baseWorkflow = buildCoachValidationWorkflow(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T02:00:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          minDistinctReviewersPerClip: 2,
+          minReviewsPerCue: 2,
+          requiredWallAngles: ['vertical'],
+        },
+        generatedAt: '2026-06-20T02:05:00.000Z',
+      },
+    );
+    const completedCsv = lowerSecondReviewerForFirstCue(completeWorksheetCsv(baseWorkflow.worksheetCsv, 5));
+    const workflow = buildCoachValidationWorkflow(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T02:00:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          minDistinctReviewersPerClip: 2,
+          minReviewsPerCue: 2,
+          requiredWallAngles: ['vertical'],
+        },
+        completedWorksheetCsv: completedCsv,
+        generatedAt: '2026-06-20T02:10:00.000Z',
+      },
+    );
+
+    expect(workflow.datasetGate?.ready).toBe(false);
+    expect(workflow.reliabilityReport?.summary).toMatchObject({
+      lowConsensusCueCount: 1,
+      status: 'needs-consensus',
+    });
+    expect(workflow.status).toBe('blocked');
+    expect(workflow.action).toContain('reviewer consensus');
+    expect(workflow.worksheetSummary).toContain('Reliability: needs-consensus');
   });
 
   it('blocks raw artifact text in completed worksheet CSV without throwing', async () => {

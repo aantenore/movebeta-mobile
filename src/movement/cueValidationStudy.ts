@@ -16,8 +16,10 @@ import type { DrillPracticeRecord } from './drillPracticeRepository';
 import type { ReportAnnotation } from './reportAnnotationRepository';
 
 export const CueValidationStudyAcceptanceSchema = z.object({
+  maxReviewerScoreSpreadPerCriterion: z.number().min(0).max(4).default(1),
   minAverageCueScore: z.number().min(1).max(5),
   minClips: z.number().int().positive(),
+  minDistinctReviewersPerCue: z.number().int().positive().default(2),
   minDistinctReviewersPerClip: z.number().int().positive(),
   minReviewsPerCue: z.number().int().positive(),
   requiredReviewModes: z.array(z.literal('packet-only')).nonempty(),
@@ -260,8 +262,10 @@ export type CueValidationCompletedDatasetOptions = {
 };
 
 export const defaultCueValidationStudyAcceptance: CueValidationStudyAcceptance = CueValidationStudyAcceptanceSchema.parse({
+  maxReviewerScoreSpreadPerCriterion: 1,
   minAverageCueScore: 4,
   minClips: 20,
+  minDistinctReviewersPerCue: 2,
   minDistinctReviewersPerClip: 2,
   minReviewsPerCue: 1,
   requiredReviewModes: ['packet-only'],
@@ -509,6 +513,7 @@ export function buildCueValidationStudySeed(
     reviewerInstructions: [
       'Review each generated cue from the packet only; do not request or attach raw video.',
       'Two distinct coach reviewers should score every cue before running the validation gate.',
+      'Adjudicate cue rows when reviewer score spread exceeds the configured consensus threshold.',
       'Scores must be real coach judgments, not generated defaults.',
       'Use the final filled dataset with npm run validation:cue before making production movement-quality claims.',
     ],
@@ -665,6 +670,7 @@ export function buildCueValidationReviewerOnboardingPacket(
       'Do not ask for raw video, screenshots, landmarks, local file paths, private notes, or account identifiers.',
       'Use a 1-5 score for relevance, timing accuracy, drill fit, and safety language.',
       `A passing cue needs an average score of at least ${parsedSeed.acceptance.minAverageCueScore}/5 and no unsafe safety-language score.`,
+      `Reviewer spread on each criterion should stay within ${parsedSeed.acceptance.maxReviewerScoreSpreadPerCriterion} point.`,
       'Reviewer IDs must identify real coach reviewers in the completed worksheet; this onboarding packet intentionally leaves them out.',
     ],
     privacy: {
