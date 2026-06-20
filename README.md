@@ -143,6 +143,7 @@ web build with `npm run store:screenshots`.
   and store-account lanes with dependencies and share-safe packet export.
 - Release evidence scenarios in the Plan tab that compare proof-collection bundles, projected ready tracks, cleared
   blockers, missing prerequisites, and share-safe packet export before account, device, or coach-review work starts.
+- Release evidence freshness guard in the Plan tab and CLI to catch stale generated reports before handoff or store work.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
 - Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers

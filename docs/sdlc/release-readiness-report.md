@@ -100,7 +100,7 @@ platforms are validated on physical climbing videos and devices.
 - EAS release readiness validates remote app versioning, internal development/preview profiles, production app bundle
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
 - Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, Release Unblock,
-  Release Critical Path, Release Evidence Scenarios, and Privacy.
+  Release Critical Path, Release Evidence Scenarios, Release Freshness, Privacy, and Data Portability.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
 - Cue validation dataset contract, template, and CLI gate are versioned and ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
@@ -135,6 +135,8 @@ platforms are validated on physical climbing videos and devices.
   coach-review work starts, including projected ready tracks, cleared blockers, missing prerequisites, and commands.
 - Plan tab prepares a share-safe release evidence scenario packet with explicit credential/local-path/raw-artifact
   exclusion flags.
+- Plan tab shows release evidence freshness for generated launch, model, feature-completion, and store-submission
+  reports, surfacing stale, missing, or invalid timestamps before handoff.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
   QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
   flags.
@@ -169,7 +171,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, store
   credential readiness, GitHub workflow activation, feature completion, store submission packet generation, web export,
-  EAS standard check, moderate-or-higher dependency audit, and dependency license inventory.
+  EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
@@ -180,6 +182,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run feature:doctor` writes `docs/sdlc/feature-completion-report.json` and
   `docs/sdlc/feature-completion-report.md`, so tracked work completion is separated from external data, device, account,
   and credential blockers.
+- `npm run release:freshness:doctor` writes `docs/sdlc/release-freshness-report.json` and
+  `docs/sdlc/release-freshness-report.md`, so generated release reports must stay inside configurable freshness windows
+  before handoff or store work.
 - `npm run validation:cue:doctor` writes `docs/sdlc/cue-validation-dataset-report.json` and
   `docs/sdlc/cue-validation-dataset-report.md`, so real-review dataset blockers are captured without embedding dataset
   rows or reviewer identities.
@@ -194,14 +199,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 91 test files and 357 tests.
+- `npm test`: passed, 103 test files and 412 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4162ms load time, 405ms average inference, and 453ms max inference in the latest run.
+  CPU backend, 3879ms load time, 328ms average inference, and 331ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
@@ -226,7 +231,9 @@ platforms are validated on physical climbing videos and devices.
   for the Expo `xcode` tooling chain.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 14/14 release steps passing.
+- `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
+  status `ready`, 11/11 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 16/16 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -336,6 +343,8 @@ platforms are validated on physical climbing videos and devices.
   upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
 - `tests/releaseEvidenceScenarios.test.ts`: passed and covers projected launch tracks, cleared blocker counts,
   prerequisite detection, all-ready state, current-evidence immutability, and raw artifact/path/token rejection.
+- `tests/releaseEvidenceFreshness.test.ts`: passed and covers configurable artifact windows, stale evidence,
+  missing/invalid timestamps, release report bundle mapping, and raw artifact/path/token rejection.
 - `tests/releaseEvidencePacket.test.ts`: passed and covers aggregated launch/model/provider/native QA evidence, all-ready
   state, artifact status mapping, and credential/local-path rejection before sharing.
 - `tests/releaseEvidenceReconciliation.test.ts`: passed and covers report inference, projected launch readiness,
@@ -372,7 +381,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated ten 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated eleven 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
@@ -385,7 +394,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
@@ -412,7 +421,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 10/10 screenshots, 5 external blockers, release archive artifacts, current
+  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, release archive artifacts, current
   artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.

@@ -11,6 +11,10 @@ import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
+import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.json';
+import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
+import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
+import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
@@ -35,6 +39,11 @@ import {
   parseReleaseEvidenceReconciliationInput,
   type ReleaseEvidenceReconciliation,
 } from '@/core/releaseEvidenceReconciliation';
+import {
+  buildReleaseEvidenceFreshness,
+  buildReleaseEvidenceFreshnessArtifactInputs,
+  type ReleaseEvidenceFreshness,
+} from '@/core/releaseEvidenceFreshness';
 import { buildReleaseEvidenceScenarioPlanner, type ReleaseEvidenceScenarioPlanner } from '@/core/releaseEvidenceScenarios';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
@@ -123,6 +132,13 @@ function releaseScenarioStatusLabel(status: ReleaseEvidenceScenarioPlanner['scen
   if (status === 'would-improve') return 'Improves';
   if (status === 'needs-prerequisite') return 'Prereq';
   return 'No impact';
+}
+
+function freshnessStatusLabel(status: ReleaseEvidenceFreshness['artifacts'][number]['status']) {
+  if (status === 'fresh') return 'Fresh';
+  if (status === 'stale') return 'Stale';
+  if (status === 'invalid-date') return 'Invalid';
+  return 'Missing';
 }
 
 const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
@@ -1108,6 +1124,63 @@ function ReleaseEvidenceScenarioCard({
   );
 }
 
+function ReleaseEvidenceFreshnessCard({
+  freshness,
+}: {
+  freshness: ReleaseEvidenceFreshness;
+}) {
+  const isReady = freshness.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {freshness.summary.freshCount}/{freshness.summary.artifactCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>fresh</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{freshness.summary.staleCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>stale</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{freshness.summary.maxObservedAgeHours}h</Text>
+          <Text style={styles.qaKitMetricLabel}>oldest</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release evidence freshness</Text>
+          <Text style={styles.qaKitText}>{freshness.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Fresh' : freshness.summary.status}
+        </Text>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {freshness.artifacts.map((artifact) => (
+          <View key={artifact.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{artifact.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {artifact.owner} · {artifact.requiredFor.join(', ')}
+                </Text>
+              </View>
+              <Text style={[styles.launchStatus, artifact.status === 'fresh' ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+                {freshnessStatusLabel(artifact.status)}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{artifact.detail}</Text>
+            <Text style={styles.qaPlatformMore}>{artifact.refreshCommand}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseEvidenceReconciliationCard({
   input,
   onChange,
@@ -1554,6 +1627,7 @@ function buildPlanSafetySources({
   modelEvidence,
   recommendation,
   releaseCriticalPath,
+  releaseEvidenceFreshness,
   releaseEvidenceScenarioPlanner,
   releaseEvidenceReconciliation,
   releaseUnblockChecklist,
@@ -1564,6 +1638,7 @@ function buildPlanSafetySources({
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
   releaseCriticalPath: ReleaseCriticalPath;
+  releaseEvidenceFreshness: ReleaseEvidenceFreshness;
   releaseEvidenceScenarioPlanner: ReleaseEvidenceScenarioPlanner;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
@@ -1639,6 +1714,18 @@ function buildPlanSafetySources({
         ]),
       ].join(' '),
     },
+    {
+      key: 'release-evidence-freshness',
+      label: 'Release evidence freshness',
+      text: [
+        releaseEvidenceFreshness.summary.nextAction,
+        ...releaseEvidenceFreshness.artifacts.flatMap((artifact) => [
+          artifact.label,
+          artifact.detail,
+          artifact.refreshCommand,
+        ]),
+      ].join(' '),
+    },
   ];
 }
 
@@ -1672,6 +1759,18 @@ export function PlanScreen() {
   });
   const releaseEvidenceScenarioPlanner = buildReleaseEvidenceScenarioPlanner({
     currentEvidence: appConfig.launchReadinessEvidence,
+  });
+  const releaseEvidenceFreshness = buildReleaseEvidenceFreshness({
+    artifacts: buildReleaseEvidenceFreshnessArtifactInputs(
+      {
+        featureCompletionReport,
+        launchReadinessReport,
+        modelAnalysisReplayReport,
+        moveNetReadinessReport,
+        storeSubmissionPacket: storeSubmissionReport,
+      },
+      { includeMissing: false },
+    ),
   });
   const releaseEvidenceReconciliationInput = parseReleaseEvidenceReconciliationInput(releaseEvidenceReconciliationJson);
   const releaseEvidenceReconciliation = buildReleaseEvidenceReconciliation({
@@ -1718,6 +1817,7 @@ export function PlanScreen() {
       modelEvidence,
       recommendation,
       releaseCriticalPath,
+      releaseEvidenceFreshness,
       releaseEvidenceScenarioPlanner,
       releaseEvidenceReconciliation,
       releaseUnblockChecklist,
@@ -2009,6 +2109,10 @@ export function PlanScreen() {
           onPreparePacket={prepareReleaseEvidenceScenarioPacket}
           planner={releaseEvidenceScenarioPlanner}
         />
+      </Section>
+
+      <Section title="Release evidence freshness" caption="Checks that generated release evidence is recent enough for handoff.">
+        <ReleaseEvidenceFreshnessCard freshness={releaseEvidenceFreshness} />
       </Section>
 
       <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">
