@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T01:27:41.752Z
+Generated: 2026-06-20T01:35:10.993Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: e28444f58b8228fd9f9b9458914f0ad3f058c5fe
+- Base commit at generation: e3ce364b917aa258bb7f34f6c739f129a769e386
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3786ms; average inference 342ms
+- MoveNet readiness: ready; load 5233ms; average inference 342ms
 - Screenshots: 8/8
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
