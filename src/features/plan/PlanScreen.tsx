@@ -35,6 +35,7 @@ import { buildStoreCredentialsSetupPacket, type StoreCredentialsSetupPacket } fr
 import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
 import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
 import { buildValidationCollectionPacket } from '@/core/validationCollectionPacket';
+import { buildValidationPilotKit, type ValidationPilotKit } from '@/core/validationPilotKit';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
 
@@ -741,10 +742,14 @@ function CommercialReadinessCard({
 
 function EvidenceCollectionPlanCard({
   onPreparePacket,
+  onPreparePilotKit,
   plan,
+  pilotKit,
 }: {
   onPreparePacket: () => void;
+  onPreparePilotKit: () => void;
   plan: ReturnType<typeof buildEvidenceCollectionPlan>;
+  pilotKit: ValidationPilotKit;
 }) {
   return (
     <View style={styles.evidencePlan}>
@@ -756,6 +761,10 @@ function EvidenceCollectionPlanCard({
         <Pressable accessibilityLabel="Prepare validation collection packet" onPress={onPreparePacket} style={styles.planAction}>
           <Download color={theme.colors.brand} size={15} />
           <Text style={styles.planActionText}>Packet</Text>
+        </Pressable>
+        <Pressable accessibilityLabel="Prepare validation pilot kit" onPress={onPreparePilotKit} style={styles.planAction}>
+          <ShieldCheck color={theme.colors.brand} size={15} />
+          <Text style={styles.planActionText}>Pilot kit</Text>
         </Pressable>
       </View>
       <View style={styles.evidencePlanHero}>
@@ -770,6 +779,10 @@ function EvidenceCollectionPlanCard({
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{plan.nativeQa.nativeWorkflowChecks}</Text>
           <Text style={styles.qaKitMetricLabel}>device checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{pilotKit.summary.pilotSprintCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>pilot sprints</Text>
         </View>
       </View>
       <Text style={styles.qaKitAction}>{plan.summary.action}</Text>
@@ -802,6 +815,17 @@ function EvidenceCollectionPlanCard({
                 </Text>
                 <Text style={styles.qaPlatformMore}>{batch.captureFocus}</Text>
               </View>
+            </View>
+          ))}
+        </View>
+      </View>
+      <View style={styles.evidencePlanItem}>
+        <Text style={styles.evidencePlanTitle}>Pilot protocol</Text>
+        <View style={styles.qaPlatformList}>
+          {pilotKit.protocol.consentPrinciples.slice(0, 3).map((item) => (
+            <View key={item} style={styles.qaWorkflowRow}>
+              <ShieldCheck color={theme.colors.success} size={14} />
+              <Text style={styles.qaWorkflowText}>{item}</Text>
             </View>
           ))}
         </View>
@@ -1163,6 +1187,7 @@ export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
+  const validationPilotKit = buildValidationPilotKit({ plan: evidencePlan });
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
   const nativeQaKit = buildNativeQaEvidenceKit();
@@ -1247,6 +1272,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(packet, null, 2),
       title: 'Prepared validation collection packet',
+    });
+  }
+
+  function prepareValidationPilotKit() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(validationPilotKit, null, 2),
+      title: 'Prepared validation pilot kit',
     });
   }
 
@@ -1421,7 +1454,12 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
-        <EvidenceCollectionPlanCard onPreparePacket={prepareValidationCollectionPacket} plan={evidencePlan} />
+        <EvidenceCollectionPlanCard
+          onPreparePacket={prepareValidationCollectionPacket}
+          onPreparePilotKit={prepareValidationPilotKit}
+          pilotKit={validationPilotKit}
+          plan={evidencePlan}
+        />
       </Section>
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
@@ -1482,6 +1520,7 @@ const styles = StyleSheet.create({
   },
   evidencePlanHero: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
   evidencePlanTop: {
@@ -1894,6 +1933,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.sm,
     flex: 1,
     gap: 2,
+    minWidth: 98,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.sm,
   },

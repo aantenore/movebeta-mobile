@@ -175,6 +175,8 @@
 - Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
+- Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
+  video, athlete/coach identities, local paths, credential values, or invented scores.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.

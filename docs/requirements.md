@@ -137,6 +137,9 @@
   rows, estimated review rows, reviewer slots per cue, capture focus, and a privacy-first collection checklist.
 - Prepare a share-safe validation collection packet from the Plan tab with balanced clip batches, reviewer slot
   templates, collection commands, and no raw video, local path, credential, or reviewer identity values.
+- Prepare a share-safe validation pilot kit from the Plan tab with consent principles, wall-angle pilot sprints, capture
+  setup guidance, coach review rules, closeout commands, and no raw video, identities, local paths, credentials, or
+  invented scores.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
@@ -222,6 +225,8 @@
 - Coach library exports must validate schema version and reject forbidden raw artifact keys before handoff.
 - Feature completion reports must exclude credential values, raw artifacts, raw video, secrets, and local paths, and must
   fail closed when tracked open work lacks an explicit external-blocker reason.
+- Validation pilot kits must keep raw video on-device, exclude athlete and coach identities, and keep reviewer score cells
+  unfilled until real coach review is collected.
 - Prepared exports must remain local until the user explicitly invokes the device share sheet.
 - Prepared export file sharing must write only to app cache, infer stable file names and content types, avoid cloud
   dependencies, and fall back to text sharing if file sharing or file writes are unavailable.
