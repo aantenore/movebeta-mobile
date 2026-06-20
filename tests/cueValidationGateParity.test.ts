@@ -57,7 +57,30 @@ function completeWorksheetCsv(csv: string) {
   ].join('\n') + '\n';
 }
 
-async function buildDataset(acceptance?: Partial<CueValidationStudyAcceptance>) {
+function lowerSecondReviewerForFirstCue(csv: string) {
+  const [headerLine, ...rows] = csv.trimEnd().split('\n');
+  const headers = headerLine.split(',');
+  const indexes = Object.fromEntries(headers.map((header, index) => [header, index]));
+  const firstCueId = rows[0].split(',')[indexes.cueId];
+  let changed = false;
+
+  return [
+    headerLine,
+    ...rows.map((row) => {
+      const cells = row.split(',');
+      if (!changed && cells[indexes.cueId] === firstCueId && cells[indexes.reviewerSlot] === '2') {
+        cells[indexes.relevance] = '3';
+        cells[indexes.timingAccuracy] = '3';
+        cells[indexes.drillFit] = '3';
+        cells[indexes.safetyLanguage] = '5';
+        changed = true;
+      }
+      return cells.join(',');
+    }),
+  ].join('\n') + '\n';
+}
+
+async function buildDataset(acceptance?: Partial<CueValidationStudyAcceptance>, csvMutator: (csv: string) => string = (csv) => csv) {
   const reports = [
     await buildReport('parity-slab', 'slab'),
     await buildReport('parity-vertical', 'vertical'),
@@ -74,7 +97,7 @@ async function buildDataset(acceptance?: Partial<CueValidationStudyAcceptance>) 
     },
   );
   const worksheet = buildCueValidationReviewWorksheet(seed, { generatedAt: '2026-06-20T09:15:00.000Z' });
-  return buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet)), {
+  return buildCueValidationDatasetFromCompletedWorksheetCsv(seed, csvMutator(completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet))), {
     generatedAt: '2026-06-20T09:20:00.000Z',
   });
 }
@@ -142,5 +165,27 @@ describe('cue validation gate parity', () => {
     expect(cliGate.ready).toBe(false);
     expect(failedLabels(appGate)).toContain('Raw artifact exclusion');
     expect(failedLabels(cliGate)).toContain('Raw artifact exclusion');
+  });
+
+  it('keeps app and CLI gates aligned on reviewer consensus failures', async () => {
+    const dataset = await buildDataset(
+      {
+        minClips: 3,
+        minDistinctReviewersPerClip: 2,
+        minReviewsPerCue: 2,
+        requiredWallAngles: ['slab', 'vertical', 'overhang'],
+      },
+      lowerSecondReviewerForFirstCue,
+    );
+
+    const appGate = validateCueValidationCompletedDataset(dataset);
+    const cliGate = validateCueValidationDataset(dataset);
+
+    expect(appGate.ready).toBe(false);
+    expect(cliGate.ready).toBe(false);
+    expect(appGate.summary).toEqual(cliGate.summary);
+    expect(appGate.summary.maxReviewerScoreSpreadPerCriterion).toBe(2);
+    expect(failedLabels(appGate)).toContain('Cue cue-lockoff reviewer consensus');
+    expect(failedLabels(cliGate)).toContain('Cue cue-lockoff reviewer consensus');
   });
 });

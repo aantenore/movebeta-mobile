@@ -63,6 +63,7 @@ function buildMissingReport({ datasetPath, generatedAt }) {
       cueCount: 0,
       fileExists: false,
       failedChecks: 1,
+      maxReviewerScoreSpreadPerCriterion: 0,
       ready: false,
       reviewCount: 0,
       totalChecks: 1,
@@ -97,6 +98,7 @@ function buildParseErrorReport({ datasetPath, error, generatedAt }) {
       cueCount: 0,
       fileExists: true,
       failedChecks: 1,
+      maxReviewerScoreSpreadPerCriterion: 0,
       ready: false,
       reviewCount: 0,
       totalChecks: 1,
@@ -162,6 +164,7 @@ Generated: ${report.generatedAt}
 - Next action: ${report.nextAction}
 - Clips: ${report.summary.clipCount}
 - Reviews: ${report.summary.reviewCount}
+- Max reviewer spread: ${report.summary.maxReviewerScoreSpreadPerCriterion ?? 0}/4
 - Wall angles: ${report.summary.wallAngles.join(', ') || 'none'}
 
 | Check | Status | Detail |

@@ -47,6 +47,11 @@ import {
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
 } from '@/movement/cueValidationStudy';
+import {
+  assertCueValidationReliabilityReportIsPrivacySafe,
+  buildCueValidationReliabilityReport,
+  formatCueValidationReliabilitySummary,
+} from '@/movement/cueValidationReliability';
 import { theme } from '@/core/theme';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
@@ -696,9 +701,26 @@ function ValidationCampaignPanel({
             <Text style={styles.libraryStatValue}>{workflow.progress.missingWallAngles.length}</Text>
             <Text style={styles.libraryStatLabel}>Angles missing</Text>
           </View>
+          <View style={styles.libraryStat}>
+            <Text style={styles.libraryStatValue}>{workflow.reliabilityReport?.summary.averageConsensusScore ?? 0}</Text>
+            <Text style={styles.libraryStatLabel}>Consensus</Text>
+          </View>
         </View>
         <Text style={styles.libraryFocus}>{workflow.action}</Text>
         <Text style={styles.libraryPrivacy}>{workflow.worksheetSummary}</Text>
+        {workflow.reliabilitySummary ? <Text style={styles.libraryPrivacy}>{workflow.reliabilitySummary}</Text> : null}
+        {workflow.reliabilityReport && workflow.reliabilityReport.summary.lowConsensusCueCount > 0 ? (
+          <View style={styles.campaignErrors}>
+            {workflow.reliabilityReport.cueFindings
+              .filter((cue) => cue.status !== 'strong-consensus')
+              .slice(0, 3)
+              .map((cue) => (
+                <Text key={`${cue.clipId}:${cue.cueId}`} style={styles.campaignError}>
+                  {cue.cueTitle}: {cue.status} · spread {cue.scoreSpread}/4
+                </Text>
+              ))}
+          </View>
+        ) : null}
         {workflow.errors.length > 0 ? (
           <View style={styles.campaignErrors}>
             {workflow.errors.map((error) => (
@@ -925,11 +947,16 @@ export function SessionsScreen() {
       assertCueValidationStudySeedIsPrivacySafe(seed);
       const dataset = buildCueValidationDatasetFromCompletedWorksheetCsv(seed, completedWorksheetCsv);
       const gate = validateCueValidationCompletedDataset(dataset);
+      const reliability = buildCueValidationReliabilityReport(dataset);
+      assertCueValidationReliabilityReportIsPrivacySafe(reliability);
       setPreparedExport({
         body: [
           formatCueValidationCompletedDatasetSummary(dataset),
           formatCueValidationGateSummary(gate),
+          formatCueValidationReliabilitySummary(reliability),
           formatCueValidationGateFailures(gate),
+          '',
+          JSON.stringify(reliability, null, 2),
           '',
           JSON.stringify(dataset, null, 2),
         ].join('\n'),

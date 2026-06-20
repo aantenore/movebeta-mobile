@@ -19,7 +19,7 @@ for (const check of validation.checks) {
 }
 
 console.log(
-  `SUMMARY clips=${validation.summary.clipCount} cues=${validation.summary.cueCount} reviews=${validation.summary.reviewCount} average=${validation.summary.averageScore}/5 wallAngles=${validation.summary.wallAngles.join(',')}`,
+  `SUMMARY clips=${validation.summary.clipCount} cues=${validation.summary.cueCount} reviews=${validation.summary.reviewCount} average=${validation.summary.averageScore}/5 maxSpread=${validation.summary.maxReviewerScoreSpreadPerCriterion}/4 wallAngles=${validation.summary.wallAngles.join(',')}`,
 );
 
 if (!validation.ready) {
