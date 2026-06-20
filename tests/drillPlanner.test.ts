@@ -100,6 +100,18 @@ describe('drill planner', () => {
     expect(plan.weeklyLoad).toContain('need variants');
   });
 
+  it('adds selected coach lens guidance to drill dosage', async () => {
+    const report = await localMovementAnalyzer.analyze({
+      coachLens: 'footwork',
+      frames: sampleAttempts[0].frames,
+      session: sampleAttempts[0].session,
+    });
+    const plan = buildDrillPlan([report]);
+    const footworkItem = plan.items.find((item) => item.cueId === 'cue-foot-cut');
+
+    expect(footworkItem?.dosage).toContain('quiet-feet lens');
+  });
+
   it('ignores orphan feedback when adapting drill plans', async () => {
     const reports = await buildReports();
     const cueId = reports[0].cues[0].id;

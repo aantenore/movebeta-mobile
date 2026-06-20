@@ -1,6 +1,6 @@
 import { appConfig } from '@/core/config';
 
-import type { ClimbSession, VideoAsset } from './contracts';
+import type { ClimbSession, CoachLensKey, VideoAsset } from './contracts';
 import { deleteAnalysisBundle, formatAnalysisBundleDeletionReceipt } from './privacyDeletion';
 import {
   createPoseEstimator,
@@ -12,13 +12,13 @@ import {
 import { reportRepository } from './reportRepository';
 import { sampleAttempts, sampleSession, sampleVideoAsset } from './sampleSession';
 
-export async function analyzeSampleSession() {
-  return analyzeDemoAttempt(sampleAttempts[0].session.id);
+export async function analyzeSampleSession(coachLens?: CoachLensKey) {
+  return analyzeDemoAttempt(sampleAttempts[0].session.id, coachLens);
 }
 
-export async function analyzeDemoAttempt(sessionId: string) {
+export async function analyzeDemoAttempt(sessionId: string, coachLens?: CoachLensKey) {
   const attempt = sampleAttempts.find((item) => item.session.id === sessionId) ?? sampleAttempts[0];
-  const report = await onDeviceMovementPipeline.analyze(attempt.video, attempt.session);
+  const report = await onDeviceMovementPipeline.analyze(attempt.video, attempt.session, { coachLens });
   return reportRepository.saveReport(report);
 }
 
@@ -28,19 +28,19 @@ async function createVideoEstimator(): Promise<PoseEstimator> {
   return (await estimator.isAvailable()) ? estimator : createPoseEstimator('local-video-fallback');
 }
 
-async function runVideoPipeline(video: VideoAsset, session: ClimbSession, provider?: AnalysisProvider) {
+async function runVideoPipeline(video: VideoAsset, session: ClimbSession, provider?: AnalysisProvider, coachLens?: CoachLensKey) {
   const estimator = provider ? createPoseEstimator(provider) : await createVideoEstimator();
   const pipeline = new OnDeviceMovementPipeline({ poseEstimator: estimator });
-  return pipeline.analyze(video, session);
+  return pipeline.analyze(video, session, { coachLens });
 }
 
-export async function analyzeVideoAttempt(video: VideoAsset, session: ClimbSession) {
+export async function analyzeVideoAttempt(video: VideoAsset, session: ClimbSession, coachLens?: CoachLensKey) {
   let report;
   try {
-    report = await runVideoPipeline(video, session);
+    report = await runVideoPipeline(video, session, undefined, coachLens);
   } catch (error) {
     if (appConfig.videoAnalysisProvider === 'local-video-fallback') throw error;
-    report = await runVideoPipeline(video, session, 'local-video-fallback');
+    report = await runVideoPipeline(video, session, 'local-video-fallback', coachLens);
   }
   return reportRepository.saveReport(report);
 }

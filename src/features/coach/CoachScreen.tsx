@@ -12,12 +12,14 @@ import { PoseOverlay } from '@/components/PoseOverlay';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { StateView } from '@/components/StateView';
+import { appConfig } from '@/core/config';
 import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
-import type { LocalAnalysisReport } from '@/movement/contracts';
+import type { CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { buildCapturePrepProtocol, type CapturePrepProtocol } from '@/movement/capturePrepProtocol';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
+import { listCoachLenses } from '@/movement/coachLens';
 import { buildCueTrustReport, type CueTrustReport, type CueTrustSignal } from '@/movement/cueTrust';
 import { buildMovementPhaseBreakdown, type MovementPhaseBreakdown } from '@/movement/movementPhaseBreakdown';
 import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts } from '@/movement/repository';
@@ -42,6 +44,7 @@ import {
 } from '@/video/videoSource';
 
 const attempts = listDemoAttempts();
+const coachLenses = listCoachLenses();
 
 type ActiveSource = VideoSourceResult | null;
 
@@ -80,6 +83,10 @@ function AnalysisQualityPanel({ report }: { report: LocalAnalysisReport }) {
         <Text style={styles.qualityStat}>Visibility {(report.analysisQuality.averageVisibility * 100).toFixed(0)}%</Text>
         <Text style={styles.qualityStat}>Landmarks {(report.analysisQuality.landmarkCoverage * 100).toFixed(0)}%</Text>
       </View>
+      <View style={styles.lensApplied}>
+        <Text style={styles.lensAppliedLabel}>Coach lens</Text>
+        <Text style={styles.lensAppliedValue}>{report.engine.coachLens.label}</Text>
+      </View>
       {hasWarnings ? (
         <View style={styles.qualityWarnings}>
           {report.analysisQuality.warnings.map((warning) => (
@@ -91,6 +98,39 @@ function AnalysisQualityPanel({ report }: { report: LocalAnalysisReport }) {
         </View>
       ) : null}
     </View>
+  );
+}
+
+function CoachLensSelector({
+  disabled,
+  onChange,
+  selectedLens,
+}: {
+  disabled: boolean;
+  onChange: (lens: CoachLensKey) => void;
+  selectedLens: CoachLensKey;
+}) {
+  return (
+    <Section title="Coach lens" caption="Tune the local analyzer before recording or importing a clip.">
+      <View style={styles.lensGrid}>
+        {coachLenses.map((lens) => {
+          const selected = selectedLens === lens.metadata.key;
+          return (
+            <Pressable
+              accessibilityLabel={`Coach lens ${lens.metadata.label}`}
+              accessibilityRole="button"
+              disabled={disabled}
+              key={lens.metadata.key}
+              onPress={() => onChange(lens.metadata.key)}
+              style={[styles.lensOption, selected ? styles.lensOptionSelected : null, disabled ? styles.disabled : null]}
+            >
+              <Text style={[styles.lensTitle, selected ? styles.lensTitleSelected : null]}>{lens.metadata.label}</Text>
+              <Text style={[styles.lensSummary, selected ? styles.lensSummarySelected : null]}>{lens.metadata.summary}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </Section>
   );
 }
 
@@ -582,6 +622,7 @@ export function CoachScreen() {
   const [recording, setRecording] = useState(false);
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [selectedAttemptId, setSelectedAttemptId] = useState(attempts[0].session.id);
+  const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
@@ -600,7 +641,12 @@ export function CoachScreen() {
     setActiveSource((source) => (source ? updateVideoSourceSession(source, nextMetadata) : source));
   }
 
-  async function runAnalysis(nextSource: ActiveSource = activeSource, sessionId = selectedAttemptId, withFeedback = true) {
+  async function runAnalysis(
+    nextSource: ActiveSource = activeSource,
+    sessionId = selectedAttemptId,
+    withFeedback = true,
+    coachLens = selectedCoachLens,
+  ) {
     if (withFeedback) selectionFeedback();
 
     if (nextSource) {
@@ -618,8 +664,8 @@ export function CoachScreen() {
 
     try {
       const nextReport = nextSource
-        ? await analyzeVideoAttempt(nextSource.video, nextSource.session)
-        : await analyzeDemoAttempt(sessionId);
+        ? await analyzeVideoAttempt(nextSource.video, nextSource.session, coachLens)
+        : await analyzeDemoAttempt(sessionId, coachLens);
       setReport(nextReport);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'The local analysis pipeline failed.';
@@ -752,6 +798,12 @@ export function CoachScreen() {
     void runAnalysis(null, sessionId, false);
   }
 
+  function selectCoachLens(coachLens: CoachLensKey) {
+    selectionFeedback();
+    setSelectedCoachLens(coachLens);
+    void runAnalysis(activeSource, selectedAttemptId, false, coachLens);
+  }
+
   useEffect(() => {
     void runAnalysis(null, selectedAttemptId, false);
   }, []);
@@ -815,6 +867,7 @@ export function CoachScreen() {
       />
       <CapturePrepProtocolPanel protocol={capturePrepProtocol} />
       <SessionMetadataEditor disabled={loading || recording} metadata={sessionMetadata} onChange={updateSessionMetadata} />
+      <CoachLensSelector disabled={loading || recording} onChange={selectCoachLens} selectedLens={selectedCoachLens} />
 
       {cameraOpen ? (
         <Section title="Recorder" caption="Frame the climber side-on and keep the full body visible.">
@@ -1160,6 +1213,62 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+  lensApplied: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+    padding: theme.spacing.sm,
+  },
+  lensAppliedLabel: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  lensAppliedValue: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  lensGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  lensOption: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flex: 1,
+    gap: 5,
+    minWidth: 150,
+    padding: theme.spacing.md,
+  },
+  lensOptionSelected: {
+    backgroundColor: theme.colors.brandDark,
+    borderColor: theme.colors.brandDark,
+  },
+  lensSummary: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
+  },
+  lensSummarySelected: {
+    color: '#DCECF3',
+  },
+  lensTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  lensTitleSelected: {
+    color: '#FFFFFF',
   },
   phaseAction: {
     color: theme.colors.text,

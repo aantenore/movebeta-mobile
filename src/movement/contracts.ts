@@ -12,6 +12,14 @@ export const AnalysisProviderSchema = z.enum([
 
 export const PrivacyModeSchema = z.enum(['on-device', 'cloud-assisted']);
 
+export const CoachLensKeySchema = z.enum(['balanced', 'footwork', 'body-position', 'power-conservation']);
+
+export const CoachLensMetadataSchema = z.object({
+  key: CoachLensKeySchema,
+  label: z.string(),
+  summary: z.string(),
+});
+
 export const LandmarkNameSchema = z.enum([
   'nose',
   'leftShoulder',
@@ -124,6 +132,11 @@ export const LocalAnalysisReportSchema = z.object({
   id: z.string(),
   session: ClimbSessionSchema,
   engine: z.object({
+    coachLens: CoachLensMetadataSchema.default({
+      key: 'balanced',
+      label: 'Balanced',
+      summary: 'General movement review across flow, feet, hips, and arm load.',
+    }),
     provider: AnalysisProviderSchema,
     model: z.string(),
     runsOnDevice: z.boolean(),
@@ -156,6 +169,8 @@ export const LocalAnalysisReportSchema = z.object({
 
 export type LandmarkName = z.infer<typeof LandmarkNameSchema>;
 export type AnalysisProvider = z.infer<typeof AnalysisProviderSchema>;
+export type CoachLensKey = z.infer<typeof CoachLensKeySchema>;
+export type CoachLensMetadata = z.infer<typeof CoachLensMetadataSchema>;
 export type PrivacyMode = z.infer<typeof PrivacyModeSchema>;
 export type PoseLandmark = z.infer<typeof PoseLandmarkSchema>;
 export type PoseFrame = z.infer<typeof PoseFrameSchema>;
@@ -178,6 +193,7 @@ export type AnalyzerThresholds = {
 };
 
 export type LocalAnalyzerInput = {
+  coachLens?: CoachLensKey;
   session: ClimbSession;
   frames: PoseFrame[];
   model?: string;

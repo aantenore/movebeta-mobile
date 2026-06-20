@@ -15,6 +15,11 @@ export const AnalysisEvidenceExportSchema = z.object({
   }),
   report: z.object({
     analysisQualityScore: z.number(),
+    coachLens: z.object({
+      key: z.string(),
+      label: z.string(),
+      summary: z.string(),
+    }),
     engineModel: z.string(),
     engineProvider: z.string(),
     performanceBudgetStatus: z.string(),
@@ -73,6 +78,7 @@ export function buildAnalysisEvidenceExport(
     },
     report: {
       analysisQualityScore: report.analysisQuality.score,
+      coachLens: report.engine.coachLens,
       engineModel: report.engine.model,
       engineProvider: report.engine.provider,
       performanceBudgetStatus: report.performance.budgetStatus,

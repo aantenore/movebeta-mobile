@@ -27,6 +27,7 @@ describe('analysis evidence export', () => {
     expect(exportBundle.schemaVersion).toBe(analysisEvidenceExportSchemaVersion);
     expect(exportBundle.generatedAt).toBe('2026-06-20T13:00:00.000Z');
     expect(exportBundle.report.reportId).toBe(report.id);
+    expect(exportBundle.report.coachLens.key).toBe('balanced');
     expect(exportBundle.privacy).toEqual({
       keyFramesIncluded: false,
       landmarksIncluded: false,

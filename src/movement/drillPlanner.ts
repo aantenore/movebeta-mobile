@@ -1,5 +1,6 @@
 import type { LocalAnalysisReport, MovementCue } from './contracts';
 import type { CueFeedback, ReportAnnotation } from './reportAnnotationRepository';
+import { coachLensDrillDosageHint, sortCuesForCoachLens } from './coachLens';
 
 export type DrillPlanPriority = 'high' | 'medium' | 'maintenance';
 export type DrillFeedbackStatus = 'reinforce' | 'variant' | 'untested';
@@ -41,6 +42,12 @@ function dosageForPriority(priority: DrillPlanPriority) {
   if (priority === 'high') return '3 sets x 3 focused repeats';
   if (priority === 'medium') return '2 sets x 3 controlled repeats';
   return '1 set x 4 easy repeats';
+}
+
+function dosageForReport(report: LocalAnalysisReport, priority: DrillPlanPriority) {
+  const hint = coachLensDrillDosageHint(report.engine.coachLens.key);
+  const dosage = dosageForPriority(priority);
+  return hint ? `${dosage} · ${hint}` : dosage;
 }
 
 function sortReports(reports: LocalAnalysisReport[]) {
@@ -107,7 +114,7 @@ function buildItem(report: LocalAnalysisReport, cue: MovementCue, feedback: CueF
 
   return {
     cueId: cue.id,
-    dosage: dosageForPriority(priority),
+    dosage: dosageForReport(report, priority),
     drill: cue.drill,
     evidence: `${report.session.title} at ${(cue.timestampMs / 1000).toFixed(1)}s`,
     feedbackEvidence: feedbackSummary.feedbackEvidence,
@@ -127,7 +134,7 @@ export function buildDrillPlan(reports: LocalAnalysisReport[], annotations: Repo
   const byCue = new Map<string, DrillPlanItem>();
 
   for (const report of orderedReports) {
-    for (const cue of report.cues) {
+    for (const cue of sortCuesForCoachLens(report.cues, report.engine.coachLens.key)) {
       const item = buildItem(report, cue, feedbackByCue.get(cue.id) ?? []);
       const existing = byCue.get(cue.id);
       if (!existing || shouldReplace(existing, item)) {

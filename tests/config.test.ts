@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   appConfig,
   resolveBillingReadinessConfig,
+  resolveConfiguredCoachLens,
   resolveLaunchReadinessEvidence,
   resolveModelEvidence,
 } from '../src/core/config';
@@ -12,8 +13,15 @@ describe('app config', () => {
     expect(appConfig.launchReadinessEvidence).toBeUndefined();
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
+    expect(appConfig.coachLens).toBe('balanced');
     expect(appConfig.billingReadiness.provider).toBe('none');
     expect(appConfig.billingReadiness.entitlementSource).toBe('plan-catalog');
+  });
+
+  it('parses configurable coach lens values with a safe default', () => {
+    expect(resolveConfiguredCoachLens('body-position')).toBe('body-position');
+    expect(resolveConfiguredCoachLens('unknown-lens')).toBe('balanced');
+    expect(resolveConfiguredCoachLens(undefined)).toBe('balanced');
   });
 
   it('parses launch readiness evidence from Expo extra objects', () => {

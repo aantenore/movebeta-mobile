@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { LocalAnalysisReport, MovementCue, MovementMetric, TimelineEvent } from './contracts';
+import { resolveCoachLens, sortCuesForCoachLens } from './coachLens';
 
 export const BetaReplayStepSchema = z.object({
   action: z.string(),
@@ -21,11 +22,6 @@ export const BetaReplayPlanSchema = z.object({
 
 export type BetaReplayStep = z.infer<typeof BetaReplayStepSchema>;
 export type BetaReplayPlan = z.infer<typeof BetaReplayPlanSchema>;
-
-function byPriority(a: MovementCue, b: MovementCue) {
-  const severityWeight = { fix: 0, watch: 1, info: 2 };
-  return severityWeight[a.severity] - severityWeight[b.severity] || a.timestampMs - b.timestampMs;
-}
 
 function lowestMetric(metrics: MovementMetric[]) {
   return [...metrics].sort((a, b) => a.score - b.score)[0];
@@ -98,7 +94,8 @@ function exitStep(report: LocalAnalysisReport, primaryCue?: MovementCue, weakest
 }
 
 export function buildBetaReplayPlan(report: LocalAnalysisReport): BetaReplayPlan {
-  const sortedCues = [...report.cues].sort(byPriority);
+  const lens = resolveCoachLens(report.engine.coachLens.key);
+  const sortedCues = sortCuesForCoachLens(report.cues, lens.metadata.key);
   const primaryCue = sortedCues[0];
   const weakestMetric = lowestMetric(report.metrics);
   const steps = [
@@ -114,7 +111,7 @@ export function buildBetaReplayPlan(report: LocalAnalysisReport): BetaReplayPlan
     primaryFocus,
     steps,
     summary: primaryCue
-      ? `Repeat this attempt around ${primaryCue.title.toLowerCase()} before adding volume.`
-      : `Repeat this attempt around ${primaryFocus.toLowerCase()} and keep the same local video setup.`,
+      ? `${lens.betaReplayHint} Repeat this attempt around ${primaryCue.title.toLowerCase()} before adding volume.`
+      : `${lens.betaReplayHint} Repeat this attempt around ${primaryFocus.toLowerCase()} and keep the same local video setup.`,
   });
 }
