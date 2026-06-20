@@ -1,21 +1,21 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T02:40:25.499Z
+Generated: 2026-06-20T02:50:53.596Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 92b08e74225cd48660897696984a565c9ac9b21a
+- Base commit at generation: ada1136a36afc363756477c5e8c6eb76d188459c
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 5389ms; average inference 338ms
-- Screenshots: 8/8
+- MoveNet readiness: ready; load 4491ms; average inference 332ms
+- Screenshots: 9/9
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
@@ -53,6 +53,7 @@ Generated: 2026-06-20T02:40:25.499Z
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`
+- [x] Release critical path screenshot: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Source archive: `../movebeta-mobile-source.zip`
 - [x] Web dist archive: `../movebeta-mobile-web-dist.zip`
 - [x] Release archives manifest: `../movebeta-mobile-release-archives.json`
@@ -67,4 +68,5 @@ Generated: 2026-06-20T02:40:25.499Z
 - [x] Freemium plan catalog: `docs/store/screenshots/05-plan.png`
 - [x] Privacy and offline readiness: `docs/store/screenshots/06-privacy.png`
 - [x] Release unblock checklist: `docs/store/screenshots/07-release-unblock.png`
+- [x] Release critical path: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Local backup restore preview: `docs/store/screenshots/08-data-portability.png`
