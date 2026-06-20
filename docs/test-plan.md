@@ -282,6 +282,10 @@
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.
+- Plan tab shows release blocker issue drafts with issue count, owners, credential key names, titles, labels, commands,
+  proof expectations, and the repository GitHub issue template path.
+- Plan tab prepares a release blocker issue packet with credential values, raw video, raw artifacts, and local paths
+  excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab prepares a store submission packet with metadata, privacy declarations, screenshots, copy checks, and
