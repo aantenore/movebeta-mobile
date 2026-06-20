@@ -135,6 +135,8 @@
   token/local-path rejection before sharing.
 - Vitest release critical path tests for blocker dependency sequencing, parallel owner lanes, ready-to-start state,
   all-ready state, and raw artifact/path/token rejection.
+- Vitest release evidence scenario tests for projected launch tracks, cleared blocker counts, prerequisite detection,
+  all-ready state, current-evidence immutability, and raw artifact/path/token rejection.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
 - Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
