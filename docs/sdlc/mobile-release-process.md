@@ -10,15 +10,16 @@
 
 1. Update requirements, changelog, and versioning notes.
 2. Run `npm run release:check`.
-3. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
-4. Review the Plan tab release unblock checklist for remaining proof artifacts, commands, and credential key names.
-5. Run `npm run release:eas:check`.
-6. Run `npm run native:qa:runbook` before collecting physical-device evidence.
-7. Run browser smoke.
-8. For native releases, run EAS preview build.
-9. Run `npm run release:archives` after web export to refresh delivery zips and checksum manifests.
-10. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
-11. Complete privacy and permission review.
+3. Run `npm run release:env:doctor` and confirm `.env.example` lists runtime, smoke, and release key names without values.
+4. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
+5. Review the Plan tab release unblock checklist for remaining proof artifacts, commands, and credential key names.
+6. Run `npm run release:eas:check`.
+7. Run `npm run native:qa:runbook` before collecting physical-device evidence.
+8. Run browser smoke.
+9. For native releases, run EAS preview build.
+10. Run `npm run release:archives` after web export to refresh delivery zips and checksum manifests.
+11. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
+12. Complete privacy and permission review.
 
 ## EAS Readiness
 
@@ -46,6 +47,9 @@ Strict mode requires:
 
 Credential values must stay in local shell secrets, CI secrets, or EAS credentials. Do not commit store credential files or
 secret-like values into `eas.json`.
+
+`.env.example` is the share-safe setup contract. Regenerate `docs/sdlc/env-template-report.json` with
+`npm run release:env:doctor` after adding runtime, smoke-test, or release credential key names.
 
 The Plan tab release unblock checklist mirrors these strict prerequisites. It lists the required proof artifacts,
 commands, affected release tracks, owners, and credential key names while deliberately excluding credential values.

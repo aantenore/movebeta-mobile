@@ -1,0 +1,167 @@
+{
+  "categories": [
+    {
+      "key": "runtime-public",
+      "label": "Runtime public configuration",
+      "missingKeys": [],
+      "owner": "engineering",
+      "presentKeys": [
+        "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
+        "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
+        "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
+        "EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE",
+        "EXPO_PUBLIC_MOVEBETA_BILLING_READINESS",
+        "EXPO_PUBLIC_MOVEBETA_MODEL_EVIDENCE"
+      ],
+      "requiredKeys": [
+        "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
+        "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
+        "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
+        "EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE",
+        "EXPO_PUBLIC_MOVEBETA_BILLING_READINESS",
+        "EXPO_PUBLIC_MOVEBETA_MODEL_EVIDENCE"
+      ],
+      "secretValuePolicy": "safe-example-value"
+    },
+    {
+      "key": "local-operations",
+      "label": "Local operation commands",
+      "missingKeys": [],
+      "owner": "engineering",
+      "presentKeys": [
+        "MOVEBETA_SMOKE_URL"
+      ],
+      "requiredKeys": [
+        "MOVEBETA_SMOKE_URL"
+      ],
+      "secretValuePolicy": "safe-example-value"
+    },
+    {
+      "key": "release-credentials",
+      "label": "Release credential key names",
+      "missingKeys": [],
+      "owner": "release",
+      "presentKeys": [
+        "EXPO_TOKEN",
+        "MOVEBETA_ASC_APP_ID",
+        "MOVEBETA_APPLE_ID",
+        "ASC_API_KEY_ID",
+        "ASC_API_ISSUER_ID",
+        "ASC_API_KEY_P8_BASE64",
+        "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
+        "MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+      ],
+      "requiredKeys": [
+        "EXPO_TOKEN",
+        "MOVEBETA_ASC_APP_ID",
+        "MOVEBETA_APPLE_ID",
+        "ASC_API_KEY_ID",
+        "ASC_API_ISSUER_ID",
+        "ASC_API_KEY_P8_BASE64",
+        "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
+        "MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+      ],
+      "secretValuePolicy": "empty-template-value"
+    }
+  ],
+  "checks": [
+    {
+      "detail": "9/9 required keys are present.",
+      "id": "runtime-public-keys",
+      "keys": [
+        "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
+        "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
+        "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
+        "EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE",
+        "EXPO_PUBLIC_MOVEBETA_BILLING_READINESS",
+        "EXPO_PUBLIC_MOVEBETA_MODEL_EVIDENCE"
+      ],
+      "label": "Runtime public configuration",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "detail": "1/1 required keys are present.",
+      "id": "local-operations-keys",
+      "keys": [
+        "MOVEBETA_SMOKE_URL"
+      ],
+      "label": "Local operation commands",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "detail": "9/9 required keys are present.",
+      "id": "release-credentials-keys",
+      "keys": [
+        "EXPO_TOKEN",
+        "MOVEBETA_ASC_APP_ID",
+        "MOVEBETA_APPLE_ID",
+        "ASC_API_KEY_ID",
+        "ASC_API_ISSUER_ID",
+        "ASC_API_KEY_P8_BASE64",
+        "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
+        "MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+      ],
+      "label": "Release credential key names",
+      "owner": "release",
+      "status": "pass"
+    },
+    {
+      "detail": "No credential values, token-like strings, or local paths were detected.",
+      "id": "secret-free-template",
+      "keys": [],
+      "label": "Secret-free template",
+      "owner": "security",
+      "status": "pass"
+    },
+    {
+      "detail": "No duplicate env keys were detected.",
+      "id": "duplicate-template-keys",
+      "keys": [],
+      "label": "Duplicate key guard",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "detail": "Every non-comment line is a KEY=value assignment.",
+      "id": "template-syntax",
+      "keys": [],
+      "label": "Template syntax",
+      "owner": "engineering",
+      "status": "pass"
+    }
+  ],
+  "generatedAt": "2026-06-20T01:26:32.975Z",
+  "nextAction": "Use .env.example as the share-safe setup contract, then set credential values only in CI secrets or local shells.",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "parsedValuesIncluded": false,
+    "secretsIncluded": false
+  },
+  "schemaVersion": "movebeta.env-template-report.v1",
+  "status": "ready",
+  "summary": {
+    "duplicateKeyCount": 0,
+    "malformedLineCount": 0,
+    "missingKeyCount": 0,
+    "presentKeyCount": 19,
+    "requiredKeyCount": 19,
+    "unsafeValueCount": 0
+  },
+  "templatePath": ".env.example",
+  "unsafeValues": []
+}
