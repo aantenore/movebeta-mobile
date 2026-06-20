@@ -10,6 +10,7 @@ import { buildBillingReadinessSummary } from '@/core/billingReadiness';
 import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket';
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
+import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
@@ -86,6 +87,14 @@ function providerStatusLabel(status: ProviderReadinessStatus) {
   return 'Review';
 }
 
+type FeatureCompletionReport = typeof featureCompletionReport;
+
+function featureCompletionStatusLabel(status: FeatureCompletionReport['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'external-blocked') return 'External';
+  return 'Gaps';
+}
+
 const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
   {
     allWorkflowsPassed: false,
@@ -160,6 +169,56 @@ function LaunchTrackCard({ track }: { track: LaunchReadinessTrack }) {
               <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={15} />
             )}
             <Text style={styles.launchCheckText}>{check.label}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function FeatureCompletionCard({ report }: { report: FeatureCompletionReport }) {
+  const isReady = report.status === 'ready';
+  const hasInternalGaps = report.summary.internalGapCount > 0;
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Feature completion audit</Text>
+          <Text style={styles.qaKitText}>{report.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : hasInternalGaps ? styles.launchStatusBlocked : null]}>
+          {featureCompletionStatusLabel(report.status)}
+        </Text>
+      </View>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.taskDoneCount}/{report.summary.taskItemCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>tasks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.backlogDoneCount}/{report.summary.backlogItemCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>backlog</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.summary.internalGapCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>internal gaps</Text>
+        </View>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {report.launchReadiness.openChecks.slice(0, 5).map((check) => (
+          <View key={check.key} style={styles.qaWorkflowRow}>
+            <TriangleAlert color={theme.colors.amber} size={14} />
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>
+                {check.owner}: {check.action}
+              </Text>
+            </View>
           </View>
         ))}
       </View>
@@ -1331,6 +1390,10 @@ export function PlanScreen() {
             ))}
           </View>
         </View>
+      </Section>
+
+      <Section title="Feature completion" caption="Machine-readable audit of tracked tasks, backlog, traceability, and launch blockers.">
+        <FeatureCompletionCard report={featureCompletionReport} />
       </Section>
 
       <Section title="Model evidence" caption="Local model proof with real-world validation kept explicit.">

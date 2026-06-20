@@ -173,6 +173,8 @@
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
 - Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.
+- Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
+  separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.

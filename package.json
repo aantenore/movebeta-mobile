@@ -69,6 +69,7 @@
     "validation:cue:doctor": "node scripts/cue_validation_dataset_doctor.mjs",
     "release:credentials:doctor": "node scripts/store_credentials_doctor.mjs",
     "release:github:doctor": "node scripts/github_workflow_doctor.mjs",
+    "feature:doctor": "node scripts/feature_completion_doctor.mjs",
     "model:movenet:smoke": "node scripts/smoke_movenet_model.mjs",
     "model:movenet:readiness": "node scripts/movenet_readiness_report.mjs",
     "model:analysis:replay": "tsx scripts/model_analysis_replay.ts",
