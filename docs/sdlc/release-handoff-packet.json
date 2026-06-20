@@ -17,6 +17,11 @@
     },
     {
       "exists": true,
+      "label": "Feature completion report",
+      "path": "docs/sdlc/feature-completion-report.json"
+    },
+    {
+      "exists": true,
       "label": "MoveNet readiness report",
       "path": "docs/sdlc/movenet-readiness-report.json"
     },
@@ -197,6 +202,16 @@
       ]
     },
     {
+      "command": "npm run feature:doctor",
+      "key": "feature-completion",
+      "label": "Feature completion doctor",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run release:eas:strict",
       "key": "eas-strict",
       "label": "Strict EAS store gate",
@@ -205,7 +220,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T01:04:26.478Z",
+  "generatedAt": "2026-06-20T01:12:51.152Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -215,9 +230,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "5856a5d20351b7c68d398671e97b241cf3c477c1",
+    "baseCommitSha": "d2d0afec37e07400efea0a0d096e855fa7671419",
     "changedPaths": [],
-    "commitSha": "5856a5d20351b7c68d398671e97b241cf3c477c1",
+    "commitSha": "d2d0afec37e07400efea0a0d096e855fa7671419",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -278,8 +293,8 @@
     "expectedScreenshots": 8,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 339,
-    "moveNetLoadMs": 5151,
+    "moveNetAverageInferenceMs": 344,
+    "moveNetLoadMs": 4594,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",
