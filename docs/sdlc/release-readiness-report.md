@@ -43,6 +43,9 @@ platforms are validated on physical climbing videos and devices.
   time, memory evidence, and explicit synthetic-frame limitations.
 - Model-analysis replay writes a durable local report proving MoveNet-shaped keypoints produce privacy-safe metrics and
   cues across bundled slab, vertical, and overhang attempts.
+- Model verification suite writes durable JSON and Markdown evidence that aggregates MoveNet runtime budgets,
+  model-shaped replay, wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real
+  validation status.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
   budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -108,6 +111,8 @@ platforms are validated on physical climbing videos and devices.
   shared entitlement catalog.
 - Plan tab shows configurable model evidence for MoveNet execution, model-shaped replay, and remaining real-world
   validation, keeping local technical readiness separate from production movement-quality claims.
+- Plan tab shows the model verification suite with runtime, replay, coverage, privacy, and real-validation status in one
+  release-facing card.
 - Plan tab shows configurable provider readiness for the primary video provider, local fallback, native target provider,
   runtime proof status, and local privacy boundary.
 - Plan tab shows configurable commercial readiness for billing adapter status, paid plan mapping ratio,
@@ -137,9 +142,9 @@ platforms are validated on physical climbing videos and devices.
   exclusion flags.
 - Plan tab shows release evidence freshness for generated launch, model, feature-completion, and store-submission
   reports, surfacing stale, missing, or invalid timestamps before handoff.
-- Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
-  QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
-  flags.
+- Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, model verification suite
+  report, provider readiness, native QA runbook, blocker checklist, relative artifact refs, release commands, and explicit
+  credential/raw-artifact exclusion flags.
 - Plan tab shows release evidence reconciliation for pasted cue-validation, native QA, iOS toolchain, and store
   credential reports, previews cleared blockers and projected launch tracks, and prepares a share-safe reconciliation
   packet before launch evidence is changed.
@@ -169,9 +174,10 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
-  MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, store
-  credential readiness, GitHub workflow activation, feature completion, store submission packet generation, web export,
-  EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
+  MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
+  cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
+  submission packet generation, web export, EAS standard check, moderate-or-higher dependency audit, dependency license
+  inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
@@ -199,16 +205,19 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 103 test files and 412 tests.
+- `npm test`: passed, 104 test files and 416 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3879ms load time, 328ms average inference, and 331ms max inference in the latest run.
+  CPU backend, 4256ms load time, 326ms average inference, and 329ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
+- `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
+  `docs/sdlc/model-verification-suite-report.md` with status `technical-ready`, 8/9 checks passing, 0 blocked checks,
+  and 1 external real-world validation check.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
   model-analysis replay, and ready/share-safe cue-validation dataset reports while preserving real-world validation targets
   until the real dataset doctor is ready.
@@ -232,8 +241,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 11/11 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 16/16 release steps passing.
+  status `ready`, 12/12 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 17/17 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -392,7 +401,7 @@ platforms are validated on physical climbing videos and devices.
   coach library export, cue-validation study seed, cue-validation clip intake manifest, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
-  Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
+  Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, model verification suite, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
   native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness

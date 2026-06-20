@@ -163,6 +163,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Verify generated release reports are recent enough before handoff, beta, or store work.',
     },
     {
+      command: 'npm run model:verification:suite',
+      key: 'model-verification-suite',
+      label: 'Model verification suite',
+      owner: 'engineering',
+      purpose: 'Aggregate MoveNet runtime, replay, wall-angle, cue, metric, privacy, and real-validation readiness evidence.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -268,6 +275,13 @@ export function buildReleaseEvidencePacket({
       label: 'Release evidence freshness report',
       path: 'docs/sdlc/release-freshness-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'releaseGate')),
+    },
+    {
+      command: 'npm run model:verification:suite',
+      key: 'model-verification-suite-report',
+      label: 'Model verification suite report',
+      path: 'docs/sdlc/model-verification-suite-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelAnalysisReplay')),
     },
   ];
   const status =

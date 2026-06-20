@@ -13,12 +13,14 @@ import appJson from '../../../app.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.json';
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
+import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
 import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
+import { buildModelVerificationSuite, type ModelVerificationSuite } from '@/core/modelVerificationSuite';
 import {
   buildNativeQaEvidenceComposerExport,
   buildNativeQaEvidenceComposerPreview,
@@ -662,6 +664,67 @@ function ModelEvidenceCard({ evidence }: { evidence: ReturnType<typeof buildMode
         {evidence.checks.map((check) => (
           <View key={check.key} style={styles.qaWorkflowRow}>
             {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>{check.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function ModelVerificationSuiteCard({ suite }: { suite: ModelVerificationSuite }) {
+  const isReady = suite.status === 'ready';
+  const isBlocked = suite.status === 'blocked';
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Model verification suite</Text>
+          <Text style={styles.qaKitText}>{suite.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {suite.status === 'technical-ready' ? 'Technical' : suite.status}
+        </Text>
+      </View>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {suite.summary.passedChecks}/{suite.summary.totalChecks}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {suite.coverage.replayAttempts.passed}/{suite.coverage.replayAttempts.total}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>replays</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{suite.coverage.wallAngles.covered.length}</Text>
+          <Text style={styles.qaKitMetricLabel}>wall angles</Text>
+        </View>
+      </View>
+      <Text style={styles.qaKitAction}>
+        {suite.summary.technicalReady
+          ? 'Runtime, replay, cue, metric, wall-angle, and privacy checks pass locally.'
+          : 'Technical model verification is blocked.'}
+      </Text>
+      <Text style={styles.qaKitText}>
+        Providers: {suite.coverage.providers.join(', ') || 'none'} · Metrics: {suite.coverage.metricIds.join(', ') || 'none'} · Cue outputs:{' '}
+        {suite.coverage.cueCount}
+      </Text>
+      <View style={styles.qaPlatformList}>
+        {suite.checks.map((check) => (
+          <View key={check.key} style={styles.qaWorkflowRow}>
+            {check.status === 'pass' ? (
               <CheckCircle2 color={theme.colors.success} size={14} />
             ) : (
               <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
@@ -1625,6 +1688,7 @@ function buildPlanSafetySources({
   evidencePlan,
   launchReadiness,
   modelEvidence,
+  modelVerificationSuite,
   recommendation,
   releaseCriticalPath,
   releaseEvidenceFreshness,
@@ -1636,6 +1700,7 @@ function buildPlanSafetySources({
   evidencePlan: ReturnType<typeof buildEvidenceCollectionPlan>;
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
+  modelVerificationSuite: ModelVerificationSuite;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
   releaseCriticalPath: ReleaseCriticalPath;
   releaseEvidenceFreshness: ReleaseEvidenceFreshness;
@@ -1666,6 +1731,14 @@ function buildPlanSafetySources({
       key: 'model-evidence',
       label: 'Model evidence',
       text: [modelEvidence.action, modelEvidence.limitation, ...modelEvidence.checks.map((check) => check.detail)].join(' '),
+    },
+    {
+      key: 'model-verification-suite',
+      label: 'Model verification suite',
+      text: [
+        modelVerificationSuite.summary.nextAction,
+        ...modelVerificationSuite.checks.map((check) => `${check.label} ${check.detail} ${check.command}`),
+      ].join(' '),
     },
     {
       key: 'evidence-collection',
@@ -1743,6 +1816,11 @@ export function PlanScreen() {
   const validationPilotKit = buildValidationPilotKit({ plan: evidencePlan });
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
+  const modelVerificationSuite = buildModelVerificationSuite({
+    modelAnalysisReplayReport,
+    moveNetReadinessReport,
+    realWorldValidation: appConfig.modelEvidence?.realWorldValidation,
+  });
   const nativeQaKit = buildNativeQaEvidenceKit();
   const nativeQaComposerPreview = buildNativeQaEvidenceComposerPreview({
     appVersion: '1.0.0',
@@ -1766,6 +1844,7 @@ export function PlanScreen() {
         featureCompletionReport,
         launchReadinessReport,
         modelAnalysisReplayReport,
+        modelVerificationSuiteReport,
         moveNetReadinessReport,
         storeSubmissionPacket: storeSubmissionReport,
       },
@@ -1815,6 +1894,7 @@ export function PlanScreen() {
       evidencePlan,
       launchReadiness,
       modelEvidence,
+      modelVerificationSuite,
       recommendation,
       releaseCriticalPath,
       releaseEvidenceFreshness,
@@ -2061,6 +2141,10 @@ export function PlanScreen() {
 
       <Section title="Model evidence" caption="Local model proof with real-world validation kept explicit.">
         <ModelEvidenceCard evidence={modelEvidence} />
+      </Section>
+
+      <Section title="Model verification suite" caption="Aggregated local proof for runtime, replay, privacy, and validation gaps.">
+        <ModelVerificationSuiteCard suite={modelVerificationSuite} />
       </Section>
 
       <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">

@@ -143,3 +143,4 @@
 | T139 | Add release critical path planner to Plan | Done |
 | T140 | Add release evidence scenario planner to Plan | Done |
 | T141 | Add release evidence freshness guard | Done |
+| T142 | Add model verification suite report and Plan card | Done |
