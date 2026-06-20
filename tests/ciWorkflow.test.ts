@@ -35,6 +35,7 @@ describe('GitHub Actions CI template', () => {
     expect(workflow).toContain('docs/sdlc/release-gate-report.json');
     expect(workflow).toContain('docs/sdlc/movenet-readiness-report.json');
     expect(workflow).toContain('docs/sdlc/model-analysis-replay-report.json');
+    expect(workflow).toContain('docs/sdlc/model-verification-suite-report.json');
     expect(workflow).toContain('docs/sdlc/native-qa-runbook.json');
     expect(workflow).toContain('docs/sdlc/ios-toolchain-report.json');
     expect(workflow).toContain('docs/sdlc/store-credentials-report.json');

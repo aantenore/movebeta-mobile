@@ -72,6 +72,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.movenet-readiness-report.v1',
     status: 'ready',
   });
+  writeJson(path.join(root, 'docs/sdlc/model-verification-suite-report.json'), {
+    schemaVersion: 'movebeta.model-verification-suite-report.v1',
+    status: 'technical-ready',
+  });
   writeJson(path.join(root, 'docs/sdlc/github-workflow-report.json'), {
     schemaVersion: 'movebeta.github-workflow-report.v1',
     status: 'blocked',
@@ -134,6 +138,7 @@ describe('release handoff packet', () => {
       expectedScreenshots: 2,
       launchStatus: 'blocked',
       moveNetStatus: 'ready',
+      modelVerificationStatus: 'technical-ready',
       releaseGateStatus: 'pass',
     });
     expect(packet.blockers[0]).toMatchObject({
@@ -144,9 +149,11 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
     expect(packet.commands.map((item) => item.key)).toContain('dependency-licenses');
     expect(packet.commands.map((item) => item.key)).toContain('feature-completion');
+    expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Model verification suite report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -167,6 +174,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('GitHub workflow doctor');
     expect(markdown).toContain('Dependency license report');
     expect(markdown).toContain('Feature completion doctor');
+    expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);

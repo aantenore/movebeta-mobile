@@ -1,0 +1,125 @@
+{
+  "coverage": {
+    "cueCount": 7,
+    "metricIds": [
+      "flow",
+      "foot-cuts",
+      "hip-drift",
+      "lock-off",
+      "pause-time"
+    ],
+    "providerCount": 1,
+    "providers": [
+      "web-tfjs-movenet"
+    ],
+    "replayAttempts": {
+      "passed": 3,
+      "total": 3
+    },
+    "wallAngles": {
+      "covered": [
+        "overhang",
+        "slab",
+        "vertical"
+      ],
+      "missing": [],
+      "required": [
+        "slab",
+        "vertical",
+        "overhang"
+      ]
+    }
+  },
+  "generatedAt": "2026-06-20T03:23:23.951Z",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.model-verification-suite-report.v1",
+  "status": "technical-ready",
+  "summary": {
+    "blockedChecks": 0,
+    "externalChecks": 1,
+    "nextAction": "npm run validation:cue",
+    "passedChecks": 8,
+    "technicalReady": true,
+    "totalChecks": 9
+  },
+  "checks": [
+    {
+      "command": "npm run model:movenet:readiness",
+      "detail": "4256ms load, 326ms avg inference, 329ms max inference",
+      "key": "movenet-runtime",
+      "label": "MoveNet runtime budget",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:movenet:readiness",
+      "detail": "4256ms <= 25000ms load budget",
+      "key": "movenet-load-budget",
+      "label": "Model load budget",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:movenet:readiness",
+      "detail": "326ms avg and 329ms max inference are inside budget",
+      "key": "movenet-inference-budget",
+      "label": "Inference budget",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:analysis:replay",
+      "detail": "3/3 model-shaped attempts passed",
+      "key": "analysis-replay",
+      "label": "Model-shaped analysis replay",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:analysis:replay",
+      "detail": "overhang, slab, vertical",
+      "key": "wall-angle-coverage",
+      "label": "Wall-angle coverage",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:analysis:replay",
+      "detail": "flow, foot-cuts, hip-drift, lock-off, pause-time",
+      "key": "metric-coverage",
+      "label": "Movement metric coverage",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:analysis:replay",
+      "detail": "7 cue outputs across 3 replay attempts",
+      "key": "cue-output-coverage",
+      "label": "Cue output coverage",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run model:analysis:replay",
+      "detail": "Replay report excludes raw video, local paths, and upload flags.",
+      "key": "privacy-boundary",
+      "label": "Privacy boundary",
+      "owner": "engineering",
+      "status": "pass"
+    },
+    {
+      "command": "npm run validation:cue",
+      "detail": "Collect consented climbing clips, coach review rows, and physical-device evidence before production movement-quality claims.",
+      "key": "real-world-validation",
+      "label": "Real climbing validation",
+      "owner": "product",
+      "status": "external-required"
+    }
+  ]
+}

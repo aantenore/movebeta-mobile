@@ -182,6 +182,10 @@
   `docs/sdlc/movenet-readiness-report.json` and is included in `npm run release:check`.
 - Model-analysis replay with `npm run model:analysis:replay`, which writes
   `docs/sdlc/model-analysis-replay-report.json` and is included in `npm run release:check`.
+- Model verification suite with `npm run model:verification:suite`, which writes
+  `docs/sdlc/model-verification-suite-report.json` and
+  `docs/sdlc/model-verification-suite-report.md`, aggregates local runtime/replay/coverage/privacy evidence, and is
+  included in `npm run release:check`.
 - Model evidence sync with `npm run model:evidence:sync`, which promotes the latest model reports into Expo
   `extra.modelEvidence` and promotes real-world validation only from a ready, share-safe cue-validation dataset report.
 - Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
@@ -320,6 +324,8 @@
   excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
+- Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,
+  privacy, and real-validation status.
 - Plan tab shows evidence reconciliation for pasted share-safe release reports, projected launch tracks, cleared blockers,
   proof gaps, and missing report sources.
 - Plan tab prepares a release evidence reconciliation packet with credential values, raw artifacts, local paths, and

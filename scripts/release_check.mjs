@@ -10,6 +10,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'quality'], key: 'quality', label: 'TypeScript and Vitest quality gate' },
   { command: ['npm', 'run', 'model:movenet:readiness'], key: 'modelReadiness', label: 'MoveNet readiness report' },
   { command: ['npm', 'run', 'model:analysis:replay'], key: 'modelAnalysisReplay', label: 'Model-shaped analysis replay' },
+  { command: ['npm', 'run', 'model:verification:suite'], key: 'modelVerificationSuite', label: 'Model verification suite' },
   { command: ['npm', 'run', 'native:qa:runbook'], key: 'nativeQaRunbook', label: 'Native QA runbook generation' },
   { command: ['npm', 'run', 'native:ios:doctor'], key: 'iosToolchainDoctor', label: 'iOS toolchain doctor' },
   { command: ['npm', 'run', 'validation:cue:doctor'], key: 'cueValidationDatasetDoctor', label: 'Cue validation dataset doctor' },

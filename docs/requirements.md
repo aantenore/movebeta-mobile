@@ -185,6 +185,8 @@
   per-criterion score spread before promoting real-world movement-quality evidence.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
+- Generate a model verification suite report that aggregates MoveNet runtime budgets, model-shaped replay coverage,
+  wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real-world validation status.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
   quality, cue generation, runtime budget, and privacy boundary without raw video artifacts.
 - Prepare a privacy-safe analysis evidence export from a local report for QA or stakeholder handoff, excluding raw video,
@@ -290,6 +292,9 @@
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.
+- Model verification suite must write durable JSON and Markdown evidence, fail on local model runtime or replay
+  regressions, stay `technical-ready` when only real-world validation is missing, and reject raw videos, local paths,
+  credential values, and token-like strings before sharing.
 - Cue-validation dataset readiness must fail when reviewer score spread exceeds the configured per-criterion threshold,
   and reliability summaries must omit reviewer identities, raw video, key frames, landmarks, video URIs, and local paths.
 - Analysis evidence timelines must be versioned, privacy-safe, legacy-report compatible, recomputed after runtime

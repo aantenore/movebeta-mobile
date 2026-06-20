@@ -144,6 +144,8 @@ web build with `npm run store:screenshots`.
 - Release evidence scenarios in the Plan tab that compare proof-collection bundles, projected ready tracks, cleared
   blockers, missing prerequisites, and share-safe packet export before account, device, or coach-review work starts.
 - Release evidence freshness guard in the Plan tab and CLI to catch stale generated reports before handoff or store work.
+- Model verification suite in the Plan tab and CLI to aggregate MoveNet runtime budgets, model-shaped replay coverage,
+  wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real-validation gaps.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
 - Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers
@@ -163,6 +165,8 @@ npm install
 npm run quality
 npm run model:movenet:smoke
 npm run model:movenet:readiness
+npm run model:analysis:replay
+npm run model:verification:suite
 npm run model:evidence:sync
 npm run export:web
 npm run preview:web
@@ -239,6 +243,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Dependency license report: `docs/sdlc/dependency-license-report.json`,
   `docs/sdlc/dependency-license-report.md`.
 - Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
+- Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
+  `docs/sdlc/model-verification-suite-report.md`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -258,6 +264,7 @@ The local release gate is:
 ```bash
 npm run release:check
 npm run model:analysis:replay
+npm run model:verification:suite
 npm run model:evidence:sync
 npm run native:ios:doctor
 npm run release:env:doctor
