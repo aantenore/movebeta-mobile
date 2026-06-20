@@ -141,6 +141,8 @@ platforms are validated on physical climbing videos and devices.
   MoveNet readiness, model-analysis replay, native QA runbook, iOS toolchain doctor, cue-validation dataset doctor, store
   credential readiness, store submission packet generation, web export, EAS standard check, and moderate-or-higher
   dependency audit.
+- `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
+  and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
   `docs/sdlc/ios-toolchain-report.md`, so full-Xcode blockers are captured as release evidence.
 - `npm run release:credentials:doctor` writes `docs/sdlc/store-credentials-report.json` and
@@ -162,12 +164,12 @@ platforms are validated on physical climbing videos and devices.
 - `npm run typecheck`: passed.
 - `npm test`: passed, 83 test files and 322 tests.
 - `npm ci`: passed from `package-lock.json`.
-- `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
+- `npm run ci`: passed and executes the shared local release gate used by the active GitHub Actions quality workflow.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3668ms load time, 324ms average inference, and 328ms max inference in the latest run.
+  CPU backend, 4572ms load time, 323ms average inference, and 326ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
