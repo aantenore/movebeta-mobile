@@ -97,6 +97,8 @@
 - Generate a next-session plan from technique readiness, personal benchmarks, drill evidence, and private project notes.
 - Adjust next-session plans from private drill practice consistency by lowering intensity and prescribing easier variants
   when skipped drills exceed completed drills.
+- Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
+  and privacy boundary so climbers know what to log before the next local comparison.
 - Show a local pre-send guard that combines analysis quality, technique readiness, open fix cues, practice
   follow-through, repeat outcomes, and training load before recommending reset, controlled repeat, or hard-try windows.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.
@@ -367,6 +369,9 @@
 - Release blocker issue reports must write JSON and Markdown artifacts from current launch evidence, preserve the same
   share-safe issue draft contract, stay fresh through release evidence freshness checks, and be included in release
   handoff evidence.
+- Session closeout packets must be schema-versioned, generated from local reports and private local logs, include only
+  derived checklist evidence, and reject raw video references, local paths, landmarks, private note text, or token-like
+  data before display or sharing.
 - Release evidence reconciliation must infer supported report schemas from pasted JSON, reject malformed, raw-artifact,
   local-path, credential-value, or token-like evidence, and project launch readiness without mutating current evidence.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret

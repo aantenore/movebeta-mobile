@@ -29,6 +29,7 @@ import { summarizeProgress } from '@/movement/progressInsights';
 import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { summarizeRepeatOutcomes } from '@/movement/repeatOutcomeInsights';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
+import { buildSessionCloseout } from '@/movement/sessionCloseout';
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
 import { theme } from '@/core/theme';
@@ -87,6 +88,10 @@ export function ProgressScreen() {
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(
     () => buildSessionPlan(filteredReports, annotations, drillPractice),
+    [annotations, drillPractice, filteredReports],
+  );
+  const sessionCloseout = useMemo(
+    () => buildSessionCloseout({ annotations, drillPractice, reports: filteredReports }),
     [annotations, drillPractice, filteredReports],
   );
   const preSendGuard = useMemo(
@@ -198,6 +203,60 @@ export function ProgressScreen() {
           </View>
 
           <Text style={styles.sessionPlanSafety}>{sessionPlan.safetyNote}</Text>
+        </View>
+      </Section>
+
+      <Section title="Session closeout" caption="A local checklist for what to log after the planned repeat.">
+        <View style={styles.closeoutCard}>
+          <View style={styles.closeoutHeader}>
+            <View style={styles.closeoutCopy}>
+              <Text style={styles.closeoutKicker}>{sessionCloseout.status}</Text>
+              <Text style={styles.closeoutTitle}>{sessionCloseout.title}</Text>
+              <Text style={styles.closeoutMeta}>Anchor: {sessionCloseout.anchor}</Text>
+            </View>
+            <View
+              style={[
+                styles.closeoutBadge,
+                sessionCloseout.status === 'reset-first' ? styles.closeoutBadgeBlocked : null,
+                sessionCloseout.status === 'evidence-complete' ? styles.closeoutBadgeReady : null,
+              ]}
+            >
+              <Text style={styles.closeoutBadgeValue}>{sessionCloseout.summary.neededCount}</Text>
+              <Text style={styles.closeoutBadgeLabel}>Needed</Text>
+            </View>
+          </View>
+
+          <View style={styles.closeoutNextAction}>
+            <Text style={styles.closeoutNextActionLabel}>Next action</Text>
+            <Text style={styles.closeoutNextActionText}>{sessionCloseout.nextAction}</Text>
+          </View>
+
+          <View style={styles.closeoutActions}>
+            {sessionCloseout.actions.map((action) => (
+              <View key={action.id} style={styles.closeoutAction}>
+                <View style={styles.closeoutActionHeader}>
+                  <Text
+                    style={[
+                      styles.closeoutActionStatus,
+                      action.status === 'blocked' ? styles.closeoutActionStatusBlocked : null,
+                      action.status === 'ready' ? styles.closeoutActionStatusReady : null,
+                    ]}
+                  >
+                    {action.status}
+                  </Text>
+                  <Text style={styles.closeoutActionSurface}>{action.ownerSurface}</Text>
+                </View>
+                <Text style={styles.closeoutActionTitle}>{action.label}</Text>
+                <Text style={styles.closeoutActionDetail}>{action.detail}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.closeoutPrivacy}>
+            <Text style={styles.closeoutPrivacyText}>Raw video included: no</Text>
+            <Text style={styles.closeoutPrivacyText}>Private notes included: no</Text>
+            <Text style={styles.closeoutPrivacyText}>Cloud upload required: no</Text>
+          </View>
         </View>
       </Section>
 
@@ -1479,6 +1538,158 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,
+  },
+  closeoutAction: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 152,
+    padding: theme.spacing.sm,
+  },
+  closeoutActionDetail: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  closeoutActionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.xs,
+    justifyContent: 'space-between',
+  },
+  closeoutActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  closeoutActionStatus: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
+  closeoutActionStatusBlocked: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  closeoutActionStatusReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  closeoutActionSurface: {
+    color: theme.colors.muted,
+    flexShrink: 1,
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'right',
+    textTransform: 'uppercase',
+  },
+  closeoutActionTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  closeoutBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 84,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  closeoutBadgeBlocked: {
+    backgroundColor: theme.colors.coral,
+  },
+  closeoutBadgeLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  closeoutBadgeReady: {
+    backgroundColor: theme.colors.success,
+  },
+  closeoutBadgeValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  closeoutCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  closeoutCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  closeoutHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  closeoutKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  closeoutMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  closeoutNextAction: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  closeoutNextActionLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  closeoutNextActionText: {
+    color: theme.colors.brandDark,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  closeoutPrivacy: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  closeoutPrivacyText: {
+    backgroundColor: '#E8F4EE',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  closeoutTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 23,
   },
   sessionPlanCard: {
     backgroundColor: theme.colors.surface,
