@@ -128,3 +128,4 @@
 | T124 | Add share-safe commercial readiness packet | Done |
 | T125 | Add cue-validation reviewer onboarding packet | Done |
 | T126 | Promote model real-world validation from ready cue dataset reports | Done |
+| T127 | Add share-safe store credentials setup packet | Done |

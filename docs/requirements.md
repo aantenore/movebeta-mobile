@@ -151,6 +151,8 @@
   Pods, and build-settings probe before marking iOS build evidence ready.
 - Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
   key presence, and Google Play credential key presence without exposing any secret values.
+- Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store
+  Connect, and Google Play key names, commands, readiness summary, and no credential values.
 - Generate a cue-validation dataset report that checks missing, malformed, ready, or failed real-review dataset evidence
   without embedding dataset rows or reviewer identities.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
@@ -266,6 +268,8 @@
   findings, and keep recommendations framed as educational movement feedback.
 - Release evidence packets must use relative repository artifact names only, exclude credential values, raw video, raw
   local artifact references, local filesystem paths, and token-like strings, and remain schema-versioned.
+- Store credentials setup packets must include only required key names and commands, reject credential values, local paths,
+  raw artifacts, and token-like strings, and avoid printing the EAS project id value.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and
   generated drafts must remain invalid until real device evidence replaces pending/null values.
 - Native QA runbook packets must be schema-versioned, generated from the same native QA evidence kit shown in the app,
