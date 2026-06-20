@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T01:04:26.478Z
+Generated: 2026-06-20T01:12:51.152Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 5856a5d20351b7c68d398671e97b241cf3c477c1
+- Base commit at generation: d2d0afec37e07400efea0a0d096e855fa7671419
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 5151ms; average inference 339ms
+- MoveNet readiness: ready; load 4594ms; average inference 344ms
 - Screenshots: 8/8
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
@@ -36,6 +36,7 @@ Generated: 2026-06-20T01:04:26.478Z
 - Coach cue-validation gate: `npm run validation:cue`
 - GitHub workflow doctor: `npm run release:github:doctor`
 - Dependency license report: `npm run security:licenses`
+- Feature completion doctor: `npm run feature:doctor`
 - Strict EAS store gate: `npm run release:eas:strict`
 
 ## Artifacts
@@ -43,6 +44,7 @@ Generated: 2026-06-20T01:04:26.478Z
 - [x] Release readiness report: `docs/sdlc/release-readiness-report.md`
 - [x] Release gate report: `docs/sdlc/release-gate-report.json`
 - [x] Launch readiness report: `docs/sdlc/launch-readiness-report.json`
+- [x] Feature completion report: `docs/sdlc/feature-completion-report.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
