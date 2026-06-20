@@ -47,7 +47,7 @@ web build with `npm run store:screenshots`.
 - Private per-report training log with project status, cue usefulness feedback, effort, confidence, notes, tags, and local persistence.
 - Progress project queue generated from private training logs with next-repeat prioritization.
 - Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
-- Plan catalog tab with current tier, upgrade path, capability matrix, and billing-provider readiness.
+- Plan catalog tab with current tier, upgrade path, capability matrix, and provider-agnostic billing readiness.
 - Launch readiness cockpit driven by replaceable evidence for demo, internal beta, and store-submission tracks.
 - Durable per-report coach consent records with grant, revoke, and delete behavior.
 - Local coach library queue from active consented reports with review priority, signal status, and privacy-safe context counts.
@@ -109,6 +109,8 @@ web build with `npm run store:screenshots`.
   raw-artifact-free handoff planning.
 - In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
   local privacy boundary.
+- Provider-agnostic commercial readiness cockpit in the Plan tab for billing adapter selection, paid plan mappings,
+  receipt-validation mode, sandbox proof, and credential-free configuration hygiene.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret

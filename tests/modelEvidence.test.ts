@@ -4,7 +4,7 @@ import { buildModelEvidenceSummary, parseModelEvidenceConfig, type ModelEvidence
 
 const technicalEvidence: ModelEvidenceConfig = {
   analysisReplay: {
-    generatedAt: '2026-06-20T00:24:51.283Z',
+    generatedAt: '2026-06-20T00:33:10.382Z',
     minimumQualityScore: 100,
     passedAttempts: 3,
     privacySafe: true,
@@ -15,16 +15,16 @@ const technicalEvidence: ModelEvidenceConfig = {
   modelName: 'MoveNet SinglePose Lightning',
   provider: 'web-tfjs-movenet',
   readiness: {
-    averageInferenceMs: 333,
+    averageInferenceMs: 339,
     backend: 'cpu',
     budget: {
       averageInferenceMs: 1500,
       loadMs: 25000,
       maxInferenceMs: 3000,
     },
-    generatedAt: '2026-06-20T00:24:43.413Z',
-    loadMs: 6194,
-    maxInferenceMs: 337,
+    generatedAt: '2026-06-20T00:33:04.392Z',
+    loadMs: 4353,
+    maxInferenceMs: 356,
     status: 'ready',
   },
   realWorldValidation: {
@@ -42,7 +42,7 @@ describe('model evidence summary', () => {
 
     expect(summary.status).toBe('technical-ready');
     expect(summary.badge).toBe('Technical ready');
-    expect(summary.metrics.map((metric) => metric.value)).toEqual(['6.2s', '333ms', '3/3']);
+    expect(summary.metrics.map((metric) => metric.value)).toEqual(['4.4s', '339ms', '3/3']);
     expect(summary.checks.map((check) => [check.label, check.status])).toEqual([
       ['MoveNet execution', 'ready'],
       ['Model-shaped replay', 'ready'],

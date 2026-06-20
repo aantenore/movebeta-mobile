@@ -1,15 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AppConfig } from '../src/core/config';
 import { assessOfflineReadiness } from '../src/core/offlineReadiness';
 import { PrivacyConsentSchema } from '../src/core/privacy';
 
-const config: AppConfig = {
-  activePlan: 'free',
-  analysisProvider: 'local-fixture',
+const config = {
   privacyMode: 'on-device',
   videoAnalysisProvider: 'web-tfjs-movenet',
-};
+} as const;
 
 describe('offline readiness', () => {
   it('marks the default local workflow as airplane-mode ready after reports exist', () => {
