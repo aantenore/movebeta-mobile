@@ -132,6 +132,8 @@ platforms are validated on physical climbing videos and devices.
   flags.
 - Plan tab prepares a share-safe store submission packet with metadata, privacy declarations, screenshots, safety-language
   scan, submission commands, and explicit credential/raw-artifact exclusion flags.
+- Plan tab prepares a share-safe store credentials setup packet with EAS project binding, Expo token, App Store Connect,
+  and Google Play key names, release commands, and explicit credential/raw-artifact exclusion flags.
 - Plan tab shows balanced validation collection batches with per-wall-angle clip targets, review-row estimates, capture
   focus, and a privacy-first collection checklist derived from cue-validation acceptance thresholds.
 - Plan tab prepares a share-safe validation collection packet with balanced batches, reviewer slot templates, collection
@@ -174,14 +176,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 88 test files and 348 tests.
+- `npm test`: passed, 89 test files and 351 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3471ms load time, 346ms average inference, and 363ms max inference in the latest run.
+  CPU backend, 5151ms load time, 339ms average inference, and 340ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
@@ -316,6 +318,8 @@ platforms are validated on physical climbing videos and devices.
   reduction, negative privacy flags, and credential/local-path/payment-data rejection before sharing.
 - `tests/storeCredentialsDoctor.test.ts`: passed and covers blocked local credentials, injected ready credentials,
   durable JSON/Markdown writes, and credential value exclusion.
+- `tests/storeCredentialsSetupPacket.test.ts`: passed and covers blocked/ready setup packets, required credential key names,
+  and credential/local-path/service-account body rejection before sharing.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading

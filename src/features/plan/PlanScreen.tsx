@@ -30,6 +30,7 @@ import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/r
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
+import { buildStoreCredentialsSetupPacket, type StoreCredentialsSetupPacket } from '@/core/storeCredentialsSetupPacket';
 import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
 import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
 import { buildValidationCollectionPacket } from '@/core/validationCollectionPacket';
@@ -892,9 +893,13 @@ function ReleaseEvidencePacketCard({
 }
 
 function StoreSubmissionPacketCard({
+  credentialsPacket,
+  onPrepareCredentialsPacket,
   onPreparePacket,
   packet,
 }: {
+  credentialsPacket: StoreCredentialsSetupPacket;
+  onPrepareCredentialsPacket: () => void;
   onPreparePacket: () => void;
   packet: StoreSubmissionPacket;
 }) {
@@ -932,8 +937,29 @@ function StoreSubmissionPacketCard({
           <Download color={theme.colors.brand} size={16} />
           <Text style={styles.planActionText}>Store packet</Text>
         </Pressable>
+        <Pressable
+          accessibilityLabel="Prepare store credentials setup packet"
+          onPress={onPrepareCredentialsPacket}
+          style={styles.planAction}
+        >
+          <ShieldCheck color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Credentials packet</Text>
+        </Pressable>
       </View>
       <View style={styles.qaPlatformList}>
+        <View style={styles.qaWorkflowRow}>
+          {credentialsPacket.summary.status === 'ready' ? (
+            <CheckCircle2 color={theme.colors.success} size={14} />
+          ) : (
+            <TriangleAlert color={theme.colors.amber} size={14} />
+          )}
+          <View style={styles.launchTrackTitleGroup}>
+            <Text style={styles.qaWorkflowText}>
+              {credentialsPacket.summary.presentGroupCount}/{credentialsPacket.summary.totalGroupCount} credential groups ready
+            </Text>
+            <Text style={styles.qaPlatformMore}>{credentialsPacket.summary.nextAction}</Text>
+          </View>
+        </View>
         <View style={styles.qaWorkflowRow}>
           <CheckCircle2 color={theme.colors.success} size={14} />
           <View style={styles.launchTrackTitleGroup}>
@@ -1105,6 +1131,14 @@ export function PlanScreen() {
   const storeSubmissionPacket = buildStoreSubmissionPacket({
     manifest: buildRuntimeStoreReadinessManifest(),
   });
+  const staticEasProjectId = (appJson.expo.extra as { eas?: { projectId?: string } } | undefined)?.eas?.projectId;
+  const storeCredentialsSetupPacket = buildStoreCredentialsSetupPacket({
+    androidPackage: storeSubmissionPacket.summary.androidPackage,
+    easProjectConfigured: typeof staticEasProjectId === 'string' && Boolean(staticEasProjectId.trim()),
+    iosBundleIdentifier: storeSubmissionPacket.summary.iosBundleIdentifier,
+    name: appJson.expo.name,
+    slug: appJson.expo.slug,
+  });
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
       commercialReadiness,
@@ -1162,6 +1196,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(storeSubmissionPacket, null, 2),
       title: 'Prepared store submission packet',
+    });
+  }
+
+  function prepareStoreCredentialsSetupPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(storeCredentialsSetupPacket, null, 2),
+      title: 'Prepared store credentials setup packet',
     });
   }
 
@@ -1328,7 +1370,12 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Store submission packet" caption="Metadata, privacy declarations, screenshots, and copy checks before App Store or Play handoff.">
-        <StoreSubmissionPacketCard packet={storeSubmissionPacket} onPreparePacket={prepareStoreSubmissionPacket} />
+        <StoreSubmissionPacketCard
+          credentialsPacket={storeCredentialsSetupPacket}
+          onPrepareCredentialsPacket={prepareStoreCredentialsSetupPacket}
+          onPreparePacket={prepareStoreSubmissionPacket}
+          packet={storeSubmissionPacket}
+        />
       </Section>
 
       {preparedPlanExport ? (

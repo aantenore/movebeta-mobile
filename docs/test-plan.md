@@ -110,6 +110,8 @@
   JSON/Markdown report writes.
 - Vitest store credentials doctor tests for blocked/ready EAS credential states, secret-value exclusion, and durable
   JSON/Markdown report writes.
+- Vitest store credentials setup packet tests for blocked/ready credential-group summaries, required key names, and
+  credential/local-path/service-account body rejection before sharing.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
@@ -170,6 +172,7 @@
   included in `npm run release:check`.
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
+- Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.
@@ -273,6 +276,8 @@
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab prepares a store submission packet with metadata, privacy declarations, screenshots, copy checks, and
   submission commands while excluding credentials and raw artifacts.
+- Plan tab prepares a store credentials setup packet with EAS/App Store/Play key names and release commands while
+  excluding credential values, local paths, and raw artifacts.
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.
