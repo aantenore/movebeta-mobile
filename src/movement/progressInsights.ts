@@ -1,5 +1,6 @@
 import type { LocalAnalysisReport, MovementMetric } from './contracts';
 import { compareLatestAttempts, type AttemptComparison } from './attemptComparison';
+import type { ReportAnnotation } from './reportAnnotationRepository';
 
 export type MetricTrend = {
   id: string;
@@ -39,7 +40,7 @@ function findMetric(report: LocalAnalysisReport | null, metricId: string) {
   return report?.metrics.find((metric) => metric.id === metricId) ?? null;
 }
 
-export function summarizeProgress(reports: LocalAnalysisReport[]): ProgressInsightSummary {
+export function summarizeProgress(reports: LocalAnalysisReport[], annotations: ReportAnnotation[] = []): ProgressInsightSummary {
   const orderedReports = sortReports(reports);
   const latestReport = orderedReports[0] ?? null;
   const previousReport = orderedReports[1] ?? null;
@@ -62,7 +63,7 @@ export function summarizeProgress(reports: LocalAnalysisReport[]): ProgressInsig
 
   return {
     attemptCount: orderedReports.length,
-    attemptComparison: compareLatestAttempts(orderedReports),
+    attemptComparison: compareLatestAttempts(orderedReports, annotations),
     averageQuality: Math.round(average(orderedReports.map((report) => report.analysisQuality.score))),
     bestMetric,
     focusMetric,
