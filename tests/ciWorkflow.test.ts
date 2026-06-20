@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-const workflow = readFileSync('docs/sdlc/ci-templates/github-actions-quality.yml', 'utf8');
+const templateWorkflowPath = 'docs/sdlc/ci-templates/github-actions-quality.yml';
+const workflow = readFileSync(templateWorkflowPath, 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
   engines?: { node?: string };
   scripts?: Record<string, string>;
@@ -35,5 +36,10 @@ describe('GitHub Actions CI template', () => {
     expect(workflow).toContain('docs/sdlc/movenet-readiness-report.json');
     expect(workflow).toContain('docs/sdlc/model-analysis-replay-report.json');
     expect(workflow).toContain('docs/sdlc/native-qa-runbook.json');
+    expect(workflow).toContain('docs/sdlc/ios-toolchain-report.json');
+    expect(workflow).toContain('docs/sdlc/store-credentials-report.json');
+    expect(workflow).toContain('docs/sdlc/cue-validation-dataset-report.json');
+    expect(workflow).toContain('docs/sdlc/launch-readiness-report.json');
+    expect(workflow).toContain('docs/store/store-submission-packet.json');
   });
 });

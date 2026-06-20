@@ -119,3 +119,4 @@
 | T115 | Add share-safe native QA evidence composer export | Done |
 | T116 | Add cue-validation clip intake manifest | Done |
 | T117 | Add share-safe store submission packet | Done |
+| T118 | Extend GitHub Actions release evidence template | Done |

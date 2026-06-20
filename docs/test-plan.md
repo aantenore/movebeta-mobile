@@ -136,8 +136,8 @@
   commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
   metadata, Markdown rendering, and durable JSON/Markdown writes.
-- Vitest CI workflow template tests for GitHub Actions trigger coverage, Node version sourcing, lockfile install, shared
-  release gate execution, deferred activation, and release evidence artifact upload.
+- Vitest CI workflow template tests for GitHub Actions trigger coverage, deferred active-workflow activation, Node
+  version sourcing, lockfile install, shared release gate execution, and release evidence artifact upload.
 - Vitest model-analysis replay tests for MoveNet-shaped keypoint conversion, bundled attempt coverage, privacy-safe
   outputs, metric/cue generation, and failing quality thresholds.
 - GitHub Actions quality workflow template with `npm run ci` on pushes to `main` and pull requests; activate after the
