@@ -43,7 +43,7 @@
       "purpose": "Verify physical-device evidence before claiming native release readiness."
     }
   ],
-  "generatedAt": "2026-06-20T03:00:00.931Z",
+  "generatedAt": "2026-06-20T03:14:35.523Z",
   "manifest": {
     "androidPackage": "com.movebeta.mobile",
     "androidPermissions": [
@@ -165,6 +165,15 @@
         }
       },
       {
+        "fileName": "11-release-freshness.png",
+        "label": "Release evidence freshness",
+        "route": "plan",
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      },
+      {
         "fileName": "08-data-portability.png",
         "label": "Local backup restore preview",
         "route": "privacy",
@@ -235,7 +244,7 @@
         "status": "pass"
       },
       {
-        "detail": "10 screenshots across Analyze, Drills, Progress, Sessions, Plan, and Privacy.",
+        "detail": "11 screenshots across Analyze, Drills, Progress, Sessions, Plan, and Privacy.",
         "id": "screenshots",
         "label": "Store screenshot plan",
         "status": "pass"
@@ -262,7 +271,7 @@
     "copyIssueCount": 0,
     "iosBundleIdentifier": "com.movebeta.mobile",
     "nextAction": "Store metadata packet is ready for account-bound credential and native QA gates.",
-    "screenshotCount": 10,
+    "screenshotCount": 11,
     "status": "metadata-ready"
   }
 }

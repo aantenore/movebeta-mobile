@@ -156,6 +156,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh task, backlog, traceability, and launch-readiness drift while separating internal gaps from external blockers.',
     },
     {
+      command: 'npm run release:freshness:doctor',
+      key: 'release-freshness-doctor',
+      label: 'Release evidence freshness doctor',
+      owner: 'release',
+      purpose: 'Verify generated release reports are recent enough before handoff, beta, or store work.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -254,6 +261,13 @@ export function buildReleaseEvidencePacket({
       label: 'Feature completion report',
       path: 'docs/sdlc/feature-completion-report.json',
       status: launchReadiness.status === 'ready' ? 'ready' : 'blocked',
+    },
+    {
+      command: 'npm run release:freshness:doctor',
+      key: 'release-freshness-report',
+      label: 'Release evidence freshness report',
+      path: 'docs/sdlc/release-freshness-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'releaseGate')),
     },
   ];
   const status =

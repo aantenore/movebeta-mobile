@@ -34,6 +34,10 @@ These screenshots are generated from the exported web build with `npm run store:
 
 ![Plan tab release evidence scenarios showing projected launch tracks, cleared blockers, and missing prerequisites](store/screenshots/10-release-evidence-scenarios.png)
 
+## Release Freshness
+
+![Plan tab release evidence freshness guard showing generated report age, stale counts, and refresh commands](store/screenshots/11-release-freshness.png)
+
 ## Privacy
 
 ![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)

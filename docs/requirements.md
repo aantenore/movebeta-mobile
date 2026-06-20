@@ -351,6 +351,9 @@
 - Release evidence scenario planning must derive future proof-collection bundles from launch-readiness and critical-path
   contracts, compare projected ready tracks and cleared blockers without mutating current evidence, surface missing
   prerequisites, and reject raw videos, local paths, credential values, and token-like strings before sharing.
+- Release evidence freshness checks must be generated from machine-readable release reports, apply configurable freshness
+  windows per artifact, surface stale, missing, and invalid timestamps, and reject raw videos, local paths, credential
+  values, and token-like strings before sharing.
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.

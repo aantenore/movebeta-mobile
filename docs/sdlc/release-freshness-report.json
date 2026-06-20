@@ -1,0 +1,198 @@
+{
+  "artifacts": [
+    {
+      "generatedAt": "2026-06-20T03:14:53.364Z",
+      "key": "launch-readiness-report",
+      "label": "Launch readiness report",
+      "maxAgeHours": 24,
+      "owner": "release",
+      "path": "docs/sdlc/launch-readiness-report.json",
+      "refreshCommand": "npm run release:readiness",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store",
+        "handoff"
+      ],
+      "ageHours": 0,
+      "detail": "Launch readiness report is 0h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:35.302Z",
+      "key": "feature-completion-report",
+      "label": "Feature completion report",
+      "maxAgeHours": 24,
+      "owner": "engineering",
+      "path": "docs/sdlc/feature-completion-report.json",
+      "refreshCommand": "npm run feature:doctor",
+      "requiredFor": [
+        "handoff"
+      ],
+      "ageHours": 0.01,
+      "detail": "Feature completion report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:28.240Z",
+      "key": "movenet-readiness-report",
+      "label": "MoveNet readiness report",
+      "maxAgeHours": 24,
+      "owner": "engineering",
+      "path": "docs/sdlc/movenet-readiness-report.json",
+      "refreshCommand": "npm run model:movenet:readiness",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ],
+      "ageHours": 0.01,
+      "detail": "MoveNet readiness report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:33.722Z",
+      "key": "model-analysis-replay-report",
+      "label": "Model-analysis replay report",
+      "maxAgeHours": 24,
+      "owner": "engineering",
+      "path": "docs/sdlc/model-analysis-replay-report.json",
+      "refreshCommand": "npm run model:analysis:replay",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ],
+      "ageHours": 0.01,
+      "detail": "Model-analysis replay report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:33.958Z",
+      "key": "ios-toolchain-report",
+      "label": "iOS toolchain report",
+      "maxAgeHours": 24,
+      "owner": "engineering",
+      "path": "docs/sdlc/ios-toolchain-report.json",
+      "refreshCommand": "npm run native:ios:doctor",
+      "requiredFor": [
+        "store"
+      ],
+      "ageHours": 0.01,
+      "detail": "iOS toolchain report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:34.082Z",
+      "key": "cue-validation-dataset-report",
+      "label": "Cue-validation dataset report",
+      "maxAgeHours": 24,
+      "owner": "product",
+      "path": "docs/sdlc/cue-validation-dataset-report.json",
+      "refreshCommand": "npm run validation:cue:doctor",
+      "requiredFor": [
+        "store"
+      ],
+      "ageHours": 0.01,
+      "detail": "Cue-validation dataset report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:34.318Z",
+      "key": "store-credentials-report",
+      "label": "Store credentials report",
+      "maxAgeHours": 24,
+      "owner": "release",
+      "path": "docs/sdlc/store-credentials-report.json",
+      "refreshCommand": "npm run release:credentials:doctor",
+      "requiredFor": [
+        "store"
+      ],
+      "ageHours": 0.01,
+      "detail": "Store credentials report is 0.01h old and inside the 24h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:34.432Z",
+      "key": "github-workflow-report",
+      "label": "GitHub workflow report",
+      "maxAgeHours": 168,
+      "owner": "engineering",
+      "path": "docs/sdlc/github-workflow-report.json",
+      "refreshCommand": "npm run release:github:doctor",
+      "requiredFor": [
+        "handoff"
+      ],
+      "ageHours": 0.01,
+      "detail": "GitHub workflow report is 0.01h old and inside the 168h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:38.981Z",
+      "key": "dependency-license-report",
+      "label": "Dependency license report",
+      "maxAgeHours": 168,
+      "owner": "release",
+      "path": "docs/sdlc/dependency-license-report.json",
+      "refreshCommand": "npm run security:licenses",
+      "requiredFor": [
+        "store",
+        "handoff"
+      ],
+      "ageHours": 0,
+      "detail": "Dependency license report is 0h old and inside the 168h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:34.198Z",
+      "key": "env-template-report",
+      "label": "Environment template report",
+      "maxAgeHours": 168,
+      "owner": "engineering",
+      "path": "docs/sdlc/env-template-report.json",
+      "refreshCommand": "npm run release:env:doctor",
+      "requiredFor": [
+        "handoff"
+      ],
+      "ageHours": 0.01,
+      "detail": "Environment template report is 0.01h old and inside the 168h freshness window.",
+      "status": "fresh"
+    },
+    {
+      "generatedAt": "2026-06-20T03:14:35.523Z",
+      "key": "store-submission-packet",
+      "label": "Store submission packet",
+      "maxAgeHours": 72,
+      "owner": "release",
+      "path": "docs/store/store-submission-packet.json",
+      "refreshCommand": "npm run store:submission",
+      "requiredFor": [
+        "store",
+        "handoff"
+      ],
+      "ageHours": 0.01,
+      "detail": "Store submission packet is 0.01h old and inside the 72h freshness window.",
+      "status": "fresh"
+    }
+  ],
+  "generatedAt": "2026-06-20T03:14:53.607Z",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.release-evidence-freshness.v1",
+  "summary": {
+    "artifactCount": 11,
+    "freshCount": 11,
+    "invalidDateCount": 0,
+    "maxObservedAgeHours": 0.01,
+    "missingDateCount": 0,
+    "nextAction": "All tracked release evidence artifacts are fresh.",
+    "oldestArtifactKey": "feature-completion-report",
+    "staleCount": 0,
+    "status": "ready"
+  }
+}
