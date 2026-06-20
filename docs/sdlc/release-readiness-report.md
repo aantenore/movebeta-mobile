@@ -128,6 +128,8 @@ platforms are validated on physical climbing videos and devices.
   scan, submission commands, and explicit credential/raw-artifact exclusion flags.
 - Plan tab shows balanced validation collection batches with per-wall-angle clip targets, review-row estimates, capture
   focus, and a privacy-first collection checklist derived from cue-validation acceptance thresholds.
+- Plan tab prepares a share-safe validation collection packet with balanced batches, reviewer slot templates, collection
+  commands, and negative privacy flags before product and coach handoff.
 - Sessions prepares a cue-validation clip intake manifest from consented study seed data, showing clip coverage,
   wall-angle gaps, required coach review rows, negative privacy flags, and raw artifact rejection before coach worksheets
   are shared.
@@ -164,14 +166,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 85 test files and 330 tests.
+- `npm test`: passed, 86 test files and 333 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4262ms load time, 326ms average inference, and 329ms max inference in the latest run.
+  CPU backend, 6194ms load time, 333ms average inference, and 337ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -291,6 +293,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
   workflow checks, configurable acceptance thresholds, balanced wall-angle batches, review-row distribution, and
   privacy-safe collection planning.
+- `tests/validationCollectionPacket.test.ts`: passed and covers versioned validation collection packets, balanced batch
+  derivation, reviewer slot templates, configurable acceptance thresholds, and raw path/token rejection.
 - `tests/releaseUnblockChecklist.test.ts`: passed and covers default external blockers, launch-readiness label/action
   parity, credential key-name disclosure without secret values, and all-ready evidence state.
 - `tests/releaseUnblockPacket.test.ts`: passed and covers versioned packet generation, ready packet generation, and
