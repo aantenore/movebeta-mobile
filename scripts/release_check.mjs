@@ -22,6 +22,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },
   { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },
   { command: ['npm', 'run', 'security:licenses'], key: 'dependencyLicenses', label: 'Dependency license report' },
+  { command: ['npm', 'run', 'release:freshness:doctor'], key: 'releaseFreshnessDoctor', label: 'Release evidence freshness doctor' },
 ];
 
 export function resolveProjectRoot() {

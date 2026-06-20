@@ -40,6 +40,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('featureCompletionDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeSubmissionPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('dependencyLicenses');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseFreshnessDoctor');
   });
 
   it('marks the release gate fail when any executed step fails', () => {

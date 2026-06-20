@@ -80,6 +80,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.dependency-license-report.v1',
     status: 'review',
   });
+  writeJson(path.join(root, 'docs/sdlc/release-freshness-report.json'), {
+    schemaVersion: 'movebeta.release-evidence-freshness.v1',
+    status: 'ready',
+  });
   writeJson(path.join(root, 'docs/sdlc/feature-completion-report.json'), {
     schemaVersion: 'movebeta.feature-completion-report.v1',
     status: 'external-blocked',
@@ -140,8 +144,11 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
     expect(packet.commands.map((item) => item.key)).toContain('dependency-licenses');
     expect(packet.commands.map((item) => item.key)).toContain('feature-completion');
+    expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
   });
 
@@ -160,6 +167,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('GitHub workflow doctor');
     expect(markdown).toContain('Dependency license report');
     expect(markdown).toContain('Feature completion doctor');
+    expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);
   });

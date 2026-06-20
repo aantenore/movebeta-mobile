@@ -19,6 +19,7 @@ SCREENSHOTS = [
     ("07-release-unblock.png", "Plan", "Release unblock checklist"),
     ("09-release-critical-path.png", "Plan", "Release critical path"),
     ("10-release-evidence-scenarios.png", "Plan", "Release evidence scenarios"),
+    ("11-release-freshness.png", "Plan", "Release evidence freshness"),
     ("08-data-portability.png", "Privacy", "Data portability"),
 ]
 
@@ -68,7 +69,12 @@ def main() -> None:
             if tab_name != "Analyze":
                 page.get_by_role("tab", name=tab_name).click()
                 page.wait_for_load_state("networkidle")
-            if file_name in {"07-release-unblock.png", "09-release-critical-path.png", "10-release-evidence-scenarios.png"}:
+            if file_name in {
+                "07-release-unblock.png",
+                "09-release-critical-path.png",
+                "10-release-evidence-scenarios.png",
+                "11-release-freshness.png",
+            }:
                 page.get_by_text(expected_text).first.scroll_into_view_if_needed()
             elif file_name == "08-data-portability.png":
                 page.get_by_text(expected_text).scroll_into_view_if_needed()
@@ -79,7 +85,13 @@ def main() -> None:
                 expect(page.get_by_text("Integrity verified: yes")).to_be_visible()
                 expect(page.get_by_text("Existing reports:")).to_be_visible()
             expect(page.get_by_text(expected_text).first).to_be_visible()
-            if file_name in {"07-release-unblock.png", "09-release-critical-path.png", "10-release-evidence-scenarios.png", "08-data-portability.png"}:
+            if file_name in {
+                "07-release-unblock.png",
+                "09-release-critical-path.png",
+                "10-release-evidence-scenarios.png",
+                "11-release-freshness.png",
+                "08-data-portability.png",
+            }:
                 pass
             elif tab_name == "Progress":
                 page.get_by_text("Pre-send guard", exact=True).scroll_into_view_if_needed()

@@ -137,6 +137,9 @@
   all-ready state, and raw artifact/path/token rejection.
 - Vitest release evidence scenario tests for projected launch tracks, cleared blocker counts, prerequisite detection,
   all-ready state, current-evidence immutability, and raw artifact/path/token rejection.
+- Vitest release evidence freshness tests for configurable artifact windows, stale evidence, missing/invalid timestamps,
+  release report bundle mapping, and raw artifact/path/token rejection; `npm run release:freshness:doctor` writes durable
+  JSON/Markdown freshness evidence and is included in `npm run release:check`.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
 - Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
