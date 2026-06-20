@@ -162,14 +162,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 83 test files and 322 tests.
+- `npm test`: passed, 84 test files and 326 tests.
 - `npm ci`: passed from `package-lock.json`.
-- `npm run ci`: passed and executes the shared local release gate used by the active GitHub Actions quality workflow.
+- `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4572ms load time, 323ms average inference, and 326ms max inference in the latest run.
+  CPU backend, 6170ms load time, 327ms average inference, and 340ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and
@@ -181,12 +181,15 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:credentials:doctor`: passed as a command and wrote `docs/sdlc/store-credentials-report.json` with
   status `blocked` because account-bound EAS project id, Expo token, App Store Connect, and Google Play credentials are
   not configured on this machine.
+- `npm run release:github:doctor`: passed as a command and wrote `docs/sdlc/github-workflow-report.json` with status
+  `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
+  committed.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
 - `npm run security:audit`: passed at `--audit-level=moderate` with 0 reported vulnerabilities after the `uuid` override
   for the Expo `xcode` tooling chain.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 11/11 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 12/12 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -257,6 +260,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/ciWorkflow.test.ts`: passed and covers GitHub Actions template trigger coverage, deferred active-workflow
   activation, Node version sourcing from `package.json`, lockfile installs, shared `npm run ci` execution, and release
   evidence artifact upload.
+- `tests/githubWorkflowDoctor.test.ts`: passed and covers OAuth scope parsing, missing workflow-scope blocker evidence,
+  active workflow/template parity, durable JSON/Markdown writes, and token-value exclusion.
 - `tests/launchReadinessDoctor.test.ts`: passed and covers local artifact detection, configured evidence drift, iOS
   toolchain report detection, and durable launch readiness report writes, including machine release-gate report detection
   and content validation for native QA evidence and cue-validation datasets.
