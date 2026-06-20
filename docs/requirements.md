@@ -158,6 +158,8 @@
   activation.
 - Generate a GitHub workflow activation report that checks template presence, active workflow status, template parity,
   GitHub CLI availability, and OAuth `workflow` scope without exposing token values.
+- Generate an offline dependency license report from the lockfile-installed package graph, including package counts,
+  license summary, notice/attribution review packages, blocked packages, and local linked package handling.
 
 ## Non-Functional
 
@@ -279,6 +281,9 @@
   target `main` and pull requests, and upload release evidence without committing CI-generated outputs.
 - GitHub workflow activation evidence must be generated without committing active workflow files when the current token
   lacks `workflow` scope, and must not include OAuth token values.
+- Dependency license evidence must handle dual permissive/copyleft license expressions, treat local linked packages as
+  internal, flag notice/attribution obligations for review, block missing or restricted third-party licenses, and avoid
+  absolute local paths or secret-like values.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Beta memory must ignore orphan annotations, remain useful without resolved cue ids, limit visible entries through a

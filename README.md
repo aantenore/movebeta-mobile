@@ -127,6 +127,8 @@ web build with `npm run store:screenshots`.
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
   scopes, and token exclusion before attempting workflow pushes.
+- Dependency license doctor that creates an offline package/license inventory from lockfile-installed dependencies before
+  release handoff.
 - Vitest for domain tests.
 
 ## Local Setup
@@ -206,6 +208,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/cue-validation-dataset-report.md`.
 - Store credentials report: `docs/sdlc/store-credentials-report.json`, `docs/sdlc/store-credentials-report.md`.
 - GitHub workflow report: `docs/sdlc/github-workflow-report.json`, `docs/sdlc/github-workflow-report.md`.
+- Dependency license report: `docs/sdlc/dependency-license-report.json`,
+  `docs/sdlc/dependency-license-report.md`.
 - Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.

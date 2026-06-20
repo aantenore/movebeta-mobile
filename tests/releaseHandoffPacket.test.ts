@@ -76,6 +76,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.github-workflow-report.v1',
     status: 'blocked',
   });
+  writeJson(path.join(root, 'docs/sdlc/dependency-license-report.json'), {
+    schemaVersion: 'movebeta.dependency-license-report.v1',
+    status: 'review',
+  });
   writeJson(path.join(root, 'docs/store/store-manifest.json'), {
     screenshots: [
       { fileName: '01-analyze.png', label: 'Analyze' },
@@ -129,7 +133,9 @@ describe('release handoff packet', () => {
     });
     expect(packet.commands.map((item) => item.key)).toContain('eas-strict');
     expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
+    expect(packet.commands.map((item) => item.key)).toContain('dependency-licenses');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
   });
 
   it('renders a markdown handoff without leaking secret values', () => {
@@ -145,6 +151,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('MoveBeta Release Handoff Packet');
     expect(markdown).toContain('Native device QA evidence');
     expect(markdown).toContain('GitHub workflow doctor');
+    expect(markdown).toContain('Dependency license report');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);
   });

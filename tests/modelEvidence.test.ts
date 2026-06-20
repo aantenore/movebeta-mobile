@@ -4,7 +4,7 @@ import { buildModelEvidenceSummary, parseModelEvidenceConfig, type ModelEvidence
 
 const technicalEvidence: ModelEvidenceConfig = {
   analysisReplay: {
-    generatedAt: '2026-06-20T00:05:54.982Z',
+    generatedAt: '2026-06-20T00:12:34.525Z',
     minimumQualityScore: 100,
     passedAttempts: 3,
     privacySafe: true,
@@ -22,9 +22,9 @@ const technicalEvidence: ModelEvidenceConfig = {
       loadMs: 25000,
       maxInferenceMs: 3000,
     },
-    generatedAt: '2026-06-20T00:05:47.210Z',
-    loadMs: 6170,
-    maxInferenceMs: 340,
+    generatedAt: '2026-06-20T00:12:26.736Z',
+    loadMs: 6195,
+    maxInferenceMs: 338,
     status: 'ready',
   },
   realWorldValidation: {
