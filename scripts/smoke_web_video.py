@@ -339,6 +339,12 @@ def main() -> None:
         expect(page.get_by_text("Paid plan product mappings")).to_be_visible()
         expect(page.get_by_text("0/2", exact=True)).to_be_visible()
         expect(page.get_by_text("No credential values in config")).to_be_visible()
+        expect(page.get_by_text("Commercial packet", exact=True)).to_be_visible()
+        page.get_by_text("Commercial packet", exact=True).click()
+        expect(page.get_by_text("Prepared commercial readiness packet")).to_be_visible()
+        expect(page.get_by_text('"schemaVersion": "movebeta.commercial-readiness-packet.v1"')).to_be_visible()
+        expect(page.get_by_text('"paymentDataIncluded": false')).to_be_visible()
+        expect(page.get_by_text('"receiptValuesIncluded": false')).to_be_visible()
 
         page.get_by_role("tab", name="Privacy").click()
         page.wait_for_load_state("networkidle")

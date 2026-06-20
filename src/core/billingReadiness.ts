@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { defaultEntitlements, type PlanEntitlement, type PlanKey } from './entitlements';
+import { defaultEntitlements, PlanKeySchema, type PlanEntitlement, type PlanKey } from './entitlements';
 
 export const BillingProviderSchema = z.enum([
   'none',
@@ -29,34 +29,36 @@ export const BillingReadinessConfigSchema = z.object({
   sandboxReady: z.boolean().default(false),
 });
 
+export const BillingReadinessCheckSchema = z.object({
+  detail: z.string(),
+  id: z.string(),
+  label: z.string(),
+  status: BillingReadinessStatusSchema,
+});
+
+export const BillingReadinessSummarySchema = z.object({
+  action: z.string(),
+  badge: z.string(),
+  checks: z.array(BillingReadinessCheckSchema),
+  mappedPlanKeys: z.array(PlanKeySchema),
+  missingPlanKeys: z.array(PlanKeySchema),
+  paidPlanKeys: z.array(PlanKeySchema),
+  planMappingRatio: z.string(),
+  provider: BillingProviderSchema,
+  providerLabel: z.string(),
+  receiptValidation: ReceiptValidationModeSchema,
+  receiptValidationLabel: z.string(),
+  sandboxReady: z.boolean(),
+  status: BillingReadinessStatusSchema,
+  title: z.string(),
+});
+
 export type BillingProvider = z.infer<typeof BillingProviderSchema>;
 export type ReceiptValidationMode = z.infer<typeof ReceiptValidationModeSchema>;
 export type BillingReadinessStatus = z.infer<typeof BillingReadinessStatusSchema>;
 export type BillingReadinessConfig = z.infer<typeof BillingReadinessConfigSchema>;
-
-export type BillingReadinessCheck = {
-  detail: string;
-  id: string;
-  label: string;
-  status: BillingReadinessStatus;
-};
-
-export type BillingReadinessSummary = {
-  action: string;
-  badge: string;
-  checks: BillingReadinessCheck[];
-  mappedPlanKeys: PlanKey[];
-  missingPlanKeys: PlanKey[];
-  paidPlanKeys: PlanKey[];
-  planMappingRatio: string;
-  provider: BillingProvider;
-  providerLabel: string;
-  receiptValidation: ReceiptValidationMode;
-  receiptValidationLabel: string;
-  sandboxReady: boolean;
-  status: BillingReadinessStatus;
-  title: string;
-};
+export type BillingReadinessCheck = z.infer<typeof BillingReadinessCheckSchema>;
+export type BillingReadinessSummary = z.infer<typeof BillingReadinessSummarySchema>;
 
 export const defaultBillingReadinessConfig = BillingReadinessConfigSchema.parse({});
 
@@ -227,7 +229,7 @@ export function buildBillingReadinessSummary(
   ];
   const status = checkStatus(checks.map((check) => check.status));
 
-  return {
+  return BillingReadinessSummarySchema.parse({
     action: actionFor(parsedConfig, status, missingPlanKeys),
     badge: badgeFor(parsedConfig, status),
     checks,
@@ -242,5 +244,5 @@ export function buildBillingReadinessSummary(
     sandboxReady: parsedConfig.sandboxReady,
     status,
     title: titleFor(parsedConfig, status),
-  };
+  });
 }
