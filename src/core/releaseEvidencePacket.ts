@@ -135,6 +135,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh full-Xcode, workspace, Pods, and build-settings readiness before iOS beta or store work.',
     },
     {
+      command: 'npm run release:env:doctor',
+      key: 'env-template-doctor',
+      label: 'Environment template doctor',
+      owner: 'engineering',
+      purpose: 'Verify .env.example covers runtime, smoke, and release key names without credential values or local paths.',
+    },
+    {
       command: 'npm run release:credentials:doctor',
       key: 'store-credentials-doctor',
       label: 'Store credentials doctor',
@@ -190,6 +197,13 @@ export function buildReleaseEvidencePacket({
       key: 'release-gate-report',
       label: 'Release gate report',
       path: 'docs/sdlc/release-gate-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'releaseGate')),
+    },
+    {
+      command: 'npm run release:env:doctor',
+      key: 'env-template-report',
+      label: 'Environment template report',
+      path: 'docs/sdlc/env-template-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'releaseGate')),
     },
     {
