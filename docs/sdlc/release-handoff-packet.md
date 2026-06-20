@@ -1,20 +1,21 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-20T03:15:55.939Z
+Generated: 2026-06-20T03:25:52.284Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 273f93dcd35bbb872c5220c5e70ba720faac90be
+- Base commit at generation: 2afe78fa996775bd3068659add6ef45a3c731d39
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3879ms; average inference 328ms
+- MoveNet readiness: ready; load 4256ms; average inference 326ms
+- Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
@@ -32,6 +33,7 @@ Generated: 2026-06-20T03:15:55.939Z
 - Full local release gate: `npm run release:full`
 - Exported web smoke: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py`
 - Store screenshot capture: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`
+- Model verification suite: `npm run model:verification:suite`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Coach cue-validation gate: `npm run validation:cue`
 - GitHub workflow doctor: `npm run release:github:doctor`
@@ -48,6 +50,7 @@ Generated: 2026-06-20T03:15:55.939Z
 - [x] Feature completion report: `docs/sdlc/feature-completion-report.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
+- [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
