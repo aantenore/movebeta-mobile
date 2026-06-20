@@ -126,3 +126,4 @@
 | T122 | Add share-safe validation collection packet | Done |
 | T123 | Add provider-agnostic commercial readiness cockpit | Done |
 | T124 | Add share-safe commercial readiness packet | Done |
+| T125 | Add cue-validation reviewer onboarding packet | Done |

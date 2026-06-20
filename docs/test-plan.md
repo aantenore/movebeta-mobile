@@ -54,8 +54,8 @@
   injected raw-artifact key rejection.
 - Vitest cue validation tests for pass, needs-review, and insufficient-data scoring.
 - Vitest cue validation study seed tests for active cue-validation consent filtering, packet-only review tasks, privacy
-  flags, private-note exclusion, no-invented-score metadata, clip intake manifests, blank review worksheets, worksheet CSV
-  export/escaping, and raw-artifact key rejection.
+  flags, private-note exclusion, no-invented-score metadata, clip intake manifests, reviewer onboarding packets, blank review
+  worksheets, worksheet CSV export/escaping, and raw-artifact key rejection.
 - Vitest completed worksheet dataset tests for final dataset composition, validation-gate compatibility, missing
   reviewer rejection, seed mismatch rejection, and out-of-range score rejection.
 - Vitest in-app cue-validation gate tests for ready datasets, default production evidence gaps, and raw-artifact rejection.
@@ -210,6 +210,8 @@
 - Sessions tab prepares a versioned coach library export with privacy flags and team templates after consent.
 - Sessions tab prepares a cue-validation study seed with packet-only review tasks and no invented scores after consent.
 - Sessions tab prepares a cue-validation clip intake manifest with consented clip coverage and no raw artifacts after consent.
+- Sessions tab prepares a cue-validation reviewer onboarding packet with coach instructions, review criteria, and no raw
+  artifacts after consent.
 - Sessions tab prepares a cue-validation review worksheet with blank coach score rows after consent.
 - Sessions tab prepares a cue-validation worksheet CSV for spreadsheet-based coach review collection after consent.
 - Sessions tab builds a cue-validation dataset JSON from a completed worksheet CSV after reviewer IDs and scores are filled.

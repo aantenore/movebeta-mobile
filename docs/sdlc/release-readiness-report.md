@@ -80,6 +80,8 @@ platforms are validated on physical climbing videos and devices.
   URI, private notes, drill notes, frames, key frames, or landmarks.
 - Sessions prepares a cue-validation study seed from active consented coach packets with packet-only review tasks and no
   invented reviewer scores.
+- Sessions prepares a cue-validation reviewer onboarding packet with coach instructions, review criteria, command checklist,
+  collection summary, negative privacy flags, and raw-artifact rejection before coach worksheets are shared.
 - Sessions prepares a cue-validation review worksheet from the study seed with null reviewer identities and null score
   fields for real coach completion.
 - Sessions prepares a cue-validation worksheet CSV with stable headers, escaped values, blank reviewer/score cells, and
@@ -137,6 +139,8 @@ platforms are validated on physical climbing videos and devices.
 - Sessions prepares a cue-validation clip intake manifest from consented study seed data, showing clip coverage,
   wall-angle gaps, required coach review rows, negative privacy flags, and raw artifact rejection before coach worksheets
   are shared.
+- Sessions prepares a cue-validation reviewer onboarding packet from consented study seed data, keeping raw video, local
+  paths, credentials, reviewer identities, and invented scores out of the reviewer handoff.
 - Plan tab shows a configurable safety-language guard for medical, injury-prevention, route-safety, and
   guaranteed-outcome copy risks across product and release copy.
 - `npm run release:handoff` writes JSON and Markdown handoff packets with repo, commit, product identity, gate status,
@@ -170,14 +174,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 88 test files and 344 tests.
+- `npm test`: passed, 88 test files and 346 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4476ms load time, 318ms average inference, and 319ms max inference in the latest run.
+  CPU backend, 6311ms load time, 335ms average inference, and 336ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness and

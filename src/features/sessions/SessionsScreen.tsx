@@ -31,16 +31,19 @@ import {
 } from '@/movement/coachLibraryExport';
 import {
   assertCueValidationClipIntakeManifestIsPrivacySafe,
+  assertCueValidationReviewerOnboardingPacketIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationClipIntakeManifest,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
+  buildCueValidationReviewerOnboardingPacket,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
   formatCueValidationClipIntakeManifestSummary,
   formatCueValidationCompletedDatasetSummary,
+  formatCueValidationReviewerOnboardingPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
 } from '@/movement/cueValidationStudy';
@@ -501,6 +504,7 @@ function CoachLibraryPanel({
   library,
   onPrepareExport,
   onPrepareValidationClipManifest,
+  onPrepareValidationReviewerOnboarding,
   onPrepareValidationSeed,
   onPrepareValidationWorksheet,
   onPrepareValidationWorksheetCsv,
@@ -508,6 +512,7 @@ function CoachLibraryPanel({
   library: CoachLibrary;
   onPrepareExport?: () => void;
   onPrepareValidationClipManifest?: () => void;
+  onPrepareValidationReviewerOnboarding?: () => void;
   onPrepareValidationSeed?: () => void;
   onPrepareValidationWorksheet?: () => void;
   onPrepareValidationWorksheetCsv?: () => void;
@@ -555,6 +560,16 @@ function CoachLibraryPanel({
             >
               <Target color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Clip manifest</Text>
+            </Pressable>
+          ) : null}
+          {onPrepareValidationReviewerOnboarding ? (
+            <Pressable
+              accessibilityLabel="Prepare cue validation reviewer onboarding packet"
+              onPress={onPrepareValidationReviewerOnboarding}
+              style={styles.secondaryAction}
+            >
+              <UserCheck color={theme.colors.brand} size={16} />
+              <Text style={styles.secondaryActionText}>Reviewer packet</Text>
             </Pressable>
           ) : null}
           {onPrepareValidationWorksheet ? (
@@ -864,6 +879,18 @@ export function SessionsScreen() {
     });
   }
 
+  async function prepareCueValidationReviewerOnboardingPacket() {
+    selectionFeedback();
+    const seed = await buildCurrentCueValidationStudySeed();
+    assertCueValidationStudySeedIsPrivacySafe(seed);
+    const packet = buildCueValidationReviewerOnboardingPacket(seed);
+    assertCueValidationReviewerOnboardingPacketIsPrivacySafe(packet);
+    setPreparedExport({
+      body: `${formatCueValidationReviewerOnboardingPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared cue validation reviewer packet',
+    });
+  }
+
   async function prepareCueValidationReviewWorksheet() {
     selectionFeedback();
     const seed = await buildCurrentCueValidationStudySeed();
@@ -1050,6 +1077,7 @@ export function SessionsScreen() {
             library={coachLibrary}
             onPrepareExport={prepareCoachLibraryExport}
             onPrepareValidationClipManifest={() => void prepareCueValidationClipIntakeManifest()}
+            onPrepareValidationReviewerOnboarding={() => void prepareCueValidationReviewerOnboardingPacket()}
             onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
             onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}

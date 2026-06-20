@@ -71,6 +71,8 @@ web build with `npm run store:screenshots`.
 - Completed worksheet CSV composer for building versioned validation dataset JSON only after real coach scores are filled.
 - Sessions dataset builder that accepts a completed worksheet CSV and prepares gate-compatible validation JSON locally.
 - In-app cue-validation gate preview that reports whether the completed dataset is ready or which checks still need data.
+- Share-safe cue-validation reviewer onboarding packet for coach instructions, review criteria, command checklist, and
+  raw-video-free collection handoff.
 - Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
 - Beta replay plan that turns local cue and metric evidence into setup, crux, and exit actions for the next attempt.

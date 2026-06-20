@@ -150,6 +150,54 @@ export const CueValidationReviewWorksheetSchema = z.object({
   sourceCueCount: z.number().int().nonnegative(),
 });
 
+export const cueValidationReviewerOnboardingPacketSchemaVersion = 'movebeta.cue-validation-reviewer-onboarding.v1';
+
+export const CueValidationReviewerOnboardingPacketSchema = z.object({
+  acceptance: CueValidationStudyAcceptanceSchema,
+  commands: z.array(
+    z.object({
+      key: z.string(),
+      label: z.string(),
+      owner: z.enum(['product', 'coach', 'qa']),
+      purpose: z.string(),
+    }),
+  ),
+  generatedAt: z.string(),
+  instructions: z.array(z.string()),
+  privacy: z.object({
+    coachPacketsIncluded: z.literal(false),
+    credentialValuesIncluded: z.literal(false),
+    keyFramesIncluded: z.literal(false),
+    landmarksIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawUrisIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reviewerIdentitiesIncluded: z.literal(false),
+    reviewerScoresInvented: z.literal(false),
+    videoLeavesDevice: z.literal(false),
+  }),
+  reviewCriteria: z.array(
+    z.object({
+      id: z.enum(['drillFit', 'relevance', 'safetyLanguage', 'timingAccuracy']),
+      passingScore: z.number().min(1).max(5),
+      prompt: z.string(),
+    }),
+  ),
+  schemaVersion: z.literal(cueValidationReviewerOnboardingPacketSchemaVersion),
+  sourceSeedGeneratedAt: z.string(),
+  summary: z.object({
+    estimatedReviewRows: z.number().int().nonnegative(),
+    missingWallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+    reviewerSlotsNeeded: z.number().int().nonnegative(),
+    sourceClipCount: z.number().int().nonnegative(),
+    sourceCueCount: z.number().int().nonnegative(),
+    status: z.enum(['needs-consent', 'needs-coverage', 'ready-for-review']),
+    targetClipCount: z.number().int().positive(),
+  }),
+});
+
 const CueValidationCompletedReviewSchema = z.object({
   cueId: z.string(),
   drillFit: z.number().int().min(1).max(5),
@@ -179,6 +227,7 @@ export const CueValidationCompletedDatasetSchema = z.object({
 export type CueValidationStudyAcceptance = z.infer<typeof CueValidationStudyAcceptanceSchema>;
 export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema>;
 export type CueValidationClipIntakeManifest = z.infer<typeof CueValidationClipIntakeManifestSchema>;
+export type CueValidationReviewerOnboardingPacket = z.infer<typeof CueValidationReviewerOnboardingPacketSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
 export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
 
@@ -191,6 +240,11 @@ export type CueValidationStudySeedOptions = {
 };
 
 export type CueValidationReviewWorksheetOptions = {
+  generatedAt?: string;
+  reviewerCount?: number;
+};
+
+export type CueValidationReviewerOnboardingPacketOptions = {
   generatedAt?: string;
   reviewerCount?: number;
 };
@@ -221,6 +275,8 @@ const forbiddenCsvArtifactPattern =
   /\b(?:fileUri|frames|keyFrame|landmarkFrames|landmarks|localUri|privateNote|rawVideo|rawVideoUri|videoPath|videoUri)\b|file:\/\//i;
 const forbiddenManifestValuePattern =
   /(file:\/\/|content:\/\/|asset:\/\/|ph:\/\/|\/Users\/|\/private\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b|rawVideoUri|videoUri)/i;
+const forbiddenOnboardingPacketValuePattern =
+  /(file:\/\/|content:\/\/|asset:\/\/|ph:\/\/|\/Users\/|\/private\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b|rawVideoUri|videoUri|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9_]+|pat_[A-Za-z0-9_]+|sk_live_[A-Za-z0-9_]+|sk_test_[A-Za-z0-9_]+|eyJ[A-Za-z0-9_-]{20,})/i;
 
 const wallAngleOrder = ['slab', 'vertical', 'overhang'] as const;
 
@@ -565,6 +621,117 @@ export function assertCueValidationClipIntakeManifestIsPrivacySafe(manifest: Cue
   }
 }
 
+export function buildCueValidationReviewerOnboardingPacket(
+  seed: CueValidationStudySeed,
+  options: CueValidationReviewerOnboardingPacketOptions = {},
+): CueValidationReviewerOnboardingPacket {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const manifest = buildCueValidationClipIntakeManifest(seed, options);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const reviewerCount = options.reviewerCount ?? parsedSeed.acceptance.minDistinctReviewersPerClip;
+  const reviewerSlotsNeeded = Math.max(0, manifest.summary.targetClipCount * reviewerCount);
+
+  return CueValidationReviewerOnboardingPacketSchema.parse({
+    acceptance: parsedSeed.acceptance,
+    commands: [
+      {
+        key: 'prepare-seed',
+        label: 'Prepare consented study seed',
+        owner: 'product',
+        purpose: 'Collect athlete consent and prepare packet-only cue review tasks from Sessions.',
+      },
+      {
+        key: 'review-packet-only',
+        label: 'Review packet-only cues',
+        owner: 'coach',
+        purpose: 'Score each generated cue from the packet context without requesting raw video or private notes.',
+      },
+      {
+        key: 'complete-worksheet',
+        label: 'Complete worksheet rows',
+        owner: 'coach',
+        purpose: 'Fill reviewer id and 1-5 scores only after a real coach review.',
+      },
+      {
+        key: 'run-validation-gate',
+        label: 'Run validation gate',
+        owner: 'qa',
+        purpose: 'Compose the completed worksheet into dataset JSON and run npm run validation:cue.',
+      },
+    ],
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+    instructions: [
+      'Review only the packet context: session metadata, quality, metrics, cues, cue trust, timeline, and privacy evidence.',
+      'Do not ask for raw video, screenshots, landmarks, local file paths, private notes, or account identifiers.',
+      'Use a 1-5 score for relevance, timing accuracy, drill fit, and safety language.',
+      `A passing cue needs an average score of at least ${parsedSeed.acceptance.minAverageCueScore}/5 and no unsafe safety-language score.`,
+      'Reviewer IDs must identify real coach reviewers in the completed worksheet; this onboarding packet intentionally leaves them out.',
+    ],
+    privacy: {
+      coachPacketsIncluded: false,
+      credentialValuesIncluded: false,
+      keyFramesIncluded: false,
+      landmarksIncluded: false,
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawArtifactsIncluded: false,
+      rawUrisIncluded: false,
+      rawVideoIncluded: false,
+      reviewerIdentitiesIncluded: false,
+      reviewerScoresInvented: false,
+      videoLeavesDevice: false,
+    },
+    reviewCriteria: [
+      {
+        id: 'relevance',
+        passingScore: parsedSeed.acceptance.minAverageCueScore,
+        prompt: 'Does the cue match an observable movement pattern in the packet?',
+      },
+      {
+        id: 'timingAccuracy',
+        passingScore: parsedSeed.acceptance.minAverageCueScore,
+        prompt: 'Is the timestamp close enough for a climber to find the movement window?',
+      },
+      {
+        id: 'drillFit',
+        passingScore: parsedSeed.acceptance.minAverageCueScore,
+        prompt: 'Is the drill specific, repeatable, and appropriate for the grade and wall angle?',
+      },
+      {
+        id: 'safetyLanguage',
+        passingScore: parsedSeed.acceptance.minAverageCueScore,
+        prompt: 'Does the feedback avoid medical, injury-prevention, or route-safety claims?',
+      },
+    ],
+    schemaVersion: cueValidationReviewerOnboardingPacketSchemaVersion,
+    sourceSeedGeneratedAt: parsedSeed.generatedAt,
+    summary: {
+      estimatedReviewRows: manifest.summary.requiredCoachReviewRows,
+      missingWallAngles: manifest.summary.missingWallAngles,
+      reviewerSlotsNeeded,
+      sourceClipCount: parsedSeed.clipCount,
+      sourceCueCount: parsedSeed.cueCount,
+      status: manifest.summary.status,
+      targetClipCount: parsedSeed.acceptance.minClips,
+    },
+  });
+}
+
+export function assertCueValidationReviewerOnboardingPacketIsPrivacySafe(packet: CueValidationReviewerOnboardingPacket) {
+  const serialized = JSON.stringify(packet);
+
+  if (forbiddenStudyKeyPattern.test(serialized) || forbiddenOnboardingPacketValuePattern.test(serialized)) {
+    throw new Error('Cue validation reviewer onboarding packet failed privacy validation: raw artifact or credential text is present.');
+  }
+
+  const parsed = CueValidationReviewerOnboardingPacketSchema.parse(packet);
+  const privacyFlags = Object.values(parsed.privacy);
+
+  if (privacyFlags.some(Boolean)) {
+    throw new Error('Cue validation reviewer onboarding packet failed privacy validation: a forbidden artifact flag is enabled.');
+  }
+}
+
 export function buildCueValidationReviewWorksheet(
   seed: CueValidationStudySeed,
   options: CueValidationReviewWorksheetOptions = {},
@@ -789,6 +956,17 @@ export function formatCueValidationCompletedDatasetSummary(dataset: CueValidatio
     `${reviewCount} real reviews`,
     `target ${parsed.acceptance.minClips} clips`,
     'ready for validation gate',
+  ].join(' · ');
+}
+
+export function formatCueValidationReviewerOnboardingPacketSummary(packet: CueValidationReviewerOnboardingPacket) {
+  const parsed = CueValidationReviewerOnboardingPacketSchema.parse(packet);
+  return [
+    `${parsed.summary.sourceClipCount}/${parsed.summary.targetClipCount} consented clips`,
+    `${parsed.summary.estimatedReviewRows} expected review rows`,
+    `${parsed.summary.reviewerSlotsNeeded} coach slots target`,
+    `status ${parsed.summary.status}`,
+    'raw video: no',
   ].join(' · ');
 }
 
