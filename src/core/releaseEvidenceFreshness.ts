@@ -61,6 +61,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   githubWorkflowReport?: unknown;
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
+  releaseBlockerIssuesReport?: unknown;
   modelAnalysisReplayReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
@@ -94,6 +95,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/feature-completion-report.json',
     refreshCommand: 'npm run feature:doctor',
     reportKey: 'featureCompletionReport',
+    requiredFor: ['handoff'],
+  },
+  {
+    key: 'release-blocker-issues-report',
+    label: 'Release blocker issues report',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/release-blocker-issues-report.json',
+    refreshCommand: 'npm run release:blocker-issues',
+    reportKey: 'releaseBlockerIssuesReport',
     requiredFor: ['handoff'],
   },
   {

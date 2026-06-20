@@ -41,6 +41,7 @@ describe('GitHub Actions CI template', () => {
     expect(workflow).toContain('docs/sdlc/store-credentials-report.json');
     expect(workflow).toContain('docs/sdlc/cue-validation-dataset-report.json');
     expect(workflow).toContain('docs/sdlc/launch-readiness-report.json');
+    expect(workflow).toContain('docs/sdlc/release-blocker-issues-report.json');
     expect(workflow).toContain('docs/store/store-submission-packet.json');
   });
 });

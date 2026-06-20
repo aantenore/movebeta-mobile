@@ -156,6 +156,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh task, backlog, traceability, and launch-readiness drift while separating internal gaps from external blockers.',
     },
     {
+      command: 'npm run release:blocker-issues',
+      key: 'release-blocker-issues',
+      label: 'Release blocker issue report',
+      owner: 'release',
+      purpose: 'Generate issue-ready drafts for every external release blocker without filing issues or exposing secrets.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -268,6 +275,13 @@ export function buildReleaseEvidencePacket({
       label: 'Feature completion report',
       path: 'docs/sdlc/feature-completion-report.json',
       status: launchReadiness.status === 'ready' ? 'ready' : 'blocked',
+    },
+    {
+      command: 'npm run release:blocker-issues',
+      key: 'release-blocker-issues-report',
+      label: 'Release blocker issues report',
+      path: 'docs/sdlc/release-blocker-issues-report.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {
       command: 'npm run release:freshness:doctor',

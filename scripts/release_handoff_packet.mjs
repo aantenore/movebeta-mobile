@@ -117,6 +117,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release gate report', 'docs/sdlc/release-gate-report.json'),
       artifact(rootDir, 'Launch readiness report', 'docs/sdlc/launch-readiness-report.json'),
       artifact(rootDir, 'Feature completion report', 'docs/sdlc/feature-completion-report.json'),
+      artifact(rootDir, 'Release blocker issues report', 'docs/sdlc/release-blocker-issues-report.json'),
       artifact(rootDir, 'MoveNet readiness report', 'docs/sdlc/movenet-readiness-report.json'),
       artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
       artifact(rootDir, 'Model verification suite report', 'docs/sdlc/model-verification-suite-report.json'),
@@ -157,6 +158,11 @@ export function buildReleaseHandoffPacket({
       command('github-workflow', 'GitHub workflow doctor', 'npm run release:github:doctor', ['demo', 'internal', 'store']),
       command('dependency-licenses', 'Dependency license report', 'npm run security:licenses', ['demo', 'internal', 'store']),
       command('feature-completion', 'Feature completion doctor', 'npm run feature:doctor', ['demo', 'internal', 'store']),
+      command('release-blocker-issues', 'Release blocker issue report', 'npm run release:blocker-issues', [
+        'demo',
+        'internal',
+        'store',
+      ]),
       command('release-freshness', 'Release evidence freshness doctor', 'npm run release:freshness:doctor', [
         'demo',
         'internal',

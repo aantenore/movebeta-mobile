@@ -132,6 +132,8 @@ platforms are validated on physical climbing videos and devices.
   artifacts, release commands, owners, affected tracks, and credential key names without exposing secret values.
 - Plan tab prepares a share-safe release unblock packet with commands, proof expectations, owners, tracks, acceptance
   criteria, env key names, and explicit credential/raw-artifact exclusion flags.
+- Release blocker issue report regenerates the same external blocker issue drafts from launch evidence as durable JSON and
+  Markdown, without filing issues automatically or exposing credentials, local paths, raw video, or raw artifacts.
 - Plan tab shows a release critical path that sequences external blockers across real-world validation, native build/QA,
   and store-account lanes, including dependency keys and ready-to-start states.
 - Plan tab prepares a share-safe release critical path packet with commands, proof expectations, dependencies, lane
@@ -140,8 +142,8 @@ platforms are validated on physical climbing videos and devices.
   coach-review work starts, including projected ready tracks, cleared blockers, missing prerequisites, and commands.
 - Plan tab prepares a share-safe release evidence scenario packet with explicit credential/local-path/raw-artifact
   exclusion flags.
-- Plan tab shows release evidence freshness for generated launch, model, feature-completion, and store-submission
-  reports, surfacing stale, missing, or invalid timestamps before handoff.
+- Plan tab shows release evidence freshness for generated launch, model, feature-completion, blocker-issue, and
+  store-submission reports, surfacing stale, missing, or invalid timestamps before handoff.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, model verification suite
   report, provider readiness, native QA runbook, blocker checklist, relative artifact refs, release commands, and explicit
   credential/raw-artifact exclusion flags.
@@ -173,13 +175,17 @@ platforms are validated on physical climbing videos and devices.
   `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE`, so release environments can update evidence without changing code.
 - `npm run release:readiness` writes `docs/sdlc/launch-readiness-report.json` and distinguishes configured evidence from
   detected local artifacts, so stale launch flags become drift instead of silent readiness.
+- `npm run release:blocker-issues` writes `docs/sdlc/release-blocker-issues-report.json` and
+  `docs/sdlc/release-blocker-issues-report.md` with issue-ready external blocker drafts generated from current launch
+  evidence.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
-  submission packet generation, web export, EAS standard check, moderate-or-higher dependency audit, dependency license
-  inventory, and release evidence freshness.
+  submission packet generation, release blocker issue report generation, web export, EAS standard check,
+  moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
-  and pull requests, then uploads machine-readable release evidence artifacts without committing generated CI outputs.
+  and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
+  committing generated CI outputs.
 - `npm run native:ios:doctor` writes `docs/sdlc/ios-toolchain-report.json` and
   `docs/sdlc/ios-toolchain-report.md`, so full-Xcode blockers are captured as release evidence.
 - `npm run release:credentials:doctor` writes `docs/sdlc/store-credentials-report.json` and
@@ -205,14 +211,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 104 test files and 416 tests.
+- `npm test`: passed, 105 test files and 418 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4256ms load time, 326ms average inference, and 329ms max inference in the latest run.
+  CPU backend, 6232ms load time, 325ms average inference, and 328ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -232,7 +238,11 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 0 internal gaps, and 10 external blockers across task, backlog, traceability, and launch evidence.
+  `external-blocked`, 140/143 tasks done, 94/96 backlog items done, 127/127 traceability rows covered, 0 internal gaps,
+  and 10 external blockers across task, backlog, traceability, and launch evidence.
+- `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
+  `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
+  6 proof artifacts, and credential key names only.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -241,8 +251,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 12/12 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 17/17 release steps passing.
+  status `ready`, 13/13 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 18/18 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -348,6 +358,8 @@ platforms are validated on physical climbing videos and devices.
   parity, credential key-name disclosure without secret values, and all-ready evidence state.
 - `tests/releaseUnblockPacket.test.ts`: passed and covers versioned packet generation, ready packet generation, and
   injected token/local-path rejection before sharing.
+- `tests/releaseBlockerIssueReport.test.ts`: passed and covers launch-evidence input, durable JSON/Markdown issue draft
+  writes, issue ordering, and credential/local-path/raw-artifact rejection before sharing.
 - `tests/releaseCriticalPath.test.ts`: passed and covers external blocker dependency sequencing, parallel lane grouping,
   upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
 - `tests/releaseEvidenceScenarios.test.ts`: passed and covers projected launch tracks, cleared blocker counts,
