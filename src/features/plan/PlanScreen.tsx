@@ -35,6 +35,7 @@ import {
   parseReleaseEvidenceReconciliationInput,
   type ReleaseEvidenceReconciliation,
 } from '@/core/releaseEvidenceReconciliation';
+import { buildReleaseEvidenceScenarioPlanner, type ReleaseEvidenceScenarioPlanner } from '@/core/releaseEvidenceScenarios';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
@@ -115,6 +116,13 @@ function criticalPathStatusLabel(status: ReleaseCriticalPath['steps'][number]['s
   if (status === 'ready') return 'Ready';
   if (status === 'ready-to-start') return 'Start';
   return 'Blocked';
+}
+
+function releaseScenarioStatusLabel(status: ReleaseEvidenceScenarioPlanner['scenarios'][number]['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'would-improve') return 'Improves';
+  if (status === 'needs-prerequisite') return 'Prereq';
+  return 'No impact';
 }
 
 const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
@@ -1016,6 +1024,90 @@ function ReleaseCriticalPathCard({
   );
 }
 
+function ReleaseEvidenceScenarioCard({
+  onPreparePacket,
+  planner,
+}: {
+  onPreparePacket: () => void;
+  planner: ReleaseEvidenceScenarioPlanner;
+}) {
+  const isReady = planner.summary.status === 'ready' || planner.summary.status === 'scenario-ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {planner.summary.maxProjectedReadyTracks}/{planner.summary.totalTracks}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>best tracks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{planner.summary.maxClearedBlockers}</Text>
+          <Text style={styles.qaKitMetricLabel}>max clears</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{planner.summary.scenarioCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>scenarios</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release evidence scenarios</Text>
+          <Text style={styles.qaKitText}>{planner.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {planner.summary.status === 'ready' ? 'Ready' : planner.summary.status === 'scenario-ready' ? 'Scenario' : 'Blocked'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release evidence scenario packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Scenario packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {planner.scenarios.map((scenario) => (
+          <View key={scenario.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>
+                  {scenario.sequence}. {scenario.label}
+                </Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {scenario.summary.projectedReadyTracks}/{scenario.summary.totalTracks} tracks · clears{' '}
+                  {scenario.summary.clearedBlockerCount}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  scenario.status === 'ready'
+                    ? styles.launchStatusReady
+                    : scenario.status === 'needs-prerequisite'
+                      ? styles.launchStatusBlocked
+                      : null,
+                ]}
+              >
+                {releaseScenarioStatusLabel(scenario.status)}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{scenario.description}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {scenario.commands[0]} · {scenario.proof[0]}
+            </Text>
+            {scenario.missingPrerequisites.length > 0 ? (
+              <Text style={styles.qaPlatformMore}>
+                Needs: {scenario.missingPrerequisites.map((item) => item.label).join(', ')}
+              </Text>
+            ) : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseEvidenceReconciliationCard({
   input,
   onChange,
@@ -1462,6 +1554,7 @@ function buildPlanSafetySources({
   modelEvidence,
   recommendation,
   releaseCriticalPath,
+  releaseEvidenceScenarioPlanner,
   releaseEvidenceReconciliation,
   releaseUnblockChecklist,
 }: {
@@ -1471,6 +1564,7 @@ function buildPlanSafetySources({
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
   releaseCriticalPath: ReleaseCriticalPath;
+  releaseEvidenceScenarioPlanner: ReleaseEvidenceScenarioPlanner;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
 }): SafetyLanguageSource[] {
@@ -1531,6 +1625,20 @@ function buildPlanSafetySources({
         ...releaseCriticalPath.steps.flatMap((step) => [step.label, step.action, ...step.acceptance, ...step.commands]),
       ].join(' '),
     },
+    {
+      key: 'release-evidence-scenarios',
+      label: 'Release evidence scenarios',
+      text: [
+        releaseEvidenceScenarioPlanner.summary.nextAction,
+        ...releaseEvidenceScenarioPlanner.scenarios.flatMap((scenario) => [
+          scenario.label,
+          scenario.description,
+          scenario.summary.nextAction,
+          ...scenario.acceptance,
+          ...scenario.commands,
+        ]),
+      ].join(' '),
+    },
   ];
 }
 
@@ -1561,6 +1669,9 @@ export function PlanScreen() {
   const releaseCriticalPath = buildReleaseCriticalPath({
     checklist: releaseUnblockChecklist,
     evidence: appConfig.launchReadinessEvidence,
+  });
+  const releaseEvidenceScenarioPlanner = buildReleaseEvidenceScenarioPlanner({
+    currentEvidence: appConfig.launchReadinessEvidence,
   });
   const releaseEvidenceReconciliationInput = parseReleaseEvidenceReconciliationInput(releaseEvidenceReconciliationJson);
   const releaseEvidenceReconciliation = buildReleaseEvidenceReconciliation({
@@ -1607,6 +1718,7 @@ export function PlanScreen() {
       modelEvidence,
       recommendation,
       releaseCriticalPath,
+      releaseEvidenceScenarioPlanner,
       releaseEvidenceReconciliation,
       releaseUnblockChecklist,
     }),
@@ -1639,6 +1751,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseCriticalPath, null, 2),
       title: 'Prepared release critical path',
+    });
+  }
+
+  function prepareReleaseEvidenceScenarioPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseEvidenceScenarioPlanner, null, 2),
+      title: 'Prepared release evidence scenarios',
     });
   }
 
@@ -1882,6 +2002,13 @@ export function PlanScreen() {
 
       <Section title="Release critical path" caption="Parallel owner lanes and dependencies for clearing external launch blockers.">
         <ReleaseCriticalPathCard onPreparePacket={prepareReleaseCriticalPathPacket} path={releaseCriticalPath} />
+      </Section>
+
+      <Section title="Release evidence scenarios" caption="Compare proof bundles before collecting account, device, or coach-review evidence.">
+        <ReleaseEvidenceScenarioCard
+          onPreparePacket={prepareReleaseEvidenceScenarioPacket}
+          planner={releaseEvidenceScenarioPlanner}
+        />
       </Section>
 
       <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">

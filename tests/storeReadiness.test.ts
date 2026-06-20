@@ -39,6 +39,7 @@ describe('store readiness', () => {
       'privacy',
       'plan',
       'plan',
+      'plan',
       'privacy',
     ]);
   });
