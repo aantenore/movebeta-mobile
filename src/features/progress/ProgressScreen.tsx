@@ -81,7 +81,7 @@ export function ProgressScreen() {
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
   const filteredReports = useMemo(() => filterProgressReports(visibleReports, filters), [visibleReports, filters]);
-  const summary = useMemo(() => summarizeProgress(filteredReports), [filteredReports]);
+  const summary = useMemo(() => summarizeProgress(filteredReports, annotations), [annotations, filteredReports]);
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
@@ -733,6 +733,12 @@ export function ProgressScreen() {
               {comparison.qualityDelta > 0 ? '+' : ''}
               {comparison.qualityDelta}
             </Text>
+            <Text style={styles.comparisonMatch}>
+              Smart baseline: {comparison.baselineMatch.confidence} · {comparison.baselineMatch.score}/100
+              {comparison.baselineMatch.reasons.length > 0
+                ? ` · ${comparison.baselineMatch.reasons.slice(0, 2).map((reason) => reason.label).join(', ')}`
+                : ''}
+            </Text>
 
             <View style={styles.comparisonStats}>
               <View style={styles.comparisonStat}>
@@ -858,6 +864,12 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     fontSize: 12,
     fontWeight: '800',
+    lineHeight: 17,
+  },
+  comparisonMatch: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
     lineHeight: 17,
   },
   comparisonStat: {

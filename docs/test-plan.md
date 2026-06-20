@@ -42,8 +42,10 @@
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
 - Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
   and local privacy copy.
-- Vitest progress insights tests for report ordering, trend deltas, and empty-history handling.
-- Vitest attempt comparison tests for latest-vs-baseline ordering, metric deltas, cue status, and insufficient history.
+- Vitest progress insights tests for report ordering, trend deltas, annotation-aware smart matching, and empty-history handling.
+- Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
+  exclusion, and empty candidate handling.
+- Vitest attempt comparison tests for smart-baseline selection, metric deltas, cue status, and insufficient history.
 - Vitest drill planner tests for cue deduplication, feedback-adapted reinforcement or variants, priority ordering,
   dosage, and empty cue reports.
 - Vitest coach review packet tests for consent metadata, review rubric, privacy-safe athlete context, and raw
@@ -247,6 +249,7 @@
 - Progress tab shows movement score bars.
 - Progress tab shows local history summary, current trend, and Pro history preview.
 - Progress tab shows attempt comparison after at least two local reports.
+- Progress tab shows smart baseline confidence and match reasons for attempt comparison.
 - Progress tab shows a project queue derived from private training logs after a Sessions log is saved.
 - Progress tab shows a next-session plan with target, duration, intensity cap, ordered phases, and practice-reset
   adaptation when drill follow-through is blocked.
