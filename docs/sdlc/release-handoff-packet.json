@@ -67,6 +67,11 @@
     },
     {
       "exists": true,
+      "label": "Release evidence scenarios screenshot",
+      "path": "docs/store/screenshots/10-release-evidence-scenarios.png"
+    },
+    {
+      "exists": true,
       "label": "Source archive",
       "path": "../movebeta-mobile-source.zip"
     },
@@ -225,7 +230,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T02:50:53.596Z",
+  "generatedAt": "2026-06-20T03:00:31.608Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -235,11 +240,56 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "ada1136a36afc363756477c5e8c6eb76d188459c",
-    "changedPaths": [],
-    "commitSha": "ada1136a36afc363756477c5e8c6eb76d188459c",
+    "baseCommitSha": "0ac8554e88b0a59b94452203017acf357e77172b",
+    "changedPaths": [
+      "M README.md",
+      "M app.json",
+      "M docs/requirements.md",
+      "M docs/screenshots.md",
+      "M docs/sdlc/backlog.md",
+      "M docs/sdlc/cue-validation-dataset-report.json",
+      "M docs/sdlc/cue-validation-dataset-report.md",
+      "M docs/sdlc/dependency-license-report.json",
+      "M docs/sdlc/dependency-license-report.md",
+      "M docs/sdlc/env-template-report.json",
+      "M docs/sdlc/env-template-report.md",
+      "M docs/sdlc/feature-completion-report.json",
+      "M docs/sdlc/feature-completion-report.md",
+      "M docs/sdlc/github-workflow-report.json",
+      "M docs/sdlc/github-workflow-report.md",
+      "M docs/sdlc/ios-toolchain-report.json",
+      "M docs/sdlc/ios-toolchain-report.md",
+      "M docs/sdlc/launch-readiness-report.json",
+      "M docs/sdlc/model-analysis-replay-report.json",
+      "M docs/sdlc/movenet-readiness-report.json",
+      "M docs/sdlc/release-gate-report.json",
+      "M docs/sdlc/release-readiness-report.md",
+      "M docs/sdlc/store-credentials-report.json",
+      "M docs/sdlc/store-credentials-report.md",
+      "M docs/sdlc/traceability-matrix.md",
+      "M docs/store/screenshot-plan.md",
+      "M docs/store/screenshots/04-sessions.png",
+      "M docs/store/screenshots/08-data-portability.png",
+      "M docs/store/store-manifest.json",
+      "M docs/store/store-submission-packet.json",
+      "M docs/store/store-submission-packet.md",
+      "M docs/task-plan.md",
+      "M docs/test-plan.md",
+      "M scripts/capture_store_screenshots.py",
+      "M scripts/generate_store_manifest.mjs",
+      "M scripts/release_handoff_packet.mjs",
+      "M scripts/smoke_web_video.py",
+      "M src/core/storeReadiness.ts",
+      "M src/features/plan/PlanScreen.tsx",
+      "M tests/storeReadiness.test.ts",
+      "M tests/storeSubmissionPacket.test.ts",
+      "?? docs/store/screenshots/10-release-evidence-scenarios.png",
+      "?? src/core/releaseEvidenceScenarios.ts",
+      "?? tests/releaseEvidenceScenarios.test.ts"
+    ],
+    "commitSha": "0ac8554e88b0a59b94452203017acf357e77172b",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
-    "worktreeDirty": false
+    "worktreeDirty": true
   },
   "schemaVersion": "movebeta.release-handoff-packet.v1",
   "screenshots": [
@@ -293,6 +343,12 @@
     },
     {
       "exists": true,
+      "fileName": "10-release-evidence-scenarios.png",
+      "label": "Release evidence scenarios",
+      "path": "docs/store/screenshots/10-release-evidence-scenarios.png"
+    },
+    {
+      "exists": true,
       "fileName": "08-data-portability.png",
       "label": "Local backup restore preview",
       "path": "docs/store/screenshots/08-data-portability.png"
@@ -300,12 +356,12 @@
   ],
   "summary": {
     "blockerCount": 5,
-    "existingScreenshots": 9,
-    "expectedScreenshots": 9,
+    "existingScreenshots": 10,
+    "expectedScreenshots": 10,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 332,
-    "moveNetLoadMs": 4491,
+    "moveNetAverageInferenceMs": 328,
+    "moveNetLoadMs": 5707,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",

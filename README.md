@@ -141,6 +141,8 @@ web build with `npm run store:screenshots`.
   owners, affected tracks, and credential key names without secret values.
 - Release critical path in the Plan tab that sequences external blockers across real-world validation, native build/QA,
   and store-account lanes with dependencies and share-safe packet export.
+- Release evidence scenarios in the Plan tab that compare proof-collection bundles, projected ready tracks, cleared
+  blockers, missing prerequisites, and share-safe packet export before account, device, or coach-review work starts.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
 - Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers

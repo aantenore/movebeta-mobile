@@ -99,8 +99,8 @@ platforms are validated on physical climbing videos and devices.
   copy, and screenshot plan.
 - EAS release readiness validates remote app versioning, internal development/preview profiles, production app bundle
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
-- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, Release Unblock, and
-  Privacy.
+- Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, Release Unblock,
+  Release Critical Path, Release Evidence Scenarios, and Privacy.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
 - Cue validation dataset contract, template, and CLI gate are versioned and ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
@@ -131,6 +131,10 @@ platforms are validated on physical climbing videos and devices.
   and store-account lanes, including dependency keys and ready-to-start states.
 - Plan tab prepares a share-safe release critical path packet with commands, proof expectations, dependencies, lane
   summaries, and explicit credential/local-path/raw-artifact exclusion flags.
+- Plan tab shows release evidence scenarios that compare future proof-collection bundles before account, device, or
+  coach-review work starts, including projected ready tracks, cleared blockers, missing prerequisites, and commands.
+- Plan tab prepares a share-safe release evidence scenario packet with explicit credential/local-path/raw-artifact
+  exclusion flags.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
   QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
   flags.
@@ -330,6 +334,8 @@ platforms are validated on physical climbing videos and devices.
   injected token/local-path rejection before sharing.
 - `tests/releaseCriticalPath.test.ts`: passed and covers external blocker dependency sequencing, parallel lane grouping,
   upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
+- `tests/releaseEvidenceScenarios.test.ts`: passed and covers projected launch tracks, cleared blocker counts,
+  prerequisite detection, all-ready state, current-evidence immutability, and raw artifact/path/token rejection.
 - `tests/releaseEvidencePacket.test.ts`: passed and covers aggregated launch/model/provider/native QA evidence, all-ready
   state, artifact status mapping, and credential/local-path rejection before sharing.
 - `tests/releaseEvidenceReconciliation.test.ts`: passed and covers report inference, projected launch readiness,
@@ -366,7 +372,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated eight 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 npm run store:screenshots`: passed and generated ten 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, practice-reset planning, the Progress technique readiness
@@ -379,7 +385,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
@@ -406,7 +412,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 9/9 screenshots, 5 external blockers, release archive artifacts, current
+  `docs/sdlc/release-handoff-packet.md` with 10/10 screenshots, 5 external blockers, release archive artifacts, current
   artifacts, and verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
