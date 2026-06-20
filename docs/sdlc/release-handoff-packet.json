@@ -37,6 +37,11 @@
     },
     {
       "exists": true,
+      "label": "Dependency license report",
+      "path": "docs/sdlc/dependency-license-report.json"
+    },
+    {
+      "exists": true,
       "label": "Store manifest",
       "path": "docs/store/store-manifest.json"
     },
@@ -182,6 +187,16 @@
       ]
     },
     {
+      "command": "npm run security:licenses",
+      "key": "dependency-licenses",
+      "label": "Dependency license report",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run release:eas:strict",
       "key": "eas-strict",
       "label": "Strict EAS store gate",
@@ -190,7 +205,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-20T00:07:45.079Z",
+  "generatedAt": "2026-06-20T00:15:20.389Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -200,9 +215,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "bac998f228ceb550ae19f3cb5d62fb7f34d2b16f",
+    "baseCommitSha": "b325046a5b078a2c04e1bfb9206092ca7f5a77bf",
     "changedPaths": [],
-    "commitSha": "bac998f228ceb550ae19f3cb5d62fb7f34d2b16f",
+    "commitSha": "b325046a5b078a2c04e1bfb9206092ca7f5a77bf",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -264,7 +279,7 @@
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
     "moveNetAverageInferenceMs": 327,
-    "moveNetLoadMs": 6170,
+    "moveNetLoadMs": 6195,
     "moveNetStatus": "ready",
     "readyTracks": 1,
     "releaseGateStatus": "pass",
