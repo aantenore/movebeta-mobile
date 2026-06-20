@@ -63,7 +63,9 @@ function readyDataset() {
     acceptance: {
       minClips: 3,
       minDistinctReviewersPerClip: 2,
+      minDistinctReviewersPerCue: 2,
       minReviewsPerCue: 2,
+      maxReviewerScoreSpreadPerCriterion: 1,
     },
     appVersion: '1.0.0',
     clips: [cueClip('slab', 1), cueClip('vertical', 2), cueClip('overhang', 3)],
@@ -111,6 +113,7 @@ describe('cue validation dataset doctor', () => {
       summary: {
         clipCount: 3,
         failedChecks: 0,
+        maxReviewerScoreSpreadPerCriterion: 1,
         ready: true,
         reviewCount: 6,
         wallAngles: ['overhang', 'slab', 'vertical'],

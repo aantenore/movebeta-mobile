@@ -138,3 +138,4 @@
 | T134 | Add smart repeat matching for comparable attempt baselines | Done |
 | T135 | Add local advanced drill packs from cue and practice evidence | Done |
 | T136 | Add configurable local coach lenses for analysis focus | Done |
+| T137 | Add reviewer consensus gate for cue-validation datasets | Done |

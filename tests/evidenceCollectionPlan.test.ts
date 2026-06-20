@@ -11,8 +11,10 @@ describe('evidence collection plan', () => {
     expect(plan.schemaVersion).toBe(evidenceCollectionPlanSchemaVersion);
     expect(plan.cueValidation).toMatchObject({
       estimatedReviewRows: 40,
+      maxReviewerScoreSpreadPerCriterion: 1,
       minAverageCueScore: 4,
       minClips: 20,
+      minDistinctReviewersPerCue: 2,
       minDistinctReviewersPerClip: 2,
       requiredWallAngles: ['slab', 'vertical', 'overhang'],
     });
@@ -51,6 +53,7 @@ describe('evidence collection plan', () => {
 
     expect(serialized).toContain('Consented climbing clips');
     expect(serialized).toContain('Keep raw video local');
+    expect(serialized).toContain('reviewer score spread');
     expect(serialized).not.toMatch(/rawVideo|videoUri|file:\/\//i);
   });
 

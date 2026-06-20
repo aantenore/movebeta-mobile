@@ -23,6 +23,12 @@ import {
   type CueValidationStudyAcceptance,
   type CueValidationStudySeedOptions,
 } from './cueValidationStudy';
+import {
+  assertCueValidationReliabilityReportIsPrivacySafe,
+  buildCueValidationReliabilityReport,
+  formatCueValidationReliabilitySummary,
+  type CueValidationReliabilityReport,
+} from './cueValidationReliability';
 import type { DrillPracticeRecord } from './drillPracticeRepository';
 import type { ReportAnnotation } from './reportAnnotationRepository';
 
@@ -49,6 +55,8 @@ export type CoachValidationWorkflow = {
   datasetGate?: CueValidationGateResult;
   errors: string[];
   progress: CoachValidationWorkflowProgress;
+  reliabilityReport?: CueValidationReliabilityReport;
+  reliabilitySummary?: string;
   schemaVersion: typeof coachValidationWorkflowSchemaVersion;
   seedSummary: string;
   shareableDatasetJson?: string;
@@ -267,10 +275,14 @@ export function buildCoachValidationWorkflow(
       generatedAt: options.generatedAt,
     });
     const datasetGate = validateCueValidationCompletedDataset(completedDataset);
+    const reliabilityReport = buildCueValidationReliabilityReport(completedDataset, { generatedAt: options.generatedAt });
+    assertCueValidationReliabilityReportIsPrivacySafe(reliabilityReport);
     const reviewCount = completedDataset.clips.reduce((sum, clip) => sum + clip.reviews.length, 0);
-    const status = datasetGate.ready ? 'ready' : 'blocked';
+    const status = datasetGate.ready && reliabilityReport.summary.status === 'ready' ? 'ready' : 'blocked';
     const action = datasetGate.ready
-      ? 'Commit the completed dataset JSON and run npm run validation:cue before production claims.'
+      ? reliabilityReport.summary.status === 'ready'
+        ? 'Commit the completed dataset JSON and run npm run validation:cue before production claims.'
+        : 'Resolve low-consensus cue reviews before promoting real-world validation evidence.'
       : formatCueValidationGateFailures(datasetGate, 1);
     const progress = buildProgress({
       acceptance,
@@ -281,6 +293,7 @@ export function buildCoachValidationWorkflow(
     });
     const datasetSummary = formatCueValidationCompletedDatasetSummary(completedDataset);
     const gateSummary = formatCueValidationGateSummary(datasetGate);
+    const reliabilitySummary = formatCueValidationReliabilitySummary(reliabilityReport);
 
     return {
       action,
@@ -288,13 +301,15 @@ export function buildCoachValidationWorkflow(
       datasetGate,
       errors: [],
       progress,
+      reliabilityReport,
+      reliabilitySummary,
       schemaVersion: coachValidationWorkflowSchemaVersion,
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableDatasetJson: JSON.stringify(completedDataset, null, 2),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status }),
       status,
       worksheetCsv,
-      worksheetSummary: `${datasetSummary} · ${gateSummary}`,
+      worksheetSummary: `${datasetSummary} · ${gateSummary} · ${reliabilitySummary}`,
     };
   } catch (error) {
     const errors = [error instanceof Error ? error.message : 'Completed validation worksheet could not be parsed.'];

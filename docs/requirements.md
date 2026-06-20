@@ -173,6 +173,8 @@
   evidence while separating internal implementation gaps from external data, device, account, and credential blockers.
 - Generate a cue-validation dataset report that checks missing, malformed, ready, or failed real-review dataset evidence
   without embedding dataset rows or reviewer identities.
+- Validate reviewer consensus for cue-validation datasets, including distinct reviewers per cue and configurable maximum
+  per-criterion score spread before promoting real-world movement-quality evidence.
 - Generate a deterministic model-analysis replay report that feeds MoveNet-shaped keypoints through the app analyzer,
   cue generation, metrics, and privacy checks.
 - Attach a versioned local analysis evidence timeline to each report, covering input normalization, pose provider, signal
@@ -280,6 +282,8 @@
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.
+- Cue-validation dataset readiness must fail when reviewer score spread exceeds the configured per-criterion threshold,
+  and reliability summaries must omit reviewer identities, raw video, key frames, landmarks, video URIs, and local paths.
 - Analysis evidence timelines must be versioned, privacy-safe, legacy-report compatible, recomputed after runtime
   measurement, and must block or review weak signal, over-budget runtime, missing cues, upload-enabled reports, or raw
   artifact references.

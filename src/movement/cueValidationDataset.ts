@@ -16,13 +16,14 @@ export type CueValidationGateResult = {
   checks: CueValidationGateCheck[];
   ready: boolean;
   summary: {
-    averageScore: number;
-    clipCount: number;
-    cueCount: number;
-    reviewCount: number;
-    wallAngles: Array<'overhang' | 'slab' | 'vertical'>;
+      averageScore: number;
+      clipCount: number;
+      cueCount: number;
+      maxReviewerScoreSpreadPerCriterion: number;
+      reviewCount: number;
+      wallAngles: Array<'overhang' | 'slab' | 'vertical'>;
+    };
   };
-};
 
 const rawArtifactKeys = new Set([
   'keyFrame',
@@ -33,6 +34,8 @@ const rawArtifactKeys = new Set([
   'videoPath',
   'videoUri',
 ]);
+
+const cueValidationScoreCriteria = ['relevance', 'timingAccuracy', 'drillFit', 'safetyLanguage'] as const;
 
 function pass(id: string, label: string, detail: string): CueValidationGateCheck {
   return { detail, id, label, status: 'pass' };
@@ -49,6 +52,58 @@ function average(values: number[]) {
 
 function reviewScore(review: CueValidationCompletedDataset['clips'][number]['reviews'][number]) {
   return average([review.relevance, review.timingAccuracy, review.drillFit, review.safetyLanguage]);
+}
+
+function scoreSpread(reviews: CueValidationCompletedDataset['clips'][number]['reviews'], criterion: (typeof cueValidationScoreCriteria)[number]) {
+  const scores = reviews.map((review) => review[criterion]);
+  if (scores.length === 0) return 0;
+  return Math.max(...scores) - Math.min(...scores);
+}
+
+function cueConsensusCheck(
+  prefix: string,
+  cueId: string,
+  reviews: CueValidationCompletedDataset['clips'][number]['reviews'],
+  acceptance: CueValidationStudyAcceptance,
+) {
+  const reviewerCount = new Set(reviews.map((review) => review.reviewerId)).size;
+  const spreads = cueValidationScoreCriteria.map((criterion) => ({
+    criterion,
+    spread: scoreSpread(reviews, criterion),
+  }));
+  const maxSpread = Math.max(0, ...spreads.map((item) => item.spread));
+  const failingSpread = spreads.find((item) => item.spread > acceptance.maxReviewerScoreSpreadPerCriterion);
+
+  if (reviewerCount < acceptance.minDistinctReviewersPerCue) {
+    return {
+      check: fail(
+        `${prefix}-cue-${cueId}-reviewer-consensus`,
+        `Cue ${cueId} reviewer consensus`,
+        `Cue requires at least ${acceptance.minDistinctReviewersPerCue} distinct reviewer${acceptance.minDistinctReviewersPerCue === 1 ? '' : 's'}.`,
+      ),
+      maxSpread,
+    };
+  }
+
+  if (failingSpread) {
+    return {
+      check: fail(
+        `${prefix}-cue-${cueId}-reviewer-consensus`,
+        `Cue ${cueId} reviewer consensus`,
+        `${failingSpread.criterion} spread ${failingSpread.spread}/4 exceeds ${acceptance.maxReviewerScoreSpreadPerCriterion}.`,
+      ),
+      maxSpread,
+    };
+  }
+
+  return {
+    check: pass(
+      `${prefix}-cue-${cueId}-reviewer-consensus`,
+      `Cue ${cueId} reviewer consensus`,
+      `${reviewerCount} reviewers · max spread ${maxSpread}/4`,
+    ),
+    maxSpread,
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -107,8 +162,11 @@ function validateClip(
       : fail(`${prefix}-review-shape`, 'Review shape', 'Every review must target a known generated cue.'),
   );
 
+  const consensusSpreads: number[] = [];
+
   for (const cueId of cueIds) {
-    const count = validReviews.filter((review) => review.cueId === cueId).length;
+    const cueReviews = validReviews.filter((review) => review.cueId === cueId);
+    const count = cueReviews.length;
     checks.push(
       count >= acceptance.minReviewsPerCue
         ? pass(`${prefix}-cue-${cueId}-reviews`, `Cue ${cueId} reviews`, `${count} reviews`)
@@ -118,6 +176,9 @@ function validateClip(
             `Cue requires at least ${acceptance.minReviewsPerCue} review${acceptance.minReviewsPerCue === 1 ? '' : 's'}.`,
           ),
     );
+    const consensus = cueConsensusCheck(prefix, cueId, cueReviews, acceptance);
+    checks.push(consensus.check);
+    consensusSpreads.push(consensus.maxSpread);
   }
 
   checks.push(
@@ -162,6 +223,7 @@ function validateClip(
     averageScore,
     checks,
     cueCount: cues.length,
+    maxReviewerScoreSpreadPerCriterion: Math.max(0, ...consensusSpreads),
     reviewCount: validReviews.length,
     wallAngle: clip.packet.session.wallAngle,
   };
@@ -188,8 +250,9 @@ export function validateCueValidationCompletedDataset(dataset: unknown): CueVali
         averageScore: 0,
         clipCount: 0,
         cueCount: 0,
-        reviewCount: 0,
-        wallAngles: [],
+      reviewCount: 0,
+      maxReviewerScoreSpreadPerCriterion: 0,
+      wallAngles: [],
       },
     };
   }
@@ -203,6 +266,7 @@ export function validateCueValidationCompletedDataset(dataset: unknown): CueVali
   const wallAngles = [...new Set(clipResults.map((result) => result.wallAngle))].sort();
   const totalCueCount = clipResults.reduce((sum, result) => sum + result.cueCount, 0);
   const totalReviewCount = clipResults.reduce((sum, result) => sum + result.reviewCount, 0);
+  const maxReviewerScoreSpreadPerCriterion = Math.max(0, ...clipResults.map((result) => result.maxReviewerScoreSpreadPerCriterion));
   const datasetAverageScore = Number(
     average(clipResults.flatMap((result) => (result.reviewCount > 0 ? [result.averageScore] : []))).toFixed(2),
   );
@@ -236,6 +300,7 @@ export function validateCueValidationCompletedDataset(dataset: unknown): CueVali
       averageScore: datasetAverageScore,
       clipCount: data.clips.length,
       cueCount: totalCueCount,
+      maxReviewerScoreSpreadPerCriterion,
       reviewCount: totalReviewCount,
       wallAngles,
     },
@@ -249,6 +314,7 @@ export function formatCueValidationGateSummary(result: CueValidationGateResult) 
     `${result.summary.clipCount} clips`,
     `${result.summary.reviewCount} reviews`,
     `average ${result.summary.averageScore}/5`,
+    `max spread ${result.summary.maxReviewerScoreSpreadPerCriterion}/4`,
     `${failedCount} open checks`,
   ].join(' · ');
 }

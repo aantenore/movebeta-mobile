@@ -122,6 +122,10 @@ describe('cue validation study seed', () => {
 
     expect(() => assertCueValidationStudySeedIsPrivacySafe(seed)).not.toThrow();
     expect(seed).toMatchObject({
+      acceptance: {
+        maxReviewerScoreSpreadPerCriterion: 1,
+        minDistinctReviewersPerCue: 2,
+      },
       appVersion: '1.0.0-test',
       clipCount: 1,
       generatedAt: '2026-06-19T23:50:00.000Z',
@@ -157,6 +161,7 @@ describe('cue validation study seed', () => {
     expect(formatCueValidationStudySeedSummary(seed)).toBe(
       `${seed.clipCount} consented clips · ${seed.cueCount} review tasks · target 20 clips · raw video: no · scores invented: no`,
     );
+    expect(seed.reviewerInstructions.join(' ')).toContain('reviewer score spread');
     expect(serialized).not.toContain('Private seed note');
     expect(serialized).not.toContain('Private reviewer prep note');
     expect(serialized).not.toContain('Private drill validation note');
@@ -334,6 +339,7 @@ describe('cue validation study seed', () => {
       'safetyLanguage',
     ]);
     expect(packet.reviewCriteria.every((criterion) => criterion.passingScore === 4.5)).toBe(true);
+    expect(packet.instructions.join(' ')).toContain('Reviewer spread');
     expect(formatCueValidationReviewerOnboardingPacketSummary(packet)).toBe(
       `1/1 consented clips · ${seed.cueCount * 2} expected review rows · 2 coach slots target · status ready-for-review · raw video: no`,
     );
