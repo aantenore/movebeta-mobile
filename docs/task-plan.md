@@ -122,3 +122,4 @@
 | T118 | Extend GitHub Actions release evidence template | Done |
 | T119 | Add GitHub workflow activation doctor | Done |
 | T120 | Add dependency license inventory doctor | Done |
+| T121 | Add balanced real-world validation collection batches | Done |

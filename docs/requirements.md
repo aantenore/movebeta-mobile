@@ -125,6 +125,8 @@
   the JSON into release evidence.
 - Show an evidence collection plan in the Plan tab with cue-validation clip targets, estimated coach review rows,
   required wall-angle coverage, native device checks, and external evidence owners.
+- Show balanced cue-validation collection batches in the Plan tab, including per-wall-angle clip targets, estimated cue
+  rows, estimated review rows, reviewer slots per cue, capture focus, and a privacy-first collection checklist.
 - Show a release unblock checklist in the Plan tab that derives remaining external blockers from launch readiness and
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
@@ -267,7 +269,8 @@
 - Native QA evidence composer exports must be schema-versioned and reject raw video URIs, local paths, credential
   values, and token-like strings before sharing.
 - Evidence collection planning must be derived from cue-validation acceptance thresholds and native QA budgets rather
-  than hard-coded in the UI.
+  than hard-coded in the UI, and per-wall-angle collection batches must rebalance automatically when clip thresholds or
+  required wall angles change.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
 - Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit
