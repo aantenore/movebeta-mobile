@@ -144,3 +144,4 @@
 | T140 | Add release evidence scenario planner to Plan | Done |
 | T141 | Add release evidence freshness guard | Done |
 | T142 | Add model verification suite report and Plan card | Done |
+| T143 | Add durable release blocker issue report | Done |

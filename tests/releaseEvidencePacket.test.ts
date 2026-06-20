@@ -41,9 +41,9 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 11,
+      artifactCount: 12,
       blockerCount: 5,
-      commandCount: 12,
+      commandCount: 13,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
@@ -54,6 +54,7 @@ describe('release evidence packet', () => {
     expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:credentials:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run feature:doctor');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run release:blocker-issues');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:freshness:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:verification:suite');
     expect(packet.artifacts.map((artifact) => [artifact.key, artifact.status])).toEqual([
@@ -66,6 +67,7 @@ describe('release evidence packet', () => {
       ['cue-validation-dataset', 'blocked'],
       ['launch-readiness-report', 'blocked'],
       ['feature-completion-report', 'blocked'],
+      ['release-blocker-issues-report', 'blocked'],
       ['release-freshness-report', 'ready'],
       ['model-verification-suite-report', 'ready'],
     ]);

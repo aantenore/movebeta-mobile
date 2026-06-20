@@ -93,6 +93,11 @@ function makeProjectRoot() {
     status: 'external-blocked',
     summary: { internalGapCount: 0 },
   });
+  writeJson(path.join(root, 'docs/sdlc/release-blocker-issues-report.json'), {
+    schemaVersion: 'movebeta.release-blocker-issue-packet.v1',
+    status: 'ready-to-file',
+    summary: { issueCount: 1 },
+  });
   writeJson(path.join(root, 'docs/store/store-manifest.json'), {
     screenshots: [
       { fileName: '01-analyze.png', label: 'Analyze' },
@@ -149,11 +154,13 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
     expect(packet.commands.map((item) => item.key)).toContain('dependency-licenses');
     expect(packet.commands.map((item) => item.key)).toContain('feature-completion');
+    expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issues');
     expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model verification suite report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -174,6 +181,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('GitHub workflow doctor');
     expect(markdown).toContain('Dependency license report');
     expect(markdown).toContain('Feature completion doctor');
+    expect(markdown).toContain('Release blocker issue report');
     expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
