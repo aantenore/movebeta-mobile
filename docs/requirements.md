@@ -100,7 +100,7 @@
   and drill evidence.
 - Compare the latest local attempt with the previous report using metric deltas, quality delta, cue status, and a next-repeat recommendation.
 - Apply capability-based Free, Pro, and Coach entitlements without hard-coding pricing into the movement engine.
-- Show a configurable Plan tab with current plan, upgrade path, capability matrix, and billing-provider readiness.
+- Show a configurable Plan tab with current plan, upgrade path, capability matrix, and provider-agnostic billing readiness.
 - Show a configurable launch-readiness cockpit for stakeholder demo, internal native beta, and store-submission tracks.
 - Generate store readiness metadata, privacy declarations, and screenshot plans from release configuration.
 - Generate a share-safe store submission packet with listing metadata, privacy declarations, screenshot plan, copy-risk
@@ -115,6 +115,8 @@
   blocked draft evidence, validator command, and privacy flags without raw video, local paths, or credential values.
 - Show a provider readiness cockpit in the Plan tab that summarizes primary video provider, native target provider,
   fallback provider, runtime proof status, and local privacy boundary.
+- Show a commercial readiness cockpit in the Plan tab that summarizes billing adapter selection, paid plan product
+  mappings, receipt-validation mode, sandbox proof, entitlement-source boundary, and credential-free config hygiene.
 - Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
   exclusion before physical-device evidence is collected.
 - Let release owners paste native QA evidence JSON in the Plan tab and preview ready runs, blocking checks, parse
@@ -212,6 +214,9 @@
 - Prepared export file sharing must write only to app cache, infer stable file names and content types, avoid cloud
   dependencies, and fall back to text sharing if file sharing or file writes are unavailable.
 - Plan catalog copy must be generated from capability descriptors and plan entitlements without payment-provider coupling.
+- Billing readiness must be generated from replaceable configuration and the shared plan keys, must keep receipt or
+  provider concerns outside pose analysis, and must reject token-like values, credential strings, raw video references,
+  or local artifact paths in plan mappings.
 - Release gate execution must produce a machine-readable JSON report with ordered step results before launch-readiness
   detection can mark the release gate verified.
 - iOS build evidence must come from the generated toolchain report and remain blocked unless full Xcode, workspace, Pods,

@@ -1,12 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { appConfig, resolveLaunchReadinessEvidence, resolveModelEvidence } from '../src/core/config';
+import {
+  appConfig,
+  resolveBillingReadinessConfig,
+  resolveLaunchReadinessEvidence,
+  resolveModelEvidence,
+} from '../src/core/config';
 
 describe('app config', () => {
   it('keeps launch readiness optional while exposing default model evidence', () => {
     expect(appConfig.launchReadinessEvidence).toBeUndefined();
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
+    expect(appConfig.billingReadiness.provider).toBe('none');
+    expect(appConfig.billingReadiness.entitlementSource).toBe('plan-catalog');
   });
 
   it('parses launch readiness evidence from Expo extra objects', () => {
@@ -41,6 +48,28 @@ describe('app config', () => {
     expect(resolveLaunchReadinessEvidence(undefined)).toBeUndefined();
   });
 
+  it('parses billing readiness config from environment JSON', () => {
+    expect(
+      resolveBillingReadinessConfig(
+        '{"provider":"revenuecat","planMappings":{"pro":"movebeta_pro_monthly","coach":"movebeta_coach_monthly"},"receiptValidation":"provider-managed","sandboxReady":true,"entitlementSource":"provider-webhook"}',
+      ),
+    ).toEqual({
+      entitlementSource: 'provider-webhook',
+      planMappings: {
+        coach: 'movebeta_coach_monthly',
+        pro: 'movebeta_pro_monthly',
+      },
+      provider: 'revenuecat',
+      receiptValidation: 'provider-managed',
+      sandboxReady: true,
+    });
+  });
+
+  it('treats empty billing readiness config as unset', () => {
+    expect(resolveBillingReadinessConfig('')).toBeUndefined();
+    expect(resolveBillingReadinessConfig(undefined)).toBeUndefined();
+  });
+
   it('parses model evidence from environment JSON', () => {
     const evidence = resolveModelEvidence(
       JSON.stringify({
@@ -53,14 +82,14 @@ describe('app config', () => {
         modelName: 'MoveNet SinglePose Lightning',
         provider: 'web-tfjs-movenet',
         readiness: {
-          averageInferenceMs: 333,
+          averageInferenceMs: 339,
           budget: {
             averageInferenceMs: 1500,
             loadMs: 25000,
             maxInferenceMs: 3000,
           },
-          loadMs: 6194,
-          maxInferenceMs: 337,
+          loadMs: 4353,
+          maxInferenceMs: 356,
           status: 'ready',
         },
         realWorldValidation: {

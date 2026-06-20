@@ -1,6 +1,8 @@
 import type { AppConfig } from './config';
 import type { PrivacyConsent } from './privacy';
 
+type OfflineReadinessConfig = Pick<AppConfig, 'privacyMode' | 'videoAnalysisProvider'>;
+
 export type OfflineReadinessStatus = 'ready' | 'review' | 'blocked';
 export type OfflineReadinessCheckStatus = 'pass' | 'watch' | 'fail';
 
@@ -53,7 +55,7 @@ function resultCopy(status: OfflineReadinessStatus) {
 }
 
 export function assessOfflineReadiness(input: {
-  config: AppConfig;
+  config: OfflineReadinessConfig;
   consent: PrivacyConsent;
   reportCount: number;
 }): OfflineReadinessResult {

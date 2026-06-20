@@ -1,5 +1,5 @@
 {
-  "averageInferenceMs": 333,
+  "averageInferenceMs": 339,
   "backend": "cpu",
   "budget": {
     "averageInferenceMs": 1500,
@@ -8,7 +8,7 @@
   },
   "checks": [
     {
-      "detail": "6194ms / 25000ms",
+      "detail": "4353ms / 25000ms",
       "key": "model-load",
       "label": "Model loads inside budget",
       "status": "pass"
@@ -20,19 +20,19 @@
       "status": "pass"
     },
     {
-      "detail": "333ms / 1500ms",
+      "detail": "339ms / 1500ms",
       "key": "average-inference-budget",
       "label": "Average inference stays inside budget",
       "status": "pass"
     },
     {
-      "detail": "337ms / 3000ms",
+      "detail": "356ms / 3000ms",
       "key": "max-inference-budget",
       "label": "Worst inference stays inside budget",
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-06-20T00:24:43.413Z",
+  "generatedAt": "2026-06-20T00:33:04.392Z",
   "input": {
     "kind": "synthetic-blank-frame",
     "shape": [
@@ -42,16 +42,16 @@
     ]
   },
   "inferenceRunsMs": [
-    333,
-    337,
-    329
+    332,
+    356,
+    328
   ],
   "limitations": [
     "Synthetic blank-frame inference proves local model execution only.",
     "Real climbing-video accuracy still requires consented clips, coach scores, and physical-device QA."
   ],
-  "loadMs": 6194,
-  "maxInferenceMs": 337,
+  "loadMs": 4353,
+  "maxInferenceMs": 356,
   "memory": {
     "unreliable": true,
     "reasons": [
@@ -69,5 +69,5 @@
   },
   "schemaVersion": "movebeta.movenet-readiness-report.v1",
   "status": "ready",
-  "warmupMs": 366
+  "warmupMs": 362
 }
