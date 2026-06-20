@@ -119,6 +119,8 @@ web build with `npm run store:screenshots`.
   evidence can satisfy release readiness.
 - Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native
   device checks, and external evidence owners derived from release contracts.
+- Balanced validation collection batches in the Plan tab, with per-wall-angle clip targets, review-row estimates, and
+  privacy-first capture checklist derived from acceptance thresholds.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker

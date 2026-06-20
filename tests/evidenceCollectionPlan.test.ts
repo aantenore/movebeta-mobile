@@ -16,6 +16,12 @@ describe('evidence collection plan', () => {
       minDistinctReviewersPerClip: 2,
       requiredWallAngles: ['slab', 'vertical', 'overhang'],
     });
+    expect(plan.cueValidation.collectionBatches.map((batch) => [batch.wallAngle, batch.targetClipCount])).toEqual([
+      ['slab', 7],
+      ['vertical', 7],
+      ['overhang', 6],
+    ]);
+    expect(plan.cueValidation.collectionBatches.reduce((sum, batch) => sum + batch.estimatedReviewRows, 0)).toBe(40);
     expect(plan.nativeQa).toMatchObject({
       maxBatteryDropPct: 4,
       nativeWorkflowChecks: 14,
@@ -37,12 +43,45 @@ describe('evidence collection plan', () => {
 
     expect(plan.cueValidation.estimatedReviewRows).toBe(108);
     expect(plan.summary.estimatedReviewRows).toBe(108);
+    expect(plan.cueValidation.collectionBatches.map((batch) => batch.estimatedReviewRows)).toEqual([36, 36, 36]);
   });
 
   it('keeps the plan privacy-safe and explicit about external evidence', () => {
     const serialized = JSON.stringify(buildEvidenceCollectionPlan());
 
     expect(serialized).toContain('Consented climbing clips');
+    expect(serialized).toContain('Keep raw video local');
     expect(serialized).not.toMatch(/rawVideo|videoUri|file:\/\//i);
+  });
+
+  it('derives collection batches from custom wall-angle requirements without hard-coded totals', () => {
+    const plan = buildEvidenceCollectionPlan({
+      averageCuesPerClip: 2,
+      cueAcceptance: {
+        ...defaultCueValidationStudyAcceptance,
+        minClips: 5,
+        minDistinctReviewersPerClip: 3,
+        minReviewsPerCue: 1,
+        requiredWallAngles: ['vertical', 'overhang'],
+      },
+    });
+
+    expect(plan.cueValidation.collectionBatches).toMatchObject([
+      {
+        estimatedCueRows: 6,
+        estimatedReviewRows: 18,
+        reviewerSlotsPerCue: 3,
+        targetClipCount: 3,
+        wallAngle: 'vertical',
+      },
+      {
+        estimatedCueRows: 4,
+        estimatedReviewRows: 12,
+        reviewerSlotsPerCue: 3,
+        targetClipCount: 2,
+        wallAngle: 'overhang',
+      },
+    ]);
+    expect(plan.cueValidation.estimatedReviewRows).toBe(30);
   });
 });
