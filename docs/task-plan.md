@@ -134,3 +134,4 @@
 | T130 | Add share-safe environment template doctor | Done |
 | T131 | Add share-safe field validation ops packet | Done |
 | T132 | Add share-safe release blocker issue packet and template | Done |
+| T133 | Add local capture prep protocol before recording | Done |

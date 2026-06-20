@@ -10,6 +10,8 @@
   angle.
 - Let users calibrate capture setup before recording, including framing, view angle, distance, lighting, wall contrast,
   phone stability, and visible bystanders.
+- Show a local capture prep protocol before recording that derives setup, warm-up, record, verify, and retake guidance
+  from capture calibration, latest local analysis quality, weakest movement metric, and primary cue evidence.
 - Preview the selected local video before or after analysis.
 - Validate selected video intake before analysis, including local URI, minimum duration, expected sampled frames, and
   resolution warnings.
@@ -317,6 +319,8 @@
 - Field validation ops packets must be generated from existing evidence collection, validation pilot, and release unblock
   contracts; phase order, owners, commands, and artifact names must remain share-safe and reject raw video references,
   local paths, credential values, token-like strings, and invented reviewer data.
+- Capture prep protocols must be generated from local setup calibration and optional local reports, keep raw video on
+  device, avoid medical or guaranteed-outcome claims, and degrade to a baseline protocol before any report exists.
 - Release unblock planning must derive blocker labels, owners, actions, and statuses from launch-readiness checks while
   keeping proof artifacts, commands, and credential key names in a replaceable release contract.
 - Release unblock packets must be schema-versioned, generated from the release unblock checklist, include explicit
