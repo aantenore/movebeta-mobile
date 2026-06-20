@@ -131,7 +131,8 @@
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
 - Vitest model evidence tests for technical-ready, validated, degraded, missing, environment JSON, and privacy-safe states.
-- Vitest model evidence sync tests for report-to-app-config mapping, real-world validation preservation, and dry-run mode.
+- Vitest model evidence sync tests for report-to-app-config mapping, real-world validation preservation, ready
+  cue-validation dataset promotion, privacy-safe report gating, and dry-run mode.
 - Vitest safety language tests for clear copy, risky claim detection, negated policy/disclaimer copy, replaceable rules,
   and visible issue limits.
 - Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
@@ -160,7 +161,7 @@
 - Model-analysis replay with `npm run model:analysis:replay`, which writes
   `docs/sdlc/model-analysis-replay-report.json` and is included in `npm run release:check`.
 - Model evidence sync with `npm run model:evidence:sync`, which promotes the latest model reports into Expo
-  `extra.modelEvidence` while preserving real-world validation thresholds.
+  `extra.modelEvidence` and promotes real-world validation only from a ready, share-safe cue-validation dataset report.
 - Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.

@@ -100,6 +100,8 @@ web build with `npm run store:screenshots`.
 - MoveNet pose contract tests that replay model-shaped keypoints through the local movement analyzer.
 - MoveNet readiness report with load-time, inference-time, backend, memory, budget checks, and explicit real-video
   validation limitations.
+- Model evidence sync from release reports, including automatic real-world validation promotion only after a share-safe
+  cue-validation dataset doctor report is ready.
 - Generated native QA runbook for physical iOS and Android validation, including workflow steps, performance budgets,
   and a draft evidence payload that remains blocked until real device values are entered.
 - In-app native QA evidence kit in the Plan tab with required device runs, workflows, budgets, placeholder policy, and
@@ -148,6 +150,7 @@ npm install
 npm run quality
 npm run model:movenet:smoke
 npm run model:movenet:readiness
+npm run model:evidence:sync
 npm run export:web
 npm run preview:web
 npm run store:manifest
@@ -240,6 +243,7 @@ The local release gate is:
 ```bash
 npm run release:check
 npm run model:analysis:replay
+npm run model:evidence:sync
 npm run native:ios:doctor
 npm run release:credentials:doctor
 npm run release:readiness
