@@ -12,6 +12,7 @@ import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
+import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import {
@@ -916,6 +917,63 @@ function ReleaseUnblockChecklistCard({
   );
 }
 
+function FieldValidationOpsCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: FieldValidationOpsPacket;
+}) {
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.targetClips}</Text>
+          <Text style={styles.qaKitMetricLabel}>clips</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.coachReviewRows}</Text>
+          <Text style={styles.qaKitMetricLabel}>review rows</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.deviceRuns}</Text>
+          <Text style={styles.qaKitMetricLabel}>device runs</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Field validation ops</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={styles.launchStatus}>Coordinate</Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare field validation ops packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Ops packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {packet.phases.map((phase) => (
+          <View key={phase.key} style={styles.qaWorkflowRow}>
+            {phase.status === 'ready-to-run' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{phase.label}</Text>
+              <Text style={styles.qaPlatformMore}>
+                {phase.duration} · {phase.owner} · {phase.commands[0].command}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseEvidencePacketCard({
   onPreparePacket,
   packet,
@@ -1204,6 +1262,11 @@ export function PlanScreen() {
   const releaseUnblockPacket = buildReleaseUnblockPacket({
     checklist: releaseUnblockChecklist,
   });
+  const fieldValidationOpsPacket = buildFieldValidationOpsPacket({
+    evidencePlan,
+    releaseUnblockChecklist,
+    validationPilotKit,
+  });
   const releaseEvidencePacket = buildReleaseEvidencePacket({
     evidenceCollectionPlan: evidencePlan,
     launchReadiness,
@@ -1261,6 +1324,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseEvidencePacket, null, 2),
       title: 'Prepared release evidence packet',
+    });
+  }
+
+  function prepareFieldValidationOpsPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(fieldValidationOpsPacket, null, 2),
+      title: 'Prepared field validation ops packet',
     });
   }
 
@@ -1460,6 +1531,10 @@ export function PlanScreen() {
           pilotKit={validationPilotKit}
           plan={evidencePlan}
         />
+      </Section>
+
+      <Section title="Field validation ops" caption="Operational run plan for real clips, coach review rows, device QA, and release promotion.">
+        <FieldValidationOpsCard onPreparePacket={prepareFieldValidationOpsPacket} packet={fieldValidationOpsPacket} />
       </Section>
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">

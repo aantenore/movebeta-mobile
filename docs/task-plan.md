@@ -132,3 +132,4 @@
 | T128 | Add machine-readable feature completion audit | Done |
 | T129 | Add share-safe validation pilot kit | Done |
 | T130 | Add share-safe environment template doctor | Done |
+| T131 | Add share-safe field validation ops packet | Done |
