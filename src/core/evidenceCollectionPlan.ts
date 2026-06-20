@@ -4,6 +4,23 @@ import { nativeQaEvidenceBudgets } from './nativeQaEvidenceKit';
 
 export const evidenceCollectionPlanSchemaVersion = 'movebeta.evidence-collection-plan.v1';
 
+const wallAngleCaptureFocus: Record<string, string> = {
+  overhang: 'Prioritize roof tension, foot-cut recovery, and lock-off timing attempts.',
+  slab: 'Prioritize quiet feet, hip drift, and balance-heavy footwork attempts.',
+  vertical: 'Prioritize pacing, straight-arm rests, and controlled dead-point attempts.',
+};
+
+function distributeTargets(total: number, keys: string[]) {
+  if (keys.length === 0) return [];
+  const base = Math.floor(total / keys.length);
+  const remainder = total % keys.length;
+
+  return keys.map((key, index) => ({
+    key,
+    target: base + (index < remainder ? 1 : 0),
+  }));
+}
+
 export function buildEvidenceCollectionPlan({
   averageCuesPerClip = 1,
   cueAcceptance = defaultCueValidationStudyAcceptance,
@@ -16,6 +33,20 @@ export function buildEvidenceCollectionPlan({
   const reviewerSlotsPerCue = Math.max(cueAcceptance.minDistinctReviewersPerClip, cueAcceptance.minReviewsPerCue);
   const estimatedReviewRows = cueAcceptance.minClips * averageCuesPerClip * reviewerSlotsPerCue;
   const nativeWorkflowChecks = nativeBudgets.requiredPlatforms.length * nativeBudgets.requiredWorkflows.length;
+  const collectionBatches = distributeTargets(cueAcceptance.minClips, cueAcceptance.requiredWallAngles).map(
+    ({ key: wallAngle, target }) => {
+      const estimatedCueRows = target * averageCuesPerClip;
+
+      return {
+        captureFocus: wallAngleCaptureFocus[wallAngle] ?? 'Prioritize representative movement quality and coach-visible beta.',
+        estimatedCueRows,
+        estimatedReviewRows: estimatedCueRows * reviewerSlotsPerCue,
+        reviewerSlotsPerCue,
+        targetClipCount: target,
+        wallAngle,
+      };
+    },
+  );
 
   return {
     schemaVersion: evidenceCollectionPlanSchemaVersion,
@@ -35,6 +66,13 @@ export function buildEvidenceCollectionPlan({
       requiredReviewModes: cueAcceptance.requiredReviewModes,
       requiredReviewerRoles: cueAcceptance.requiredReviewerRoles,
       requiredWallAngles: cueAcceptance.requiredWallAngles,
+      collectionBatches,
+      collectionChecklist: [
+        'Capture only consented indoor climbing attempts with bystanders out of frame or consent handled.',
+        'Keep raw video local; share packet-only review worksheets with coaches.',
+        'Balance the first collection sprint across required wall angles before adding more clips to a single style.',
+        'Record reviewer ids and 1-5 scores only after a real coach completes the worksheet.',
+      ],
     },
     nativeQa: {
       maxBatteryDropPct: nativeBudgets.maxBatteryDropPct,

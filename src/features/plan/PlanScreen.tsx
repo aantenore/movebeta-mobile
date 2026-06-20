@@ -651,6 +651,33 @@ function EvidenceCollectionPlanCard({ plan }: { plan: ReturnType<typeof buildEvi
           <Text style={styles.qaPlatformMore}>Battery budget: {plan.nativeQa.maxBatteryDropPct}% per run</Text>
         </View>
       </View>
+      <View style={styles.evidencePlanItem}>
+        <Text style={styles.evidencePlanTitle}>Balanced clip batches</Text>
+        <View style={styles.qaPlatformList}>
+          {plan.cueValidation.collectionBatches.map((batch) => (
+            <View key={batch.wallAngle} style={styles.qaWorkflowRow}>
+              <Circle color={theme.colors.brand} size={12} />
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.qaWorkflowText}>
+                  {batch.wallAngle}: {batch.targetClipCount} clips · {batch.estimatedReviewRows} review rows
+                </Text>
+                <Text style={styles.qaPlatformMore}>{batch.captureFocus}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+      <View style={styles.evidencePlanItem}>
+        <Text style={styles.evidencePlanTitle}>Collection checklist</Text>
+        <View style={styles.qaPlatformList}>
+          {plan.cueValidation.collectionChecklist.map((item) => (
+            <View key={item} style={styles.qaWorkflowRow}>
+              <CheckCircle2 color={theme.colors.success} size={14} />
+              <Text style={styles.qaWorkflowText}>{item}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
       <View style={styles.qaPlatformList}>
         {plan.externalEvidence.map((item) => (
           <View key={item.key} style={styles.qaWorkflowRow}>
@@ -938,7 +965,12 @@ function buildPlanSafetySources({
     {
       key: 'evidence-collection',
       label: 'Evidence collection',
-      text: `${evidencePlan.summary.action} ${evidencePlan.externalEvidence.map((item) => item.label).join(' ')}`,
+      text: [
+        evidencePlan.summary.action,
+        ...evidencePlan.externalEvidence.map((item) => item.label),
+        ...evidencePlan.cueValidation.collectionBatches.map((batch) => batch.captureFocus),
+        ...evidencePlan.cueValidation.collectionChecklist,
+      ].join(' '),
     },
     {
       key: 'release-unblock',
