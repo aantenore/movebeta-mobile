@@ -130,6 +130,9 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, provider readiness, native
   QA runbook, blocker checklist, relative artifact refs, release commands, and explicit credential/raw-artifact exclusion
   flags.
+- Plan tab shows release evidence reconciliation for pasted cue-validation, native QA, iOS toolchain, and store
+  credential reports, previews cleared blockers and projected launch tracks, and prepares a share-safe reconciliation
+  packet before launch evidence is changed.
 - Plan tab prepares a share-safe store submission packet with metadata, privacy declarations, screenshots, safety-language
   scan, submission commands, and explicit credential/raw-artifact exclusion flags.
 - Plan tab prepares a share-safe store credentials setup packet with EAS project binding, Expo token, App Store Connect,
@@ -323,6 +326,8 @@ platforms are validated on physical climbing videos and devices.
   injected token/local-path rejection before sharing.
 - `tests/releaseEvidencePacket.test.ts`: passed and covers aggregated launch/model/provider/native QA evidence, all-ready
   state, artifact status mapping, and credential/local-path rejection before sharing.
+- `tests/releaseEvidenceReconciliation.test.ts`: passed and covers report inference, projected launch readiness,
+  independent store blocker clearing, invalid JSON handling, and raw artifact/path/token rejection.
 - `tests/storeSubmissionPacket.test.ts`: passed and covers versioned store metadata packets, risky-copy review state,
   command checklist, negative privacy flags, and token/local-path rejection before sharing.
 - `tests/commercialReadinessPacket.test.ts`: passed and covers versioned commercial readiness packets, ready-state action
@@ -368,7 +373,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, evidence collection plan, validation pilot kit export, release unblock checklist, release unblock packet export, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.

@@ -158,6 +158,10 @@
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
+- Show release evidence reconciliation in the Plan tab so release owners can paste share-safe cue-validation, native QA,
+  iOS toolchain, and store credential reports and preview which launch blockers and tracks would clear.
+- Prepare a share-safe release evidence reconciliation packet from the Plan tab with current/projected readiness,
+  cleared blocker count, proof gaps, report sources, commands, and explicit negative privacy flags.
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
@@ -340,6 +344,8 @@
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.
+- Release evidence reconciliation must infer supported report schemas from pasted JSON, reject malformed, raw-artifact,
+  local-path, credential-value, or token-like evidence, and project launch readiness without mutating current evidence.
 - Release handoff packets must be generated from existing machine-readable reports and store manifests, include no secret
   values, and fail screenshot completeness when the manifest declares a missing screenshot.
 - Release archive manifests must include file size, SHA-256 digest, repository commit, branch, remote URL, and worktree
