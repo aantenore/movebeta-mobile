@@ -135,6 +135,8 @@
   token/local-path rejection before sharing.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
+- Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
+  clearing, invalid JSON handling, and raw artifact/path/token rejection.
 - Vitest launch-readiness doctor tests for store-manifest screenshot completeness, including newly declared screenshots.
 - Vitest launch-readiness doctor tests for model-analysis replay detection, missing-report blocking, and failing-report
   blocking before launch tracks are ready.
@@ -307,6 +309,10 @@
   excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
+- Plan tab shows evidence reconciliation for pasted share-safe release reports, projected launch tracks, cleared blockers,
+  proof gaps, and missing report sources.
+- Plan tab prepares a release evidence reconciliation packet with credential values, raw artifacts, local paths, and
+  token-like values excluded before sharing.
 - Plan tab prepares a store submission packet with metadata, privacy declarations, screenshots, copy checks, and
   submission commands while excluding credentials and raw artifacts.
 - Plan tab prepares a store credentials setup packet with EAS/App Store/Play key names and release commands while
