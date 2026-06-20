@@ -3,6 +3,12 @@ import { z } from 'zod';
 
 import { AnalysisProviderSchema, PrivacyModeSchema } from '@/movement/contracts';
 
+import {
+  BillingReadinessConfigSchema,
+  defaultBillingReadinessConfig,
+  parseBillingReadinessConfig,
+  type BillingReadinessConfig,
+} from './billingReadiness';
 import { PlanKeySchema } from './entitlements';
 import { LaunchReadinessEvidenceSchema, type LaunchReadinessEvidence } from './launchReadiness';
 import {
@@ -19,6 +25,7 @@ const ConfigSchema = z.object({
   nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
   privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
+  billingReadiness: BillingReadinessConfigSchema,
   launchReadinessEvidence: LaunchReadinessEvidenceSchema.optional(),
   modelEvidence: ModelEvidenceConfigSchema.optional(),
 });
@@ -36,6 +43,10 @@ export function resolveLaunchReadinessEvidence(value: unknown): LaunchReadinessE
 
 export function resolveModelEvidence(value: unknown): ModelEvidenceConfig | undefined {
   return parseModelEvidenceConfig(value);
+}
+
+export function resolveBillingReadinessConfig(value: unknown): BillingReadinessConfig | undefined {
+  return parseBillingReadinessConfig(value);
 }
 
 export const appConfig = ConfigSchema.parse({
@@ -60,6 +71,9 @@ export const appConfig = ConfigSchema.parse({
     expoExtra.privacyMode ??
     'on-device',
   officialApiBaseUrl: process.env.EXPO_PUBLIC_MOVEBETA_API_BASE_URL,
+  billingReadiness:
+    resolveBillingReadinessConfig(process.env.EXPO_PUBLIC_MOVEBETA_BILLING_READINESS ?? expoExtra.billingReadiness) ??
+    defaultBillingReadinessConfig,
   launchReadinessEvidence: resolveLaunchReadinessEvidence(
     process.env.EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE ?? expoExtra.launchReadinessEvidence,
   ),

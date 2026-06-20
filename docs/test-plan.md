@@ -243,6 +243,8 @@
 - Progress tab filters history by wall angle, grade, and gym without leaving the local report boundary.
 - Progress and Drills tabs show plan access gates driven by entitlement capabilities.
 - Plan tab shows current tier, upgrade path, capability matrix, and provider readiness from the shared plan catalog.
+- Plan tab shows commercial readiness from billing config, including adapter status, paid plan mapping ratio,
+  receipt-validation mode, sandbox proof, and credential-free config hygiene.
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Plan tab shows model evidence for MoveNet execution, model-shaped replay, and remaining real-video validation without
   production accuracy claims.
@@ -269,6 +271,17 @@
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.
+
+Commercial readiness automated coverage:
+
+```bash
+npx vitest run tests/billingReadiness.test.ts tests/config.test.ts
+```
+
+- `tests/billingReadiness.test.ts` covers the default not-connected state, a ready RevenueCat-style adapter, missing paid
+  plan mappings, missing receipt validation, and rejection of token-like or local artifact mapping values.
+- `tests/config.test.ts` covers `EXPO_PUBLIC_MOVEBETA_BILLING_READINESS` JSON parsing and the default Expo `extra`
+  commercial readiness config.
 
 Command used for local smoke:
 

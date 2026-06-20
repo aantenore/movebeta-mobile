@@ -6,6 +6,7 @@ import { ArrowUpRight, CheckCircle2, Circle, Download, Share2, ShieldCheck, Tria
 import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
+import { buildBillingReadinessSummary } from '@/core/billingReadiness';
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
@@ -617,6 +618,54 @@ function ProviderReadinessCard({ readiness }: { readiness: ReturnType<typeof bui
   );
 }
 
+function CommercialReadinessCard({ readiness }: { readiness: ReturnType<typeof buildBillingReadinessSummary> }) {
+  const isReady = readiness.status === 'ready';
+  const isBlocked = readiness.status === 'blocked';
+
+  return (
+    <View style={styles.qaKit}>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>{readiness.title}</Text>
+          <Text style={styles.qaKitText}>{readiness.action}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {readiness.badge}
+        </Text>
+      </View>
+      <View style={styles.qaKitHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{readiness.providerLabel}</Text>
+          <Text style={styles.qaKitMetricLabel}>provider</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.planMappingRatio}</Text>
+          <Text style={styles.qaKitMetricLabel}>paid plans</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{readiness.receiptValidationLabel}</Text>
+          <Text style={styles.qaKitMetricLabel}>receipts</Text>
+        </View>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {readiness.checks.map((check) => (
+          <View key={check.id} style={styles.qaWorkflowRow}>
+            {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>{check.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function EvidenceCollectionPlanCard({
   onPreparePacket,
   plan,
@@ -948,12 +997,14 @@ function SafetyLanguageGuardCard({ guard }: { guard: ReturnType<typeof buildSafe
 }
 
 function buildPlanSafetySources({
+  commercialReadiness,
   evidencePlan,
   launchReadiness,
   modelEvidence,
   recommendation,
   releaseUnblockChecklist,
 }: {
+  commercialReadiness: ReturnType<typeof buildBillingReadinessSummary>;
   evidencePlan: ReturnType<typeof buildEvidenceCollectionPlan>;
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
@@ -965,6 +1016,11 @@ function buildPlanSafetySources({
       key: 'plan-recommendation',
       label: 'Plan recommendation',
       text: `${recommendation.title} ${recommendation.action}`,
+    },
+    {
+      key: 'commercial-readiness',
+      label: 'Commercial readiness',
+      text: [commercialReadiness.action, ...commercialReadiness.checks.map((check) => check.detail)].join(' '),
     },
     {
       key: 'launch-readiness',
@@ -1019,6 +1075,7 @@ export function PlanScreen() {
   });
   const nativeQaImportPreview = buildNativeQaEvidenceImportPreview(nativeQaEvidenceJson);
   const providerReadiness = buildProviderReadinessSummary(appConfig);
+  const commercialReadiness = buildBillingReadinessSummary(appConfig.billingReadiness);
   const releaseUnblockChecklist = buildReleaseUnblockChecklist(appConfig.launchReadinessEvidence);
   const nativeQaRunbookPacket = buildNativeQaRunbookPacket();
   const releaseUnblockPacket = buildReleaseUnblockPacket({
@@ -1037,6 +1094,7 @@ export function PlanScreen() {
   });
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
+      commercialReadiness,
       evidencePlan,
       launchReadiness,
       modelEvidence,
@@ -1270,14 +1328,7 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
-        <View style={styles.readiness}>
-          <Text style={styles.readinessTitle}>Provider status</Text>
-          <Text style={styles.readinessBadge}>Not connected</Text>
-          <Text style={styles.readinessText}>
-            Keep store subscriptions or a provider such as RevenueCat outside the movement domain; map receipts back to
-            the same plan keys.
-          </Text>
-        </View>
+        <CommercialReadinessCard readiness={commercialReadiness} />
       </Section>
     </Screen>
   );

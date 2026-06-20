@@ -27,6 +27,8 @@ The app now models these tiers as replaceable entitlements. `EXPO_PUBLIC_MOVEBET
 selects the current plan; product surfaces read capabilities instead of hard-coding prices or payment providers.
 The Plan tab turns the same entitlement contract into a catalog, upgrade path, and capability matrix while leaving checkout
 to a replaceable store-subscription or billing provider integration.
+Commercial readiness now tracks that future integration separately from movement analysis: billing adapter, paid plan
+product mappings, receipt-validation mode, sandbox proof, and config hygiene are visible without committing to a vendor.
 The launch-readiness cockpit reads `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` or Expo
 `extra.launchReadinessEvidence`, letting release evidence advance from CI, EAS, or a release manager without changing UI
 code.

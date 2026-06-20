@@ -334,8 +334,11 @@ def main() -> None:
         expect(page.get_by_text("Clear", exact=True).last).to_be_visible()
         expect(page.get_by_text("No medical, injury-prevention, or route-safety claims found in checked Plan copy.")).to_be_visible()
         expect(page.get_by_text("Commercial readiness")).to_be_visible()
-        expect(page.get_by_text("Provider status")).to_be_visible()
-        expect(page.get_by_text("Not connected")).to_be_visible()
+        expect(page.get_by_text("Commercial checkout not connected")).to_be_visible()
+        expect(page.get_by_text("Billing provider adapter")).to_be_visible()
+        expect(page.get_by_text("Paid plan product mappings")).to_be_visible()
+        expect(page.get_by_text("0/2", exact=True)).to_be_visible()
+        expect(page.get_by_text("No credential values in config")).to_be_visible()
 
         page.get_by_role("tab", name="Privacy").click()
         page.wait_for_load_state("networkidle")
