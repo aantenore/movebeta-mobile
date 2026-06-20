@@ -245,6 +245,8 @@
 - Plan tab shows current tier, upgrade path, capability matrix, and provider readiness from the shared plan catalog.
 - Plan tab shows commercial readiness from billing config, including adapter status, paid plan mapping ratio,
   receipt-validation mode, sandbox proof, and credential-free config hygiene.
+- Plan tab prepares a commercial readiness packet with billing adapter, paid plan mapping, receipt-validation, sandbox,
+  movement-boundary, owner-action, and negative privacy flags before sharing.
 - Plan tab shows launch readiness for stakeholder demo, internal native beta, and store submission.
 - Plan tab shows model evidence for MoveNet execution, model-shaped replay, and remaining real-video validation without
   production accuracy claims.
@@ -275,11 +277,13 @@
 Commercial readiness automated coverage:
 
 ```bash
-npx vitest run tests/billingReadiness.test.ts tests/config.test.ts
+npx vitest run tests/billingReadiness.test.ts tests/commercialReadinessPacket.test.ts tests/config.test.ts
 ```
 
 - `tests/billingReadiness.test.ts` covers the default not-connected state, a ready RevenueCat-style adapter, missing paid
   plan mappings, missing receipt validation, and rejection of token-like or local artifact mapping values.
+- `tests/commercialReadinessPacket.test.ts` covers versioned packet generation, ready-state action reduction, negative
+  privacy flags, and token/local-path/payment-data rejection.
 - `tests/config.test.ts` covers `EXPO_PUBLIC_MOVEBETA_BILLING_READINESS` JSON parsing and the default Expo `extra`
   commercial readiness config.
 

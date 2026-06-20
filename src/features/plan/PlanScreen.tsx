@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { buildBillingReadinessSummary } from '@/core/billingReadiness';
+import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket';
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
@@ -618,7 +619,13 @@ function ProviderReadinessCard({ readiness }: { readiness: ReturnType<typeof bui
   );
 }
 
-function CommercialReadinessCard({ readiness }: { readiness: ReturnType<typeof buildBillingReadinessSummary> }) {
+function CommercialReadinessCard({
+  onPreparePacket,
+  readiness,
+}: {
+  onPreparePacket: () => void;
+  readiness: ReturnType<typeof buildBillingReadinessSummary>;
+}) {
   const isReady = readiness.status === 'ready';
   const isBlocked = readiness.status === 'blocked';
 
@@ -646,6 +653,12 @@ function CommercialReadinessCard({ readiness }: { readiness: ReturnType<typeof b
           <Text style={styles.providerMetricValue}>{readiness.receiptValidationLabel}</Text>
           <Text style={styles.qaKitMetricLabel}>receipts</Text>
         </View>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare commercial readiness packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Commercial packet</Text>
+        </Pressable>
       </View>
       <View style={styles.qaPlatformList}>
         {readiness.checks.map((check) => (
@@ -1152,6 +1165,17 @@ export function PlanScreen() {
     });
   }
 
+  function prepareCommercialReadinessPacket() {
+    selectionFeedback();
+    const packet = buildCommercialReadinessPacket({
+      readiness: commercialReadiness,
+    });
+    setPreparedPlanExport({
+      body: JSON.stringify(packet, null, 2),
+      title: 'Prepared commercial readiness packet',
+    });
+  }
+
   function updateNativeQaComposerRun(
     platform: NativeQaEvidenceComposerRun['platform'],
     patch: Partial<NativeQaEvidenceComposerRun>,
@@ -1328,7 +1352,7 @@ export function PlanScreen() {
       </Section>
 
       <Section title="Commercial readiness" caption="Checkout can be connected later without changing analysis contracts.">
-        <CommercialReadinessCard readiness={commercialReadiness} />
+        <CommercialReadinessCard onPreparePacket={prepareCommercialReadinessPacket} readiness={commercialReadiness} />
       </Section>
     </Screen>
   );

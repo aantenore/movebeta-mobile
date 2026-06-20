@@ -117,6 +117,9 @@
   fallback provider, runtime proof status, and local privacy boundary.
 - Show a commercial readiness cockpit in the Plan tab that summarizes billing adapter selection, paid plan product
   mappings, receipt-validation mode, sandbox proof, entitlement-source boundary, and credential-free config hygiene.
+- Prepare a share-safe commercial readiness packet from the Plan tab with adapter status, paid plan mapping gaps,
+  receipt-validation status, sandbox proof, owner actions, and no payment data, receipt values, secrets, local paths, or
+  raw artifacts.
 - Show an in-app native QA evidence validator preview that reports ready runs, blocking checks, and raw-artifact
   exclusion before physical-device evidence is collected.
 - Let release owners paste native QA evidence JSON in the Plan tab and preview ready runs, blocking checks, parse
@@ -217,6 +220,9 @@
 - Billing readiness must be generated from replaceable configuration and the shared plan keys, must keep receipt or
   provider concerns outside pose analysis, and must reject token-like values, credential strings, raw video references,
   or local artifact paths in plan mappings.
+- Commercial readiness packets must be schema-versioned, generated from the billing readiness summary, list owner actions
+  without shelling into provider accounts, and reject token-like values, credential strings, payment data, receipt values,
+  raw video references, or local artifact paths before sharing.
 - Release gate execution must produce a machine-readable JSON report with ordered step results before launch-readiness
   detection can mark the release gate verified.
 - iOS build evidence must come from the generated toolchain report and remain blocked unless full Xcode, workspace, Pods,
