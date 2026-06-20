@@ -28,6 +28,7 @@ import { buildNativeQaEvidenceDraft, validateNativeQaEvidenceForApp } from '@/co
 import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
+import { buildReleaseBlockerIssuePacket, type ReleaseBlockerIssuePacket } from '@/core/releaseBlockerIssuePacket';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
@@ -917,6 +918,74 @@ function ReleaseUnblockChecklistCard({
   );
 }
 
+function ReleaseBlockerIssueCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: ReleaseBlockerIssuePacket;
+}) {
+  const isReady = packet.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.issueCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>issues</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.ownerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>owners</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.credentialKeyNameCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>key names</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release blocker issues</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'File'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release blocker issue packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Issue packet</Text>
+        </Pressable>
+      </View>
+      {isReady ? (
+        <View style={styles.releaseReadyRow}>
+          <CheckCircle2 color={theme.colors.success} size={15} />
+          <Text style={styles.qaWorkflowText}>No release blocker issues need filing.</Text>
+        </View>
+      ) : (
+        <View style={styles.releaseUnblockList}>
+          {packet.issues.map((issue) => (
+            <View key={issue.key} style={styles.releaseUnblockItem}>
+              <View style={styles.releaseUnblockTop}>
+                <View style={styles.launchTrackTitleGroup}>
+                  <Text style={styles.releaseUnblockTitle}>{issue.title}</Text>
+                  <Text style={styles.releaseUnblockMeta}>
+                    {issue.owner} · {issue.tracks.join(', ')}
+                  </Text>
+                </View>
+                <Text style={[styles.launchStatus, styles.launchStatusBlocked]}>{issue.status}</Text>
+              </View>
+              <Text style={styles.qaKitText}>{issue.proof[0]}</Text>
+              <Text style={styles.qaPlatformMore}>{issue.commands[0] ?? 'Proof-only issue'}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
 function FieldValidationOpsCard({
   onPreparePacket,
   packet,
@@ -1262,6 +1331,9 @@ export function PlanScreen() {
   const releaseUnblockPacket = buildReleaseUnblockPacket({
     checklist: releaseUnblockChecklist,
   });
+  const releaseBlockerIssuePacket = buildReleaseBlockerIssuePacket({
+    checklist: releaseUnblockChecklist,
+  });
   const fieldValidationOpsPacket = buildFieldValidationOpsPacket({
     evidencePlan,
     releaseUnblockChecklist,
@@ -1308,6 +1380,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseUnblockPacket, null, 2),
       title: 'Prepared release unblock packet',
+    });
+  }
+
+  function prepareReleaseBlockerIssuePacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseBlockerIssuePacket, null, 2),
+      title: 'Prepared release blocker issue packet',
     });
   }
 
@@ -1539,6 +1619,10 @@ export function PlanScreen() {
 
       <Section title="Release unblock checklist" caption="External access and proof needed before native beta or store submission.">
         <ReleaseUnblockChecklistCard checklist={releaseUnblockChecklist} onPreparePacket={prepareReleaseUnblockPacket} />
+      </Section>
+
+      <Section title="Release blocker issues" caption="Issue-ready external blocker drafts for GitHub tracking without secrets.">
+        <ReleaseBlockerIssueCard onPreparePacket={prepareReleaseBlockerIssuePacket} packet={releaseBlockerIssuePacket} />
       </Section>
 
       <Section title="Release evidence packet" caption="One share-safe packet for QA, product validation, and release owners.">
