@@ -21,6 +21,7 @@ export const envTemplateContract = [
       'EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE',
       'EXPO_PUBLIC_MOVEBETA_BILLING_READINESS',
       'EXPO_PUBLIC_MOVEBETA_MODEL_EVIDENCE',
+      'EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY',
     ],
   },
   {
@@ -35,6 +36,9 @@ export const envTemplateContract = [
     owner: 'release',
     requiredKeys: [
       ...storeCredentialEnvKeys.easToken,
+      'VERCEL_TOKEN',
+      'VERCEL_ORG_ID',
+      'VERCEL_PROJECT_ID',
       ...storeCredentialEnvKeys.iosAscAppId,
       ...storeCredentialEnvKeys.iosAppleId,
       ...storeCredentialEnvKeys.iosApiKey,

@@ -174,6 +174,8 @@ platforms are validated on physical climbing videos and devices.
   store-submission reports, surfacing stale, missing, or invalid timestamps before handoff.
 - Plan tab shows installable PWA readiness from the generated static report, including manifest, service worker,
   exported static assets, Vercel static config, SPA fallback, and no-backend status.
+- Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
+  surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, model verification suite
   report, provider readiness, native QA runbook, blocker checklist, relative artifact refs, release commands, and explicit
   credential/raw-artifact exclusion flags.
@@ -220,12 +222,15 @@ platforms are validated on physical climbing videos and devices.
   `aantenore/movebeta-mobile` repository.
 - `npm run web:pwa:check` writes `docs/sdlc/pwa-readiness-report.json` and
   `docs/sdlc/pwa-readiness-report.md`, verifying the installable static PWA path without API routes or a backend.
+- `npm run web:vercel:check` writes `docs/sdlc/vercel-deployment-report.json` and
+  `docs/sdlc/vercel-deployment-report.md`, verifying static prebuilt deployment readiness without committing Vercel
+  account values or adding backend routes.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, PWA
-  readiness, EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and release evidence
-  freshness.
+  readiness, Vercel deployment readiness, EAS standard check, moderate-or-higher dependency audit, dependency license
+  inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -254,14 +259,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 115 test files and 470 tests.
+- `npm test`: passed, 119 test files and 484 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 5005ms load time, 350ms average inference, and 354ms max inference in the latest run.
+  CPU backend, 6288ms load time, 332ms average inference, and 340ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -281,7 +286,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 159/162 tasks done, 113/115 backlog items done, 146/146 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 160/163 tasks done, 114/116 backlog items done, 147/147 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -294,6 +299,9 @@ platforms are validated on physical climbing videos and devices.
   `aantenore/movebeta-mobile`.
 - `npm run web:pwa:check`: passed and wrote `docs/sdlc/pwa-readiness-report.json` plus
   `docs/sdlc/pwa-readiness-report.md` with status `ready`, 7/7 checks, and backend required `false`.
+- `npm run web:vercel:check`: passed and wrote `docs/sdlc/vercel-deployment-report.json` plus
+  `docs/sdlc/vercel-deployment-report.md` with status `static-ready`, 4/6 verified checks, 0 blocked checks, and 2
+  account-binding/secret actions remaining outside the repository.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -302,8 +310,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 16/16 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 21/21 release steps passing.
+  status `ready`, 17/17 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 22/22 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

@@ -164,3 +164,4 @@
 | T160 | Add in-app release blocker issue filing plan packet | Done |
 | T161 | Add share-safe release blocker issue web links | Done |
 | T162 | Add installable static PWA deployment path | Done |
+| T163 | Add share-safe Vercel static deployment readiness packet | Done |
