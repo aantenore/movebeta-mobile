@@ -8,6 +8,7 @@ import { buildSessionAgenda } from './sessionAgenda';
 import { summarizeTrainingLoad } from './trainingLoad';
 
 export const attemptPacingSchemaVersion = 'movebeta.attempt-pacing.v1';
+export const attemptPacingPacketSchemaVersion = 'movebeta.attempt-pacing-packet.v1';
 
 export const AttemptPacingStepSchema = z.object({
   countsTowardAttemptBudget: z.boolean(),
@@ -54,7 +55,29 @@ export const AttemptPacingPlanSchema = z.object({
   title: z.string(),
 });
 
+export const AttemptPacingPacketSchema = z.object({
+  generatedAt: z.string(),
+  nextAction: z.string(),
+  pacing: AttemptPacingPlanSchema,
+  privacy: z.object({
+    cloudUploadRequired: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+  }),
+  purpose: z.string(),
+  schemaVersion: z.literal(attemptPacingPacketSchemaVersion),
+  summary: z.object({
+    attemptSlots: z.number().int().nonnegative(),
+    hardAttemptSlots: z.number().int().nonnegative(),
+    maxTotalAttempts: z.number().int().positive(),
+    restMinutes: z.number().int().nonnegative(),
+    status: z.string(),
+    stopRuleCount: z.number().int().nonnegative(),
+  }),
+});
+
 export type AttemptPacingPlan = z.infer<typeof AttemptPacingPlanSchema>;
+export type AttemptPacingPacket = z.infer<typeof AttemptPacingPacketSchema>;
 export type AttemptPacingStep = z.infer<typeof AttemptPacingStepSchema>;
 export type AttemptPacingStopRule = z.infer<typeof AttemptPacingStopRuleSchema>;
 
@@ -346,6 +369,43 @@ export function assertAttemptPacingPlanIsShareSafe(plan: AttemptPacingPlan) {
     throw new Error('Attempt pacing plan contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');
   }
   return plan;
+}
+
+export function assertAttemptPacingPacketIsShareSafe(packet: AttemptPacingPacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Attempt pacing packet contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');
+  }
+  return packet;
+}
+
+export function buildAttemptPacingPacket(pacing: AttemptPacingPlan, generatedAt = new Date().toISOString()) {
+  const packet = AttemptPacingPacketSchema.parse({
+    generatedAt,
+    nextAction: pacing.nextAction,
+    pacing,
+    privacy: {
+      cloudUploadRequired: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+    },
+    purpose: 'Share the local attempt pacing plan with derived attempt budget, rest windows, stop rules, and privacy flags only.',
+    schemaVersion: attemptPacingPacketSchemaVersion,
+    summary: {
+      attemptSlots: pacing.summary.attemptSlots,
+      hardAttemptSlots: pacing.summary.hardAttemptSlots,
+      maxTotalAttempts: pacing.summary.maxTotalAttempts,
+      restMinutes: pacing.summary.restMinutes,
+      status: pacing.status,
+      stopRuleCount: pacing.stopRules.length,
+    },
+  });
+
+  return assertAttemptPacingPacketIsShareSafe(packet);
+}
+
+export function formatAttemptPacingPacketSummary(packet: AttemptPacingPacket) {
+  const parsed = AttemptPacingPacketSchema.parse(packet);
+  return `${parsed.summary.status} pacing · ${parsed.summary.attemptSlots}/${parsed.summary.maxTotalAttempts} slots · ${parsed.summary.hardAttemptSlots} hard · ${parsed.summary.restMinutes} min rest`;
 }
 
 export function buildAttemptPacingPlan({
