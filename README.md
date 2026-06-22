@@ -192,6 +192,8 @@ web build with `npm run store:screenshots`.
 - Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
 - Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
   deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
+- In-app PWA runtime readiness in the Plan tab for install prompt state, standalone mode, service worker/cache readiness,
+  network state, update state, and share-safe install guidance.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth

@@ -204,6 +204,9 @@
 - Provide a share-safe Vercel static deployment readiness path that verifies the prebuilt static PWA contract, no-backend
   surface, empty Vercel secret template keys, project binding status, and deployment-secret availability without
   committing token values, project identifiers, local paths, or backend code.
+- Provide in-app PWA runtime guidance that detects standalone install mode, browser install prompt availability, service
+  worker registration/control state, Cache API offline readiness, network state, and pending service-worker updates
+  without requiring a backend.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
@@ -411,6 +414,9 @@
   missing Vercel account binding and secrets as action-needed rather than implementation blockers, keep static deploy
   commands shareable, and reject credential values, project id values, local paths, raw artifacts, raw videos, and
   token-like strings before sharing.
+- PWA install guidance packets must be schema-versioned, generated from runtime browser signals, degrade to manual
+  browser-install guidance when `beforeinstallprompt` is not exposed, keep native runtimes on the native install path,
+  and reject credential values, local paths, raw artifacts, raw videos, and token-like strings before sharing.
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.
