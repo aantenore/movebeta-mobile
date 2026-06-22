@@ -32,6 +32,7 @@ import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/re
 import { buildSessionCloseout } from '@/movement/sessionCloseout';
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
+import { summarizeTrainingLoad } from '@/movement/trainingLoad';
 import { theme } from '@/core/theme';
 
 type FilterChipProps = {
@@ -93,6 +94,10 @@ export function ProgressScreen() {
   const sessionCloseout = useMemo(
     () => buildSessionCloseout({ annotations, drillPractice, reports: filteredReports }),
     [annotations, drillPractice, filteredReports],
+  );
+  const trainingLoad = useMemo(
+    () => summarizeTrainingLoad({ annotations, drillPractice }),
+    [annotations, drillPractice],
   );
   const preSendGuard = useMemo(
     () => buildPreSendGuard(filteredReports, annotations, drillPractice),
@@ -256,6 +261,70 @@ export function ProgressScreen() {
             <Text style={styles.closeoutPrivacyText}>Raw video included: no</Text>
             <Text style={styles.closeoutPrivacyText}>Private notes included: no</Text>
             <Text style={styles.closeoutPrivacyText}>Cloud upload required: no</Text>
+          </View>
+        </View>
+      </Section>
+
+      <Section title="Training load" caption="A local load check from private effort, repeat, and drill logs.">
+        <View style={styles.trainingLoadCard}>
+          <View style={styles.trainingLoadHeader}>
+            <View style={styles.trainingLoadCopy}>
+              <Text style={styles.trainingLoadKicker}>{trainingLoad.status}</Text>
+              <Text style={styles.trainingLoadTitle}>{trainingLoad.title}</Text>
+              <Text style={styles.trainingLoadMeta}>
+                {trainingLoad.windowDays} days · avg effort {trainingLoad.summary.averageEffort || '-'} ·{' '}
+                {trainingLoad.summary.repeatAttemptCount} repeats
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.trainingLoadScore,
+                trainingLoad.status === 'deload' ? styles.trainingLoadScoreLimit : null,
+                trainingLoad.status === 'balanced' ? styles.trainingLoadScoreReady : null,
+              ]}
+            >
+              <Text style={styles.trainingLoadScoreValue}>{trainingLoad.trainingLoadScore}</Text>
+              <Text style={styles.trainingLoadScoreLabel}>Load</Text>
+            </View>
+          </View>
+
+          <View style={styles.trainingLoadRecommendation}>
+            <Text style={styles.trainingLoadRecommendationLabel}>Recommendation</Text>
+            <Text style={styles.trainingLoadRecommendationText}>{trainingLoad.recommendation}</Text>
+            <Text style={styles.trainingLoadNextAction}>{trainingLoad.nextAction}</Text>
+          </View>
+
+          <View style={styles.trainingLoadStats}>
+            <View style={styles.trainingLoadStat}>
+              <Text style={styles.trainingLoadStatValue}>{trainingLoad.summary.highEffortSessionCount}</Text>
+              <Text style={styles.trainingLoadStatLabel}>High effort</Text>
+            </View>
+            <View style={styles.trainingLoadStat}>
+              <Text style={styles.trainingLoadStatValue}>{trainingLoad.summary.stalledRepeatCount}</Text>
+              <Text style={styles.trainingLoadStatLabel}>Stalled</Text>
+            </View>
+            <View style={styles.trainingLoadStat}>
+              <Text style={styles.trainingLoadStatValue}>{trainingLoad.summary.skippedDrillRate}%</Text>
+              <Text style={styles.trainingLoadStatLabel}>Skipped</Text>
+            </View>
+          </View>
+
+          <View style={styles.trainingLoadSignals}>
+            {trainingLoad.signals.map((signal) => (
+              <View key={signal.id} style={styles.trainingLoadSignal}>
+                <Text
+                  style={[
+                    styles.trainingLoadSignalStatus,
+                    signal.status === 'limit' ? styles.trainingLoadSignalStatusLimit : null,
+                    signal.status === 'ready' ? styles.trainingLoadSignalStatusReady : null,
+                  ]}
+                >
+                  {signal.status}
+                </Text>
+                <Text style={styles.trainingLoadSignalTitle}>{signal.label}</Text>
+                <Text style={styles.trainingLoadSignalDetail}>{signal.detail}</Text>
+              </View>
+            ))}
           </View>
         </View>
       </Section>
@@ -1686,6 +1755,161 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   closeoutTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 23,
+  },
+  trainingLoadCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  trainingLoadCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  trainingLoadHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  trainingLoadKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  trainingLoadMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  trainingLoadNextAction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  trainingLoadRecommendation: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    gap: 4,
+    padding: theme.spacing.sm,
+  },
+  trainingLoadRecommendationLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  trainingLoadRecommendationText: {
+    color: theme.colors.brandDark,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  trainingLoadScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 86,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  trainingLoadScoreLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  trainingLoadScoreLimit: {
+    backgroundColor: theme.colors.coral,
+  },
+  trainingLoadScoreReady: {
+    backgroundColor: theme.colors.success,
+  },
+  trainingLoadScoreValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  trainingLoadSignal: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 152,
+    padding: theme.spacing.sm,
+  },
+  trainingLoadSignalDetail: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  trainingLoadSignals: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  trainingLoadSignalStatus: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
+  trainingLoadSignalStatusLimit: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  trainingLoadSignalStatusReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  trainingLoadSignalTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  trainingLoadStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    minWidth: 92,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  trainingLoadStatLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  trainingLoadStats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  trainingLoadStatValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  trainingLoadTitle: {
     color: theme.colors.ink,
     fontSize: 18,
     fontWeight: '900',
