@@ -134,6 +134,8 @@
   provider blocking, fallback provider availability, and privacy-safe output.
 - Vitest iOS toolchain doctor tests for Command Line Tools-only blocker detection, full-Xcode ready detection, and durable
   JSON/Markdown report writes.
+- Vitest iOS toolchain setup packet tests for blocked and ready packet generation, sanitized command/proof copy, negative
+  privacy flags, and local-path/token rejection before sharing.
 - Vitest store credentials doctor tests for blocked/ready EAS credential states, secret-value exclusion, and durable
   JSON/Markdown report writes.
 - Vitest store credentials setup packet tests for blocked/ready credential-group summaries, required key names, and
@@ -356,6 +358,8 @@
   exclusion.
 - Plan tab shows the native QA evidence composer for structured Android/iOS physical-run measurements and can reuse the
   composed JSON in the local import preview.
+- Plan tab prepares an iOS toolchain setup packet with sanitized full-Xcode, Developer directory, workspace, Pods,
+  build-settings, and build-log checks while excluding local paths, credentials, raw artifacts, raw video, and tokens.
 - Plan tab prepares a native QA runbook packet with raw video, credential values, and local paths excluded before
   sharing.
 - Plan tab shows the evidence collection plan with clip, review-row, device-check, wall-angle, owner targets, balanced
@@ -417,6 +421,7 @@ MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py
 
 - Android custom dev build with `native-platform-pose`.
 - iOS simulator/device build after full Xcode installation.
+- iOS toolchain setup packet export before the iOS build blocker is assigned or handed off.
 - Camera permission flow.
 - Capture setup blocks recording when visible bystanders, cropped framing, backlighting, or unusable distance are selected.
 - Imported video flow.
