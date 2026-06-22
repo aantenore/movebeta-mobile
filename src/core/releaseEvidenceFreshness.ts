@@ -62,10 +62,12 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
   releaseBlockerIssueFilingPlan?: unknown;
+  releaseBlockerIssueWebLinks?: unknown;
   releaseBlockerIssuesReport?: unknown;
   modelAnalysisReplayReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
+  pwaReadinessReport?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
 };
@@ -116,6 +118,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/release-blocker-issue-filing-plan.json',
     refreshCommand: 'npm run release:blocker-issues:file',
     reportKey: 'releaseBlockerIssueFilingPlan',
+    requiredFor: ['handoff'],
+  },
+  {
+    key: 'release-blocker-issue-web-links',
+    label: 'Release blocker issue web links',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/release-blocker-issue-web-links.json',
+    refreshCommand: 'npm run release:blocker-issues:links',
+    reportKey: 'releaseBlockerIssueWebLinks',
     requiredFor: ['handoff'],
   },
   {
@@ -217,6 +229,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run store:submission',
     reportKey: 'storeSubmissionPacket',
     requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'pwa-readiness-report',
+    label: 'PWA readiness report',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/pwa-readiness-report.json',
+    refreshCommand: 'npm run export:web && npm run web:pwa:check',
+    reportKey: 'pwaReadinessReport',
+    requiredFor: ['demo', 'handoff'],
   },
 ];
 

@@ -16,6 +16,7 @@ import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.js
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
 import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
+import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
@@ -41,6 +42,10 @@ import {
   buildReleaseBlockerIssueFilingPlan,
   type ReleaseBlockerIssueFilingPlan,
 } from '@/core/releaseBlockerIssueFilingPlan';
+import {
+  buildReleaseBlockerIssueWebLinksPacket,
+  type ReleaseBlockerIssueWebLinksPacket,
+} from '@/core/releaseBlockerIssueWebLinks';
 import { buildReleaseCriticalPath, type ReleaseCriticalPath } from '@/core/releaseCriticalPath';
 import {
   buildReleaseEvidenceReconciliation,
@@ -1510,6 +1515,116 @@ function ReleaseBlockerIssueFilingCard({
   );
 }
 
+function ReleaseBlockerIssueWebLinksCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: ReleaseBlockerIssueWebLinksPacket;
+}) {
+  const isReady = packet.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.readyLinkCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>ready links</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.blockedLinkCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blocked links</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.maxUrlLength}</Text>
+          <Text style={styles.qaKitMetricLabel}>max chars</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release blocker issue links</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {packet.summary.status}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release blocker issue web links" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Issue links</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {packet.issues.map((issue) => (
+          <View key={issue.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{issue.title}</Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {issue.owner} · {issue.tracks.join(', ')}
+                </Text>
+              </View>
+              <Text style={[styles.launchStatus, issue.status === 'ready' ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+                {issue.status}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{issue.webUrl ? 'Prefilled GitHub issue URL ready.' : 'Repository configuration required.'}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {issue.bodyPreviewLineCount} body lines · {issue.urlLength}/{packet.summary.urlLengthBudget} chars
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
+  const isReady = report.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.verifiedCount}/{report.summary.checkCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.privacy.backendRequired ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>backend</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Installable PWA</Text>
+          <Text style={styles.qaKitText}>{report.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {report.summary.status}
+        </Text>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {report.checks.map((check) => (
+          <View key={check.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{check.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{check.detail}</Text>
+              </View>
+              <Text style={[styles.launchStatus, check.status === 'verified' ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+                {check.status}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function FieldValidationOpsCard({
   onPreparePacket,
   packet,
@@ -1842,6 +1957,8 @@ function buildPlanSafetySources({
   releaseEvidenceScenarioPlanner,
   releaseEvidenceReconciliation,
   releaseBlockerIssueFilingPlan,
+  releaseBlockerIssueWebLinksPacket,
+  pwaReadiness,
   releaseUnblockChecklist,
   validationConsentPacket,
   iosToolchainSetupPacket,
@@ -1858,6 +1975,8 @@ function buildPlanSafetySources({
   releaseEvidenceScenarioPlanner: ReleaseEvidenceScenarioPlanner;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseBlockerIssueFilingPlan: ReleaseBlockerIssueFilingPlan;
+  releaseBlockerIssueWebLinksPacket: ReleaseBlockerIssueWebLinksPacket;
+  pwaReadiness: typeof pwaReadinessReport;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
   validationConsentPacket: ValidationConsentPacket;
 }): SafetyLanguageSource[] {
@@ -1953,6 +2072,18 @@ function buildPlanSafetySources({
       ].join(' '),
     },
     {
+      key: 'release-blocker-issue-links',
+      label: 'Release blocker issue links',
+      text: [
+        releaseBlockerIssueWebLinksPacket.summary.nextAction,
+        ...releaseBlockerIssueWebLinksPacket.issues.flatMap((issue) => [
+          issue.title,
+          issue.status,
+          ...issue.labels,
+        ]),
+      ].join(' '),
+    },
+    {
       key: 'release-critical-path',
       label: 'Release critical path',
       text: [
@@ -1984,6 +2115,14 @@ function buildPlanSafetySources({
           artifact.detail,
           artifact.refreshCommand,
         ]),
+      ].join(' '),
+    },
+    {
+      key: 'pwa-readiness',
+      label: 'PWA readiness',
+      text: [
+        pwaReadiness.summary.nextAction,
+        ...pwaReadiness.checks.flatMap((check) => [check.label, check.detail, check.status]),
       ].join(' '),
     },
   ];
@@ -2058,6 +2197,10 @@ export function PlanScreen() {
   const releaseBlockerIssueFilingPlan = buildReleaseBlockerIssueFilingPlan({
     packet: releaseBlockerIssuePacket,
   });
+  const releaseBlockerIssueWebLinksPacket = buildReleaseBlockerIssueWebLinksPacket({
+    packet: releaseBlockerIssuePacket,
+    repository: appConfig.releaseRepository,
+  });
   const fieldValidationOpsPacket = buildFieldValidationOpsPacket({
     evidencePlan,
     releaseUnblockChecklist,
@@ -2096,6 +2239,8 @@ export function PlanScreen() {
       releaseEvidenceScenarioPlanner,
       releaseEvidenceReconciliation,
       releaseBlockerIssueFilingPlan,
+      releaseBlockerIssueWebLinksPacket,
+      pwaReadiness: pwaReadinessReport,
       releaseUnblockChecklist,
       validationConsentPacket,
     }),
@@ -2128,6 +2273,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseBlockerIssueFilingPlan, null, 2),
       title: 'Prepared release blocker issue filing plan',
+    });
+  }
+
+  function prepareReleaseBlockerIssueWebLinksPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseBlockerIssueWebLinksPacket, null, 2),
+      title: 'Prepared release blocker issue web links',
     });
   }
 
@@ -2426,6 +2579,10 @@ export function PlanScreen() {
         <ReleaseEvidenceFreshnessCard freshness={releaseEvidenceFreshness} />
       </Section>
 
+      <Section title="Installable PWA" caption="Static Vercel-ready web install path with no backend requirement.">
+        <PwaReadinessCard report={pwaReadinessReport} />
+      </Section>
+
       <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">
         <ReleaseEvidenceReconciliationCard
           input={releaseEvidenceReconciliationJson}
@@ -2444,6 +2601,13 @@ export function PlanScreen() {
         <ReleaseBlockerIssueFilingCard
           onPreparePlan={prepareReleaseBlockerIssueFilingPlan}
           plan={releaseBlockerIssueFilingPlan}
+        />
+      </Section>
+
+      <Section title="Release blocker issue links" caption="Prefilled GitHub issue URLs for mobile or browser-based filing.">
+        <ReleaseBlockerIssueWebLinksCard
+          onPreparePacket={prepareReleaseBlockerIssueWebLinksPacket}
+          packet={releaseBlockerIssueWebLinksPacket}
         />
       </Section>
 

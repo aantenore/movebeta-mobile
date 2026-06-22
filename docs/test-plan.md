@@ -232,6 +232,16 @@
   by default, and requires `--create` plus `MOVEBETA_RELEASE_ISSUE_CREATE=1` before GitHub issue mutation.
 - Vitest release blocker issue filing tests cover the mobile-safe schema, dry-run export, exact-title existing issue
   handling, sanitized GitHub CLI failures, and JSON/Markdown artifact writes.
+- Release blocker issue web links with `npm run release:blocker-issues:links`, which writes
+  `docs/sdlc/release-blocker-issue-web-links.json` and `docs/sdlc/release-blocker-issue-web-links.md` from the same
+  issue drafts and configurable GitHub repository.
+- Vitest release blocker issue web-link tests cover repository normalization, missing repository state, URL length
+  budget review, share-safe schema output, and JSON/Markdown artifact writes.
+- PWA readiness doctor with `npm run web:pwa:check`, which validates the exported web build includes installable
+  manifest metadata, service worker registration, PWA icons, Vercel static config, SPA fallback, and no backend/API
+  route surface.
+- Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, and JSON/Markdown report
+  writes.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
@@ -391,6 +401,10 @@
   opt-in.
 - Plan tab shows release blocker issue filing metrics, command previews, filing statuses, and prepares the same versioned
   dry-run filing JSON without bundling Node or GitHub CLI mutation code.
+- Plan tab shows release blocker issue web-link metrics and prepares a versioned prefilled-link packet from mobile-safe
+  core logic without bundling Node or GitHub CLI mutation code.
+- Exported web build includes installable PWA metadata and service worker registration, and the PWA readiness doctor
+  verifies the static Vercel deployment path before release handoff.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,

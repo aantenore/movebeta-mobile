@@ -28,6 +28,7 @@ const ConfigSchema = z.object({
   coachLens: CoachLensKeySchema,
   privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
+  releaseRepository: z.string().optional(),
   billingReadiness: BillingReadinessConfigSchema,
   launchReadinessEvidence: LaunchReadinessEvidenceSchema.optional(),
   modelEvidence: ModelEvidenceConfigSchema.optional(),
@@ -92,6 +93,9 @@ export const appConfig = ConfigSchema.parse({
     expoExtra.privacyMode ??
     'on-device',
   officialApiBaseUrl: process.env.EXPO_PUBLIC_MOVEBETA_API_BASE_URL,
+  releaseRepository:
+    process.env.EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY ??
+    (typeof expoExtra.releaseRepository === 'string' ? expoExtra.releaseRepository : undefined),
   billingReadiness:
     resolveBillingReadinessConfig(process.env.EXPO_PUBLIC_MOVEBETA_BILLING_READINESS ?? expoExtra.billingReadiness) ??
     defaultBillingReadinessConfig,
