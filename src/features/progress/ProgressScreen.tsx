@@ -15,7 +15,11 @@ import {
   formatAttemptPacingPacketSummary,
   formatRestTimerClock,
 } from '@/movement/attemptPacing';
-import { summarizeAnalysisTrustTrend } from '@/movement/analysisTrustTrend';
+import {
+  buildAnalysisTrustTrendPacket,
+  formatAnalysisTrustTrendPacketSummary,
+  summarizeAnalysisTrustTrend,
+} from '@/movement/analysisTrustTrend';
 import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
@@ -90,6 +94,7 @@ export function ProgressScreen() {
   const [activeRestTimer, setActiveRestTimer] = useState<{ label: string; remainingSeconds: number; sourceStepId: string } | null>(null);
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
+  const [preparedTrustTrendPacket, setPreparedTrustTrendPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
@@ -149,6 +154,15 @@ export function ProgressScreen() {
     setPreparedPacingPacket({
       body: `${formatAttemptPacingPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
       title: 'Prepared attempt pacing packet',
+    });
+  }
+
+  function prepareTrustTrendPacket() {
+    selectionFeedback();
+    const packet = buildAnalysisTrustTrendPacket(analysisTrustTrend);
+    setPreparedTrustTrendPacket({
+      body: `${formatAnalysisTrustTrendPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared analysis trust trend packet',
     });
   }
 
@@ -300,8 +314,26 @@ export function ProgressScreen() {
               Local boundary crossings: {analysisTrustTrend.privacy.reportsCrossingLocalBoundary}
             </Text>
           </View>
+
+          <View style={styles.sessionAgendaActions}>
+            <Pressable
+              accessibilityLabel="Prepare analysis trust trend packet"
+              onPress={prepareTrustTrendPacket}
+              style={styles.sessionAgendaAction}
+            >
+              <Text style={styles.sessionAgendaActionText}>Trend packet</Text>
+            </Pressable>
+          </View>
         </View>
       </Section>
+
+      {preparedTrustTrendPacket ? (
+        <Section title={preparedTrustTrendPacket.title} caption="Share-safe trust trend evidence prepared locally.">
+          <View style={styles.sessionAgendaPacketBox}>
+            <Text selectable style={styles.sessionAgendaPacketText}>{preparedTrustTrendPacket.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section title="Next session plan" caption="A local training block assembled from readiness, benchmarks, and private project notes.">
         <View style={styles.sessionPlanCard}>

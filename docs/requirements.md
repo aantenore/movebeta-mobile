@@ -55,6 +55,8 @@
   values.
 - Show an analysis trust trend in Progress that aggregates local coaching-ready, review-first, journal-only, and retake
   decisions, highlights the latest decision, and preserves the local-only privacy boundary.
+- Prepare a share-safe analysis trust trend packet from Progress with trend status, counts, latest decision, next action,
+  and explicit exclusion of raw media, video URIs, report ids, private notes, local paths, and token-like values.
 - Generate a local beta replay plan with setup, crux, and exit actions from report cues, timeline, and weakest metric.
 - Generate a local movement phase breakdown that scores launch, crux, and finish phases from cues and timeline events.
 - Block recording when capture setup has privacy or pose-extraction blockers.
