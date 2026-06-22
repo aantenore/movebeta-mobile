@@ -1,0 +1,116 @@
+{
+  "checks": [
+    {
+      "action": "Keep vercel.json static-first with outputDirectory dist.",
+      "detail": "vercel.json uses npm run export:web, outputDirectory dist, static headers, and SPA fallback.",
+      "key": "vercel-static-config",
+      "label": "Vercel static config",
+      "status": "verified"
+    },
+    {
+      "action": "Run npm run export:web && npm run web:pwa:check before deployment.",
+      "detail": "PWA readiness report is ready, including manifest, service worker, static assets, and no-backend checks.",
+      "key": "pwa-readiness",
+      "label": "PWA readiness evidence",
+      "status": "verified"
+    },
+    {
+      "action": "Do not add api, pages/api, or functions until a paid backend path is explicitly selected.",
+      "detail": "No Vercel API routes, functions directory, or backend surface is present.",
+      "key": "no-backend-surface",
+      "label": "No backend surface",
+      "status": "verified"
+    },
+    {
+      "action": "Keep VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID documented with empty template values.",
+      "detail": "Vercel deployment key names are documented in .env.example with empty template values.",
+      "key": "env-template",
+      "label": "Deployment env template",
+      "status": "verified"
+    },
+    {
+      "action": "Run vercel link or vercel pull on the target Vercel account when ready to deploy.",
+      "detail": ".vercel/project.json is not present; deployment can still be configured from Vercel Git integration or CI secrets.",
+      "key": "project-binding",
+      "label": "Vercel project binding",
+      "status": "action-needed"
+    },
+    {
+      "action": "Set Vercel credential values only in local shell, CI secrets, or Vercel project settings.",
+      "detail": "Current shell is missing deployment values for VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.",
+      "key": "deployment-secrets",
+      "label": "Deployment secret availability",
+      "status": "action-needed"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run export:web",
+      "key": "export-web",
+      "label": "Export web PWA",
+      "purpose": "Build the static web output into dist."
+    },
+    {
+      "command": "npm run web:pwa:check",
+      "key": "pwa-check",
+      "label": "Validate PWA output",
+      "purpose": "Verify manifest, service worker, static assets, and no-backend path."
+    },
+    {
+      "command": "npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN",
+      "key": "vercel-pull",
+      "label": "Pull Vercel project settings",
+      "purpose": "Bind local configuration to the selected Vercel project without committing secret values."
+    },
+    {
+      "command": "npx vercel build --prod --token=$VERCEL_TOKEN",
+      "key": "vercel-build",
+      "label": "Build prebuilt Vercel artifact",
+      "purpose": "Build Vercel output from the static project configuration."
+    },
+    {
+      "command": "npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN",
+      "key": "vercel-deploy",
+      "label": "Deploy prebuilt production artifact",
+      "purpose": "Deploy the prebuilt static PWA to production."
+    },
+    {
+      "command": "MOVEBETA_SMOKE_URL=<deployment-url> python3 scripts/smoke_web_video.py",
+      "key": "post-deploy-smoke",
+      "label": "Smoke deployed PWA",
+      "purpose": "Verify the deployed URL renders the installable PWA and app workflows."
+    }
+  ],
+  "deploymentMode": "static-prebuilt",
+  "envKeys": [
+    "VERCEL_TOKEN",
+    "VERCEL_ORG_ID",
+    "VERCEL_PROJECT_ID"
+  ],
+  "generatedAt": "2026-06-22T15:44:14.201Z",
+  "privacy": {
+    "backendRequired": false,
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "projectIdValuesIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.vercel-deployment-readiness.v1",
+  "summary": {
+    "actionNeededCount": 2,
+    "blockedCount": 0,
+    "checkCount": 6,
+    "envKeysMissing": [
+      "VERCEL_TOKEN",
+      "VERCEL_ORG_ID",
+      "VERCEL_PROJECT_ID"
+    ],
+    "envKeysPresent": [],
+    "nextAction": "Connect the Vercel project and deployment secrets, then run the prebuilt deploy commands and post-deploy smoke.",
+    "projectBinding": "missing",
+    "status": "static-ready",
+    "verifiedCount": 4
+  }
+}

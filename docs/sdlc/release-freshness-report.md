@@ -1,13 +1,13 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-22T15:30:54.745Z
+Generated: 2026-06-22T15:44:14.476Z
 
 - Status: ready
-- Fresh artifacts: 16/16
+- Fresh artifacts: 17/17
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
-- Oldest artifact: movenet-readiness-report
+- Oldest artifact: launch-readiness-report
 - Next action: All tracked release evidence artifacts are fresh.
 - Credential values included: no
 - Local paths included: no
@@ -19,9 +19,9 @@ Generated: 2026-06-22T15:30:54.745Z
 | Launch readiness report | fresh | 0.01h | 24h | `npm run release:readiness` |
 | Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0.01h | 24h | `npm run release:blocker-issues` |
-| Release blocker issue filing plan | fresh | 0.01h | 24h | `npm run release:blocker-issues:file` |
-| Release blocker issue web links | fresh | 0.01h | 24h | `npm run release:blocker-issues:links` |
-| MoveNet readiness report | fresh | 0.02h | 24h | `npm run model:movenet:readiness` |
+| Release blocker issue filing plan | fresh | 0h | 24h | `npm run release:blocker-issues:file` |
+| Release blocker issue web links | fresh | 0h | 24h | `npm run release:blocker-issues:links` |
+| MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
 | Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
 | Model verification suite report | fresh | 0.01h | 24h | `npm run model:verification:suite` |
 | iOS toolchain report | fresh | 0.01h | 24h | `npm run native:ios:doctor` |
@@ -32,3 +32,4 @@ Generated: 2026-06-22T15:30:54.745Z
 | Environment template report | fresh | 0.01h | 168h | `npm run release:env:doctor` |
 | Store submission packet | fresh | 0.01h | 72h | `npm run store:submission` |
 | PWA readiness report | fresh | 0h | 72h | `npm run export:web && npm run web:pwa:check` |
+| Vercel deployment report | fresh | 0h | 72h | `npm run web:vercel:check` |

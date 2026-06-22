@@ -164,6 +164,9 @@
 - Vitest release evidence freshness tests for configurable artifact windows, stale evidence, missing/invalid timestamps,
   release report bundle mapping, and raw artifact/path/token rejection; `npm run release:freshness:doctor` writes durable
   JSON/Markdown freshness evidence and is included in `npm run release:check`.
+- Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
+  secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
+  durable static deployment readiness evidence and is included in `npm run release:check`.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
 - Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
@@ -242,6 +245,9 @@
   route surface.
 - Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, and JSON/Markdown report
   writes.
+- Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
+  configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
+  availability, and share-safe deploy commands.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
@@ -405,6 +411,8 @@
   core logic without bundling Node or GitHub CLI mutation code.
 - Exported web build includes installable PWA metadata and service worker registration, and the PWA readiness doctor
   verifies the static Vercel deployment path before release handoff.
+- Plan tab shows Vercel deployment readiness and prepares a Vercel packet with backend-required false, static-ready
+  status, prebuilt deploy commands, and no committed credential/project id values.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,

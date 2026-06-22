@@ -201,6 +201,9 @@
   repository value and rejecting credential values, local paths, raw artifacts, and raw video references.
 - Provide an installable static PWA build for Vercel-style hosting, with web manifest, service worker, static deployment
   config, and no backend/API route requirement.
+- Provide a share-safe Vercel static deployment readiness path that verifies the prebuilt static PWA contract, no-backend
+  surface, empty Vercel secret template keys, project binding status, and deployment-secret availability without
+  committing token values, project identifiers, local paths, or backend code.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
@@ -404,6 +407,10 @@
 - Release evidence freshness checks must be generated from machine-readable release reports, apply configurable freshness
   windows per artifact, surface stale, missing, and invalid timestamps, and reject raw videos, local paths, credential
   values, and token-like strings before sharing.
+- Vercel deployment readiness reports must be generated from project configuration and current environment state, treat
+  missing Vercel account binding and secrets as action-needed rather than implementation blockers, keep static deploy
+  commands shareable, and reject credential values, project id values, local paths, raw artifacts, raw videos, and
+  token-like strings before sharing.
 - Release blocker issue packets must be schema-versioned, generated from the release unblock checklist, point to the
   repository issue template, include only share-safe issue drafts, and reject token-like values, credential strings,
   absolute local paths, raw artifacts, or raw video references before sharing.

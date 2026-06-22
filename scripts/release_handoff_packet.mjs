@@ -128,6 +128,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Dependency license report', 'docs/sdlc/dependency-license-report.json'),
       artifact(rootDir, 'Release evidence freshness report', 'docs/sdlc/release-freshness-report.json'),
       artifact(rootDir, 'PWA readiness report', 'docs/sdlc/pwa-readiness-report.json'),
+      artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
       artifact(rootDir, 'Store manifest', 'docs/store/store-manifest.json'),
       artifact(rootDir, 'Screenshot gallery', 'docs/screenshots.md'),
       artifact(rootDir, 'Release unblock screenshot', 'docs/store/screenshots/07-release-unblock.png'),
@@ -184,6 +185,13 @@ export function buildReleaseHandoffPacket({
       command('pwa-readiness', 'PWA static readiness doctor', 'npm run export:web && npm run web:pwa:check', [
         'demo',
         'internal',
+      ]),
+      command('vercel-readiness', 'Vercel deployment readiness doctor', 'npm run web:vercel:check', [
+        'demo',
+        'internal',
+      ]),
+      command('vercel-deploy', 'Vercel prebuilt production deploy', 'npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN', [
+        'demo',
       ]),
       command('eas-strict', 'Strict EAS store gate', 'npm run release:eas:strict', ['store']),
     ],
