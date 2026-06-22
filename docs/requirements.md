@@ -105,6 +105,8 @@
   rest windows, attempt budget, hard-try slots, and stop rules before adding intensity.
 - Prepare a share-safe local attempt pacing packet from the current pacing plan with schema version, summary, rest
   windows, attempt caps, stop rules, negative privacy flags, and raw-artifact rejection.
+- Start a local rest timer from attempt pacing steps so climbers can follow rest windows in-session without cloud sync,
+  account state, or media artifacts.
 - Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
   and privacy boundary so climbers know what to log before the next local comparison.
 - Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can

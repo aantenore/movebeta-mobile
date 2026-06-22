@@ -5,6 +5,7 @@ import {
   assertAttemptPacingPlanIsShareSafe,
   buildAttemptPacingPlan,
   buildAttemptPacingPacket,
+  formatRestTimerClock,
   formatAttemptPacingPacketSummary,
 } from '../src/movement/attemptPacing';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
@@ -150,6 +151,14 @@ describe('attempt pacing plan', () => {
     expect(plan.summary.maxTotalAttempts).toBe(5);
     expect(plan.summary.maxHardAttempts).toBe(2);
     expect(plan.steps.find((step) => step.type === 'hard-try')?.restAfterSeconds).toBe(420);
+  });
+
+  it('formats local rest timer values for the session UI', () => {
+    expect(formatRestTimerClock(0)).toBe('00:00');
+    expect(formatRestTimerClock(59)).toBe('00:59');
+    expect(formatRestTimerClock(120)).toBe('02:00');
+    expect(formatRestTimerClock(301.9)).toBe('05:01');
+    expect(formatRestTimerClock(-10)).toBe('00:00');
   });
 
   it('builds a share-safe packet from the pacing plan', async () => {
