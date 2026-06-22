@@ -77,6 +77,8 @@ web build with `npm run store:screenshots`.
 - Capture-readiness guidance that turns weak video signal into concrete retake advice.
 - Analysis trust summary that combines local quality, body coverage, cue evidence, runtime budget, evidence timeline, and
   privacy boundary into a coaching/review/retake decision.
+- Share-safe analysis trust packet for exporting the local coaching/review/retake decision without raw media, landmarks,
+  private notes, local paths, or token-like values.
 - Beta replay plan that turns local cue and metric evidence into setup, crux, and exit actions for the next attempt.
 - Movement phase breakdown that scores launch, crux, and finish phases from local cues and timeline events.
 - Cue trust scoring that grades each coaching cue from pose quality, timing evidence, runtime budget, and validation readiness.

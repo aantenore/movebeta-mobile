@@ -60,6 +60,11 @@ import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/perform
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
 import { summarizeAnalysisEvidence } from '@/movement/analysisEvidence';
 import { assertAnalysisEvidenceExportIsPrivacySafe, buildAnalysisEvidenceExport } from '@/movement/analysisEvidenceExport';
+import {
+  assertAnalysisTrustPacketIsPrivacySafe,
+  buildAnalysisTrustPacket,
+  formatAnalysisTrustPacketSummary,
+} from '@/movement/analysisTrustPacket';
 import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import {
   createReportAnnotation,
@@ -835,6 +840,29 @@ export function SessionsScreen() {
     }
   }
 
+  async function prepareAnalysisTrustPacket(reportId: string) {
+    selectionFeedback();
+    const report = await exportReport(reportId);
+    if (!report) {
+      setPreparedExport(null);
+      return;
+    }
+
+    try {
+      const packet = buildAnalysisTrustPacket(report);
+      assertAnalysisTrustPacketIsPrivacySafe(packet);
+      setPreparedExport({
+        body: `${formatAnalysisTrustPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+        title: 'Prepared analysis trust packet',
+      });
+    } catch (error) {
+      setPreparedExport({
+        body: error instanceof Error ? error.message : 'Analysis trust packet could not be prepared.',
+        title: 'Analysis trust blocked',
+      });
+    }
+  }
+
   async function prepareCoachPacket(reportId: string) {
     selectionFeedback();
     const report = await exportReport(reportId);
@@ -1077,6 +1105,10 @@ export function SessionsScreen() {
                 <Pressable onPress={() => void prepareAnalysisEvidenceExport(report.id)} style={styles.secondaryAction}>
                   <ShieldCheck color={theme.colors.brand} size={16} />
                   <Text style={styles.secondaryActionText}>Evidence</Text>
+                </Pressable>
+                <Pressable onPress={() => void prepareAnalysisTrustPacket(report.id)} style={styles.secondaryAction}>
+                  <Target color={theme.colors.brand} size={16} />
+                  <Text style={styles.secondaryActionText}>Trust</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => void toggleCoachConsent(report.id)}

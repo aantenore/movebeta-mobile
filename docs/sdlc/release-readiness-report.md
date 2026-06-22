@@ -30,6 +30,8 @@ platforms are validated on physical climbing videos and devices.
 - Analyze and Sessions show a local analysis trust summary that combines signal quality, body coverage, cue evidence,
   runtime budget, evidence timeline, and privacy boundary into coaching-ready, review-first, journal-only, or retake
   decisions.
+- Sessions prepares a share-safe analysis trust packet with versioned trust factors, report metadata, and explicit
+  negative privacy flags before sharing.
 - Analyze turns the current cue and metric evidence into a local setup, crux, and exit beta replay plan before movement
   metrics.
 - Analyze scores launch, crux, and finish phases from local cue and timeline evidence before movement metrics.
@@ -227,14 +229,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 110 test files and 448 tests.
+- `npm test`: passed, 111 test files and 451 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 5366ms load time, 316ms average inference, and 318ms max inference in the latest run.
+  CPU backend, 7175ms load time, 324ms average inference, and 326ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -254,7 +256,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 148/151 tasks done, 102/104 backlog items done, 135/135 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 149/152 tasks done, 103/105 backlog items done, 136/136 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -282,6 +284,8 @@ platforms are validated on physical climbing videos and devices.
   performance facts, timeline marker bounds, and privacy evidence.
 - `tests/analysisTrust.test.ts`: passed and covers coaching-ready local reports, retake decisions from weak pose signal,
   local-only privacy boundary blocking, weighted trust factors, and raw artifact exclusion.
+- `tests/analysisTrustPacket.test.ts`: passed and covers versioned trust packet generation, retake decision export,
+  summary copy, negative privacy flags, and raw path/artifact rejection.
 - `tests/analysisEvidence.test.ts`: passed and covers versioned report timelines, privacy-safe step evidence, blocked
   weak-quality/over-budget/raw-artifact states, summaries, and legacy report fallback.
 - `tests/analysisEvidenceExport.test.ts`: passed and covers versioned evidence-only exports, negative privacy flags, and
@@ -435,7 +439,7 @@ platforms are validated on physical climbing videos and devices.
   capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions analysis trust summary, the Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
+  Sessions analysis trust summary, the Sessions analysis trust packet, the Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
   repeat outcome panel, the Sessions coach library queue, team templates,
   coach library export, cue-validation study seed, cue-validation clip intake manifest, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,
