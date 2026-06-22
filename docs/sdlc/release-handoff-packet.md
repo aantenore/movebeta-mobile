@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-22T14:38:01.724Z
+Generated: 2026-06-22T15:00:54.559Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: b4de9f784c27a5e8d3094e33e12af5aa4926443f
+- Base commit at generation: f8079551abeae9201ab3d4e592db7bb100201994
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4440ms; average inference 345ms
+- MoveNet readiness: ready; load 6266ms; average inference 324ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -40,6 +40,7 @@ Generated: 2026-06-22T14:38:01.724Z
 - Dependency license report: `npm run security:licenses`
 - Feature completion doctor: `npm run feature:doctor`
 - Release blocker issue report: `npm run release:blocker-issues`
+- Release blocker issue filing plan: `npm run release:blocker-issues:file`
 - Release evidence freshness doctor: `npm run release:freshness:doctor`
 - Strict EAS store gate: `npm run release:eas:strict`
 
@@ -50,6 +51,7 @@ Generated: 2026-06-22T14:38:01.724Z
 - [x] Launch readiness report: `docs/sdlc/launch-readiness-report.json`
 - [x] Feature completion report: `docs/sdlc/feature-completion-report.json`
 - [x] Release blocker issues report: `docs/sdlc/release-blocker-issues-report.json`
+- [x] Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
