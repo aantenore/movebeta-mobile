@@ -9,7 +9,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
-import { buildAttemptPacingPlan } from '@/movement/attemptPacing';
+import { buildAttemptPacingPacket, buildAttemptPacingPlan, formatAttemptPacingPacketSummary } from '@/movement/attemptPacing';
 import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
@@ -82,6 +82,7 @@ export function ProgressScreen() {
   const [drillPractice, setDrillPractice] = useState<DrillPracticeRecord[]>([]);
   const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
+  const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
@@ -131,6 +132,15 @@ export function ProgressScreen() {
     setPreparedAgendaPacket({
       body: `${formatSessionAgendaPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
       title: 'Prepared session agenda packet',
+    });
+  }
+
+  function preparePacingPacket() {
+    selectionFeedback();
+    const packet = buildAttemptPacingPacket(attemptPacing);
+    setPreparedPacingPacket({
+      body: `${formatAttemptPacingPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared attempt pacing packet',
     });
   }
 
@@ -372,8 +382,22 @@ export function ProgressScreen() {
               </View>
             ))}
           </View>
+
+          <View style={styles.sessionAgendaActions}>
+            <Pressable accessibilityLabel="Prepare attempt pacing packet" onPress={preparePacingPacket} style={styles.sessionAgendaAction}>
+              <Text style={styles.sessionAgendaActionText}>Pacing packet</Text>
+            </Pressable>
+          </View>
         </View>
       </Section>
+
+      {preparedPacingPacket ? (
+        <Section title={preparedPacingPacket.title} caption="Share-safe pacing evidence prepared locally.">
+          <View style={styles.sessionAgendaPacketBox}>
+            <Text selectable style={styles.sessionAgendaPacketText}>{preparedPacingPacket.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section title="Session closeout" caption="A local checklist for what to log after the planned repeat.">
         <View style={styles.closeoutCard}>
