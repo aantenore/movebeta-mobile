@@ -160,6 +160,8 @@ platforms are validated on physical climbing videos and devices.
 - Release blocker issue filing plan turns the generated drafts into a share-safe dry-run GitHub filing plan, with
   exact-title existing issue detection in create mode and mutation gated behind `--create` plus
   `MOVEBETA_RELEASE_ISSUE_CREATE=1`.
+- Plan tab shows the release blocker issue filing plan with planned/existing/created counts, command previews, filing
+  status, and a share-safe JSON export from mobile-safe core logic.
 - Plan tab shows a release critical path that sequences external blockers across real-world validation, native build/QA,
   and store-account lanes, including dependency keys and ready-to-start states.
 - Plan tab prepares a share-safe release critical path packet with commands, proof expectations, dependencies, lane
@@ -251,7 +253,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 6266ms load time, 324ms average inference, and 329ms max inference in the latest run.
+  CPU backend, 5231ms load time, 320ms average inference, and 337ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -271,7 +273,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 156/159 tasks done, 110/112 backlog items done, 143/143 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 157/160 tasks done, 111/113 backlog items done, 144/144 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -417,9 +419,9 @@ platforms are validated on physical climbing videos and devices.
   injected token/local-path rejection before sharing.
 - `tests/releaseBlockerIssueReport.test.ts`: passed and covers launch-evidence input, durable JSON/Markdown issue draft
   writes, issue ordering, and credential/local-path/raw-artifact rejection before sharing.
-- `tests/releaseBlockerIssueFiling.test.ts`: passed and covers dry-run filing plan generation, JSON/Markdown artifact
-  writes, exact-title existing issue skipping, GitHub CLI failure capture, and credential/local-path/raw-artifact
-  exclusion inherited from the issue packet.
+- `tests/releaseBlockerIssueFiling.test.ts`: passed and covers mobile-safe schema validation, dry-run filing plan
+  generation, JSON/Markdown artifact writes, exact-title existing issue skipping, GitHub CLI failure capture, and
+  credential/local-path/raw-artifact exclusion inherited from the issue packet.
 - `tests/releaseCriticalPath.test.ts`: passed and covers external blocker dependency sequencing, parallel lane grouping,
   upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
 - `tests/releaseEvidenceScenarios.test.ts`: passed and covers projected launch tracks, cleared blocker counts,
@@ -475,7 +477,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, model verification suite, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release blocker issue filing plan export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.

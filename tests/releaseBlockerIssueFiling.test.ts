@@ -4,6 +4,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildReleaseBlockerIssuePacket } from '../src/core/releaseBlockerIssuePacket';
+import { ReleaseBlockerIssueFilingPlanSchema } from '../src/core/releaseBlockerIssueFilingPlan';
 import {
   assertReleaseBlockerIssueFilingPlanIsShareSafe,
   buildReleaseBlockerIssueFilingPlan,
@@ -54,6 +55,7 @@ describe('release blocker issue filing', () => {
     });
 
     expect(plan.schemaVersion).toBe(RELEASE_BLOCKER_ISSUE_FILING_SCHEMA_VERSION);
+    expect(ReleaseBlockerIssueFilingPlanSchema.parse(plan)).toEqual(plan);
     expect(plan.summary).toMatchObject({
       createEnabled: false,
       issueCount: 5,

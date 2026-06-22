@@ -230,6 +230,8 @@
 - Release blocker issue filing plan with `npm run release:blocker-issues:file`, which writes
   `docs/sdlc/release-blocker-issue-filing-plan.json` and `docs/sdlc/release-blocker-issue-filing-plan.md`, stays dry-run
   by default, and requires `--create` plus `MOVEBETA_RELEASE_ISSUE_CREATE=1` before GitHub issue mutation.
+- Vitest release blocker issue filing tests cover the mobile-safe schema, dry-run export, exact-title existing issue
+  handling, sanitized GitHub CLI failures, and JSON/Markdown artifact writes.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
@@ -387,6 +389,8 @@
 - CLI release blocker issue filing plan turns those drafts into a share-safe dry-run plan, detects existing exact-title
   GitHub issues in create mode, records planned/existing/created/failed statuses, and keeps mutation behind explicit
   opt-in.
+- Plan tab shows release blocker issue filing metrics, command previews, filing statuses, and prepares the same versioned
+  dry-run filing JSON without bundling Node or GitHub CLI mutation code.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,
