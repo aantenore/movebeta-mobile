@@ -190,6 +190,8 @@ web build with `npm run store:screenshots`.
 - Release blocker issue web-link export in the Plan tab and CLI that generates prefilled GitHub issue URLs from a
   configurable repository without exposing secrets or local artifacts.
 - Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
+- Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
+  deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
@@ -222,6 +224,7 @@ npm run release:blocker-issues
 npm run release:blocker-issues:file
 npm run release:blocker-issues:links
 npm run web:pwa:check
+npm run web:vercel:check
 npm run native:qa:runbook
 npm run ci
 npm run release:eas:check
@@ -237,6 +240,7 @@ EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
+EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY=aantenore/movebeta-mobile
 EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"nativeQaRunbook":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
 
@@ -296,6 +300,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`,
   `docs/sdlc/release-blocker-issue-web-links.md`.
 - PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
+- Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`,
+  `docs/sdlc/vercel-deployment-report.md`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -322,6 +328,7 @@ npm run release:blocker-issues:file
 npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:doctor
+npm run web:vercel:check
 npm run release:readiness
 npm run release:archives
 npm run release:handoff
@@ -330,9 +337,11 @@ npm run release:handoff
 Use `npm run release:full` to run the full local quality gate and refresh the machine-detected launch readiness report in
 one command, including the release handoff packet.
 
-The web app can be deployed as a static installable PWA without a backend. Run `npm run export:web`, then
-`npm run web:pwa:check`; `vercel.json` points Vercel at `dist` and does not define API routes or serverless functions.
-Use Vercel plan selection according to the intended personal or commercial deployment context.
+The web app can be deployed as a static installable PWA without a backend. Run `npm run export:web`,
+`npm run web:pwa:check`, and `npm run web:vercel:check`; `vercel.json` points Vercel at `dist` and does not define API
+routes or serverless functions. The Vercel doctor keeps account binding and deployment token values outside source
+control while documenting the prebuilt deploy commands. Use Vercel plan selection according to the intended personal or
+commercial deployment context.
 
 The EAS release gates are:
 

@@ -70,6 +70,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   pwaReadinessReport?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
+  vercelDeploymentReport?: unknown;
 };
 
 type FreshnessConfig = Omit<ReleaseEvidenceFreshnessArtifactInput, 'generatedAt'> & {
@@ -238,6 +239,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/pwa-readiness-report.json',
     refreshCommand: 'npm run export:web && npm run web:pwa:check',
     reportKey: 'pwaReadinessReport',
+    requiredFor: ['demo', 'handoff'],
+  },
+  {
+    key: 'vercel-deployment-report',
+    label: 'Vercel deployment report',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/vercel-deployment-report.json',
+    refreshCommand: 'npm run web:vercel:check',
+    reportKey: 'vercelDeploymentReport',
     requiredFor: ['demo', 'handoff'],
   },
 ];
