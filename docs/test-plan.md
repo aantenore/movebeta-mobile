@@ -36,6 +36,8 @@
   practice-reset planning from skipped drill logs.
 - Vitest session agenda tests for baseline, controlled, deload, configurable block limits, share-safe agenda packets, and
   raw artifact/private-note rejection.
+- Vitest attempt pacing tests for baseline, controlled, progress, reset, configurable rest/attempt limits, and raw
+  artifact/private-note rejection.
 - Vitest session closeout tests for baseline checklist, latest-report closeout actions, complete closeout evidence, and
   raw artifact/private-note rejection.
 - Vitest training load tests for baseline, balanced, review, deload, configurable threshold behavior, and raw
@@ -288,6 +290,8 @@
   privacy-safe local evidence.
 - Progress tab prepares a session agenda packet with schema version, summary, negative privacy flags, and local JSON
   preview.
+- Progress tab shows an attempt pacing plan with rest windows, attempt caps, hard-try slots, and stop rules from local
+  agenda, load, and guard evidence.
 - Progress tab shows a session closeout checklist with training-log, drill follow-through, repeat-outcome, and privacy
   boundary actions before the next local comparison.
 - Progress tab shows a training load balance with recent effort, repeat, skipped-drill signals, recommendation, and

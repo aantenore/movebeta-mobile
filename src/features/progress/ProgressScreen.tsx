@@ -9,6 +9,7 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
+import { buildAttemptPacingPlan } from '@/movement/attemptPacing';
 import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
@@ -99,6 +100,10 @@ export function ProgressScreen() {
   );
   const sessionCloseout = useMemo(
     () => buildSessionCloseout({ annotations, drillPractice, reports: filteredReports }),
+    [annotations, drillPractice, filteredReports],
+  );
+  const attemptPacing = useMemo(
+    () => buildAttemptPacingPlan({ annotations, drillPractice, reports: filteredReports }),
     [annotations, drillPractice, filteredReports],
   );
   const trainingLoad = useMemo(
@@ -297,6 +302,78 @@ export function ProgressScreen() {
           </View>
         </Section>
       ) : null}
+
+      <Section title="Attempt pacing" caption="A local rest and attempt budget before adding intensity.">
+        <View style={styles.attemptPacingCard}>
+          <View style={styles.attemptPacingHeader}>
+            <View style={styles.attemptPacingCopy}>
+              <Text style={styles.attemptPacingKicker}>{attemptPacing.status}</Text>
+              <Text style={styles.attemptPacingTitle}>{attemptPacing.title}</Text>
+              <Text style={styles.attemptPacingMeta}>
+                {attemptPacing.summary.maxTotalAttempts} max attempts · {attemptPacing.summary.maxHardAttempts} hard ·{' '}
+                {attemptPacing.summary.restMinutes} min rest
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.attemptPacingBadge,
+                attemptPacing.status === 'reset' ? styles.attemptPacingBadgeLimit : null,
+                attemptPacing.status === 'progress' ? styles.attemptPacingBadgeReady : null,
+              ]}
+            >
+              <Text style={styles.attemptPacingBadgeValue}>{attemptPacing.summary.attemptSlots}</Text>
+              <Text style={styles.attemptPacingBadgeLabel}>Slots</Text>
+            </View>
+          </View>
+
+          <View style={styles.attemptPacingNextAction}>
+            <Text style={styles.attemptPacingNextActionLabel}>Next action</Text>
+            <Text style={styles.attemptPacingNextActionText}>{attemptPacing.nextAction}</Text>
+          </View>
+
+          <View style={styles.attemptPacingSteps}>
+            {attemptPacing.steps.map((step) => (
+              <View key={step.id} style={styles.attemptPacingStep}>
+                <View style={styles.attemptPacingStepHeader}>
+                  <Text style={styles.attemptPacingStepLabel}>{step.label}</Text>
+                  <Text
+                    style={[
+                      styles.attemptPacingIntensity,
+                      step.intensity === 'easy' ? styles.attemptPacingIntensityEasy : null,
+                      step.intensity === 'hard' ? styles.attemptPacingIntensityHard : null,
+                    ]}
+                  >
+                    {step.intensity}
+                  </Text>
+                </View>
+                <Text style={styles.attemptPacingStepTitle}>{step.title}</Text>
+                <Text style={styles.attemptPacingStepInstruction}>{step.instruction}</Text>
+                <Text style={styles.attemptPacingStepEvidence}>
+                  Rest {Math.round(step.restAfterSeconds / 60)} min · {step.evidence}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.attemptPacingRules}>
+            {attemptPacing.stopRules.map((rule) => (
+              <View key={rule.id} style={styles.attemptPacingRule}>
+                <Text
+                  style={[
+                    styles.attemptPacingRuleStatus,
+                    rule.status === 'limit' ? styles.attemptPacingRuleStatusLimit : null,
+                    rule.status === 'ready' ? styles.attemptPacingRuleStatusReady : null,
+                  ]}
+                >
+                  {rule.status}
+                </Text>
+                <Text style={styles.attemptPacingRuleTitle}>{rule.label}</Text>
+                <Text style={styles.attemptPacingRuleDetail}>{rule.detail}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </Section>
 
       <Section title="Session closeout" caption="A local checklist for what to log after the planned repeat.">
         <View style={styles.closeoutCard}>
@@ -1694,6 +1771,184 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,
+  },
+  attemptPacingBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 84,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  attemptPacingBadgeLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingBadgeLimit: {
+    backgroundColor: theme.colors.coral,
+  },
+  attemptPacingBadgeReady: {
+    backgroundColor: theme.colors.success,
+  },
+  attemptPacingBadgeValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  attemptPacingCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  attemptPacingCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  attemptPacingHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  attemptPacingIntensity: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
+  attemptPacingIntensityEasy: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  attemptPacingIntensityHard: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  attemptPacingKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  attemptPacingNextAction: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  attemptPacingNextActionLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingNextActionText: {
+    color: theme.colors.brandDark,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  attemptPacingRule: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 158,
+    padding: theme.spacing.sm,
+  },
+  attemptPacingRuleDetail: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  attemptPacingRules: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  attemptPacingRuleStatus: {
+    color: theme.colors.amber,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingRuleStatusLimit: {
+    color: theme.colors.coral,
+  },
+  attemptPacingRuleStatusReady: {
+    color: theme.colors.success,
+  },
+  attemptPacingRuleTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 17,
+  },
+  attemptPacingStep: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 178,
+    padding: theme.spacing.sm,
+  },
+  attemptPacingStepEvidence: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  attemptPacingStepHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.xs,
+    justifyContent: 'space-between',
+  },
+  attemptPacingStepInstruction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  attemptPacingStepLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingSteps: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  attemptPacingStepTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  attemptPacingTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 22,
   },
   sessionAgendaBadge: {
     alignItems: 'center',

@@ -101,6 +101,8 @@
   minute-by-minute plan with an intensity cap and privacy-safe local evidence.
 - Prepare a share-safe local session agenda packet from the current agenda with schema version, summary, blocks,
   negative privacy flags, and raw-artifact rejection.
+- Generate a local attempt pacing plan from the session agenda, training load, and pre-send guard so climbers know the
+  rest windows, attempt budget, hard-try slots, and stop rules before adding intensity.
 - Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
   and privacy boundary so climbers know what to log before the next local comparison.
 - Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can
