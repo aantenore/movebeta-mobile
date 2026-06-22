@@ -85,6 +85,8 @@ web build with `npm run store:screenshots`.
 - Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
 - Session agenda that composes training load, next-session plan, and closeout evidence into a local minute-by-minute
   plan with intensity labels and privacy-safe proof.
+- Share-safe session agenda packet with versioned JSON, summary, block timing, intensity labels, and negative privacy
+  flags.
 - Session closeout checklist that turns the plan, pre-send guard, drill logs, repeat outcomes, and privacy boundary into
   the next local logging actions.
 - Training load balance that summarizes recent private effort, repeat, and drill logs into a local recommendation without

@@ -42,8 +42,30 @@ export const SessionAgendaSchema = z.object({
   title: z.string(),
 });
 
+export const sessionAgendaPacketSchemaVersion = 'movebeta.session-agenda-packet.v1';
+
+export const SessionAgendaPacketSchema = z.object({
+  agenda: SessionAgendaSchema,
+  generatedAt: z.string(),
+  nextAction: z.string(),
+  privacy: z.object({
+    cloudUploadRequired: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+  }),
+  purpose: z.string(),
+  schemaVersion: z.literal(sessionAgendaPacketSchemaVersion),
+  summary: z.object({
+    anchor: z.string(),
+    blockCount: z.number().int().nonnegative(),
+    status: z.string(),
+    totalMinutes: z.number().int().nonnegative(),
+  }),
+});
+
 export type SessionAgendaBlock = z.infer<typeof SessionAgendaBlockSchema>;
 export type SessionAgenda = z.infer<typeof SessionAgendaSchema>;
+export type SessionAgendaPacket = z.infer<typeof SessionAgendaPacketSchema>;
 
 export type SessionAgendaConfig = {
   closeoutMinutes: number;
@@ -118,6 +140,41 @@ export function assertSessionAgendaIsShareSafe(agenda: SessionAgenda) {
     throw new Error('Session agenda contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');
   }
   return agenda;
+}
+
+export function assertSessionAgendaPacketIsShareSafe(packet: SessionAgendaPacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Session agenda packet contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');
+  }
+  return packet;
+}
+
+export function buildSessionAgendaPacket(agenda: SessionAgenda, generatedAt = new Date().toISOString()) {
+  const packet = SessionAgendaPacketSchema.parse({
+    agenda,
+    generatedAt,
+    nextAction: agenda.nextAction,
+    privacy: {
+      cloudUploadRequired: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+    },
+    purpose: 'Share the next local session agenda with derived blocks, timing, intensity, and privacy flags only.',
+    schemaVersion: sessionAgendaPacketSchemaVersion,
+    summary: {
+      anchor: agenda.anchor,
+      blockCount: agenda.summary.blockCount,
+      status: agenda.status,
+      totalMinutes: agenda.summary.totalMinutes,
+    },
+  });
+
+  return assertSessionAgendaPacketIsShareSafe(packet);
+}
+
+export function formatSessionAgendaPacketSummary(packet: SessionAgendaPacket) {
+  const parsed = SessionAgendaPacketSchema.parse(packet);
+  return `${parsed.summary.status} agenda · ${parsed.summary.blockCount} blocks · ${parsed.summary.totalMinutes} min · anchor ${parsed.summary.anchor}`;
 }
 
 export function buildSessionAgenda({

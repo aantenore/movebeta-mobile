@@ -99,6 +99,8 @@
   when skipped drills exceed completed drills.
 - Generate a local session agenda from training load, next-session plan, and closeout evidence so climbers have a
   minute-by-minute plan with an intensity cap and privacy-safe local evidence.
+- Prepare a share-safe local session agenda packet from the current agenda with schema version, summary, blocks,
+  negative privacy flags, and raw-artifact rejection.
 - Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
   and privacy boundary so climbers know what to log before the next local comparison.
 - Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can
