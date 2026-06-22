@@ -364,6 +364,13 @@ function restMinutes(steps: AttemptPacingStep[]) {
   return Math.round(steps.reduce((sum, step) => sum + step.restAfterSeconds, 0) / 60);
 }
 
+export function formatRestTimerClock(seconds: number) {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainingSeconds = safeSeconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
 export function assertAttemptPacingPlanIsShareSafe(plan: AttemptPacingPlan) {
   if (containsForbiddenValue(plan)) {
     throw new Error('Attempt pacing plan contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');

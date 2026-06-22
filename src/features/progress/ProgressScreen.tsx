@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 
@@ -9,7 +9,12 @@ import { Section } from '@/components/Section';
 import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
-import { buildAttemptPacingPacket, buildAttemptPacingPlan, formatAttemptPacingPacketSummary } from '@/movement/attemptPacing';
+import {
+  buildAttemptPacingPacket,
+  buildAttemptPacingPlan,
+  formatAttemptPacingPacketSummary,
+  formatRestTimerClock,
+} from '@/movement/attemptPacing';
 import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
@@ -81,6 +86,7 @@ export function ProgressScreen() {
   const [annotations, setAnnotations] = useState<ReportAnnotation[]>([]);
   const [drillPractice, setDrillPractice] = useState<DrillPracticeRecord[]>([]);
   const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
+  const [activeRestTimer, setActiveRestTimer] = useState<{ label: string; remainingSeconds: number; sourceStepId: string } | null>(null);
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
@@ -144,6 +150,15 @@ export function ProgressScreen() {
     });
   }
 
+  function startRestTimer(stepId: string, label: string, seconds: number) {
+    selectionFeedback();
+    setActiveRestTimer({
+      label,
+      remainingSeconds: seconds,
+      sourceStepId: stepId,
+    });
+  }
+
   async function refresh() {
     let nextReports = await listReports();
 
@@ -171,6 +186,22 @@ export function ProgressScreen() {
       });
     }, []),
   );
+
+  useEffect(() => {
+    if (!activeRestTimer || activeRestTimer.remainingSeconds <= 0) return undefined;
+
+    const timer = setInterval(() => {
+      setActiveRestTimer((current) => {
+        if (!current) return current;
+        if (current.remainingSeconds <= 1) {
+          return { ...current, remainingSeconds: 0 };
+        }
+        return { ...current, remainingSeconds: current.remainingSeconds - 1 };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [activeRestTimer]);
 
   return (
     <Screen>
@@ -358,12 +389,47 @@ export function ProgressScreen() {
                 </View>
                 <Text style={styles.attemptPacingStepTitle}>{step.title}</Text>
                 <Text style={styles.attemptPacingStepInstruction}>{step.instruction}</Text>
-                <Text style={styles.attemptPacingStepEvidence}>
-                  Rest {Math.round(step.restAfterSeconds / 60)} min · {step.evidence}
-                </Text>
+                <Text style={styles.attemptPacingStepEvidence}>{step.evidence}</Text>
+                {step.restAfterSeconds > 0 ? (
+                  <View style={styles.attemptPacingStepFooter}>
+                    <Text style={styles.attemptPacingStepRest}>Rest {Math.round(step.restAfterSeconds / 60)} min</Text>
+                    <Pressable
+                      accessibilityLabel={`Start rest timer for ${step.title}`}
+                      onPress={() => startRestTimer(step.id, step.title, step.restAfterSeconds)}
+                      style={styles.attemptPacingTimerButton}
+                    >
+                      <Text style={styles.attemptPacingTimerButtonText}>Start rest</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
               </View>
             ))}
           </View>
+
+          {activeRestTimer ? (
+            <View style={styles.attemptPacingTimerPanel}>
+              <View style={styles.attemptPacingTimerCopy}>
+                <Text style={styles.attemptPacingTimerLabel}>Rest timer</Text>
+                <Text style={styles.attemptPacingTimerStep}>{activeRestTimer.label}</Text>
+                <Text style={styles.attemptPacingTimerStatus}>
+                  {activeRestTimer.remainingSeconds === 0 ? 'Ready for the next step.' : 'Stay with the current pacing plan.'}
+                </Text>
+              </View>
+              <View style={styles.attemptPacingTimerValueBox}>
+                <Text style={styles.attemptPacingTimerValue}>{formatRestTimerClock(activeRestTimer.remainingSeconds)}</Text>
+                <Pressable
+                  accessibilityLabel="Clear rest timer"
+                  onPress={() => {
+                    selectionFeedback();
+                    setActiveRestTimer(null);
+                  }}
+                  style={styles.attemptPacingTimerClear}
+                >
+                  <Text style={styles.attemptPacingTimerClearText}>Clear</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : null}
 
           <View style={styles.attemptPacingRules}>
             {attemptPacing.stopRules.map((rule) => (
@@ -1962,11 +2028,91 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
+  attemptPacingStepFooter: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
+    justifyContent: 'space-between',
+  },
+  attemptPacingStepRest: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+  },
   attemptPacingStepTitle: {
     color: theme.colors.ink,
     fontSize: 14,
     fontWeight: '900',
     lineHeight: 18,
+  },
+  attemptPacingTimerButton: {
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 6,
+  },
+  attemptPacingTimerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  attemptPacingTimerClear: {
+    alignSelf: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 6,
+  },
+  attemptPacingTimerClearText: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  attemptPacingTimerCopy: {
+    flex: 1,
+    gap: 3,
+  },
+  attemptPacingTimerLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  attemptPacingTimerPanel: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.md,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+    padding: theme.spacing.md,
+  },
+  attemptPacingTimerStatus: {
+    color: theme.colors.brandDark,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 16,
+  },
+  attemptPacingTimerStep: {
+    color: theme.colors.ink,
+    fontSize: 15,
+    fontWeight: '900',
+    lineHeight: 19,
+  },
+  attemptPacingTimerValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  attemptPacingTimerValueBox: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    gap: 6,
+    minWidth: 92,
+    padding: theme.spacing.sm,
   },
   attemptPacingTitle: {
     color: theme.colors.ink,
