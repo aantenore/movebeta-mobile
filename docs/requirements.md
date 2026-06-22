@@ -204,6 +204,9 @@
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
 - Generate an iOS toolchain report that checks the selected Developer directory, full Xcode availability, workspace,
   Pods, and build-settings probe before marking iOS build evidence ready.
+- Prepare a share-safe iOS toolchain setup packet from the Plan tab with sanitized full-Xcode, Developer directory,
+  workspace, Pods, build-settings, and iOS build-log checks, commands, proof expectations, and no local paths, credential
+  values, raw artifacts, raw video, or token-like values.
 - Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
   key presence, and Google Play credential key presence without exposing any secret values.
 - Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store

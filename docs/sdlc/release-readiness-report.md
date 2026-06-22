@@ -187,6 +187,8 @@ platforms are validated on physical climbing videos and devices.
   guidance, coach review rules, closeout commands, and explicit identity/raw-video/score-invention exclusion flags.
 - Plan tab prepares a share-safe validation consent packet with athlete consent copy, bystander policy, withdrawal
   handling, required metadata, wall-angle capture checks, and explicit identity/raw-video/token exclusion flags.
+- Plan tab prepares a share-safe iOS toolchain setup packet with sanitized full-Xcode, Developer directory, workspace,
+  Pods, build-settings, and build-log checks plus commands and proof expectations before iOS build handoff.
 - Sessions prepares a cue-validation clip intake manifest from consented study seed data, showing clip coverage,
   wall-angle gaps, required coach review rows, negative privacy flags, and raw artifact rejection before coach worksheets
   are shared.
@@ -236,14 +238,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 113 test files and 463 tests.
+- `npm test`: passed, 114 test files and 466 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4521ms load time, 331ms average inference, and 341ms max inference in the latest run.
+  CPU backend, 4440ms load time, 345ms average inference, and 357ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -263,7 +265,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 154/157 tasks done, 108/110 backlog items done, 141/141 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 155/158 tasks done, 109/111 backlog items done, 142/142 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -355,6 +357,8 @@ platforms are validated on physical climbing videos and devices.
   summaries, durable JSON/Markdown writes, and reviewer identity exclusion.
 - `tests/iosToolchainDoctor.test.ts`: passed and covers Command Line Tools-only blocker detection, full-Xcode ready
   detection, and durable JSON/Markdown artifact writes.
+- `tests/iosToolchainSetupPacket.test.ts`: passed and covers blocked and ready setup packet generation, sanitized
+  command/proof copy, negative privacy flags, and local-path/token rejection.
 - `tests/ciWorkflow.test.ts`: passed and covers GitHub Actions template trigger coverage, deferred active-workflow
   activation, Node version sourcing from `package.json`, lockfile installs, shared `npm run ci` execution, and release
   evidence artifact upload.
@@ -459,7 +463,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, model verification suite, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.

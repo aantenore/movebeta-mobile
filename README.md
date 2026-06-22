@@ -147,6 +147,8 @@ web build with `npm run store:screenshots`.
 - Share-safe validation consent packet from the Plan tab with athlete script, bystander policy, withdrawal policy,
   per-wall-angle consent checks, and no raw video, identities, local paths, credentials, or token-like values.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
+- Share-safe iOS toolchain setup packet from the Plan tab with sanitized full-Xcode/build unblock checks, commands, proof
+  expectations, and no local paths, credentials, tokens, raw artifacts, or raw video.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
   values.
