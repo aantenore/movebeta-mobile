@@ -6,6 +6,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { Camera, Clock, Cpu, Gauge, RotateCcw, ShieldCheck, Square, TriangleAlert, Upload, Video } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { AnalysisTrustPanel } from '@/components/AnalysisTrustPanel';
 import { MovementCueCard } from '@/components/MovementCueCard';
 import { MovementMetricRow } from '@/components/MovementMetricRow';
 import { PoseOverlay } from '@/components/PoseOverlay';
@@ -968,6 +969,7 @@ export function CoachScreen() {
 
           <AnalysisQualityPanel report={report} />
           <CaptureReadinessPanel report={report} />
+          <AnalysisTrustPanel report={report} />
           <BetaReplayPlanPanel plan={buildBetaReplayPlan(report)} />
           <MovementPhaseBreakdownPanel breakdown={buildMovementPhaseBreakdown(report)} />
           {cueTrust ? <CueTrustPanel cueTrust={cueTrust} /> : null}
