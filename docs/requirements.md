@@ -97,6 +97,8 @@
 - Generate a next-session plan from technique readiness, personal benchmarks, drill evidence, and private project notes.
 - Adjust next-session plans from private drill practice consistency by lowering intensity and prescribing easier variants
   when skipped drills exceed completed drills.
+- Generate a local session agenda from training load, next-session plan, and closeout evidence so climbers have a
+  minute-by-minute plan with an intensity cap and privacy-safe local evidence.
 - Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
   and privacy boundary so climbers know what to log before the next local comparison.
 - Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can
