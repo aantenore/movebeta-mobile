@@ -157,6 +157,9 @@ platforms are validated on physical climbing videos and devices.
   criteria, env key names, and explicit credential/raw-artifact exclusion flags.
 - Release blocker issue report regenerates the same external blocker issue drafts from launch evidence as durable JSON and
   Markdown, without filing issues automatically or exposing credentials, local paths, raw video, or raw artifacts.
+- Release blocker issue filing plan turns the generated drafts into a share-safe dry-run GitHub filing plan, with
+  exact-title existing issue detection in create mode and mutation gated behind `--create` plus
+  `MOVEBETA_RELEASE_ISSUE_CREATE=1`.
 - Plan tab shows a release critical path that sequences external blockers across real-world validation, native build/QA,
   and store-account lanes, including dependency keys and ready-to-start states.
 - Plan tab prepares a share-safe release critical path packet with commands, proof expectations, dependencies, lane
@@ -205,10 +208,13 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:blocker-issues` writes `docs/sdlc/release-blocker-issues-report.json` and
   `docs/sdlc/release-blocker-issues-report.md` with issue-ready external blocker drafts generated from current launch
   evidence.
+- `npm run release:blocker-issues:file` writes `docs/sdlc/release-blocker-issue-filing-plan.json` and
+  `docs/sdlc/release-blocker-issue-filing-plan.md` as a dry-run by default, with 5 planned issue filings in the latest
+  local run.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
-  submission packet generation, release blocker issue report generation, web export, EAS standard check,
+  submission packet generation, release blocker issue report and filing-plan generation, web export, EAS standard check,
   moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
@@ -238,14 +244,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 114 test files and 466 tests.
+- `npm test`: passed, 115 test files and 470 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4440ms load time, 345ms average inference, and 357ms max inference in the latest run.
+  CPU backend, 6266ms load time, 324ms average inference, and 329ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -265,11 +271,14 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 155/158 tasks done, 109/111 backlog items done, 142/142 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 156/159 tasks done, 110/112 backlog items done, 143/143 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
   6 proof artifacts, and credential key names only.
+- `npm run release:blocker-issues:file`: passed and wrote `docs/sdlc/release-blocker-issue-filing-plan.json` plus
+  `docs/sdlc/release-blocker-issue-filing-plan.md` with status `dry-run`, 5 planned issue filings, 0 created issues, and
+  0 existing exact-title issues in the latest local run.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -278,8 +287,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 13/13 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 18/18 release steps passing.
+  status `ready`, 14/14 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 19/19 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -408,6 +417,9 @@ platforms are validated on physical climbing videos and devices.
   injected token/local-path rejection before sharing.
 - `tests/releaseBlockerIssueReport.test.ts`: passed and covers launch-evidence input, durable JSON/Markdown issue draft
   writes, issue ordering, and credential/local-path/raw-artifact rejection before sharing.
+- `tests/releaseBlockerIssueFiling.test.ts`: passed and covers dry-run filing plan generation, JSON/Markdown artifact
+  writes, exact-title existing issue skipping, GitHub CLI failure capture, and credential/local-path/raw-artifact
+  exclusion inherited from the issue packet.
 - `tests/releaseCriticalPath.test.ts`: passed and covers external blocker dependency sequencing, parallel lane grouping,
   upstream evidence effects, all-ready state, and raw artifact/path/token rejection.
 - `tests/releaseEvidenceScenarios.test.ts`: passed and covers projected launch tracks, cleared blocker counts,
@@ -490,8 +502,8 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 22 current artifacts including the
-  release blocker issues report, release archive artifacts, and 12 verification commands.
+  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 23 current artifacts including the
+  release blocker issue filing plan, release archive artifacts, and 13 verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.
