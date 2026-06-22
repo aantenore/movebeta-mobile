@@ -30,7 +30,7 @@ import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { summarizeRepeatOutcomes } from '@/movement/repeatOutcomeInsights';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
 import { buildSessionCloseout } from '@/movement/sessionCloseout';
-import { buildSessionAgenda } from '@/movement/sessionAgenda';
+import { buildSessionAgenda, buildSessionAgendaPacket, formatSessionAgendaPacketSummary } from '@/movement/sessionAgenda';
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
 import { summarizeTrainingLoad } from '@/movement/trainingLoad';
@@ -80,6 +80,7 @@ export function ProgressScreen() {
   const [annotations, setAnnotations] = useState<ReportAnnotation[]>([]);
   const [drillPractice, setDrillPractice] = useState<DrillPracticeRecord[]>([]);
   const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
+  const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
@@ -118,6 +119,15 @@ export function ProgressScreen() {
   );
   const comparison = summary.attemptComparison;
   const activeFilters = activeProgressFilterCount(filters);
+
+  function prepareAgendaPacket() {
+    selectionFeedback();
+    const packet = buildSessionAgendaPacket(sessionAgenda);
+    setPreparedAgendaPacket({
+      body: `${formatSessionAgendaPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared session agenda packet',
+    });
+  }
 
   async function refresh() {
     let nextReports = await listReports();
@@ -271,8 +281,22 @@ export function ProgressScreen() {
             <Text style={styles.sessionAgendaPrivacyText}>Raw video included: no</Text>
             <Text style={styles.sessionAgendaPrivacyText}>Private notes included: no</Text>
           </View>
+
+          <View style={styles.sessionAgendaActions}>
+            <Pressable accessibilityLabel="Prepare session agenda packet" onPress={prepareAgendaPacket} style={styles.sessionAgendaAction}>
+              <Text style={styles.sessionAgendaActionText}>Agenda packet</Text>
+            </Pressable>
+          </View>
         </View>
       </Section>
+
+      {preparedAgendaPacket ? (
+        <Section title={preparedAgendaPacket.title} caption="Share-safe agenda evidence prepared locally.">
+          <View style={styles.sessionAgendaPacketBox}>
+            <Text selectable style={styles.sessionAgendaPacketText}>{preparedAgendaPacket.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section title="Session closeout" caption="A local checklist for what to log after the planned repeat.">
         <View style={styles.closeoutCard}>
@@ -1696,6 +1720,24 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '900',
   },
+  sessionAgendaAction: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.sm,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  sessionAgendaActions: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  sessionAgendaActionText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+  },
   sessionAgendaBlock: {
     backgroundColor: theme.colors.surfaceAlt,
     borderRadius: theme.radius.sm,
@@ -1805,6 +1847,17 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '900',
     lineHeight: 18,
+  },
+  sessionAgendaPacketBox: {
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.md,
+  },
+  sessionAgendaPacketText: {
+    color: '#F8FAFC',
+    fontFamily: 'monospace',
+    fontSize: 11,
+    lineHeight: 16,
   },
   sessionAgendaPrivacy: {
     flexDirection: 'row',

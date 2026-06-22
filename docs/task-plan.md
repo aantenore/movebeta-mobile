@@ -148,3 +148,4 @@
 | T144 | Add local session closeout checklist | Done |
 | T145 | Add local training load balance | Done |
 | T146 | Add local session agenda | Done |
+| T147 | Add share-safe session agenda packet | Done |
