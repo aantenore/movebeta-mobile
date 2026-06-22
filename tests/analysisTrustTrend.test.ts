@@ -2,8 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { attachAnalysisEvidence } from '../src/movement/analysisEvidence';
 import {
+  analysisTrustTrendPacketSchemaVersion,
   analysisTrustTrendSchemaVersion,
+  AnalysisTrustTrendPacketSchema,
   AnalysisTrustTrendSchema,
+  buildAnalysisTrustTrendPacket,
+  formatAnalysisTrustTrendPacketSummary,
   summarizeAnalysisTrustTrend,
 } from '../src/movement/analysisTrustTrend';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
@@ -132,5 +136,45 @@ describe('analysis trust trend', () => {
     expect(trend.privacy.localOnly).toBe(false);
     expect(trend.privacy.reportsCrossingLocalBoundary).toBe(1);
     expect(trend.nextAction).toContain('Retake or review');
+  });
+
+  it('builds a share-safe packet without report ids, raw media, or private notes', async () => {
+    const trend = summarizeAnalysisTrustTrend(
+      [
+        await buildReport({
+          id: 'packet-report',
+          session: session('packet-session', 'Compression board repeat', '2026-06-22T10:00:00.000Z'),
+        }),
+      ],
+      { generatedAt: '2026-06-22T15:30:00.000Z' },
+    );
+    const packet = buildAnalysisTrustTrendPacket(trend, { generatedAt: '2026-06-22T15:31:00.000Z' });
+
+    expect(AnalysisTrustTrendPacketSchema.parse(packet)).toEqual(packet);
+    expect(packet.schemaVersion).toBe(analysisTrustTrendPacketSchemaVersion);
+    expect(packet.generatedAt).toBe('2026-06-22T15:31:00.000Z');
+    expect(packet.trend.latest).toMatchObject({
+      decision: 'coach-ready',
+      title: 'Compression board repeat',
+    });
+    expect(packet.privacy).toMatchObject({
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      videoUriIncluded: false,
+    });
+    expect(formatAnalysisTrustTrendPacketSummary(packet)).toContain('Analysis trust trend:');
+    expect(JSON.stringify(packet)).not.toMatch(/"reportId"\s*:|"privateNote"\s*:|file:\/\/|content:\/\/|ph:\/\/|\/Users\/|secret-value/i);
+  });
+
+  it('rejects trend packets when source titles contain raw local artifacts', async () => {
+    const trend = summarizeAnalysisTrustTrend([
+      await buildReport({
+        id: 'unsafe-title-report',
+        session: session('unsafe-title-session', '/Users/athlete/raw-climb.mov', '2026-06-22T10:00:00.000Z'),
+      }),
+    ]);
+
+    expect(() => buildAnalysisTrustTrendPacket(trend)).toThrow('Analysis trust trend packet contains raw media');
   });
 });

@@ -81,6 +81,8 @@ web build with `npm run store:screenshots`.
   private notes, local paths, or token-like values.
 - Analysis trust trend that aggregates coaching-ready, review-first, journal-only, and retake decisions across local
   reports without raw video or private notes.
+- Share-safe analysis trust trend packet for exporting reliability status, counts, latest decision, and next action
+  without raw media, report ids, private notes, local paths, or token-like values.
 - Beta replay plan that turns local cue and metric evidence into setup, crux, and exit actions for the next attempt.
 - Movement phase breakdown that scores launch, crux, and finish phases from local cues and timeline events.
 - Cue trust scoring that grades each coaching cue from pose quality, timing evidence, runtime budget, and validation readiness.

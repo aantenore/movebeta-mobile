@@ -155,3 +155,4 @@
 | T151 | Add local analysis trust summary | Done |
 | T152 | Add share-safe analysis trust packet | Done |
 | T153 | Add local analysis trust trend | Done |
+| T154 | Add share-safe analysis trust trend packet | Done |
