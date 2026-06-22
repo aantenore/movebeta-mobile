@@ -167,6 +167,8 @@
 - Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
   secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
   durable static deployment readiness evidence and is included in `npm run release:check`.
+- Vitest PWA runtime readiness tests for standalone launches, browser install prompt availability, manual install
+  fallback, native install path, and unsafe guidance packet rejection.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
   status mapping, and token/local-path rejection before sharing.
 - Vitest release evidence reconciliation tests for report inference, projected launch readiness, independent store blocker
@@ -413,6 +415,8 @@
   verifies the static Vercel deployment path before release handoff.
 - Plan tab shows Vercel deployment readiness and prepares a Vercel packet with backend-required false, static-ready
   status, prebuilt deploy commands, and no committed credential/project id values.
+- Plan tab shows PWA runtime readiness and prepares PWA install guidance with raw video, local paths, and credential
+  values excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command
   evidence while excluding raw video, local paths, and credential values.
 - Plan tab shows the model verification suite with local runtime, replay, wall-angle, movement metric, cue output,

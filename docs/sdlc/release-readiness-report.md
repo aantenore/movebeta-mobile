@@ -174,6 +174,8 @@ platforms are validated on physical climbing videos and devices.
   store-submission reports, surfacing stale, missing, or invalid timestamps before handoff.
 - Plan tab shows installable PWA readiness from the generated static report, including manifest, service worker,
   exported static assets, Vercel static config, SPA fallback, and no-backend status.
+- Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
+  worker/cache readiness, network state, update state, and share-safe install guidance.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, model verification suite
@@ -259,14 +261,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 119 test files and 484 tests.
+- `npm test`: passed, 120 test files and 489 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 6288ms load time, 332ms average inference, and 340ms max inference in the latest run.
+  CPU backend, 10648ms load time, 317ms average inference, and 321ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -286,7 +288,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 160/163 tasks done, 114/116 backlog items done, 147/147 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 161/164 tasks done, 115/117 backlog items done, 148/148 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
