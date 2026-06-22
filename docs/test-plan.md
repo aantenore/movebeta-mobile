@@ -50,6 +50,8 @@
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
 - Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
   and local privacy copy.
+- Vitest analysis trust tests for coaching-ready local reports, retake decisions from weak pose signal, local-only privacy
+  boundary blocking, weighted factors, and raw artifact exclusion.
 - Vitest progress insights tests for report ordering, trend deltas, annotation-aware smart matching, and empty-history handling.
 - Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
   exclusion, and empty candidate handling.
@@ -241,6 +243,7 @@
 - Selected videos render clip-readiness status before analysis-dependent coaching output.
 - Analysis quality renders before coaching cues and warns on weak pose confidence.
 - Capture-readiness guidance renders before coaching cues and recommends whether to trust or retake the clip.
+- Analysis trust renders on Analyze and Sessions with local coaching-ready, review-first, journal-only, or retake factors.
 - Beta replay plan renders before movement metrics with setup, crux, and exit actions.
 - Movement phase breakdown renders before movement metrics with the primary phase and phase scores.
 - Cue trust renders before movement metrics with validation-readiness status and per-cue confidence scores.
@@ -249,6 +252,7 @@
 - Sessions tab shows selectable session review detail with focus metric, primary cue, timeline, and local evidence.
 - Sessions tab shows the analysis evidence timeline for local report input, pose provider, quality, cue generation,
   runtime budget, and privacy boundary.
+- Sessions tab shows the analysis trust summary for the selected report.
 - Sessions tab prepares a versioned analysis evidence-only export from a local report.
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and
