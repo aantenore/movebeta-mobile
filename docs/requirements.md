@@ -53,6 +53,8 @@
 - Prepare a share-safe analysis trust packet from a selected local report with schema version, summary, trust factors,
   report metadata, and explicit exclusion of raw media, video URIs, key frames, landmarks, private notes, and token-like
   values.
+- Show an analysis trust trend in Progress that aggregates local coaching-ready, review-first, journal-only, and retake
+  decisions, highlights the latest decision, and preserves the local-only privacy boundary.
 - Generate a local beta replay plan with setup, crux, and exit actions from report cues, timeline, and weakest metric.
 - Generate a local movement phase breakdown that scores launch, crux, and finish phases from cues and timeline events.
 - Block recording when capture setup has privacy or pose-extraction blockers.

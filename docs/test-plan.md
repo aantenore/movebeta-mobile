@@ -54,6 +54,8 @@
   boundary blocking, weighted factors, and raw artifact exclusion.
 - Vitest analysis trust packet tests for versioned share-safe packet generation, retake decision export, summary copy,
   negative privacy flags, and raw path/artifact rejection.
+- Vitest analysis trust trend tests for empty baselines, improving/degrading trend status, latest decision ordering,
+  local-boundary crossings, and raw artifact exclusion.
 - Vitest progress insights tests for report ordering, trend deltas, annotation-aware smart matching, and empty-history handling.
 - Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
   exclusion, and empty candidate handling.
@@ -246,6 +248,7 @@
 - Analysis quality renders before coaching cues and warns on weak pose confidence.
 - Capture-readiness guidance renders before coaching cues and recommends whether to trust or retake the clip.
 - Analysis trust renders on Analyze and Sessions with local coaching-ready, review-first, journal-only, or retake factors.
+- Analysis trust trend renders on Progress with latest decision, ready/review/retake counts, next action, and local-boundary status.
 - Beta replay plan renders before movement metrics with setup, crux, and exit actions.
 - Movement phase breakdown renders before movement metrics with the primary phase and phase scores.
 - Cue trust renders before movement metrics with validation-readiness status and per-cue confidence scores.
