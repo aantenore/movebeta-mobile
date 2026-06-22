@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-22T15:55:19.201Z
+Generated: 2026-06-22T16:10:27.839Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 2dee6afff03d5475d63ea57e32e574842dcd2436
+- Base commit at generation: 23c43519c6fd4da107f72738e67ac2f97b0c60f4
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 10648ms; average inference 317ms
+- MoveNet readiness: ready; load 4293ms; average inference 335ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -45,6 +45,7 @@ Generated: 2026-06-22T15:55:19.201Z
 - Release evidence freshness doctor: `npm run release:freshness:doctor`
 - PWA static readiness doctor: `npm run export:web && npm run web:pwa:check`
 - Vercel deployment readiness doctor: `npm run web:vercel:check`
+- Vercel workflow readiness doctor: `npm run web:vercel:workflow`
 - Vercel prebuilt production deploy: `npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN`
 - Strict EAS store gate: `npm run release:eas:strict`
 
@@ -66,6 +67,7 @@ Generated: 2026-06-22T15:55:19.201Z
 - [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
 - [x] PWA readiness report: `docs/sdlc/pwa-readiness-report.json`
 - [x] Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`
+- [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`
