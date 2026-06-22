@@ -58,6 +58,9 @@ build or EAS project evidence.
 Use the Plan tab evidence reconciliation panel before flipping launch evidence flags: paste only share-safe generated
 reports, confirm which blockers would clear, and reject any JSON that contains raw video paths, credential values, or
 token-like strings.
+Use `npm run release:blocker-issues:file` to generate a dry-run GitHub issue filing plan from the current blocker issue
+drafts. Real GitHub issue creation is intentionally gated behind both `--create` and
+`MOVEBETA_RELEASE_ISSUE_CREATE=1`, and the command checks existing open issue titles before creating missing blockers.
 
 ## Go/No-Go
 

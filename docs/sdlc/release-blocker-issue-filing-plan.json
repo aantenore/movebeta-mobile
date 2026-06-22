@@ -1,0 +1,111 @@
+{
+  "generatedAt": "2026-06-22T14:59:38.405Z",
+  "issues": [
+    {
+      "bodyPreviewLineCount": 25,
+      "commandPreview": "gh issue create --title \"[Release Blocker] Native device QA evidence\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:qa,track:internal,track:store,check:nativeDeviceQa\"",
+      "filingStatus": "planned",
+      "key": "nativeDeviceQa",
+      "labels": [
+        "release-blocker",
+        "owner:qa",
+        "track:internal",
+        "track:store",
+        "check:nativeDeviceQa"
+      ],
+      "owner": "qa",
+      "title": "[Release Blocker] Native device QA evidence",
+      "tracks": [
+        "internal",
+        "store"
+      ]
+    },
+    {
+      "bodyPreviewLineCount": 25,
+      "commandPreview": "gh issue create --title \"[Release Blocker] iOS build verification\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:engineering,track:store,check:iosBuild\"",
+      "filingStatus": "planned",
+      "key": "iosBuild",
+      "labels": [
+        "release-blocker",
+        "owner:engineering",
+        "track:store",
+        "check:iosBuild"
+      ],
+      "owner": "engineering",
+      "title": "[Release Blocker] iOS build verification",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "bodyPreviewLineCount": 24,
+      "commandPreview": "gh issue create --title \"[Release Blocker] Real cue-validation dataset\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:product,track:store,check:cueValidationDataset\"",
+      "filingStatus": "planned",
+      "key": "cueValidationDataset",
+      "labels": [
+        "release-blocker",
+        "owner:product",
+        "track:store",
+        "check:cueValidationDataset"
+      ],
+      "owner": "product",
+      "title": "[Release Blocker] Real cue-validation dataset",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "bodyPreviewLineCount": 24,
+      "commandPreview": "gh issue create --title \"[Release Blocker] EAS project binding\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:release,track:store,check:easProject\"",
+      "filingStatus": "planned",
+      "key": "easProject",
+      "labels": [
+        "release-blocker",
+        "owner:release",
+        "track:store",
+        "check:easProject"
+      ],
+      "owner": "release",
+      "title": "[Release Blocker] EAS project binding",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "bodyPreviewLineCount": 28,
+      "commandPreview": "gh issue create --title \"[Release Blocker] Store submission credentials\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:release,track:store,check:easCredentials\"",
+      "filingStatus": "planned",
+      "key": "easCredentials",
+      "labels": [
+        "release-blocker",
+        "owner:release",
+        "track:store",
+        "check:easCredentials"
+      ],
+      "owner": "release",
+      "title": "[Release Blocker] Store submission credentials",
+      "tracks": [
+        "store"
+      ]
+    }
+  ],
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretsIncluded": false
+  },
+  "schemaVersion": "movebeta.release-blocker-issue-filing.v1",
+  "sourcePacketSchemaVersion": "movebeta.release-blocker-issue-packet.v1",
+  "summary": {
+    "createEnabled": false,
+    "createdCount": 0,
+    "existingCount": 0,
+    "failedCount": 0,
+    "issueCount": 5,
+    "nextAction": "Review the dry-run plan, then rerun with --create and MOVEBETA_RELEASE_ISSUE_CREATE=1 when ready to file GitHub issues.",
+    "plannedCount": 5,
+    "status": "dry-run"
+  }
+}

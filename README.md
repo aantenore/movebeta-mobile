@@ -183,6 +183,8 @@ web build with `npm run store:screenshots`.
   would clear, and prepares a versioned no-secret reconciliation packet.
 - Release blocker issue report CLI that regenerates issue-ready external blocker drafts from current launch evidence
   without filing GitHub issues or exposing secret values.
+- Release blocker issue filing CLI that writes a dry-run filing plan by default and requires `--create` plus
+  `MOVEBETA_RELEASE_ISSUE_CREATE=1` before creating GitHub issues.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
@@ -212,6 +214,7 @@ npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:doctor
 npm run release:blocker-issues
+npm run release:blocker-issues:file
 npm run native:qa:runbook
 npm run ci
 npm run release:eas:check
@@ -281,6 +284,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
   `docs/sdlc/release-blocker-issues-report.md`.
+- Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`,
+  `docs/sdlc/release-blocker-issue-filing-plan.md`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -303,6 +308,7 @@ npm run model:analysis:replay
 npm run model:verification:suite
 npm run model:evidence:sync
 npm run release:blocker-issues
+npm run release:blocker-issues:file
 npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:doctor

@@ -163,6 +163,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate issue-ready drafts for every external release blocker without filing issues or exposing secrets.',
     },
     {
+      command: 'npm run release:blocker-issues:file',
+      key: 'release-blocker-issue-filing',
+      label: 'Release blocker issue filing plan',
+      owner: 'release',
+      purpose: 'Generate a dry-run GitHub issue filing plan, or explicitly file missing blocker issues after opt-in.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -281,6 +288,13 @@ export function buildReleaseEvidencePacket({
       key: 'release-blocker-issues-report',
       label: 'Release blocker issues report',
       path: 'docs/sdlc/release-blocker-issues-report.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
+    },
+    {
+      command: 'npm run release:blocker-issues:file',
+      key: 'release-blocker-issue-filing-plan',
+      label: 'Release blocker issue filing plan',
+      path: 'docs/sdlc/release-blocker-issue-filing-plan.json',
       status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {
