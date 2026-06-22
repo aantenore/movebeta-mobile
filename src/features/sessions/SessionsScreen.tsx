@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router';
 import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Target, Trash2, UserCheck } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { AnalysisTrustPanel } from '@/components/AnalysisTrustPanel';
 import { MovementCueCard } from '@/components/MovementCueCard';
 import { MovementMetricRow } from '@/components/MovementMetricRow';
 import { Screen } from '@/components/Screen';
@@ -219,6 +220,8 @@ function SessionReviewPanel({ detail, report }: { detail: SessionReviewDetail; r
         <SessionFactGrid facts={detail.qualityFacts} />
         <SessionFactGrid facts={detail.performanceFacts} />
       </View>
+
+      <AnalysisTrustPanel report={report} />
 
       {detail.focusMetric ? (
         <Section

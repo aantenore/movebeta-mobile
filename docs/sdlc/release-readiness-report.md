@@ -27,6 +27,9 @@ platforms are validated on physical climbing videos and devices.
   cue generation, runtime budget, and privacy boundary.
 - Sessions prepares a versioned analysis evidence-only export with explicit negative privacy flags before sharing.
 - Analyze converts video signal quality into ready, review, or retake guidance before coaching cues.
+- Analyze and Sessions show a local analysis trust summary that combines signal quality, body coverage, cue evidence,
+  runtime budget, evidence timeline, and privacy boundary into coaching-ready, review-first, journal-only, or retake
+  decisions.
 - Analyze turns the current cue and metric evidence into a local setup, crux, and exit beta replay plan before movement
   metrics.
 - Analyze scores launch, crux, and finish phases from local cue and timeline evidence before movement metrics.
@@ -224,14 +227,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 109 test files and 445 tests.
+- `npm test`: passed, 110 test files and 448 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4747ms load time, 327ms average inference, and 330ms max inference in the latest run.
+  CPU backend, 5366ms load time, 316ms average inference, and 318ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -251,7 +254,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 147/150 tasks done, 101/103 backlog items done, 134/134 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 148/151 tasks done, 102/104 backlog items done, 135/135 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -277,6 +280,8 @@ platforms are validated on physical climbing videos and devices.
   build drift, and committed submit-secret rejection.
 - `tests/sessionDetail.test.ts`: passed and covers session review status, focus metric, primary cue, quality facts,
   performance facts, timeline marker bounds, and privacy evidence.
+- `tests/analysisTrust.test.ts`: passed and covers coaching-ready local reports, retake decisions from weak pose signal,
+  local-only privacy boundary blocking, weighted trust factors, and raw artifact exclusion.
 - `tests/analysisEvidence.test.ts`: passed and covers versioned report timelines, privacy-safe step evidence, blocked
   weak-quality/over-budget/raw-artifact states, summaries, and legacy report fallback.
 - `tests/analysisEvidenceExport.test.ts`: passed and covers versioned evidence-only exports, negative privacy flags, and
@@ -427,10 +432,10 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated eleven 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness
+  capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
-  Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
+  Sessions analysis trust summary, the Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
   repeat outcome panel, the Sessions coach library queue, team templates,
   coach library export, cue-validation study seed, cue-validation clip intake manifest, cue-validation review worksheet, worksheet CSV, completed validation
   dataset composition, prepared export share action, the Progress project queue, the Sessions coach packet consent gate,

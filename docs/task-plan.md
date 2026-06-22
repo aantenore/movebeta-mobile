@@ -152,3 +152,4 @@
 | T148 | Add local attempt pacing plan | Done |
 | T149 | Add share-safe attempt pacing packet | Done |
 | T150 | Add local rest timer controls for attempt pacing | Done |
+| T151 | Add local analysis trust summary | Done |
