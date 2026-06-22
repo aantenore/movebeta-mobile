@@ -88,6 +88,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.release-evidence-freshness.v1',
     status: 'ready',
   });
+  writeJson(path.join(root, 'docs/sdlc/vercel-workflow-report.json'), {
+    schemaVersion: 'movebeta.vercel-workflow-readiness.v1',
+    summary: { status: 'template-ready' },
+  });
   writeJson(path.join(root, 'docs/sdlc/feature-completion-report.json'), {
     schemaVersion: 'movebeta.feature-completion-report.v1',
     status: 'external-blocked',
@@ -162,7 +166,9 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issue-filing');
     expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
+    expect(packet.commands.map((item) => item.key)).toContain('vercel-workflow');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Vercel workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model verification suite report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
@@ -191,6 +197,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Release blocker issue filing plan');
     expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('Release evidence freshness doctor');
+    expect(markdown).toContain('Vercel workflow readiness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);
   });

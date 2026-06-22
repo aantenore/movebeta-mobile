@@ -129,6 +129,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release evidence freshness report', 'docs/sdlc/release-freshness-report.json'),
       artifact(rootDir, 'PWA readiness report', 'docs/sdlc/pwa-readiness-report.json'),
       artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
+      artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
       artifact(rootDir, 'Store manifest', 'docs/store/store-manifest.json'),
       artifact(rootDir, 'Screenshot gallery', 'docs/screenshots.md'),
       artifact(rootDir, 'Release unblock screenshot', 'docs/store/screenshots/07-release-unblock.png'),
@@ -187,6 +188,10 @@ export function buildReleaseHandoffPacket({
         'internal',
       ]),
       command('vercel-readiness', 'Vercel deployment readiness doctor', 'npm run web:vercel:check', [
+        'demo',
+        'internal',
+      ]),
+      command('vercel-workflow', 'Vercel workflow readiness doctor', 'npm run web:vercel:workflow', [
         'demo',
         'internal',
       ]),

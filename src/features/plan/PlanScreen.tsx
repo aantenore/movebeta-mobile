@@ -19,6 +19,7 @@ import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import vercelDeploymentReport from '../../../docs/sdlc/vercel-deployment-report.json';
+import vercelWorkflowReport from '../../../docs/sdlc/vercel-workflow-report.json';
 import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
@@ -129,6 +130,7 @@ function providerStatusLabel(status: ProviderReadinessStatus) {
 
 type FeatureCompletionReport = typeof featureCompletionReport;
 type VercelDeploymentReport = typeof vercelDeploymentReport;
+type VercelWorkflowReport = typeof vercelWorkflowReport;
 
 function featureCompletionStatusLabel(status: FeatureCompletionReport['status']) {
   if (status === 'ready') return 'Ready';
@@ -166,6 +168,12 @@ function freshnessStatusLabel(status: ReleaseEvidenceFreshness['artifacts'][numb
 function vercelDeploymentStatusLabel(status: VercelDeploymentReport['summary']['status']) {
   if (status === 'linked') return 'Linked';
   if (status === 'static-ready') return 'Static';
+  return 'Blocked';
+}
+
+function vercelWorkflowStatusLabel(status: VercelWorkflowReport['summary']['status']) {
+  if (status === 'active-ready') return 'Active';
+  if (status === 'template-ready') return 'Template';
   return 'Blocked';
 }
 
@@ -1912,6 +1920,68 @@ function VercelDeploymentCard({
   );
 }
 
+function VercelWorkflowCard({
+  onPreparePacket,
+  report,
+}: {
+  onPreparePacket: () => void;
+  report: VercelWorkflowReport;
+}) {
+  const isActive = report.summary.status === 'active-ready';
+  const isBlocked = report.summary.status === 'blocked';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.verifiedCount}/{report.summary.checkCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.summary.actionNeededCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>actions</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.summary.activeWorkflowExists ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>active</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Vercel workflow</Text>
+          <Text style={styles.qaKitText}>{report.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isActive ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {vercelWorkflowStatusLabel(report.summary.status)}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare Vercel workflow packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Workflow packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {report.checks.map((check) => (
+          <View key={check.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{check.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{check.detail}</Text>
+              </View>
+              <Text style={[styles.launchStatus, check.status === 'verified' ? styles.launchStatusReady : check.status === 'blocked' ? styles.launchStatusBlocked : null]}>
+                {check.status}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function FieldValidationOpsCard({
   onPreparePacket,
   packet,
@@ -2248,6 +2318,7 @@ function buildPlanSafetySources({
   pwaReadiness,
   pwaRuntimeReadiness,
   vercelDeploymentReadiness,
+  vercelWorkflowReadiness,
   releaseUnblockChecklist,
   validationConsentPacket,
   iosToolchainSetupPacket,
@@ -2268,6 +2339,7 @@ function buildPlanSafetySources({
   pwaReadiness: typeof pwaReadinessReport;
   pwaRuntimeReadiness: PwaRuntimeReadiness;
   vercelDeploymentReadiness: VercelDeploymentReport;
+  vercelWorkflowReadiness: VercelWorkflowReport;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
   validationConsentPacket: ValidationConsentPacket;
 }): SafetyLanguageSource[] {
@@ -2434,6 +2506,14 @@ function buildPlanSafetySources({
         ...vercelDeploymentReadiness.commands.map((command) => `${command.command} ${command.purpose}`),
       ].join(' '),
     },
+    {
+      key: 'vercel-workflow-readiness',
+      label: 'Vercel workflow readiness',
+      text: [
+        vercelWorkflowReadiness.summary.nextAction,
+        ...vercelWorkflowReadiness.checks.flatMap((check) => [check.label, check.detail, check.status, check.action]),
+      ].join(' '),
+    },
   ];
 }
 
@@ -2489,6 +2569,7 @@ export function PlanScreen() {
         pwaReadinessReport,
         storeSubmissionPacket: storeSubmissionReport,
         vercelDeploymentReport,
+        vercelWorkflowReport,
       },
       { includeMissing: false },
     ),
@@ -2555,6 +2636,7 @@ export function PlanScreen() {
       pwaReadiness: pwaReadinessReport,
       pwaRuntimeReadiness: pwaRuntime.readiness,
       vercelDeploymentReadiness: vercelDeploymentReport,
+      vercelWorkflowReadiness: vercelWorkflowReport,
       releaseUnblockChecklist,
       validationConsentPacket,
     }),
@@ -2713,6 +2795,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(vercelDeploymentReport, null, 2),
       title: 'Prepared Vercel deployment packet',
+    });
+  }
+
+  function prepareVercelWorkflowPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(vercelWorkflowReport, null, 2),
+      title: 'Prepared Vercel workflow packet',
     });
   }
 
@@ -2918,6 +3008,7 @@ export function PlanScreen() {
 
       <Section title="Vercel deployment" caption="Static prebuilt deployment readiness without backend or committed secrets.">
         <VercelDeploymentCard onPreparePacket={prepareVercelDeploymentPacket} report={vercelDeploymentReport} />
+        <VercelWorkflowCard onPreparePacket={prepareVercelWorkflowPacket} report={vercelWorkflowReport} />
       </Section>
 
       <Section title="Evidence reconciliation" caption="Paste share-safe release reports to preview which launch blockers would clear.">

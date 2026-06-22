@@ -40,6 +40,15 @@ Unsupported runtimes or decode failures fall back to `local-video-fallback`, whi
 uploading video. Production native builds keep the same `PoseEstimator` interface and replace only the provider
 implementation.
 
+MoveNet loading is intentionally lazy in the current web/PWA path. The app downloads the TensorFlow.js pose-detection
+chunk and MoveNet SinglePose Lightning weights only when the first real web analysis asks for a detector, not when the
+PWA is opened or installed. The detector promise is reused for the active browser session, and normal browser HTTP cache
+can reuse fetched model assets later. The service worker currently precaches the app shell and same-origin static build
+assets; it does not guarantee offline availability for TensorFlow Hub-hosted model weights before the first model load.
+For production offline analysis, the preferred next step is to vendor the MoveNet graph and weight shards under
+`public/models/...`, configure `web-tfjs-movenet` with that same-origin `modelUrl`, and add those model assets to the
+PWA cache policy.
+
 `src/video/videoMetadata.ts` resolves duration and dimensions before source normalization. Custom native builds read
 metadata through `movebeta-pose`; web preview can use browser video metadata; unsupported runtimes fall back to
 picker/timer/default values without blocking analysis. The recorder uses a configurable muted profile so movement
