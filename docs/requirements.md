@@ -126,6 +126,8 @@
 - Summarize private cue usefulness feedback into useful rate, top useful cue, and review cue signals.
 - Generate a local technique readiness plan from report trends, cue severity, private project status, effort, confidence,
   and drill evidence.
+- Prepare a share-safe technique readiness packet from Progress with readiness status, focus, warm-up, next action, risk,
+  and drill guidance while excluding raw media, video URIs, report ids, private notes, local paths, and token-like values.
 - Compare the latest local attempt with the best matching local baseline using configurable smart repeat matching across
   wall angle, gym, grade, title, cue overlap, recency, and private local annotation signals.
 - Generate advanced drill packs locally from report cues, cue feedback, practice logs, wall angle, grade band, and

@@ -1,8 +1,12 @@
+import { z } from 'zod';
+
 import { buildDrillPlan, type DrillPlanItem } from './drillPlanner';
 import { summarizeProgress, type ProgressInsightSummary } from './progressInsights';
 import { summarizeProjectQueue, type ProjectQueueSummary } from './projectQueue';
 import type { LocalAnalysisReport } from './contracts';
 import type { ReportAnnotation } from './reportAnnotationRepository';
+
+export const techniqueReadinessPacketSchemaVersion = 'movebeta.technique-readiness-packet.v1';
 
 export type TechniqueReadinessStatus = 'ready' | 'repeat' | 'recover' | 'baseline';
 
@@ -16,6 +20,54 @@ export type TechniqueReadinessPlan = {
   status: TechniqueReadinessStatus;
   warmup: string;
 };
+
+export const TechniqueReadinessStatusSchema = z.enum(['ready', 'repeat', 'recover', 'baseline']);
+
+export const TechniqueReadinessPacketSchema = z.object({
+  generatedAt: z.string(),
+  privacy: z.object({
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    tokenLikeValuesIncluded: z.literal(false),
+    videoUriIncluded: z.literal(false),
+  }),
+  purpose: z.string(),
+  readiness: z.object({
+    drill: z
+      .object({
+        dosage: z.string(),
+        drill: z.string(),
+        feedbackStatus: z.string(),
+        focus: z.string(),
+        priority: z.string(),
+        sourceSessionTitle: z.string(),
+        title: z.string(),
+      })
+      .nullable(),
+    focus: z.string(),
+    headline: z.string(),
+    nextAction: z.string(),
+    risk: z.string(),
+    score: z.number().int().min(0).max(100),
+    status: TechniqueReadinessStatusSchema,
+    warmup: z.string(),
+  }),
+  schemaVersion: z.literal(techniqueReadinessPacketSchemaVersion),
+});
+
+export type TechniqueReadinessPacket = z.infer<typeof TechniqueReadinessPacketSchema>;
+
+const forbiddenReadinessPacketValuePattern =
+  /(file:\/\/|content:\/\/|ph:\/\/|asset-library:\/\/|blob:|data:|\/users\/|\/var\/|\/private\/|rawVideo|videoUri|keyFrame|landmarks|privateNote|sourceReportId|reportId|secret|token|BEGIN PRIVATE KEY)/i;
+
+function containsForbiddenValue(value: unknown): boolean {
+  if (typeof value === 'string') return forbiddenReadinessPacketValuePattern.test(value);
+  if (Array.isArray(value)) return value.some(containsForbiddenValue);
+  if (value && typeof value === 'object') return Object.values(value).some(containsForbiddenValue);
+  return false;
+}
 
 function clampScore(score: number) {
   return Math.max(0, Math.min(100, Math.round(score)));
@@ -114,4 +166,66 @@ export function buildTechniqueReadinessPlan(
     status,
     warmup: warmupFor(status, focus),
   };
+}
+
+function packetDrill(drill: DrillPlanItem | null) {
+  if (!drill) return null;
+
+  return {
+    dosage: drill.dosage,
+    drill: drill.drill,
+    feedbackStatus: drill.feedbackStatus,
+    focus: drill.focus,
+    priority: drill.priority,
+    sourceSessionTitle: drill.sourceSessionTitle,
+    title: drill.title,
+  };
+}
+
+export function assertTechniqueReadinessPacketIsPrivacySafe(packet: TechniqueReadinessPacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Technique readiness packet contains raw media, local path, report id, private note, or secret-like evidence.');
+  }
+
+  return packet;
+}
+
+export function buildTechniqueReadinessPacket(
+  readiness: TechniqueReadinessPlan,
+  options: { generatedAt?: string; purpose?: string } = {},
+): TechniqueReadinessPacket {
+  const packet = TechniqueReadinessPacketSchema.parse({
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+    privacy: {
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      tokenLikeValuesIncluded: false,
+      videoUriIncluded: false,
+    },
+    purpose: options.purpose ?? 'Share local technique readiness without sensitive artifacts.',
+    readiness: {
+      drill: packetDrill(readiness.drill),
+      focus: readiness.focus,
+      headline: readiness.headline,
+      nextAction: readiness.nextAction,
+      risk: readiness.risk,
+      score: readiness.score,
+      status: readiness.status,
+      warmup: readiness.warmup,
+    },
+    schemaVersion: techniqueReadinessPacketSchemaVersion,
+  });
+
+  return assertTechniqueReadinessPacketIsPrivacySafe(packet);
+}
+
+export function formatTechniqueReadinessPacketSummary(packet: TechniqueReadinessPacket) {
+  return [
+    `Technique readiness: ${packet.readiness.status} (${packet.readiness.score}/100)`,
+    `Focus: ${packet.readiness.focus}`,
+    `Action: ${packet.readiness.nextAction}`,
+    `Privacy: raw video no - URI no - private notes no - report ids no`,
+  ].join('\n');
 }

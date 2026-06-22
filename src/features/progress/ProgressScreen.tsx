@@ -43,7 +43,11 @@ import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/re
 import { buildSessionCloseout } from '@/movement/sessionCloseout';
 import { buildSessionAgenda, buildSessionAgendaPacket, formatSessionAgendaPacketSummary } from '@/movement/sessionAgenda';
 import { buildSessionPlan } from '@/movement/sessionPlan';
-import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
+import {
+  buildTechniqueReadinessPacket,
+  buildTechniqueReadinessPlan,
+  formatTechniqueReadinessPacketSummary,
+} from '@/movement/techniqueReadiness';
 import { summarizeTrainingLoad } from '@/movement/trainingLoad';
 import { theme } from '@/core/theme';
 
@@ -94,6 +98,7 @@ export function ProgressScreen() {
   const [activeRestTimer, setActiveRestTimer] = useState<{ label: string; remainingSeconds: number; sourceStepId: string } | null>(null);
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
+  const [preparedReadinessPacket, setPreparedReadinessPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedTrustTrendPacket, setPreparedTrustTrendPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
@@ -163,6 +168,15 @@ export function ProgressScreen() {
     setPreparedTrustTrendPacket({
       body: `${formatAnalysisTrustTrendPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
       title: 'Prepared analysis trust trend packet',
+    });
+  }
+
+  function prepareReadinessPacket() {
+    selectionFeedback();
+    const packet = buildTechniqueReadinessPacket(readiness);
+    setPreparedReadinessPacket({
+      body: `${formatTechniqueReadinessPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared technique readiness packet',
     });
   }
 
@@ -786,8 +800,26 @@ export function ProgressScreen() {
             <Text style={styles.readinessBlockLabel}>Risk</Text>
             <Text style={styles.readinessBlockText}>{readiness.risk}</Text>
           </View>
+
+          <View style={styles.sessionAgendaActions}>
+            <Pressable
+              accessibilityLabel="Prepare technique readiness packet"
+              onPress={prepareReadinessPacket}
+              style={styles.sessionAgendaAction}
+            >
+              <Text style={styles.sessionAgendaActionText}>Readiness packet</Text>
+            </Pressable>
+          </View>
         </View>
       </Section>
+
+      {preparedReadinessPacket ? (
+        <Section title={preparedReadinessPacket.title} caption="Share-safe readiness evidence prepared locally.">
+          <View style={styles.sessionAgendaPacketBox}>
+            <Text selectable style={styles.sessionAgendaPacketText}>{preparedReadinessPacket.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section
         title="History filters"
