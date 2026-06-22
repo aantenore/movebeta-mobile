@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-22T15:11:03.714Z
+Generated: 2026-06-22T15:34:04.904Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: ee9095f247beae1e32b8917800ba23ba2a08be53
+- Base commit at generation: a324dfd6f22189fd28a39e731817fa9b3ba89b44
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 5231ms; average inference 320ms
+- MoveNet readiness: ready; load 5005ms; average inference 350ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -41,7 +41,9 @@ Generated: 2026-06-22T15:11:03.714Z
 - Feature completion doctor: `npm run feature:doctor`
 - Release blocker issue report: `npm run release:blocker-issues`
 - Release blocker issue filing plan: `npm run release:blocker-issues:file`
+- Release blocker issue web links: `npm run release:blocker-issues:links`
 - Release evidence freshness doctor: `npm run release:freshness:doctor`
+- PWA static readiness doctor: `npm run export:web && npm run web:pwa:check`
 - Strict EAS store gate: `npm run release:eas:strict`
 
 ## Artifacts
@@ -52,6 +54,7 @@ Generated: 2026-06-22T15:11:03.714Z
 - [x] Feature completion report: `docs/sdlc/feature-completion-report.json`
 - [x] Release blocker issues report: `docs/sdlc/release-blocker-issues-report.json`
 - [x] Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`
+- [x] Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
@@ -59,6 +62,7 @@ Generated: 2026-06-22T15:11:03.714Z
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
 - [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
+- [x] PWA readiness report: `docs/sdlc/pwa-readiness-report.json`
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`

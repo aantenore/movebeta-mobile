@@ -32,6 +32,11 @@
     },
     {
       "exists": true,
+      "label": "Release blocker issue web links",
+      "path": "docs/sdlc/release-blocker-issue-web-links.json"
+    },
+    {
+      "exists": true,
       "label": "MoveNet readiness report",
       "path": "docs/sdlc/movenet-readiness-report.json"
     },
@@ -64,6 +69,11 @@
       "exists": true,
       "label": "Release evidence freshness report",
       "path": "docs/sdlc/release-freshness-report.json"
+    },
+    {
+      "exists": true,
+      "label": "PWA readiness report",
+      "path": "docs/sdlc/pwa-readiness-report.json"
     },
     {
       "exists": true,
@@ -277,6 +287,16 @@
       ]
     },
     {
+      "command": "npm run release:blocker-issues:links",
+      "key": "release-blocker-issue-links",
+      "label": "Release blocker issue web links",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run release:freshness:doctor",
       "key": "release-freshness",
       "label": "Release evidence freshness doctor",
@@ -284,6 +304,15 @@
         "demo",
         "internal",
         "store"
+      ]
+    },
+    {
+      "command": "npm run export:web && npm run web:pwa:check",
+      "key": "pwa-readiness",
+      "label": "PWA static readiness doctor",
+      "requiredFor": [
+        "demo",
+        "internal"
       ]
     },
     {
@@ -295,7 +324,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-22T15:11:03.714Z",
+  "generatedAt": "2026-06-22T15:34:04.904Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -305,9 +334,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "ee9095f247beae1e32b8917800ba23ba2a08be53",
+    "baseCommitSha": "a324dfd6f22189fd28a39e731817fa9b3ba89b44",
     "changedPaths": [],
-    "commitSha": "ee9095f247beae1e32b8917800ba23ba2a08be53",
+    "commitSha": "a324dfd6f22189fd28a39e731817fa9b3ba89b44",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -386,8 +415,8 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 320,
-    "moveNetLoadMs": 5231,
+    "moveNetAverageInferenceMs": 350,
+    "moveNetLoadMs": 5005,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
