@@ -55,6 +55,7 @@ import { buildStoreCredentialsSetupPacket, type StoreCredentialsSetupPacket } fr
 import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
 import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
 import { buildValidationCollectionPacket } from '@/core/validationCollectionPacket';
+import { buildValidationConsentPacket, type ValidationConsentPacket } from '@/core/validationConsentPacket';
 import { buildValidationPilotKit, type ValidationPilotKit } from '@/core/validationPilotKit';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
@@ -849,11 +850,15 @@ function CommercialReadinessCard({
 }
 
 function EvidenceCollectionPlanCard({
+  consentPacket,
+  onPrepareConsentPacket,
   onPreparePacket,
   onPreparePilotKit,
   plan,
   pilotKit,
 }: {
+  consentPacket: ValidationConsentPacket;
+  onPrepareConsentPacket: () => void;
   onPreparePacket: () => void;
   onPreparePilotKit: () => void;
   plan: ReturnType<typeof buildEvidenceCollectionPlan>;
@@ -866,6 +871,12 @@ function EvidenceCollectionPlanCard({
           <Text style={styles.evidencePlanTitle}>Validation collection</Text>
           <Text style={styles.qaPlatformMore}>Share-safe packet for product and coach reviewers.</Text>
         </View>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare validation consent packet" onPress={onPrepareConsentPacket} style={styles.planAction}>
+          <ShieldCheck color={theme.colors.brand} size={15} />
+          <Text style={styles.planActionText}>Consent packet</Text>
+        </Pressable>
         <Pressable accessibilityLabel="Prepare validation collection packet" onPress={onPreparePacket} style={styles.planAction}>
           <Download color={theme.colors.brand} size={15} />
           <Text style={styles.planActionText}>Packet</Text>
@@ -891,6 +902,10 @@ function EvidenceCollectionPlanCard({
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{pilotKit.summary.pilotSprintCount}</Text>
           <Text style={styles.qaKitMetricLabel}>pilot sprints</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{consentPacket.summary.consentStepCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>consent steps</Text>
         </View>
       </View>
       <Text style={styles.qaKitAction}>{plan.summary.action}</Text>
@@ -1695,6 +1710,7 @@ function buildPlanSafetySources({
   releaseEvidenceScenarioPlanner,
   releaseEvidenceReconciliation,
   releaseUnblockChecklist,
+  validationConsentPacket,
 }: {
   commercialReadiness: ReturnType<typeof buildBillingReadinessSummary>;
   evidencePlan: ReturnType<typeof buildEvidenceCollectionPlan>;
@@ -1707,6 +1723,7 @@ function buildPlanSafetySources({
   releaseEvidenceScenarioPlanner: ReleaseEvidenceScenarioPlanner;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
+  validationConsentPacket: ValidationConsentPacket;
 }): SafetyLanguageSource[] {
   return [
     {
@@ -1748,6 +1765,18 @@ function buildPlanSafetySources({
         ...evidencePlan.externalEvidence.map((item) => item.label),
         ...evidencePlan.cueValidation.collectionBatches.map((batch) => batch.captureFocus),
         ...evidencePlan.cueValidation.collectionChecklist,
+      ].join(' '),
+    },
+    {
+      key: 'validation-consent',
+      label: 'Validation consent',
+      text: [
+        validationConsentPacket.summary.nextAction,
+        validationConsentPacket.consentProtocol.athleteScript,
+        validationConsentPacket.consentProtocol.bystanderPolicy,
+        validationConsentPacket.consentProtocol.retentionPolicy,
+        validationConsentPacket.consentProtocol.withdrawalPolicy,
+        ...validationConsentPacket.consentProtocol.consentChecks,
       ].join(' '),
     },
     {
@@ -1813,6 +1842,7 @@ export function PlanScreen() {
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
+  const validationConsentPacket = buildValidationConsentPacket({ plan: evidencePlan });
   const validationPilotKit = buildValidationPilotKit({ plan: evidencePlan });
   const launchReadiness = buildLaunchReadinessSummary(appConfig.launchReadinessEvidence);
   const modelEvidence = buildModelEvidenceSummary(appConfig.modelEvidence);
@@ -1901,6 +1931,7 @@ export function PlanScreen() {
       releaseEvidenceScenarioPlanner,
       releaseEvidenceReconciliation,
       releaseUnblockChecklist,
+      validationConsentPacket,
     }),
   );
   const groupedCapabilities = catalog
@@ -1982,6 +2013,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(packet, null, 2),
       title: 'Prepared validation collection packet',
+    });
+  }
+
+  function prepareValidationConsentPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(validationConsentPacket, null, 2),
+      title: 'Prepared validation consent packet',
     });
   }
 
@@ -2169,6 +2208,8 @@ export function PlanScreen() {
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">
         <EvidenceCollectionPlanCard
+          consentPacket={validationConsentPacket}
+          onPrepareConsentPacket={prepareValidationConsentPacket}
           onPreparePacket={prepareValidationCollectionPacket}
           onPreparePilotKit={prepareValidationPilotKit}
           pilotKit={validationPilotKit}

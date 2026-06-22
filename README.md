@@ -144,6 +144,8 @@ web build with `npm run store:screenshots`.
   without payment data, receipt values, secrets, local paths, or raw artifacts.
 - Share-safe validation pilot kit from the Plan tab with consent principles, wall-angle pilot sprints, capture setup,
   coach review rules, closeout commands, and no raw video, identities, local paths, credentials, or invented scores.
+- Share-safe validation consent packet from the Plan tab with athlete script, bystander policy, withdrawal policy,
+  per-wall-angle consent checks, and no raw video, identities, local paths, credentials, or token-like values.
 - Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
 - Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
 - Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
@@ -162,6 +164,8 @@ web build with `npm run store:screenshots`.
   privacy-first capture checklist derived from acceptance thresholds.
 - Share-safe validation collection packet from the Plan tab, with balanced batches, reviewer slot templates, workflow
   commands, and explicit raw-video/path/credential exclusion flags.
+- Share-safe validation consent packet from the Plan tab, with local-analysis consent copy, per-batch metadata fields,
+  withdrawal handling, and explicit raw-video/path/identity/token exclusion flags.
 - Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
   owners, affected tracks, and credential key names without secret values.
 - Release critical path in the Plan tab that sequences external blockers across real-world validation, native build/QA,
