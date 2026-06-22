@@ -91,6 +91,8 @@ web build with `npm run store:screenshots`.
 - Local progress filters for wall angle, grade, and gym.
 - Personal benchmarks for best overall, wall angle, grade, and gym attempts after the active local filters.
 - Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
+- Share-safe technique readiness packet for exporting status, focus, warm-up, next action, risk, and drill guidance
+  without raw media, report ids, private notes, local paths, or token-like values.
 - Session agenda that composes training load, next-session plan, and closeout evidence into a local minute-by-minute
   plan with intensity labels and privacy-safe proof.
 - Share-safe session agenda packet with versioned JSON, summary, block timing, intensity labels, and negative privacy
