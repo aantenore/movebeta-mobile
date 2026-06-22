@@ -30,6 +30,7 @@ import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { summarizeRepeatOutcomes } from '@/movement/repeatOutcomeInsights';
 import { reportAnnotationRepository, type ReportAnnotation } from '@/movement/reportAnnotationRepository';
 import { buildSessionCloseout } from '@/movement/sessionCloseout';
+import { buildSessionAgenda } from '@/movement/sessionAgenda';
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import { buildTechniqueReadinessPlan } from '@/movement/techniqueReadiness';
 import { summarizeTrainingLoad } from '@/movement/trainingLoad';
@@ -89,6 +90,10 @@ export function ProgressScreen() {
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(
     () => buildSessionPlan(filteredReports, annotations, drillPractice),
+    [annotations, drillPractice, filteredReports],
+  );
+  const sessionAgenda = useMemo(
+    () => buildSessionAgenda({ annotations, drillPractice, reports: filteredReports }),
     [annotations, drillPractice, filteredReports],
   );
   const sessionCloseout = useMemo(
@@ -208,6 +213,64 @@ export function ProgressScreen() {
           </View>
 
           <Text style={styles.sessionPlanSafety}>{sessionPlan.safetyNote}</Text>
+        </View>
+      </Section>
+
+      <Section title="Session agenda" caption="A local agenda that combines load, session plan, and closeout evidence.">
+        <View style={styles.sessionAgendaCard}>
+          <View style={styles.sessionAgendaHeader}>
+            <View style={styles.sessionAgendaCopy}>
+              <Text style={styles.sessionAgendaKicker}>{sessionAgenda.status}</Text>
+              <Text style={styles.sessionAgendaTitle}>{sessionAgenda.title}</Text>
+              <Text style={styles.sessionAgendaMeta}>
+                {sessionAgenda.summary.totalMinutes} min · {sessionAgenda.summary.blockCount} blocks · anchor {sessionAgenda.anchor}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.sessionAgendaBadge,
+                sessionAgenda.status === 'deload' ? styles.sessionAgendaBadgeLimit : null,
+                sessionAgenda.status === 'progress' ? styles.sessionAgendaBadgeReady : null,
+              ]}
+            >
+              <Text style={styles.sessionAgendaBadgeValue}>{sessionAgenda.summary.closeoutNeededCount}</Text>
+              <Text style={styles.sessionAgendaBadgeLabel}>Open</Text>
+            </View>
+          </View>
+
+          <View style={styles.sessionAgendaNextAction}>
+            <Text style={styles.sessionAgendaNextActionLabel}>Next action</Text>
+            <Text style={styles.sessionAgendaNextActionText}>{sessionAgenda.nextAction}</Text>
+          </View>
+
+          <View style={styles.sessionAgendaBlocks}>
+            {sessionAgenda.blocks.map((block) => (
+              <View key={block.id} style={styles.sessionAgendaBlock}>
+                <View style={styles.sessionAgendaBlockHeader}>
+                  <Text style={styles.sessionAgendaBlockLabel}>{block.label}</Text>
+                  <Text
+                    style={[
+                      styles.sessionAgendaIntensity,
+                      block.intensity === 'easy' ? styles.sessionAgendaIntensityEasy : null,
+                      block.intensity === 'hard' ? styles.sessionAgendaIntensityHard : null,
+                    ]}
+                  >
+                    {block.intensity}
+                  </Text>
+                </View>
+                <Text style={styles.sessionAgendaBlockTitle}>
+                  {block.title} · {block.durationMinutes} min
+                </Text>
+                <Text style={styles.sessionAgendaBlockInstruction}>{block.instruction}</Text>
+                <Text style={styles.sessionAgendaBlockEvidence}>{block.evidence}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.sessionAgendaPrivacy}>
+            <Text style={styles.sessionAgendaPrivacyText}>Raw video included: no</Text>
+            <Text style={styles.sessionAgendaPrivacyText}>Private notes included: no</Text>
+          </View>
         </View>
       </Section>
 
@@ -1607,6 +1670,162 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: theme.spacing.sm,
+  },
+  sessionAgendaBadge: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.md,
+    minWidth: 84,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  sessionAgendaBadgeLabel: {
+    color: '#F4FFF8',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionAgendaBadgeLimit: {
+    backgroundColor: theme.colors.coral,
+  },
+  sessionAgendaBadgeReady: {
+    backgroundColor: theme.colors.success,
+  },
+  sessionAgendaBadgeValue: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  sessionAgendaBlock: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 4,
+    minWidth: 178,
+    padding: theme.spacing.sm,
+  },
+  sessionAgendaBlockEvidence: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  sessionAgendaBlockHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.xs,
+    justifyContent: 'space-between',
+  },
+  sessionAgendaBlockInstruction: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  sessionAgendaBlockLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionAgendaBlocks: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  sessionAgendaBlockTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  sessionAgendaCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  sessionAgendaCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  sessionAgendaHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+  },
+  sessionAgendaIntensity: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
+  sessionAgendaIntensityEasy: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  sessionAgendaIntensityHard: {
+    backgroundColor: '#FFF0EC',
+    color: theme.colors.coral,
+  },
+  sessionAgendaKicker: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionAgendaMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  sessionAgendaNextAction: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  sessionAgendaNextActionLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  sessionAgendaNextActionText: {
+    color: theme.colors.brandDark,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  sessionAgendaPrivacy: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  sessionAgendaPrivacyText: {
+    backgroundColor: '#E8F4EE',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  sessionAgendaTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 23,
   },
   closeoutAction: {
     backgroundColor: theme.colors.surfaceAlt,

@@ -34,6 +34,8 @@
 - Vitest personal benchmark tests for best overall, wall-angle, grade, gym, latest-vs-best deltas, and empty state.
 - Vitest session plan tests for baseline blocks, recovery intensity caps, repeat-project training blocks, and
   practice-reset planning from skipped drill logs.
+- Vitest session agenda tests for baseline, controlled, deload, configurable block limits, and raw artifact/private-note
+  rejection.
 - Vitest session closeout tests for baseline checklist, latest-report closeout actions, complete closeout evidence, and
   raw artifact/private-note rejection.
 - Vitest training load tests for baseline, balanced, review, deload, configurable threshold behavior, and raw
@@ -282,6 +284,8 @@
 - Progress tab shows a project queue derived from private training logs after a Sessions log is saved.
 - Progress tab shows a next-session plan with target, duration, intensity cap, ordered phases, and practice-reset
   adaptation when drill follow-through is blocked.
+- Progress tab shows a session agenda with load, plan, and closeout blocks, intensity labels, open closeout count, and
+  privacy-safe local evidence.
 - Progress tab shows a session closeout checklist with training-log, drill follow-through, repeat-outcome, and privacy
   boundary actions before the next local comparison.
 - Progress tab shows a training load balance with recent effort, repeat, skipped-drill signals, recommendation, and

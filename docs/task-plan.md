@@ -147,3 +147,4 @@
 | T143 | Add durable release blocker issue report | Done |
 | T144 | Add local session closeout checklist | Done |
 | T145 | Add local training load balance | Done |
+| T146 | Add local session agenda | Done |
