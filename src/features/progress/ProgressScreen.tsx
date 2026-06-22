@@ -48,7 +48,7 @@ import {
   buildTechniqueReadinessPlan,
   formatTechniqueReadinessPacketSummary,
 } from '@/movement/techniqueReadiness';
-import { summarizeTrainingLoad } from '@/movement/trainingLoad';
+import { buildTrainingLoadPacket, formatTrainingLoadPacketSummary, summarizeTrainingLoad } from '@/movement/trainingLoad';
 import { theme } from '@/core/theme';
 
 type FilterChipProps = {
@@ -99,6 +99,7 @@ export function ProgressScreen() {
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedReadinessPacket, setPreparedReadinessPacket] = useState<{ body: string; title: string } | null>(null);
+  const [preparedTrainingLoadPacket, setPreparedTrainingLoadPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedTrustTrendPacket, setPreparedTrustTrendPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
@@ -177,6 +178,15 @@ export function ProgressScreen() {
     setPreparedReadinessPacket({
       body: `${formatTechniqueReadinessPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
       title: 'Prepared technique readiness packet',
+    });
+  }
+
+  function prepareTrainingLoadPacket() {
+    selectionFeedback();
+    const packet = buildTrainingLoadPacket(trainingLoad);
+    setPreparedTrainingLoadPacket({
+      body: `${formatTrainingLoadPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared training load packet',
     });
   }
 
@@ -692,8 +702,26 @@ export function ProgressScreen() {
               </View>
             ))}
           </View>
+
+          <View style={styles.sessionAgendaActions}>
+            <Pressable
+              accessibilityLabel="Prepare training load packet"
+              onPress={prepareTrainingLoadPacket}
+              style={styles.sessionAgendaAction}
+            >
+              <Text style={styles.sessionAgendaActionText}>Load packet</Text>
+            </Pressable>
+          </View>
         </View>
       </Section>
+
+      {preparedTrainingLoadPacket ? (
+        <Section title={preparedTrainingLoadPacket.title} caption="Share-safe training load evidence prepared locally.">
+          <View style={styles.sessionAgendaPacketBox}>
+            <Text selectable style={styles.sessionAgendaPacketText}>{preparedTrainingLoadPacket.body}</Text>
+          </View>
+        </Section>
+      ) : null}
 
       <Section
         title="Pre-send guard"

@@ -120,6 +120,9 @@
   and privacy boundary so climbers know what to log before the next local comparison.
 - Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can
   keep the next session controlled or add one variable based on recent local evidence.
+- Prepare a share-safe training load packet from Progress with status, score, window, derived counts, recommendation,
+  next action, and signals while excluding raw media, video URIs, report ids, private notes, local paths, and token-like
+  values.
 - Show a local pre-send guard that combines analysis quality, technique readiness, open fix cues, practice
   follow-through, repeat outcomes, and training load before recommending reset, controlled repeat, or hard-try windows.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.

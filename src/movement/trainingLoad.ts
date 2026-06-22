@@ -4,6 +4,7 @@ import type { DrillPracticeRecord } from './drillPracticeRepository';
 import type { ReportAnnotation } from './reportAnnotationRepository';
 
 export const trainingLoadSchemaVersion = 'movebeta.training-load.v1';
+export const trainingLoadPacketSchemaVersion = 'movebeta.training-load-packet.v1';
 
 export const TrainingLoadSignalSchema = z.object({
   detail: z.string(),
@@ -39,7 +40,24 @@ export const TrainingLoadSummarySchema = z.object({
   windowDays: z.number().int().positive(),
 });
 
+export const TrainingLoadPacketSchema = z.object({
+  generatedAt: z.string(),
+  load: TrainingLoadSummarySchema,
+  privacy: z.object({
+    cloudUploadRequired: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    tokenLikeValuesIncluded: z.literal(false),
+    videoUriIncluded: z.literal(false),
+  }),
+  purpose: z.string(),
+  schemaVersion: z.literal(trainingLoadPacketSchemaVersion),
+});
+
 export type TrainingLoadSignal = z.infer<typeof TrainingLoadSignalSchema>;
+export type TrainingLoadPacket = z.infer<typeof TrainingLoadPacketSchema>;
 export type TrainingLoadSummary = z.infer<typeof TrainingLoadSummarySchema>;
 
 export type TrainingLoadConfig = {
@@ -59,7 +77,7 @@ const defaultConfig: TrainingLoadConfig = {
 };
 
 const forbiddenTrainingLoadValuePattern =
-  /(file:\/\/|content:\/\/|ph:\/\/|asset-library:\/\/|blob:|data:|\/users\/|\/var\/|\/private\/|rawVideo|videoUri|keyFrame|landmarks|secret|token)/i;
+  /(file:\/\/|content:\/\/|ph:\/\/|asset-library:\/\/|blob:|data:|\/users\/|\/var\/|\/private\/|rawVideo|videoUri|keyFrame|landmarks|privateNote|reportId|secret|token)/i;
 
 function parseTimestamp(value: string) {
   const time = Date.parse(value);
@@ -122,6 +140,45 @@ export function assertTrainingLoadSummaryIsShareSafe(summary: TrainingLoadSummar
     throw new Error('Training load summary contains local paths, raw video artifacts, private notes, landmarks, or token-like data.');
   }
   return summary;
+}
+
+export function assertTrainingLoadPacketIsShareSafe(packet: TrainingLoadPacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Training load packet contains local paths, raw video artifacts, report ids, private notes, landmarks, or token-like data.');
+  }
+  return packet;
+}
+
+export function buildTrainingLoadPacket(
+  load: TrainingLoadSummary,
+  options: { generatedAt?: string; purpose?: string } = {},
+): TrainingLoadPacket {
+  const packet = TrainingLoadPacketSchema.parse({
+    generatedAt: options.generatedAt ?? load.generatedAt,
+    load,
+    privacy: {
+      cloudUploadRequired: false,
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      tokenLikeValuesIncluded: false,
+      videoUriIncluded: false,
+    },
+    purpose: options.purpose ?? 'Share local training load guidance without sensitive artifacts.',
+    schemaVersion: trainingLoadPacketSchemaVersion,
+  });
+
+  return assertTrainingLoadPacketIsShareSafe(packet);
+}
+
+export function formatTrainingLoadPacketSummary(packet: TrainingLoadPacket) {
+  return [
+    `Training load: ${packet.load.status} (${packet.load.trainingLoadScore}/100)`,
+    `Window: ${packet.load.windowDays} days - effort ${packet.load.summary.averageEffort || 0} - repeats ${packet.load.summary.repeatAttemptCount}`,
+    `Action: ${packet.load.nextAction}`,
+    `Privacy: raw video no - URI no - private notes no - report ids no`,
+  ].join('\n');
 }
 
 export function summarizeTrainingLoad({

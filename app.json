@@ -96,7 +96,7 @@
       },
       "modelEvidence": {
         "analysisReplay": {
-          "generatedAt": "2026-06-22T14:12:06.190Z",
+          "generatedAt": "2026-06-22T14:18:22.582Z",
           "minimumQualityScore": 100,
           "passedAttempts": 3,
           "privacySafe": true,
@@ -114,9 +114,9 @@
             "loadMs": 25000,
             "maxInferenceMs": 3000
           },
-          "generatedAt": "2026-06-22T14:11:58.285Z",
-          "loadMs": 6233,
-          "maxInferenceMs": 336,
+          "generatedAt": "2026-06-22T14:18:15.556Z",
+          "loadMs": 5390,
+          "maxInferenceMs": 345,
           "status": "ready"
         },
         "realWorldValidation": {

@@ -44,6 +44,8 @@
   raw artifact/private-note rejection.
 - Vitest training load tests for baseline, balanced, review, deload, configurable threshold behavior, and raw
   artifact/private-note rejection.
+- Vitest training load packet tests for versioned packet generation, summary copy, report-id exclusion, negative privacy
+  flags, and raw local artifact rejection.
 - Vitest pre-send guard tests for baseline, controlled-repeat, reset-first, hard-try window, blocked practice, and
   replaceable thresholds.
 - Vitest cue pattern tests for persistent, emerging, cleared, and empty cue-history states.
@@ -316,6 +318,8 @@
   boundary actions before the next local comparison.
 - Progress tab shows a training load balance with recent effort, repeat, skipped-drill signals, recommendation, and
   privacy-safe derived counts.
+- Progress prepares a versioned training load packet with raw media, report ids, private notes, local paths, and
+  token-like values excluded before sharing.
 - Progress tab shows a pre-send guard with score, load cap, action, and local evidence signals before hard tries.
 - Progress tab shows technique readiness with score, next action, warm-up, and risk.
 - Progress prepares a versioned technique readiness packet with raw media, report ids, private notes, local paths, and

@@ -40,8 +40,9 @@ platforms are validated on physical climbing videos and devices.
   metrics.
 - Analyze scores launch, crux, and finish phases from local cue and timeline evidence before movement metrics.
 - Progress shows local history summary, best signal, next focus metric, next-session planning, technique readiness,
-  share-safe technique readiness packet preparation, local session agenda, local training load, pre-send guard, personal
-  benchmarks, recurring cue patterns, cue usefulness insights, practice consistency, attempt comparison, and trend deltas.
+  share-safe technique readiness packet preparation, local session agenda, local training load, share-safe training load
+  packet preparation, pre-send guard, personal benchmarks, recurring cue patterns, cue usefulness insights, practice
+  consistency, attempt comparison, and trend deltas.
 - Progress lowers the next-session plan to a practice reset when private drill logs show skipped drills exceeding
   completed drills.
 - Progress shows a local session closeout checklist that turns the next-session plan, pre-send guard, drill
@@ -233,14 +234,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 112 test files and 458 tests.
+- `npm test`: passed, 112 test files and 460 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 6233ms load time, 333ms average inference, and 336ms max inference in the latest run.
+  CPU backend, 5390ms load time, 333ms average inference, and 345ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -260,7 +261,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 152/155 tasks done, 106/108 backlog items done, 139/139 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 153/156 tasks done, 107/109 backlog items done, 140/140 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -325,7 +326,8 @@ platforms are validated on physical climbing videos and devices.
 - `tests/preSendGuard.test.ts`: passed and covers baseline, controlled-repeat, reset-first, hard-try window, blocked
   practice, and replaceable threshold behavior.
 - `tests/trainingLoad.test.ts`: passed and covers baseline, balanced, review, deload, configurable high-effort
-  thresholds, and privacy-safe summary rejection.
+  thresholds, share-safe training load packet generation, report-id exclusion, negative privacy flags, and raw artifact
+  rejection.
 - `tests/coachReviewPacket.test.ts`: passed and covers `movebeta.coach-review.v2`, consent metadata, review rubric,
   cue trust export, validation-aware cue trust downgrade, reviewer identity exclusion, privacy-safe athlete context,
   private-note exclusion, drill-note exclusion, and raw video/landmark exclusion.
@@ -443,7 +445,7 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated eleven 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress analysis trust trend, the Progress analysis trust trend packet, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness, the Progress technique readiness packet
+  capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress analysis trust trend, the Progress analysis trust trend packet, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, the Progress training load packet, practice-reset planning, the Progress technique readiness, the Progress technique readiness packet
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions analysis trust summary, the Sessions analysis trust packet, the Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
