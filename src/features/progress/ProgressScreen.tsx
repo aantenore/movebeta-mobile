@@ -15,6 +15,7 @@ import {
   formatAttemptPacingPacketSummary,
   formatRestTimerClock,
 } from '@/movement/attemptPacing';
+import { summarizeAnalysisTrustTrend } from '@/movement/analysisTrustTrend';
 import { summarizeBetaMemory } from '@/movement/betaMemory';
 import type { LocalAnalysisReport } from '@/movement/contracts';
 import { summarizeCueFeedbackInsights } from '@/movement/cueFeedbackInsights';
@@ -94,6 +95,7 @@ export function ProgressScreen() {
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
   const filteredReports = useMemo(() => filterProgressReports(visibleReports, filters), [visibleReports, filters]);
   const summary = useMemo(() => summarizeProgress(filteredReports, annotations), [annotations, filteredReports]);
+  const analysisTrustTrend = useMemo(() => summarizeAnalysisTrustTrend(filteredReports), [filteredReports]);
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
   const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
@@ -236,6 +238,70 @@ export function ProgressScreen() {
           </View>
         </View>
       ) : null}
+
+      <Section title="Analysis trust trend" caption="Local reliability trend across the currently filtered reports.">
+        <View style={styles.analysisTrustTrendCard}>
+          <View style={styles.analysisTrustTrendHeader}>
+            <View style={styles.analysisTrustTrendCopy}>
+              <Text style={styles.analysisTrustTrendKicker}>{analysisTrustTrend.status}</Text>
+              <Text style={styles.analysisTrustTrendTitle}>{analysisTrustTrend.summary}</Text>
+              <Text style={styles.analysisTrustTrendMeta}>
+                {analysisTrustTrend.reportCount} reports · avg {analysisTrustTrend.averageScore}/100
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.analysisTrustTrendScore,
+                analysisTrustTrend.status === 'degrading' ? styles.analysisTrustTrendScoreLimit : null,
+                analysisTrustTrend.status === 'stable-ready' || analysisTrustTrend.status === 'improving'
+                  ? styles.analysisTrustTrendScoreReady
+                  : null,
+              ]}
+            >
+              <Text style={styles.analysisTrustTrendScoreValue}>{analysisTrustTrend.latest?.score ?? '-'}</Text>
+              <Text style={styles.analysisTrustTrendScoreLabel}>Latest</Text>
+            </View>
+          </View>
+
+          <View style={styles.analysisTrustTrendAction}>
+            <Text style={styles.analysisTrustTrendActionLabel}>Next action</Text>
+            <Text style={styles.analysisTrustTrendActionText}>{analysisTrustTrend.nextAction}</Text>
+          </View>
+
+          <View style={styles.analysisTrustTrendStats}>
+            <View style={styles.analysisTrustTrendStat}>
+              <Text style={styles.analysisTrustTrendStatValue}>{analysisTrustTrend.counts.coachReady}</Text>
+              <Text style={styles.analysisTrustTrendStatLabel}>Ready reports</Text>
+            </View>
+            <View style={styles.analysisTrustTrendStat}>
+              <Text style={styles.analysisTrustTrendStatValue}>{analysisTrustTrend.counts.reviewFirst}</Text>
+              <Text style={styles.analysisTrustTrendStatLabel}>Review first</Text>
+            </View>
+            <View style={styles.analysisTrustTrendStat}>
+              <Text style={styles.analysisTrustTrendStatValue}>
+                {analysisTrustTrend.counts.retake + analysisTrustTrend.counts.journalOnly}
+              </Text>
+              <Text style={styles.analysisTrustTrendStatLabel}>Retake/journal</Text>
+            </View>
+          </View>
+
+          {analysisTrustTrend.latest ? (
+            <View style={styles.analysisTrustTrendLatest}>
+              <Text style={styles.analysisTrustTrendLatestLabel}>Latest decision</Text>
+              <Text style={styles.analysisTrustTrendLatestValue}>{analysisTrustTrend.latest.decision}</Text>
+              <Text style={styles.analysisTrustTrendLatestMeta}>{analysisTrustTrend.latest.title}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.analysisTrustTrendPrivacy}>
+            <Text style={styles.analysisTrustTrendPrivacyText}>Raw video included: no</Text>
+            <Text style={styles.analysisTrustTrendPrivacyText}>Private notes included: no</Text>
+            <Text style={styles.analysisTrustTrendPrivacyText}>
+              Local boundary crossings: {analysisTrustTrend.privacy.reportsCrossingLocalBoundary}
+            </Text>
+          </View>
+        </View>
+      </Section>
 
       <Section title="Next session plan" caption="A local training block assembled from readiness, benchmarks, and private project notes.">
         <View style={styles.sessionPlanCard}>
@@ -1191,6 +1257,150 @@ export function ProgressScreen() {
 }
 
 const styles = StyleSheet.create({
+  analysisTrustTrendAction: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 4,
+    padding: theme.spacing.sm,
+  },
+  analysisTrustTrendActionLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  analysisTrustTrendActionText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  analysisTrustTrendCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  analysisTrustTrendCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  analysisTrustTrendHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  analysisTrustTrendKicker: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  analysisTrustTrendLatest: {
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: 4,
+    padding: theme.spacing.sm,
+  },
+  analysisTrustTrendLatestLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  analysisTrustTrendLatestMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 16,
+  },
+  analysisTrustTrendLatestValue: {
+    color: theme.colors.ink,
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  analysisTrustTrendMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  analysisTrustTrendPrivacy: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  analysisTrustTrendPrivacyText: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  analysisTrustTrendScore: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    minWidth: 72,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  analysisTrustTrendScoreLabel: {
+    color: theme.colors.brand,
+    fontSize: 10,
+    fontWeight: '900',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  analysisTrustTrendScoreLimit: {
+    backgroundColor: '#FFF0EC',
+  },
+  analysisTrustTrendScoreReady: {
+    backgroundColor: '#E8F4EE',
+  },
+  analysisTrustTrendScoreValue: {
+    color: theme.colors.ink,
+    fontSize: 20,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  analysisTrustTrendStat: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    gap: 2,
+    minWidth: 96,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+  },
+  analysisTrustTrendStatLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  analysisTrustTrendStats: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  analysisTrustTrendStatValue: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  analysisTrustTrendTitle: {
+    color: theme.colors.ink,
+    fontSize: 17,
+    fontWeight: '900',
+    lineHeight: 21,
+  },
   chart: {
     backgroundColor: theme.colors.surface,
     borderColor: theme.colors.line,
