@@ -41,6 +41,8 @@ platforms are validated on physical climbing videos and devices.
   minute-based blocks with intensity labels and no raw artifacts.
 - Progress prepares a share-safe session agenda packet with a stable schema, local-only timing/intensity evidence, and
   explicit negative privacy flags before sharing.
+- Progress shows a local attempt pacing plan that turns agenda, load, and pre-send evidence into rest windows, attempt
+  caps, hard-try slots, and stop rules before adding intensity.
 - Progress summarizes recent private effort, repeat attempts, stalled outcomes, and drill follow-through into a local
   training-load recommendation without exposing private notes or raw video artifacts.
 - Drills shows a weekly drill plan with priority, dosage, report evidence, private cue feedback adaptation, private
@@ -219,14 +221,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 108 test files and 436 tests.
+- `npm test`: passed, 109 test files and 442 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 6046ms load time, 324ms average inference, and 327ms max inference in the latest run.
+  CPU backend, 24979ms load time, 317ms average inference, and 319ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -246,7 +248,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 144/147 tasks done, 98/100 backlog items done, 131/131 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 145/148 tasks done, 99/101 backlog items done, 132/132 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -361,6 +363,8 @@ platforms are validated on physical climbing videos and devices.
   evidence, privacy flags, and raw artifact/private-note rejection.
 - `tests/sessionAgenda.test.ts`: passed and covers baseline, controlled, deload, configurable block limits, share-safe
   agenda packets, packet summaries, and raw artifact/private-note rejection.
+- `tests/attemptPacing.test.ts`: passed and covers baseline, controlled, progress, reset, configurable rest/attempt
+  limits, stop rules, and raw artifact/private-note rejection.
 - `tests/evidenceCollectionPlan.test.ts`: passed and covers validation clip targets, estimated review rows, native QA
   workflow checks, configurable acceptance thresholds, balanced wall-angle batches, review-row distribution, and
   privacy-safe collection planning.
@@ -419,7 +423,7 @@ platforms are validated on physical climbing videos and devices.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated eleven 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
-  capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, session agenda, session agenda packet, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness
+  capture-readiness guidance, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, session closeout checklist, local training load, practice-reset planning, the Progress technique readiness
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
   Sessions analysis evidence timeline, the Sessions analysis evidence export, the Sessions cue feedback controls, the Sessions repeat outcome controls, the Sessions private training log, the Progress
