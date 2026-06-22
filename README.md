@@ -106,6 +106,8 @@ web build with `npm run store:screenshots`.
   the next local logging actions.
 - Training load balance that summarizes recent private effort, repeat, and drill logs into a local recommendation without
   exposing raw video or private notes.
+- Share-safe training load packet for exporting load status, score, window, derived counts, recommendation, next action,
+  and signals without raw media, report ids, private notes, local paths, or token-like values.
 - Recurring cue pattern tracking for persistent, emerging, and cleared technique issues.
 - Cue usefulness insights that turn private cue feedback into useful, unclear, and review signals.
 - Repeat-outcome logging for comparable attempts after applying a beta plan, including repeat status, attempts, and

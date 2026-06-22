@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { createReportAnnotation, updateRepeatOutcome } from '../src/movement/reportAnnotationRepository';
-import { assertTrainingLoadSummaryIsShareSafe, summarizeTrainingLoad } from '../src/movement/trainingLoad';
+import {
+  assertTrainingLoadSummaryIsShareSafe,
+  buildTrainingLoadPacket,
+  formatTrainingLoadPacketSummary,
+  summarizeTrainingLoad,
+  trainingLoadPacketSchemaVersion,
+  TrainingLoadPacketSchema,
+} from '../src/movement/trainingLoad';
 
 const generatedAt = '2026-06-21T10:00:00.000Z';
 
@@ -143,5 +150,49 @@ describe('training load summary', () => {
     };
 
     expect(() => assertTrainingLoadSummaryIsShareSafe(unsafe)).toThrow('Training load summary contains local paths');
+  });
+
+  it('builds a share-safe training load packet without report ids or private artifacts', () => {
+    const annotation = updateRepeatOutcome(
+      createReportAnnotation('report-1', {
+        perceivedEffort: 4,
+        privateNote: 'Private load note must stay local.',
+        updatedAt: '2026-06-20T10:00:00.000Z',
+      }),
+      {
+        attempts: 2,
+        resolvedCueIds: ['cue-1'],
+        status: 'improved',
+        updatedAt: '2026-06-20T10:15:00.000Z',
+      },
+    );
+    const load = summarizeTrainingLoad({ annotations: [annotation], generatedAt });
+    const packet = buildTrainingLoadPacket(load, { generatedAt: '2026-06-22T16:30:00.000Z' });
+
+    expect(TrainingLoadPacketSchema.parse(packet)).toEqual(packet);
+    expect(packet.schemaVersion).toBe(trainingLoadPacketSchemaVersion);
+    expect(packet.generatedAt).toBe('2026-06-22T16:30:00.000Z');
+    expect(packet.load.status).toBe('review');
+    expect(packet.privacy).toMatchObject({
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      videoUriIncluded: false,
+    });
+    expect(formatTrainingLoadPacketSummary(packet)).toContain('Training load:');
+    expect(JSON.stringify(packet)).not.toMatch(/"reportId"\s*:|"privateNote"\s*:|file:\/\/|content:\/\/|ph:\/\/|\/Users\/|secret-value/i);
+  });
+
+  it('rejects training load packets when load copy contains unsafe local artifacts', () => {
+    const load = summarizeTrainingLoad({
+      annotations: [],
+      generatedAt,
+    });
+    const unsafeLoad = {
+      ...load,
+      nextAction: 'Review /Users/athlete/raw.mov before adding load.',
+    };
+
+    expect(() => buildTrainingLoadPacket(unsafeLoad)).toThrow('Training load packet contains local paths');
   });
 });

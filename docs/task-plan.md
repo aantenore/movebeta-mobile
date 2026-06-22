@@ -157,3 +157,4 @@
 | T153 | Add local analysis trust trend | Done |
 | T154 | Add share-safe analysis trust trend packet | Done |
 | T155 | Add share-safe technique readiness packet | Done |
+| T156 | Add share-safe training load packet | Done |
