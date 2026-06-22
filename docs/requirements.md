@@ -414,6 +414,9 @@
   missing Vercel account binding and secrets as action-needed rather than implementation blockers, keep static deploy
   commands shareable, and reject credential values, project id values, local paths, raw artifacts, raw videos, and
   token-like strings before sharing.
+- Vercel workflow readiness reports must validate the documented static deployment workflow template, required GitHub
+  secret names, active workflow absence or parity, post-deploy smoke coverage, artifact upload coverage, and reject
+  credential values, local paths, raw artifacts, raw videos, and token-like strings before sharing.
 - PWA install guidance packets must be schema-versioned, generated from runtime browser signals, degrade to manual
   browser-install guidance when `beforeinstallprompt` is not exposed, keep native runtimes on the native install path,
   and reject credential values, local paths, raw artifacts, raw videos, and token-like strings before sharing.

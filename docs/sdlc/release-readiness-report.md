@@ -178,6 +178,8 @@ platforms are validated on physical climbing videos and devices.
   worker/cache readiness, network state, update state, and share-safe install guidance.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
+- Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
+  workflow action state, template parity checks, and share-safe packet export.
 - Plan tab prepares a share-safe release evidence packet with launch readiness, model evidence, model verification suite
   report, provider readiness, native QA runbook, blocker checklist, relative artifact refs, release commands, and explicit
   credential/raw-artifact exclusion flags.
@@ -227,12 +229,15 @@ platforms are validated on physical climbing videos and devices.
 - `npm run web:vercel:check` writes `docs/sdlc/vercel-deployment-report.json` and
   `docs/sdlc/vercel-deployment-report.md`, verifying static prebuilt deployment readiness without committing Vercel
   account values or adding backend routes.
+- `npm run web:vercel:workflow` writes `docs/sdlc/vercel-workflow-report.json` and
+  `docs/sdlc/vercel-workflow-report.md`, verifying the static production deployment workflow template before activation
+  without committing Vercel credential values or a live GitHub Actions workflow.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, PWA
-  readiness, Vercel deployment readiness, EAS standard check, moderate-or-higher dependency audit, dependency license
-  inventory, and release evidence freshness.
+  readiness, Vercel deployment readiness, Vercel workflow readiness, EAS standard check, moderate-or-higher dependency
+  audit, dependency license inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -288,7 +293,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 161/164 tasks done, 115/117 backlog items done, 148/148 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 162/165 tasks done, 116/118 backlog items done, 149/149 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -304,6 +309,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run web:vercel:check`: passed and wrote `docs/sdlc/vercel-deployment-report.json` plus
   `docs/sdlc/vercel-deployment-report.md` with status `static-ready`, 4/6 verified checks, 0 blocked checks, and 2
   account-binding/secret actions remaining outside the repository.
+- `npm run web:vercel:workflow`: passed and wrote `docs/sdlc/vercel-workflow-report.json` plus
+  `docs/sdlc/vercel-workflow-report.md` with status `template-ready`, 3/5 verified checks, 0 blocked checks, and 2
+  workflow activation actions remaining outside the repository.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -312,8 +320,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 17/17 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 22/22 release steps passing.
+  status `ready`, 18/18 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 23/23 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -500,7 +508,7 @@ platforms are validated on physical climbing videos and devices.
   privacy-safe athlete context, cue trust packet JSON, validation campaign tracker, validation status export, and export, the
   Plan tab catalog, upgrade path, capability matrix, launch readiness, model evidence, model verification suite, provider readiness, native QA evidence kit, native QA
   runbook packet export, native QA validator preview, native QA evidence composer, native QA evidence composer export,
-  native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, release evidence reconciliation, release blocker issue filing plan export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
+  native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, installable PWA readiness, Vercel deployment readiness, Vercel workflow readiness, release evidence reconciliation, release blocker issue filing plan export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
 - `npx expo prebuild --no-install`: passed.
@@ -527,9 +535,9 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 26 current artifacts including the
+  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 27 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, PWA readiness report, Vercel deployment report,
-  release archive artifacts, and 17 verification commands.
+  Vercel workflow report, release archive artifacts, and 18 verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.

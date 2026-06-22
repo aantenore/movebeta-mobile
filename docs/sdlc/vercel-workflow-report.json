@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "action": "Keep docs/sdlc/ci-templates/vercel-static-deploy.yml committed as the activation source.",
+      "detail": "Vercel static deployment workflow template exists in docs/sdlc/ci-templates.",
+      "key": "workflow-template",
+      "label": "Workflow template",
+      "status": "verified"
+    },
+    {
+      "action": "Keep the template on main push plus manual workflow_dispatch, with release gate before deployment.",
+      "detail": "Template contains release gate, static export, PWA/Vercel checks, prebuilt deployment, deployed smoke, and artifact upload.",
+      "key": "template-contract",
+      "label": "Template deployment contract",
+      "status": "verified"
+    },
+    {
+      "action": "Reference only GitHub secret names for Vercel deployment credentials.",
+      "detail": "Template references VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID through GitHub secrets.",
+      "key": "secret-references",
+      "label": "Secret references",
+      "status": "verified"
+    },
+    {
+      "action": "Copy the template to .github/workflows/vercel-static-deploy.yml only after the GitHub token has workflow scope and Vercel secrets exist.",
+      "detail": ".github/workflows/vercel-static-deploy.yml is not committed; activation is intentionally deferred.",
+      "key": "active-workflow",
+      "label": "Active workflow file",
+      "status": "action-needed"
+    },
+    {
+      "action": "Keep the active Vercel workflow byte-for-byte aligned with the documented template.",
+      "detail": "Skipped until the active Vercel workflow file is committed.",
+      "key": "active-template-parity",
+      "label": "Active/template parity",
+      "status": "action-needed"
+    }
+  ],
+  "generatedAt": "2026-06-22T16:07:26.271Z",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretValuesIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.vercel-workflow-readiness.v1",
+  "summary": {
+    "actionNeededCount": 2,
+    "activeMatchesTemplate": false,
+    "activeWorkflowExists": false,
+    "blockedCount": 0,
+    "checkCount": 5,
+    "nextAction": "Add Vercel GitHub secrets and copy the template to .github/workflows/vercel-static-deploy.yml when workflow scope is available.",
+    "status": "template-ready",
+    "templateExists": true,
+    "verifiedCount": 3
+  },
+  "templatePath": "docs/sdlc/ci-templates/vercel-static-deploy.yml",
+  "workflowPath": ".github/workflows/vercel-static-deploy.yml"
+}

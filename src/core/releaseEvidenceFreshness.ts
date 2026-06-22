@@ -71,6 +71,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
   vercelDeploymentReport?: unknown;
+  vercelWorkflowReport?: unknown;
 };
 
 type FreshnessConfig = Omit<ReleaseEvidenceFreshnessArtifactInput, 'generatedAt'> & {
@@ -250,6 +251,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run web:vercel:check',
     reportKey: 'vercelDeploymentReport',
     requiredFor: ['demo', 'handoff'],
+  },
+  {
+    key: 'vercel-workflow-report',
+    label: 'Vercel workflow report',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/vercel-workflow-report.json',
+    refreshCommand: 'npm run web:vercel:workflow',
+    reportKey: 'vercelWorkflowReport',
+    requiredFor: ['handoff'],
   },
 ];
 

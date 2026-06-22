@@ -38,6 +38,7 @@ function bundle(generatedAt = '2026-06-20T10:00:00.000Z'): ReleaseEvidenceFreshn
     storeCredentialsReport: report(generatedAt),
     storeSubmissionPacket: report(generatedAt),
     vercelDeploymentReport: report(generatedAt),
+    vercelWorkflowReport: report(generatedAt),
   };
 }
 
@@ -53,8 +54,8 @@ describe('release evidence freshness', () => {
     expect(ReleaseEvidenceFreshnessSchema.parse(freshness)).toEqual(freshness);
     expect(freshness.schemaVersion).toBe(releaseEvidenceFreshnessSchemaVersion);
     expect(freshness.summary).toMatchObject({
-      artifactCount: 17,
-      freshCount: 17,
+      artifactCount: 18,
+      freshCount: 18,
       invalidDateCount: 0,
       maxObservedAgeHours: 2,
       missingDateCount: 0,
