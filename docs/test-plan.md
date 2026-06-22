@@ -52,6 +52,8 @@
   and local privacy copy.
 - Vitest analysis trust tests for coaching-ready local reports, retake decisions from weak pose signal, local-only privacy
   boundary blocking, weighted factors, and raw artifact exclusion.
+- Vitest analysis trust packet tests for versioned share-safe packet generation, retake decision export, summary copy,
+  negative privacy flags, and raw path/artifact rejection.
 - Vitest progress insights tests for report ordering, trend deltas, annotation-aware smart matching, and empty-history handling.
 - Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
   exclusion, and empty candidate handling.
@@ -253,6 +255,8 @@
 - Sessions tab shows the analysis evidence timeline for local report input, pose provider, quality, cue generation,
   runtime budget, and privacy boundary.
 - Sessions tab shows the analysis trust summary for the selected report.
+- Sessions tab prepares a versioned analysis trust packet with raw media, landmarks, private notes, local paths, and
+  token-like values excluded before sharing.
 - Sessions tab prepares a versioned analysis evidence-only export from a local report.
 - Sessions tab shows a private training log and allows cue usefulness, project status, effort, confidence, tags, and notes to be edited.
 - Report export renders privacy-safe JSON and Delete removes the report, private training log, drill practice log, and

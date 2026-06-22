@@ -50,6 +50,9 @@
 - Convert analysis quality into capture-readiness guidance so users know when to trust cues or retake the clip.
 - Show a local analysis trust summary that combines signal quality, body coverage, cue evidence, runtime budget, evidence
   timeline status, and privacy boundary into coaching-ready, review-first, journal-only, or retake decisions.
+- Prepare a share-safe analysis trust packet from a selected local report with schema version, summary, trust factors,
+  report metadata, and explicit exclusion of raw media, video URIs, key frames, landmarks, private notes, and token-like
+  values.
 - Generate a local beta replay plan with setup, crux, and exit actions from report cues, timeline, and weakest metric.
 - Generate a local movement phase breakdown that scores launch, crux, and finish phases from cues and timeline events.
 - Block recording when capture setup has privacy or pose-extraction blockers.
