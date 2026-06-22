@@ -4,7 +4,13 @@ import { createDrillPracticeRecord } from '../src/movement/drillPracticeReposito
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import { createReportAnnotation, updateRepeatOutcome } from '../src/movement/reportAnnotationRepository';
 import { sampleAttempts } from '../src/movement/sampleSession';
-import { assertSessionAgendaIsShareSafe, buildSessionAgenda } from '../src/movement/sessionAgenda';
+import {
+  assertSessionAgendaIsShareSafe,
+  assertSessionAgendaPacketIsShareSafe,
+  buildSessionAgenda,
+  buildSessionAgendaPacket,
+  formatSessionAgendaPacketSummary,
+} from '../src/movement/sessionAgenda';
 
 async function buildSampleReports() {
   return Promise.all(
@@ -118,6 +124,30 @@ describe('session agenda', () => {
     expect(agenda.blocks).toHaveLength(3);
   });
 
+  it('builds a share-safe packet from the current agenda', async () => {
+    const reports = await buildSampleReports();
+    const agenda = buildSessionAgenda({
+      annotations: [],
+      generatedAt: '2026-06-22T10:00:00.000Z',
+      reports,
+    });
+    const packet = buildSessionAgendaPacket(agenda, '2026-06-22T10:05:00.000Z');
+
+    expect(packet.schemaVersion).toBe('movebeta.session-agenda-packet.v1');
+    expect(packet.summary).toMatchObject({
+      blockCount: agenda.summary.blockCount,
+      status: agenda.status,
+      totalMinutes: agenda.summary.totalMinutes,
+    });
+    expect(packet.privacy).toEqual({
+      cloudUploadRequired: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+    });
+    expect(formatSessionAgendaPacketSummary(packet)).toContain(`${agenda.summary.blockCount} blocks`);
+    expect(assertSessionAgendaPacketIsShareSafe(packet)).toBe(packet);
+  });
+
   it('rejects injected local paths, raw video, landmarks, private notes, and token-like values', async () => {
     const reports = await buildSampleReports();
     const agenda = buildSessionAgenda({
@@ -131,5 +161,21 @@ describe('session agenda', () => {
     };
 
     expect(() => assertSessionAgendaIsShareSafe(unsafe)).toThrow('Session agenda contains local paths');
+  });
+
+  it('rejects unsafe packet values before sharing', async () => {
+    const reports = await buildSampleReports();
+    const agenda = buildSessionAgenda({
+      annotations: [],
+      generatedAt: '2026-06-22T10:00:00.000Z',
+      reports,
+    });
+    const packet = buildSessionAgendaPacket(agenda, '2026-06-22T10:05:00.000Z');
+    const unsafe = {
+      ...packet,
+      purpose: 'Leaked content://media/external/video/42 with token abc.',
+    };
+
+    expect(() => assertSessionAgendaPacketIsShareSafe(unsafe)).toThrow('Session agenda packet contains local paths');
   });
 });
