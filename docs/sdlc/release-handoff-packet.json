@@ -77,6 +77,11 @@
     },
     {
       "exists": true,
+      "label": "Vercel deployment report",
+      "path": "docs/sdlc/vercel-deployment-report.json"
+    },
+    {
+      "exists": true,
       "label": "Store manifest",
       "path": "docs/store/store-manifest.json"
     },
@@ -316,6 +321,23 @@
       ]
     },
     {
+      "command": "npm run web:vercel:check",
+      "key": "vercel-readiness",
+      "label": "Vercel deployment readiness doctor",
+      "requiredFor": [
+        "demo",
+        "internal"
+      ]
+    },
+    {
+      "command": "npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN",
+      "key": "vercel-deploy",
+      "label": "Vercel prebuilt production deploy",
+      "requiredFor": [
+        "demo"
+      ]
+    },
+    {
       "command": "npm run release:eas:strict",
       "key": "eas-strict",
       "label": "Strict EAS store gate",
@@ -324,7 +346,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-22T15:34:04.904Z",
+  "generatedAt": "2026-06-22T15:46:54.904Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -334,9 +356,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "a324dfd6f22189fd28a39e731817fa9b3ba89b44",
+    "baseCommitSha": "b40e75024771111549ad862c3bd2a120b4ab5f72",
     "changedPaths": [],
-    "commitSha": "a324dfd6f22189fd28a39e731817fa9b3ba89b44",
+    "commitSha": "b40e75024771111549ad862c3bd2a120b4ab5f72",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -415,8 +437,8 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 350,
-    "moveNetLoadMs": 5005,
+    "moveNetAverageInferenceMs": 332,
+    "moveNetLoadMs": 6288,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
