@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "detail": "public/manifest.json exists and is valid JSON.",
+      "key": "manifest-source",
+      "label": "Source web manifest",
+      "status": "verified"
+    },
+    {
+      "detail": "Manifest includes name, short name, start URL, scope, standalone display, and 192/512 icons.",
+      "key": "manifest-installability",
+      "label": "Manifest installability fields",
+      "status": "verified"
+    },
+    {
+      "detail": "public/sw.js registers install/fetch handlers and uses Cache Storage.",
+      "key": "service-worker-source",
+      "label": "Source service worker",
+      "status": "verified"
+    },
+    {
+      "detail": "Exported dist/index.html links the manifest and registers the service worker.",
+      "key": "html-registration",
+      "label": "HTML manifest and service worker registration",
+      "status": "verified"
+    },
+    {
+      "detail": "Expo web export copied manifest, service worker, and PWA icons into dist.",
+      "key": "exported-static-assets",
+      "label": "Exported PWA static assets",
+      "status": "verified"
+    },
+    {
+      "detail": "vercel.json deploys the Expo web export from dist with static headers and SPA fallback.",
+      "key": "vercel-static-config",
+      "label": "Vercel static deployment config",
+      "status": "verified"
+    },
+    {
+      "detail": "Repository does not include Vercel API routes or a backend directory for the PWA path.",
+      "key": "no-backend-surface",
+      "label": "No backend surface required",
+      "status": "verified"
+    }
+  ],
+  "generatedAt": "2026-06-22T15:30:47.996Z",
+  "privacy": {
+    "backendRequired": false,
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false
+  },
+  "schemaVersion": "movebeta.pwa-readiness.v1",
+  "summary": {
+    "checkCount": 7,
+    "nextAction": "Deploy the static dist output to Vercel, then run the web smoke against the deployment URL.",
+    "status": "ready",
+    "verifiedCount": 7
+  }
+}

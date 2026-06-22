@@ -187,6 +187,9 @@ web build with `npm run store:screenshots`.
   `MOVEBETA_RELEASE_ISSUE_CREATE=1` before creating GitHub issues.
 - Plan tab release blocker issue filing export that prepares the same dry-run filing JSON from mobile-safe core logic,
   keeping Node and GitHub CLI mutation code out of the app runtime.
+- Release blocker issue web-link export in the Plan tab and CLI that generates prefilled GitHub issue URLs from a
+  configurable repository without exposing secrets or local artifacts.
+- Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
@@ -217,6 +220,8 @@ npm run release:env:doctor
 npm run release:credentials:doctor
 npm run release:blocker-issues
 npm run release:blocker-issues:file
+npm run release:blocker-issues:links
+npm run web:pwa:check
 npm run native:qa:runbook
 npm run ci
 npm run release:eas:check
@@ -288,6 +293,9 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/release-blocker-issues-report.md`.
 - Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`,
   `docs/sdlc/release-blocker-issue-filing-plan.md`.
+- Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`,
+  `docs/sdlc/release-blocker-issue-web-links.md`.
+- PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -321,6 +329,10 @@ npm run release:handoff
 
 Use `npm run release:full` to run the full local quality gate and refresh the machine-detected launch readiness report in
 one command, including the release handoff packet.
+
+The web app can be deployed as a static installable PWA without a backend. Run `npm run export:web`, then
+`npm run web:pwa:check`; `vercel.json` points Vercel at `dist` and does not define API routes or serverless functions.
+Use Vercel plan selection according to the intended personal or commercial deployment context.
 
 The EAS release gates are:
 
