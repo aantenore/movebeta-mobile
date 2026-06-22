@@ -149,6 +149,8 @@
   configurable acceptance thresholds, balanced wall-angle batches, review-row distribution, and raw-artifact exclusion.
 - Vitest validation collection packet tests for schema version, balanced batch derivation, reviewer slot templates,
   configurable acceptance thresholds, and raw path/token rejection.
+- Vitest validation consent packet tests for versioned packet generation, configurable batch thresholds, athlete script,
+  required metadata, negative privacy flags, and raw path/identity/token rejection.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
 - Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
@@ -227,6 +229,8 @@
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
   video, athlete/coach identities, local paths, credential values, or invented scores.
+- Validation consent packet from the Plan tab, which prepares athlete consent copy, bystander policy, withdrawal policy,
+  and per-wall-angle capture checks without raw media, identities, local paths, credentials, or tokens.
 - Field validation ops packet from the Plan tab, which composes evidence collection, validation pilot, and release unblock
   contracts into ordered real-world collection, validation, and promotion phases without raw video, identities, local
   paths, credential values, or invented scores.
@@ -358,6 +362,8 @@
   clip batches, and privacy-first collection checklist.
 - Plan tab prepares a validation collection packet with balanced batches, reviewer slots, collection commands, and
   credential/local-path/raw-video flags excluded before sharing.
+- Plan tab prepares a validation consent packet with consent copy, bystander/withdrawal policy, required metadata, and
+  credential/local-path/raw-video/identity flags excluded before sharing.
 - Plan tab shows the release unblock checklist with blocker count, owner count, release commands, proof artifacts, and
   credential key names for external store blockers.
 - Plan tab prepares a release unblock packet with credential values excluded before sharing.

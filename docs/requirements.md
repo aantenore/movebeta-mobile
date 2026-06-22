@@ -173,6 +173,9 @@
 - Prepare a share-safe validation pilot kit from the Plan tab with consent principles, wall-angle pilot sprints, capture
   setup guidance, coach review rules, closeout commands, and no raw video, identities, local paths, credentials, or
   invented scores.
+- Prepare a share-safe validation consent packet from the Plan tab with local-analysis consent copy, bystander policy,
+  withdrawal policy, per-wall-angle consent checks, required metadata fields, and no raw video, identities, local paths,
+  credentials, or token-like values.
 - Prepare a share-safe field validation ops packet from the Plan tab that sequences consented packet preparation, real
   clip collection, coach worksheet review, physical-device QA, validation commands, and release promotion without raw
   video, identities, local paths, credentials, or invented scores.
