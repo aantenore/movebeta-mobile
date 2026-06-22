@@ -99,6 +99,8 @@
   when skipped drills exceed completed drills.
 - Generate a local session closeout checklist from the next-session plan, pre-send guard, drill practice, repeat outcomes,
   and privacy boundary so climbers know what to log before the next local comparison.
+- Generate a local training load balance from private effort, repeat outcome, and drill practice logs so climbers can
+  keep the next session controlled or add one variable based on recent local evidence.
 - Show a local pre-send guard that combines analysis quality, technique readiness, open fix cues, practice
   follow-through, repeat outcomes, and training load before recommending reset, controlled repeat, or hard-try windows.
 - Summarize recurring coach cue patterns as persistent, emerging, or cleared across local reports.
@@ -371,6 +373,9 @@
   handoff evidence.
 - Session closeout packets must be schema-versioned, generated from local reports and private local logs, include only
   derived checklist evidence, and reject raw video references, local paths, landmarks, private note text, or token-like
+  data before display or sharing.
+- Training load summaries must be schema-versioned, use configurable lookback and limit thresholds, include only derived
+  effort/repeat/drill counts, and reject raw video references, local paths, landmarks, private note text, or token-like
   data before display or sharing.
 - Release evidence reconciliation must infer supported report schemas from pasted JSON, reject malformed, raw-artifact,
   local-path, credential-value, or token-like evidence, and project launch readiness without mutating current evidence.

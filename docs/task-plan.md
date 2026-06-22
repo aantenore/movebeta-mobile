@@ -146,3 +146,4 @@
 | T142 | Add model verification suite report and Plan card | Done |
 | T143 | Add durable release blocker issue report | Done |
 | T144 | Add local session closeout checklist | Done |
+| T145 | Add local training load balance | Done |

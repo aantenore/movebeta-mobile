@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { z } from 'zod';
 
+import appJson from '../../app.json';
 import { AnalysisProviderSchema, CoachLensKeySchema, PrivacyModeSchema } from '@/movement/contracts';
 import { resolveCoachLensKey } from '@/movement/coachLens';
 
@@ -32,7 +33,20 @@ const ConfigSchema = z.object({
   modelEvidence: ModelEvidenceConfigSchema.optional(),
 });
 
-const expoExtra = Constants.expoConfig?.extra ?? {};
+type ExtraConfig = Record<string, unknown>;
+
+function isExtraConfig(value: unknown): value is ExtraConfig {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+export function resolveExpoExtra(runtimeExtra: unknown, bundledExtra: unknown = appJson.expo.extra): ExtraConfig {
+  const runtime = isExtraConfig(runtimeExtra) ? runtimeExtra : {};
+  const bundled = isExtraConfig(bundledExtra) ? bundledExtra : {};
+  // Expo web can keep a stale legacy manifest next to the current bundled app config after export.
+  return { ...runtime, ...bundled };
+}
+
+const expoExtra = resolveExpoExtra(Constants.expoConfig?.extra);
 const isNativeRuntime = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
 const configuredVideoProvider =
   isNativeRuntime ? expoExtra.nativeVideoAnalysisProvider ?? expoExtra.videoAnalysisProvider : expoExtra.videoAnalysisProvider;
