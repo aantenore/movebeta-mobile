@@ -151,3 +151,4 @@
 | T147 | Add share-safe session agenda packet | Done |
 | T148 | Add local attempt pacing plan | Done |
 | T149 | Add share-safe attempt pacing packet | Done |
+| T150 | Add local rest timer controls for attempt pacing | Done |

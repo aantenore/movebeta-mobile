@@ -37,7 +37,7 @@
 - Vitest session agenda tests for baseline, controlled, deload, configurable block limits, share-safe agenda packets, and
   raw artifact/private-note rejection.
 - Vitest attempt pacing tests for baseline, controlled, progress, reset, configurable rest/attempt limits, and raw
-  artifact/private-note rejection, plus share-safe pacing packets and packet summaries.
+  artifact/private-note rejection, share-safe pacing packets, packet summaries, and rest timer formatting.
 - Vitest session closeout tests for baseline checklist, latest-report closeout actions, complete closeout evidence, and
   raw artifact/private-note rejection.
 - Vitest training load tests for baseline, balanced, review, deload, configurable threshold behavior, and raw
@@ -294,6 +294,7 @@
   agenda, load, and guard evidence.
 - Progress tab prepares an attempt pacing packet with schema version, summary, negative privacy flags, and local JSON
   preview.
+- Progress tab starts and clears a local rest timer from attempt pacing steps.
 - Progress tab shows a session closeout checklist with training-log, drill follow-through, repeat-outcome, and privacy
   boundary actions before the next local comparison.
 - Progress tab shows a training load balance with recent effort, repeat, skipped-drill signals, recommendation, and
