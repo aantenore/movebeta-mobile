@@ -56,6 +56,8 @@
   negative privacy flags, and raw path/artifact rejection.
 - Vitest analysis trust trend tests for empty baselines, improving/degrading trend status, latest decision ordering,
   local-boundary crossings, and raw artifact exclusion.
+- Vitest analysis trust trend packet tests for versioned packet generation, summary copy, report-id exclusion, negative
+  privacy flags, and raw local artifact rejection.
 - Vitest progress insights tests for report ordering, trend deltas, annotation-aware smart matching, and empty-history handling.
 - Vitest repeat matcher tests for comparable baseline selection, annotation-aware tag/project confidence, private-note
   exclusion, and empty candidate handling.
@@ -249,6 +251,8 @@
 - Capture-readiness guidance renders before coaching cues and recommends whether to trust or retake the clip.
 - Analysis trust renders on Analyze and Sessions with local coaching-ready, review-first, journal-only, or retake factors.
 - Analysis trust trend renders on Progress with latest decision, ready/review/retake counts, next action, and local-boundary status.
+- Progress prepares a versioned analysis trust trend packet with raw media, report ids, private notes, local paths, and
+  token-like values excluded before sharing.
 - Beta replay plan renders before movement metrics with setup, crux, and exit actions.
 - Movement phase breakdown renders before movement metrics with the primary phase and phase scores.
 - Cue trust renders before movement metrics with validation-readiness status and per-cue confidence scores.

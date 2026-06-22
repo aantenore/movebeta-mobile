@@ -8,6 +8,7 @@ import {
 import type { LocalAnalysisReport } from './contracts';
 
 export const analysisTrustTrendSchemaVersion = 'movebeta.analysis-trust-trend.v1';
+export const analysisTrustTrendPacketSchemaVersion = 'movebeta.analysis-trust-trend-packet.v1';
 
 export const AnalysisTrustTrendStatusSchema = z.enum([
   'baseline-needed',
@@ -49,9 +50,43 @@ export const AnalysisTrustTrendSchema = z.object({
   summary: z.string(),
 });
 
+export const AnalysisTrustTrendPacketPointSchema = z.object({
+  createdAt: z.string(),
+  decision: AnalysisTrustDecisionSchema,
+  score: z.number().int().min(0).max(100),
+  title: z.string(),
+});
+
+export const AnalysisTrustTrendPacketSchema = z.object({
+  generatedAt: z.string(),
+  privacy: z.object({
+    localOnly: z.boolean(),
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    reportsCrossingLocalBoundary: z.number().int().nonnegative(),
+    tokenLikeValuesIncluded: z.literal(false),
+    videoUriIncluded: z.literal(false),
+  }),
+  purpose: z.string(),
+  schemaVersion: z.literal(analysisTrustTrendPacketSchemaVersion),
+  trend: z.object({
+    averageScore: z.number().int().min(0).max(100),
+    counts: AnalysisTrustTrendSchema.shape.counts,
+    latest: AnalysisTrustTrendPacketPointSchema.nullable(),
+    nextAction: z.string(),
+    previous: AnalysisTrustTrendPacketPointSchema.nullable(),
+    reportCount: z.number().int().nonnegative(),
+    status: AnalysisTrustTrendStatusSchema,
+    summary: z.string(),
+  }),
+});
+
 export type AnalysisTrustTrendStatus = z.infer<typeof AnalysisTrustTrendStatusSchema>;
 export type AnalysisTrustTrendPoint = z.infer<typeof AnalysisTrustTrendPointSchema>;
 export type AnalysisTrustTrend = z.infer<typeof AnalysisTrustTrendSchema>;
+export type AnalysisTrustTrendPacket = z.infer<typeof AnalysisTrustTrendPacketSchema>;
 
 export type AnalysisTrustTrendOptions = {
   generatedAt?: string;
@@ -63,6 +98,16 @@ const decisionRank: Record<AnalysisTrustDecision, number> = {
   'journal-only': 2,
   retake: 1,
 };
+
+const forbiddenTrendPacketValuePattern =
+  /(file:\/\/|content:\/\/|ph:\/\/|asset-library:\/\/|blob:|data:|\/users\/|\/var\/|\/private\/|rawVideo|videoUri|keyFrame|landmarks|privateNote|secret|token|BEGIN PRIVATE KEY|reportId)/i;
+
+function containsForbiddenValue(value: unknown): boolean {
+  if (typeof value === 'string') return forbiddenTrendPacketValuePattern.test(value);
+  if (Array.isArray(value)) return value.some(containsForbiddenValue);
+  if (value && typeof value === 'object') return Object.values(value).some(containsForbiddenValue);
+  return false;
+}
 
 function createdAtMs(report: LocalAnalysisReport) {
   const value = Date.parse(report.session.createdAt);
@@ -173,4 +218,65 @@ export function summarizeAnalysisTrustTrend(
     status,
     summary: summaryFor(status, latest, previous),
   });
+}
+
+function packetPoint(point: AnalysisTrustTrendPoint | null) {
+  if (!point) return null;
+
+  return {
+    createdAt: point.createdAt,
+    decision: point.decision,
+    score: point.score,
+    title: point.title,
+  };
+}
+
+export function assertAnalysisTrustTrendPacketIsPrivacySafe(packet: AnalysisTrustTrendPacket) {
+  if (containsForbiddenValue(packet)) {
+    throw new Error('Analysis trust trend packet contains raw media, local path, report id, private note, or secret-like evidence.');
+  }
+
+  return packet;
+}
+
+export function buildAnalysisTrustTrendPacket(
+  trend: AnalysisTrustTrend,
+  options: { generatedAt?: string; purpose?: string } = {},
+): AnalysisTrustTrendPacket {
+  const packet = AnalysisTrustTrendPacketSchema.parse({
+    generatedAt: options.generatedAt ?? trend.generatedAt,
+    privacy: {
+      localOnly: trend.privacy.localOnly,
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      reportsCrossingLocalBoundary: trend.privacy.reportsCrossingLocalBoundary,
+      tokenLikeValuesIncluded: false,
+      videoUriIncluded: false,
+    },
+    purpose: options.purpose ?? 'Share local analysis reliability trend without raw media or private notes.',
+    schemaVersion: analysisTrustTrendPacketSchemaVersion,
+    trend: {
+      averageScore: trend.averageScore,
+      counts: trend.counts,
+      latest: packetPoint(trend.latest),
+      nextAction: trend.nextAction,
+      previous: packetPoint(trend.previous),
+      reportCount: trend.reportCount,
+      status: trend.status,
+      summary: trend.summary,
+    },
+  });
+
+  return assertAnalysisTrustTrendPacketIsPrivacySafe(packet);
+}
+
+export function formatAnalysisTrustTrendPacketSummary(packet: AnalysisTrustTrendPacket) {
+  return [
+    `Analysis trust trend: ${packet.trend.status} (${packet.trend.averageScore}/100 avg)`,
+    `Reports: ${packet.trend.reportCount} · ready ${packet.trend.counts.coachReady} · review ${packet.trend.counts.reviewFirst} · retake/journal ${packet.trend.counts.retake + packet.trend.counts.journalOnly}`,
+    `Action: ${packet.trend.nextAction}`,
+    `Privacy: raw video no · URI no · private notes no · report ids no`,
+  ].join('\n');
 }
