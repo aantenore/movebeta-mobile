@@ -185,6 +185,8 @@ web build with `npm run store:screenshots`.
   without filing GitHub issues or exposing secret values.
 - Release blocker issue filing CLI that writes a dry-run filing plan by default and requires `--create` plus
   `MOVEBETA_RELEASE_ISSUE_CREATE=1` before creating GitHub issues.
+- Plan tab release blocker issue filing export that prepares the same dry-run filing JSON from mobile-safe core logic,
+  keeping Node and GitHub CLI mutation code out of the app runtime.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth

@@ -37,6 +37,10 @@ import { theme } from '@/core/theme';
 import { buildPlanCatalog, buildPlanRecommendation, type PlanCatalogItem } from '@/core/planCatalog';
 import { buildProviderReadinessSummary, type ProviderReadinessStatus } from '@/core/providerReadiness';
 import { buildReleaseBlockerIssuePacket, type ReleaseBlockerIssuePacket } from '@/core/releaseBlockerIssuePacket';
+import {
+  buildReleaseBlockerIssueFilingPlan,
+  type ReleaseBlockerIssueFilingPlan,
+} from '@/core/releaseBlockerIssueFilingPlan';
 import { buildReleaseCriticalPath, type ReleaseCriticalPath } from '@/core/releaseCriticalPath';
 import {
   buildReleaseEvidenceReconciliation,
@@ -1441,6 +1445,71 @@ function ReleaseBlockerIssueCard({
   );
 }
 
+function ReleaseBlockerIssueFilingCard({
+  onPreparePlan,
+  plan,
+}: {
+  onPreparePlan: () => void;
+  plan: ReleaseBlockerIssueFilingPlan;
+}) {
+  const isClear = plan.summary.issueCount === 0 || plan.summary.status === 'filed';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.plannedCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>planned</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.existingCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>existing</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.createdCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>created</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release blocker issue filing</Text>
+          <Text style={styles.qaKitText}>{plan.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isClear ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {plan.summary.status}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release blocker issue filing plan" onPress={onPreparePlan} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Filing plan</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {plan.issues.map((issue) => (
+          <View key={issue.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{issue.title}</Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {issue.owner} · {issue.tracks.join(', ')}
+                </Text>
+              </View>
+              <Text style={[styles.launchStatus, issue.filingStatus === 'failed' ? styles.launchStatusBlocked : null]}>
+                {issue.filingStatus}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{issue.commandPreview}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {issue.bodyPreviewLineCount} body lines · {issue.labels.slice(0, 3).join(', ')}
+            </Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function FieldValidationOpsCard({
   onPreparePacket,
   packet,
@@ -1772,6 +1841,7 @@ function buildPlanSafetySources({
   releaseEvidenceFreshness,
   releaseEvidenceScenarioPlanner,
   releaseEvidenceReconciliation,
+  releaseBlockerIssueFilingPlan,
   releaseUnblockChecklist,
   validationConsentPacket,
   iosToolchainSetupPacket,
@@ -1787,6 +1857,7 @@ function buildPlanSafetySources({
   releaseEvidenceFreshness: ReleaseEvidenceFreshness;
   releaseEvidenceScenarioPlanner: ReleaseEvidenceScenarioPlanner;
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
+  releaseBlockerIssueFilingPlan: ReleaseBlockerIssueFilingPlan;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
   validationConsentPacket: ValidationConsentPacket;
 }): SafetyLanguageSource[] {
@@ -1866,6 +1937,19 @@ function buildPlanSafetySources({
       text: [
         releaseEvidenceReconciliation.summary.nextAction,
         ...releaseEvidenceReconciliation.items.flatMap((item) => [item.label, item.detail, item.command, ...item.proof]),
+      ].join(' '),
+    },
+    {
+      key: 'release-blocker-issue-filing',
+      label: 'Release blocker issue filing',
+      text: [
+        releaseBlockerIssueFilingPlan.summary.nextAction,
+        ...releaseBlockerIssueFilingPlan.issues.flatMap((issue) => [
+          issue.title,
+          issue.commandPreview,
+          issue.filingStatus,
+          ...issue.labels,
+        ]),
       ].join(' '),
     },
     {
@@ -1971,6 +2055,9 @@ export function PlanScreen() {
   const releaseBlockerIssuePacket = buildReleaseBlockerIssuePacket({
     checklist: releaseUnblockChecklist,
   });
+  const releaseBlockerIssueFilingPlan = buildReleaseBlockerIssueFilingPlan({
+    packet: releaseBlockerIssuePacket,
+  });
   const fieldValidationOpsPacket = buildFieldValidationOpsPacket({
     evidencePlan,
     releaseUnblockChecklist,
@@ -2008,6 +2095,7 @@ export function PlanScreen() {
       releaseEvidenceFreshness,
       releaseEvidenceScenarioPlanner,
       releaseEvidenceReconciliation,
+      releaseBlockerIssueFilingPlan,
       releaseUnblockChecklist,
       validationConsentPacket,
     }),
@@ -2032,6 +2120,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseBlockerIssuePacket, null, 2),
       title: 'Prepared release blocker issue packet',
+    });
+  }
+
+  function prepareReleaseBlockerIssueFilingPlan() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseBlockerIssueFilingPlan, null, 2),
+      title: 'Prepared release blocker issue filing plan',
     });
   }
 
@@ -2342,6 +2438,13 @@ export function PlanScreen() {
 
       <Section title="Release blocker issues" caption="Issue-ready external blocker drafts for GitHub tracking without secrets.">
         <ReleaseBlockerIssueCard onPreparePacket={prepareReleaseBlockerIssuePacket} packet={releaseBlockerIssuePacket} />
+      </Section>
+
+      <Section title="Release blocker issue filing" caption="Dry-run GitHub filing plan for external blocker tracking.">
+        <ReleaseBlockerIssueFilingCard
+          onPreparePlan={prepareReleaseBlockerIssueFilingPlan}
+          plan={releaseBlockerIssueFilingPlan}
+        />
       </Section>
 
       <Section title="Release evidence packet" caption="One share-safe packet for QA, product validation, and release owners.">

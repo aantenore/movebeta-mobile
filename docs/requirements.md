@@ -195,6 +195,8 @@
 - Generate a share-safe release blocker issue filing plan from the issue report, with dry-run output by default,
   exact-title idempotency for existing GitHub issues, an explicit opt-in create mode, and no credential values, raw
   artifacts, local paths, or raw video references.
+- Prepare the same share-safe release blocker issue filing plan from the Plan tab so release owners can hand off the
+  dry-run GitHub filing plan from mobile/web without loading Node or GitHub CLI code into the app runtime.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
