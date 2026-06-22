@@ -1,6 +1,6 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-22T10:09:50.565Z
+Generated: 2026-06-22T10:15:25.392Z
 
 - Status: ready
 - Fresh artifacts: 13/13

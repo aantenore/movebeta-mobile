@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  assertAttemptPacingPacketIsShareSafe,
   assertAttemptPacingPlanIsShareSafe,
   buildAttemptPacingPlan,
+  buildAttemptPacingPacket,
+  formatAttemptPacingPacketSummary,
 } from '../src/movement/attemptPacing';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
@@ -149,6 +152,32 @@ describe('attempt pacing plan', () => {
     expect(plan.steps.find((step) => step.type === 'hard-try')?.restAfterSeconds).toBe(420);
   });
 
+  it('builds a share-safe packet from the pacing plan', async () => {
+    const reports = await buildSampleReports();
+    const plan = buildAttemptPacingPlan({
+      annotations: [],
+      generatedAt,
+      reports,
+    });
+    const packet = buildAttemptPacingPacket(plan, '2026-06-22T10:05:00.000Z');
+
+    expect(packet.schemaVersion).toBe('movebeta.attempt-pacing-packet.v1');
+    expect(packet.summary).toMatchObject({
+      attemptSlots: plan.summary.attemptSlots,
+      hardAttemptSlots: plan.summary.hardAttemptSlots,
+      maxTotalAttempts: plan.summary.maxTotalAttempts,
+      status: plan.status,
+      stopRuleCount: plan.stopRules.length,
+    });
+    expect(packet.privacy).toEqual({
+      cloudUploadRequired: false,
+      privateNotesIncluded: false,
+      rawVideoIncluded: false,
+    });
+    expect(formatAttemptPacingPacketSummary(packet)).toContain(`${plan.summary.attemptSlots}/${plan.summary.maxTotalAttempts} slots`);
+    expect(assertAttemptPacingPacketIsShareSafe(packet)).toBe(packet);
+  });
+
   it('rejects local paths, raw video, private notes, landmarks, or token-like values before sharing', () => {
     const plan = buildAttemptPacingPlan({
       annotations: [],
@@ -161,5 +190,20 @@ describe('attempt pacing plan', () => {
     };
 
     expect(() => assertAttemptPacingPlanIsShareSafe(unsafe)).toThrow('Attempt pacing plan contains local paths');
+  });
+
+  it('rejects unsafe packet values before sharing', () => {
+    const plan = buildAttemptPacingPlan({
+      annotations: [],
+      generatedAt,
+      reports: [],
+    });
+    const packet = buildAttemptPacingPacket(plan, '2026-06-22T10:05:00.000Z');
+    const unsafe = {
+      ...packet,
+      purpose: 'Leaked content://media/external/video/42 with token abc.',
+    };
+
+    expect(() => assertAttemptPacingPacketIsShareSafe(unsafe)).toThrow('Attempt pacing packet contains local paths');
   });
 });
