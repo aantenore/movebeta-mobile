@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
 import { ArrowUpRight, CheckCircle2, Circle, Download, Share2, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
@@ -58,6 +58,12 @@ import {
   buildReleaseEvidenceFreshnessArtifactInputs,
   type ReleaseEvidenceFreshness,
 } from '@/core/releaseEvidenceFreshness';
+import {
+  buildPwaInstallGuidancePacket,
+  buildPwaRuntimeReadiness,
+  type PwaRuntimeProbe,
+  type PwaRuntimeReadiness,
+} from '@/core/pwaRuntimeReadiness';
 import { buildReleaseEvidenceScenarioPlanner, type ReleaseEvidenceScenarioPlanner } from '@/core/releaseEvidenceScenarios';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
@@ -161,6 +167,147 @@ function vercelDeploymentStatusLabel(status: VercelDeploymentReport['summary']['
   if (status === 'linked') return 'Linked';
   if (status === 'static-ready') return 'Static';
   return 'Blocked';
+}
+
+function pwaRuntimeStatusLabel(status: PwaRuntimeReadiness['summary']['status']) {
+  if (status === 'installed') return 'Installed';
+  if (status === 'installable') return 'Install';
+  if (status === 'runtime-ready') return 'Ready';
+  if (status === 'native') return 'Native';
+  return 'Blocked';
+}
+
+type BeforeInstallPromptEventLike = Event & {
+  prompt?: () => Promise<void>;
+  userChoice?: Promise<{ outcome?: string }>;
+};
+
+function nativePwaProbe(): PwaRuntimeProbe {
+  return {
+    cacheApiSupported: false,
+    installPromptAvailable: false,
+    installedStandalone: false,
+    online: true,
+    runtime: 'native',
+    serviceWorkerControlled: false,
+    serviceWorkerRegistered: false,
+    serviceWorkerSupported: false,
+    updateAvailable: false,
+  };
+}
+
+function browserPwaProbe(patch: Partial<PwaRuntimeProbe> = {}): PwaRuntimeProbe {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return nativePwaProbe();
+  }
+
+  const navigatorWithStandalone = navigator as Navigator & { standalone?: boolean };
+  const serviceWorkerContainer = navigator.serviceWorker;
+
+  return {
+    cacheApiSupported: 'caches' in window,
+    installPromptAvailable: false,
+    installedStandalone:
+      window.matchMedia?.('(display-mode: standalone)')?.matches === true || navigatorWithStandalone.standalone === true,
+    online: navigator.onLine !== false,
+    runtime: 'web',
+    serviceWorkerControlled: Boolean(serviceWorkerContainer?.controller),
+    serviceWorkerRegistered: false,
+    serviceWorkerSupported: 'serviceWorker' in navigator,
+    updateAvailable: false,
+    ...patch,
+  };
+}
+
+function usePwaRuntimeReadiness() {
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEventLike | null>(null);
+  const [probe, setProbe] = useState<PwaRuntimeProbe>(() => browserPwaProbe());
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+      setProbe(nativePwaProbe());
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const mergeProbe = (patch: Partial<PwaRuntimeProbe> = {}) => {
+      if (cancelled) return;
+      setProbe((current) =>
+        browserPwaProbe({
+          installPromptAvailable: current.installPromptAvailable,
+          serviceWorkerRegistered: current.serviceWorkerRegistered,
+          updateAvailable: current.updateAvailable,
+          ...patch,
+        }),
+      );
+    };
+
+    const refreshServiceWorkerState = async () => {
+      if (!('serviceWorker' in navigator)) {
+        mergeProbe({ serviceWorkerRegistered: false, serviceWorkerSupported: false });
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.getRegistration?.();
+      const updateAvailable = Boolean(registration?.waiting || registration?.installing);
+      mergeProbe({
+        serviceWorkerRegistered: Boolean(registration),
+        updateAvailable,
+      });
+
+      registration?.addEventListener('updatefound', () => {
+        mergeProbe({
+          serviceWorkerRegistered: true,
+          updateAvailable: true,
+        });
+      });
+    };
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      const promptEvent = event as BeforeInstallPromptEventLike;
+      setDeferredInstallPrompt(promptEvent);
+      mergeProbe({ installPromptAvailable: true });
+    };
+    const handleOnlineState = () => mergeProbe();
+    const handleControllerChange = () => mergeProbe({ serviceWorkerControlled: true, serviceWorkerRegistered: true });
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('online', handleOnlineState);
+    window.addEventListener('offline', handleOnlineState);
+    navigator.serviceWorker?.addEventListener('controllerchange', handleControllerChange);
+    void refreshServiceWorkerState();
+    void navigator.serviceWorker?.ready.then(() => mergeProbe({ serviceWorkerRegistered: true }));
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('online', handleOnlineState);
+      window.removeEventListener('offline', handleOnlineState);
+      navigator.serviceWorker?.removeEventListener('controllerchange', handleControllerChange);
+    };
+  }, []);
+
+  async function promptInstall() {
+    if (!deferredInstallPrompt?.prompt) return;
+    await deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice?.catch(() => undefined);
+    setDeferredInstallPrompt(null);
+    setProbe((current) =>
+      browserPwaProbe({
+        installPromptAvailable: false,
+        installedStandalone: choice?.outcome === 'accepted' || current.installedStandalone,
+        serviceWorkerRegistered: current.serviceWorkerRegistered,
+        updateAvailable: current.updateAvailable,
+      }),
+    );
+  }
+
+  return {
+    promptInstall,
+    readiness: buildPwaRuntimeReadiness(probe),
+  };
 }
 
 const defaultNativeQaComposerRuns: NativeQaEvidenceComposerRun[] = [
@@ -1633,6 +1780,76 @@ function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
   );
 }
 
+function PwaRuntimeCard({
+  onInstall,
+  readiness,
+}: {
+  onInstall: () => void;
+  readiness: PwaRuntimeReadiness;
+}) {
+  const isReady =
+    readiness.summary.status === 'installed' ||
+    readiness.summary.status === 'installable' ||
+    readiness.summary.status === 'runtime-ready' ||
+    readiness.summary.status === 'native';
+  const isBlocked = readiness.summary.status === 'unsupported';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{pwaRuntimeStatusLabel(readiness.summary.status)}</Text>
+          <Text style={styles.qaKitMetricLabel}>install</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.offlineReady ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>offline</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.updateAvailable ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>update</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>PWA runtime</Text>
+          <Text style={styles.qaKitText}>{readiness.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {pwaRuntimeStatusLabel(readiness.summary.status)}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Install app or prepare PWA install guidance" onPress={onInstall} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Install app</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {readiness.checks.map((check) => (
+          <View key={check.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{check.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{check.detail}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  check.status === 'ready' ? styles.launchStatusReady : check.status === 'blocked' ? styles.launchStatusBlocked : null,
+                ]}
+              >
+                {check.status}
+              </Text>
+            </View>
+            <Text style={styles.qaPlatformMore}>{check.action}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function VercelDeploymentCard({
   onPreparePacket,
   report,
@@ -2029,6 +2246,7 @@ function buildPlanSafetySources({
   releaseBlockerIssueFilingPlan,
   releaseBlockerIssueWebLinksPacket,
   pwaReadiness,
+  pwaRuntimeReadiness,
   vercelDeploymentReadiness,
   releaseUnblockChecklist,
   validationConsentPacket,
@@ -2048,6 +2266,7 @@ function buildPlanSafetySources({
   releaseBlockerIssueFilingPlan: ReleaseBlockerIssueFilingPlan;
   releaseBlockerIssueWebLinksPacket: ReleaseBlockerIssueWebLinksPacket;
   pwaReadiness: typeof pwaReadinessReport;
+  pwaRuntimeReadiness: PwaRuntimeReadiness;
   vercelDeploymentReadiness: VercelDeploymentReport;
   releaseUnblockChecklist: ReturnType<typeof buildReleaseUnblockChecklist>;
   validationConsentPacket: ValidationConsentPacket;
@@ -2198,6 +2417,15 @@ function buildPlanSafetySources({
       ].join(' '),
     },
     {
+      key: 'pwa-runtime-readiness',
+      label: 'PWA runtime readiness',
+      text: [
+        pwaRuntimeReadiness.summary.nextAction,
+        pwaRuntimeReadiness.summary.status,
+        ...pwaRuntimeReadiness.checks.flatMap((check) => [check.label, check.detail, check.status, check.action]),
+      ].join(' '),
+    },
+    {
       key: 'vercel-deployment-readiness',
       label: 'Vercel deployment readiness',
       text: [
@@ -2217,6 +2445,7 @@ export function PlanScreen() {
   const [nativeQaEvidenceJson, setNativeQaEvidenceJson] = useState('');
   const [preparedPlanExport, setPreparedPlanExport] = useState<{ body: string; title: string } | null>(null);
   const [releaseEvidenceReconciliationJson, setReleaseEvidenceReconciliationJson] = useState('');
+  const pwaRuntime = usePwaRuntimeReadiness();
   const catalog = buildPlanCatalog(appConfig.activePlan);
   const recommendation = buildPlanRecommendation(appConfig.activePlan);
   const evidencePlan = buildEvidenceCollectionPlan();
@@ -2324,6 +2553,7 @@ export function PlanScreen() {
       releaseBlockerIssueFilingPlan,
       releaseBlockerIssueWebLinksPacket,
       pwaReadiness: pwaReadinessReport,
+      pwaRuntimeReadiness: pwaRuntime.readiness,
       vercelDeploymentReadiness: vercelDeploymentReport,
       releaseUnblockChecklist,
       validationConsentPacket,
@@ -2483,6 +2713,16 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(vercelDeploymentReport, null, 2),
       title: 'Prepared Vercel deployment packet',
+    });
+  }
+
+  async function preparePwaInstallGuidance() {
+    selectionFeedback();
+    await pwaRuntime.promptInstall();
+    const packet = buildPwaInstallGuidancePacket(pwaRuntime.readiness);
+    setPreparedPlanExport({
+      body: JSON.stringify(packet, null, 2),
+      title: 'Prepared PWA install guidance',
     });
   }
 
@@ -2673,6 +2913,7 @@ export function PlanScreen() {
 
       <Section title="Installable PWA" caption="Static Vercel-ready web install path with no backend requirement.">
         <PwaReadinessCard report={pwaReadinessReport} />
+        <PwaRuntimeCard onInstall={() => void preparePwaInstallGuidance()} readiness={pwaRuntime.readiness} />
       </Section>
 
       <Section title="Vercel deployment" caption="Static prebuilt deployment readiness without backend or committed secrets.">

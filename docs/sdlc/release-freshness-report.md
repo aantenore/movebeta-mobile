@@ -1,6 +1,6 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-22T15:44:14.476Z
+Generated: 2026-06-22T15:53:44.213Z
 
 - Status: ready
 - Fresh artifacts: 17/17
@@ -19,7 +19,7 @@ Generated: 2026-06-22T15:44:14.476Z
 | Launch readiness report | fresh | 0.01h | 24h | `npm run release:readiness` |
 | Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0.01h | 24h | `npm run release:blocker-issues` |
-| Release blocker issue filing plan | fresh | 0h | 24h | `npm run release:blocker-issues:file` |
+| Release blocker issue filing plan | fresh | 0.01h | 24h | `npm run release:blocker-issues:file` |
 | Release blocker issue web links | fresh | 0h | 24h | `npm run release:blocker-issues:links` |
 | MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
 | Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
