@@ -36,6 +36,8 @@
   practice-reset planning from skipped drill logs.
 - Vitest session closeout tests for baseline checklist, latest-report closeout actions, complete closeout evidence, and
   raw artifact/private-note rejection.
+- Vitest training load tests for baseline, balanced, review, deload, configurable threshold behavior, and raw
+  artifact/private-note rejection.
 - Vitest pre-send guard tests for baseline, controlled-repeat, reset-first, hard-try window, blocked practice, and
   replaceable thresholds.
 - Vitest cue pattern tests for persistent, emerging, cleared, and empty cue-history states.
@@ -282,6 +284,8 @@
   adaptation when drill follow-through is blocked.
 - Progress tab shows a session closeout checklist with training-log, drill follow-through, repeat-outcome, and privacy
   boundary actions before the next local comparison.
+- Progress tab shows a training load balance with recent effort, repeat, skipped-drill signals, recommendation, and
+  privacy-safe derived counts.
 - Progress tab shows a pre-send guard with score, load cap, action, and local evidence signals before hard tries.
 - Progress tab shows technique readiness with score, next action, warm-up, and risk.
 - Progress tab shows personal benchmarks for best overall and filtered style segments.

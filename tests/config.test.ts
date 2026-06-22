@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import appJson from '../app.json';
 import {
   appConfig,
+  resolveExpoExtra,
   resolveBillingReadinessConfig,
   resolveConfiguredCoachLens,
   resolveLaunchReadinessEvidence,
@@ -9,13 +11,32 @@ import {
 } from '../src/core/config';
 
 describe('app config', () => {
-  it('keeps launch readiness optional while exposing default model evidence', () => {
-    expect(appConfig.launchReadinessEvidence).toBeUndefined();
+  it('loads bundled launch readiness and model evidence from app extra', () => {
+    expect(appConfig.launchReadinessEvidence?.releaseGate).toBe(true);
+    expect(appConfig.launchReadinessEvidence?.iosBuild).toBe(false);
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
     expect(appConfig.coachLens).toBe('balanced');
     expect(appConfig.billingReadiness.provider).toBe('none');
     expect(appConfig.billingReadiness.entitlementSource).toBe('plan-catalog');
+  });
+
+  it('prefers bundled app extra when the runtime Expo manifest is stale', () => {
+    const extra = resolveExpoExtra(
+      {
+        modelEvidence: {
+          readiness: {
+            loadMs: 1,
+          },
+        },
+        runtimeOnly: true,
+      },
+      appJson.expo.extra,
+    );
+
+    expect(extra.runtimeOnly).toBe(true);
+    expect(extra.modelEvidence).toEqual(appJson.expo.extra.modelEvidence);
+    expect(appConfig.modelEvidence?.readiness.loadMs).toBe(appJson.expo.extra.modelEvidence.readiness.loadMs);
   });
 
   it('parses configurable coach lens values with a safe default', () => {
