@@ -167,6 +167,10 @@
 - Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
   secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
   durable static deployment readiness evidence and is included in `npm run release:check`.
+- Vitest Vercel workflow doctor tests for template-ready deferred activation, active workflow/template parity,
+  missing deployment contract snippets, active workflow drift, JSON/Markdown report writes, and raw credential-like
+  value rejection; `npm run web:vercel:workflow` writes durable static deployment workflow evidence and is included in
+  `npm run release:check`.
 - Vitest PWA runtime readiness tests for standalone launches, browser install prompt availability, manual install
   fallback, native install path, and unsafe guidance packet rejection.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
@@ -250,6 +254,9 @@
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.
+- Vercel workflow readiness doctor with `npm run web:vercel:workflow`, which validates the documented production
+  deploy workflow template, release gate ordering, static export/PWA/Vercel checks, prebuilt deploy command, post-deploy
+  smoke, required GitHub secret names, artifact uploads, and active workflow parity.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw
@@ -415,6 +422,8 @@
   verifies the static Vercel deployment path before release handoff.
 - Plan tab shows Vercel deployment readiness and prepares a Vercel packet with backend-required false, static-ready
   status, prebuilt deploy commands, and no committed credential/project id values.
+- Plan tab shows Vercel workflow readiness and prepares a workflow packet with template-ready status, deferred activation
+  actions, active workflow parity state, and no committed credential values.
 - Plan tab shows PWA runtime readiness and prepares PWA install guidance with raw video, local paths, and credential
   values excluded before sharing.
 - Plan tab prepares a release evidence packet with launch, model, provider, native QA, blocker, artifact, and command

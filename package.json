@@ -57,6 +57,7 @@
     "export:web": "expo export --platform web && node scripts/prepare_pwa_dist.mjs",
     "web:pwa:check": "node scripts/pwa_readiness_doctor.mjs",
     "web:vercel:check": "node scripts/vercel_deployment_doctor.mjs",
+    "web:vercel:workflow": "node scripts/vercel_workflow_doctor.mjs",
     "preview:web": "node scripts/serve-web.mjs dist 8082",
     "store:manifest": "node scripts/generate_store_manifest.mjs",
     "store:submission": "tsx scripts/store_submission_packet.ts",

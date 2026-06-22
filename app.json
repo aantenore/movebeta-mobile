@@ -97,7 +97,7 @@
       },
       "modelEvidence": {
         "analysisReplay": {
-          "generatedAt": "2026-06-22T15:53:06.175Z",
+          "generatedAt": "2026-06-22T16:06:59.019Z",
           "minimumQualityScore": 100,
           "passedAttempts": 3,
           "privacySafe": true,
@@ -108,16 +108,16 @@
         "modelName": "MoveNet SinglePose Lightning",
         "provider": "web-tfjs-movenet",
         "readiness": {
-          "averageInferenceMs": 317,
+          "averageInferenceMs": 335,
           "backend": "cpu",
           "budget": {
             "averageInferenceMs": 1500,
             "loadMs": 25000,
             "maxInferenceMs": 3000
           },
-          "generatedAt": "2026-06-22T15:52:53.954Z",
-          "loadMs": 10648,
-          "maxInferenceMs": 321,
+          "generatedAt": "2026-06-22T16:06:53.074Z",
+          "loadMs": 4293,
+          "maxInferenceMs": 352,
           "status": "ready"
         },
         "realWorldValidation": {

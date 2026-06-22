@@ -192,6 +192,8 @@ web build with `npm run store:screenshots`.
 - Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
 - Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
   deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
+- Vercel static production workflow template plus readiness doctor for GitHub Actions activation, required secret-name
+  references, release gate ordering, post-deploy smoke, and artifact upload evidence without committed secret values.
 - In-app PWA runtime readiness in the Plan tab for install prompt state, standalone mode, service worker/cache readiness,
   network state, update state, and share-safe install guidance.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
@@ -227,6 +229,7 @@ npm run release:blocker-issues:file
 npm run release:blocker-issues:links
 npm run web:pwa:check
 npm run web:vercel:check
+npm run web:vercel:workflow
 npm run native:qa:runbook
 npm run ci
 npm run release:eas:check
@@ -304,6 +307,7 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
 - Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`,
   `docs/sdlc/vercel-deployment-report.md`.
+- Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`, `docs/sdlc/vercel-workflow-report.md`.
 - Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
   `docs/sdlc/release-handoff-packet.json`.
 - Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
@@ -331,6 +335,7 @@ npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:doctor
 npm run web:vercel:check
+npm run web:vercel:workflow
 npm run release:readiness
 npm run release:archives
 npm run release:handoff
@@ -340,10 +345,17 @@ Use `npm run release:full` to run the full local quality gate and refresh the ma
 one command, including the release handoff packet.
 
 The web app can be deployed as a static installable PWA without a backend. Run `npm run export:web`,
-`npm run web:pwa:check`, and `npm run web:vercel:check`; `vercel.json` points Vercel at `dist` and does not define API
-routes or serverless functions. The Vercel doctor keeps account binding and deployment token values outside source
-control while documenting the prebuilt deploy commands. Use Vercel plan selection according to the intended personal or
-commercial deployment context.
+`npm run web:pwa:check`, `npm run web:vercel:check`, and `npm run web:vercel:workflow`; `vercel.json` points Vercel at
+`dist` and does not define API routes or serverless functions. The Vercel doctors keep account binding, workflow
+activation, and deployment token values outside source control while documenting prebuilt deploy commands and a static
+GitHub Actions deployment template. Use Vercel plan selection according to the intended personal or commercial
+deployment context.
+
+The web MoveNet model is lazy-loaded: the PWA does not fetch model weights at install time. The first real Analyze run
+loads the TensorFlow.js pose-detection chunk and MoveNet SinglePose Lightning weights, then keeps the detector in memory
+for the active session. Browser HTTP cache can reuse those assets later, but offline analysis before the first model load
+requires vendoring the MoveNet graph/weights under `public/models/...` and pointing the provider at that same-origin
+`modelUrl`.
 
 The EAS release gates are:
 
