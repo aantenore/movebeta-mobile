@@ -31,6 +31,8 @@
 - Vitest project queue tests for active/repeat/sent counts, average effort, next-repeat priority, missing-report tolerance,
   and action generation.
 - Vitest technique readiness tests for baseline, repeat, and recovery next-session recommendations.
+- Vitest technique readiness packet tests for versioned packet generation, summary copy, report-id exclusion, negative
+  privacy flags, and raw local artifact rejection.
 - Vitest personal benchmark tests for best overall, wall-angle, grade, gym, latest-vs-best deltas, and empty state.
 - Vitest session plan tests for baseline blocks, recovery intensity caps, repeat-project training blocks, and
   practice-reset planning from skipped drill logs.
@@ -316,6 +318,8 @@
   privacy-safe derived counts.
 - Progress tab shows a pre-send guard with score, load cap, action, and local evidence signals before hard tries.
 - Progress tab shows technique readiness with score, next action, warm-up, and risk.
+- Progress prepares a versioned technique readiness packet with raw media, report ids, private notes, local paths, and
+  token-like values excluded before sharing.
 - Progress tab shows personal benchmarks for best overall and filtered style segments.
 - Progress tab shows recurring cue patterns with latest cue count, total patterns, cleared count, and drill evidence.
 - Progress tab shows cue usefulness insights from private Sessions feedback.
