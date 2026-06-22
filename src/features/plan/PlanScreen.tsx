@@ -11,6 +11,7 @@ import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
+import iosToolchainReport from '../../../docs/sdlc/ios-toolchain-report.json';
 import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.json';
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
@@ -21,6 +22,7 @@ import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import { buildModelVerificationSuite, type ModelVerificationSuite } from '@/core/modelVerificationSuite';
+import { buildIosToolchainSetupPacket, type IosToolchainSetupPacket } from '@/core/iosToolchainSetupPacket';
 import {
   buildNativeQaEvidenceComposerExport,
   buildNativeQaEvidenceComposerPreview,
@@ -1496,6 +1498,67 @@ function FieldValidationOpsCard({
   );
 }
 
+function IosToolchainSetupCard({
+  onPreparePacket,
+  packet,
+}: {
+  onPreparePacket: () => void;
+  packet: IosToolchainSetupPacket;
+}) {
+  const isReady = packet.summary.status === 'ready-for-ios-build';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {packet.summary.readyCheckCount}/{packet.summary.totalCheckCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>ready checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{packet.summary.blockedCheckCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blocked</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{packet.reportStatus}</Text>
+          <Text style={styles.qaKitMetricLabel}>doctor</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>iOS toolchain setup</Text>
+          <Text style={styles.qaKitText}>{packet.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'Blocked'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare iOS toolchain setup packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>iOS packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.qaPlatformList}>
+        {packet.checks.map((check) => (
+          <View key={check.key} style={styles.qaWorkflowRow}>
+            {check.status === 'ready' ? (
+              <CheckCircle2 color={theme.colors.success} size={14} />
+            ) : (
+              <TriangleAlert color={check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            )}
+            <View style={styles.launchTrackTitleGroup}>
+              <Text style={styles.qaWorkflowText}>{check.label}</Text>
+              <Text style={styles.qaPlatformMore}>{check.action}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function ReleaseEvidencePacketCard({
   onPreparePacket,
   packet,
@@ -1711,9 +1774,11 @@ function buildPlanSafetySources({
   releaseEvidenceReconciliation,
   releaseUnblockChecklist,
   validationConsentPacket,
+  iosToolchainSetupPacket,
 }: {
   commercialReadiness: ReturnType<typeof buildBillingReadinessSummary>;
   evidencePlan: ReturnType<typeof buildEvidenceCollectionPlan>;
+  iosToolchainSetupPacket: IosToolchainSetupPacket;
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   modelVerificationSuite: ModelVerificationSuite;
@@ -1777,6 +1842,15 @@ function buildPlanSafetySources({
         validationConsentPacket.consentProtocol.retentionPolicy,
         validationConsentPacket.consentProtocol.withdrawalPolicy,
         ...validationConsentPacket.consentProtocol.consentChecks,
+      ].join(' '),
+    },
+    {
+      key: 'ios-toolchain-setup',
+      label: 'iOS toolchain setup',
+      text: [
+        iosToolchainSetupPacket.summary.nextAction,
+        ...iosToolchainSetupPacket.checks.flatMap((check) => [check.label, check.action, ...check.proof]),
+        ...iosToolchainSetupPacket.commands.map((command) => `${command.command} ${command.purpose}`),
       ].join(' '),
     },
     {
@@ -1851,6 +1925,9 @@ export function PlanScreen() {
     moveNetReadinessReport,
     realWorldValidation: appConfig.modelEvidence?.realWorldValidation,
   });
+  const iosToolchainSetupPacket = buildIosToolchainSetupPacket({
+    report: iosToolchainReport,
+  });
   const nativeQaKit = buildNativeQaEvidenceKit();
   const nativeQaComposerPreview = buildNativeQaEvidenceComposerPreview({
     appVersion: '1.0.0',
@@ -1922,6 +1999,7 @@ export function PlanScreen() {
     buildPlanSafetySources({
       commercialReadiness,
       evidencePlan,
+      iosToolchainSetupPacket,
       launchReadiness,
       modelEvidence,
       modelVerificationSuite,
@@ -2002,6 +2080,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(fieldValidationOpsPacket, null, 2),
       title: 'Prepared field validation ops packet',
+    });
+  }
+
+  function prepareIosToolchainSetupPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(iosToolchainSetupPacket, null, 2),
+      title: 'Prepared iOS toolchain setup packet',
     });
   }
 
@@ -2204,6 +2290,10 @@ export function PlanScreen() {
           onPrepareRunbook={prepareNativeQaRunbookPacket}
           onUseComposedEvidence={useComposedNativeQaEvidence}
         />
+      </Section>
+
+      <Section title="iOS toolchain setup" caption="Share-safe full-Xcode and iOS build unblock plan derived from the current doctor report.">
+        <IosToolchainSetupCard onPreparePacket={prepareIosToolchainSetupPacket} packet={iosToolchainSetupPacket} />
       </Section>
 
       <Section title="Evidence collection plan" caption="Real-world validation targets derived from release contracts.">

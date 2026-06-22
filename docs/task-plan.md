@@ -159,3 +159,4 @@
 | T155 | Add share-safe technique readiness packet | Done |
 | T156 | Add share-safe training load packet | Done |
 | T157 | Add share-safe validation consent packet | Done |
+| T158 | Add share-safe iOS toolchain setup packet | Done |
