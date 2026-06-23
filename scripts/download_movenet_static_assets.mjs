@@ -29,14 +29,33 @@ function assertSafeRelativeAsset(assetPath) {
   return assetPath.replace(/^\.\//, '');
 }
 
+function isHtmlPayload(buffer) {
+  return buffer.subarray(0, 256).toString('utf8').trimStart().toLowerCase().startsWith('<!doctype html') ||
+    buffer.subarray(0, 256).toString('utf8').trimStart().toLowerCase().startsWith('<html');
+}
+
+function withTfhubFormatFile(url) {
+  if (!url.startsWith('https://tfhub.dev/')) return url;
+  const parsed = new URL(url);
+  parsed.searchParams.set('tfjs-format', 'file');
+  return parsed.toString();
+}
+
 async function fetchBuffer(url, { allowTfhubFormatRetry = false } = {}) {
   const response = await fetch(url);
   if (response.ok) {
-    return Buffer.from(await response.arrayBuffer());
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (allowTfhubFormatRetry && url.startsWith('https://tfhub.dev/') && !url.includes('tfjs-format=file') && isHtmlPayload(buffer)) {
+      const retryResponse = await fetch(withTfhubFormatFile(url));
+      if (retryResponse.ok) {
+        return Buffer.from(await retryResponse.arrayBuffer());
+      }
+    }
+    return buffer;
   }
 
   if (allowTfhubFormatRetry && url.startsWith('https://tfhub.dev/') && !url.includes('?')) {
-    const retryUrl = `${url}?tfjs-format=file`;
+    const retryUrl = withTfhubFormatFile(url);
     const retryResponse = await fetch(retryUrl);
     if (retryResponse.ok) {
       return Buffer.from(await retryResponse.arrayBuffer());
@@ -67,8 +86,8 @@ function normalizeWeightPath(assetPath) {
 
 function sourceUrlForWeightPath(assetPath) {
   const rawPath = String(assetPath);
-  if (/^https?:\/\//i.test(rawPath)) return rawPath;
-  return new URL(rawPath, movenetStaticAssetConfig.sourceBaseUrl).toString();
+  const sourceUrl = /^https?:\/\//i.test(rawPath) ? rawPath : new URL(rawPath, movenetStaticAssetConfig.sourceBaseUrl).toString();
+  return withTfhubFormatFile(sourceUrl);
 }
 
 function normalizeModelJson(modelJson) {

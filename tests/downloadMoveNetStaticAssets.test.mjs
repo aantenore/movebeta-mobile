@@ -55,10 +55,12 @@ describe('MoveNet static asset downloader', () => {
       ],
     };
     const fetchCalls = [];
+    const relativeShardUrl =
+      'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/group1-shard1of2.bin?tfjs-format=file';
     globalThis.fetch = async (url) => {
       fetchCalls.push(String(url));
       if (String(url) === movenetStaticAssetConfig.sourceModelUrl) return response(JSON.stringify(modelJson));
-      if (String(url).endsWith('/group1-shard1of2.bin')) return response(Buffer.from([1, 2, 3]));
+      if (String(url) === relativeShardUrl) return response(Buffer.from([1, 2, 3]));
       if (String(url) === absoluteShardUrl) return response(Buffer.from([4, 5, 6, 7]));
       return { ok: false, status: 404, statusText: 'Not Found', arrayBuffer: async () => arrayBufferFrom('') };
     };
@@ -69,6 +71,7 @@ describe('MoveNet static asset downloader', () => {
     });
 
     expect(fetchCalls).toContain(movenetStaticAssetConfig.sourceModelUrl);
+    expect(fetchCalls).toContain(relativeShardUrl);
     expect(manifest.schemaVersion).toBe(MOVENET_STATIC_ASSET_SCHEMA_VERSION);
     expect(manifest.modelUrl).toBe('/models/movenet/singlepose/lightning/4/model.json');
     expect(manifest.summary).toMatchObject({

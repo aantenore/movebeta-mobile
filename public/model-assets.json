@@ -11,17 +11,17 @@
       "sha256": "99a7389bb5fdf9bdba119efaca4cfdec254663143c35debc2477d75a8f480204"
     },
     {
-      "bytes": 5691,
+      "bytes": 4194304,
       "path": "/models/movenet/singlepose/lightning/4/group1-shard1of2.bin",
-      "sha256": "b9a6f5780a5b9ddf7e17626858bc49d6f666c9f9ffcaccabcfe428f08dd06c0f"
+      "sha256": "b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2"
     },
     {
-      "bytes": 5691,
+      "bytes": 455912,
       "path": "/models/movenet/singlepose/lightning/4/group1-shard2of2.bin",
-      "sha256": "054614d0e95b9466fb9038387c485079736413a843fa433512d9ee33fc09780d"
+      "sha256": "8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc"
     }
   ],
-  "generatedAt": "2026-06-23T07:39:04.448Z",
+  "generatedAt": "2026-06-23T12:32:27.149Z",
   "modelName": "MoveNet SinglePose Lightning",
   "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
   "schemaVersion": "movebeta.static-model-assets.v1",
@@ -32,6 +32,6 @@
   "summary": {
     "fileCount": 3,
     "shardCount": 2,
-    "totalBytes": 324508
+    "totalBytes": 4963342
   }
 }

@@ -105,6 +105,24 @@ describe('MoveNet static assets doctor', () => {
     expect(report.checks.find((item) => item.key === 'source-weight-shards')?.status).toBe('blocked');
   });
 
+  it('blocks when a weight shard contains an HTML redirect response', () => {
+    const rootDir = makeReadyFixture();
+    writeText(path.join(rootDir, 'public/models/movenet/singlepose/lightning/4/group1-shard1of1.bin'), '<!DOCTYPE html><html></html>');
+    const report = buildMoveNetStaticAssetsReport({ rootDir });
+
+    expect(report.summary.status).toBe('blocked');
+    expect(report.checks.find((item) => item.key === 'source-weight-shards')?.detail).toContain('HTML response');
+  });
+
+  it('blocks when exported model shards contain an HTML redirect response', () => {
+    const rootDir = makeReadyFixture();
+    writeText(path.join(rootDir, 'dist/models/movenet/singlepose/lightning/4/group1-shard1of1.bin'), '<html></html>');
+    const report = buildMoveNetStaticAssetsReport({ rootDir });
+
+    expect(report.summary.status).toBe('blocked');
+    expect(report.checks.find((item) => item.key === 'exported-model-assets')?.detail).toContain('valid weight shard');
+  });
+
   it('blocks when app config points to a different model URL', () => {
     const rootDir = makeReadyFixture();
     writeJson(path.join(rootDir, 'app.json'), {
