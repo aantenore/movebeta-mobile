@@ -517,6 +517,10 @@
   requested.
 - Release handoff generation must support an explicit delivered commit SHA so final handoff artifacts can point at the
   implementation commit being sold, reviewed, or transferred without hand-editing JSON.
+- Acquisition readiness packets must aggregate product scope, release gate, launch clearance, commercial path,
+  distribution, model provenance, supply review, and handoff evidence into share-safe JSON and Markdown artifacts for
+  buyer due diligence, separating external clearance from internal implementation blockers and rejecting credential
+  values, local paths, media references, raw artifacts, payment data, and token-like values.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.
