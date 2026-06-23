@@ -1,0 +1,159 @@
+{
+  "commands": [
+    {
+      "command": "npm run release:check",
+      "key": "release-check",
+      "label": "Local release gate",
+      "owner": "engineering",
+      "purpose": "Refresh tests, model evidence, PWA output, Vercel readiness, supply review, data-room, and freshness gates before deployment."
+    },
+    {
+      "command": "npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN",
+      "key": "vercel-pull",
+      "label": "Pull Vercel settings",
+      "owner": "release",
+      "purpose": "Bind the working copy to the selected Vercel project using CI/local secrets only."
+    },
+    {
+      "command": "npx vercel build --prod --token=$VERCEL_TOKEN",
+      "key": "vercel-build",
+      "label": "Build prebuilt artifact",
+      "owner": "release",
+      "purpose": "Build the static PWA with production Vercel settings before deployment."
+    },
+    {
+      "command": "npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN",
+      "key": "vercel-deploy",
+      "label": "Deploy prebuilt artifact",
+      "owner": "release",
+      "purpose": "Deploy the already-built static PWA artifact to production without remote rebuilding."
+    },
+    {
+      "command": "MOVEBETA_SMOKE_URL=<deployment-url> python3 scripts/smoke_web_video.py",
+      "key": "post-deploy-smoke",
+      "label": "Post-deploy smoke",
+      "owner": "qa",
+      "purpose": "Verify the production URL renders release UI, PWA cache paths, and model-delivery screens."
+    },
+    {
+      "command": "npx vercel inspect <deployment-url> --token=$VERCEL_TOKEN",
+      "key": "inspect-deployment",
+      "label": "Inspect deployment",
+      "owner": "release",
+      "purpose": "Capture deployment status and metadata after production deploy."
+    },
+    {
+      "command": "npx vercel rollback <deployment-url-or-id> --token=$VERCEL_TOKEN",
+      "key": "rollback",
+      "label": "Rollback deployment",
+      "owner": "release",
+      "purpose": "Restore a previous production deployment if post-deploy smoke or monitoring fails."
+    }
+  ],
+  "generatedAt": "2026-06-23T16:48:11.899Z",
+  "phases": [
+    {
+      "evidence": [
+        "docs/sdlc/release-gate-report.json",
+        "docs/sdlc/pwa-readiness-report.json",
+        "docs/sdlc/web-smoke-report.json"
+      ],
+      "key": "static-release-proof",
+      "label": "Static release proof",
+      "nextAction": "Run npm run release:check before deployment.",
+      "owner": "engineering",
+      "status": "verified"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-deployment-report.json",
+        "vercel.json"
+      ],
+      "key": "static-vercel-config",
+      "label": "Static Vercel config",
+      "nextAction": "Keep vercel.json on the static prebuilt PWA contract before deployment.",
+      "owner": "release",
+      "status": "verified"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-deployment-report.json",
+        ".vercel/project.json"
+      ],
+      "key": "project-binding",
+      "label": "Project binding",
+      "nextAction": "Run npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN on the target Vercel account.",
+      "owner": "release",
+      "status": "external-required"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-deployment-report.json",
+        ".env.example"
+      ],
+      "key": "deployment-secrets",
+      "label": "Deployment secrets",
+      "nextAction": "Set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID only in local shell, Vercel settings, or GitHub secrets.",
+      "owner": "release",
+      "status": "external-required"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-workflow-report.json",
+        "docs/sdlc/ci-templates/vercel-static-deploy.yml"
+      ],
+      "key": "workflow-template",
+      "label": "Workflow template",
+      "nextAction": "Keep the documented Vercel workflow template aligned with release gate and prebuilt deploy commands.",
+      "owner": "release",
+      "status": "verified"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-workflow-report.json",
+        ".github/workflows/vercel-static-deploy.yml"
+      ],
+      "key": "workflow-activation",
+      "label": "Workflow activation",
+      "nextAction": "Add Vercel GitHub secrets and activate .github/workflows/vercel-static-deploy.yml when workflow scope is available.",
+      "owner": "release",
+      "status": "external-required"
+    },
+    {
+      "evidence": [
+        "docs/sdlc/vercel-deployment-handoff.json",
+        "docs/sdlc/web-smoke-report.json"
+      ],
+      "key": "production-smoke",
+      "label": "Production smoke",
+      "nextAction": "Run MOVEBETA_SMOKE_URL=<deployment-url> python3 scripts/smoke_web_video.py after production deployment.",
+      "owner": "qa",
+      "status": "ready-to-run"
+    }
+  ],
+  "privacy": {
+    "backendRequired": false,
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "projectIdValuesIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "rollback": {
+    "command": "npx vercel rollback <deployment-url-or-id> --token=$VERCEL_TOKEN",
+    "strategy": "Use Vercel rollback to restore the previous production deployment if production smoke fails after deploy."
+  },
+  "schemaVersion": "movebeta.vercel-deployment-handoff.v1",
+  "summary": {
+    "blockedPhaseCount": 0,
+    "commandCount": 7,
+    "deploymentStatus": "static-ready",
+    "externalActionCount": 3,
+    "nextAction": "Run npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN on the target Vercel account.",
+    "phaseCount": 7,
+    "readyPhaseCount": 3,
+    "status": "handoff-ready",
+    "workflowStatus": "template-ready"
+  }
+}

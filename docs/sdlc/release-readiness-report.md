@@ -251,6 +251,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run web:vercel:workflow` writes `docs/sdlc/vercel-workflow-report.json` and
   `docs/sdlc/vercel-workflow-report.md`, verifying the static production deployment workflow template before activation
   without committing Vercel credential values or a live GitHub Actions workflow.
+- `npm run web:vercel:handoff` writes `docs/sdlc/vercel-deployment-handoff.json` and
+  `docs/sdlc/vercel-deployment-handoff.md`, combining release gate, PWA, web smoke, Vercel deployment, and Vercel
+  workflow evidence into no-backend prebuilt deploy, post-deploy smoke, inspect, and rollback phases.
 - `npm run model:movenet:assets:check` writes `docs/sdlc/movenet-static-assets-report.json` and
   `docs/sdlc/movenet-static-assets-report.md`, verifying same-origin MoveNet graph/weight assets in `public` and
   exported `dist`, app config URL alignment, and service-worker model cache coverage.
@@ -266,8 +269,9 @@ platforms are validated on physical climbing videos and devices.
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, static
   MoveNet asset readiness, model asset provenance, model delivery lifecycle, PWA readiness, web smoke report, Vercel
-  deployment readiness, Vercel workflow readiness, EAS standard check, moderate-or-higher dependency audit, dependency
-  license inventory, license review packet, acquisition readiness, data-room index, and release evidence freshness.
+  deployment readiness, Vercel workflow readiness, Vercel deployment handoff, EAS standard check,
+  moderate-or-higher dependency audit, dependency license inventory, license review packet, acquisition readiness,
+  data-room index, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -351,7 +355,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 187/190 tasks done, 141/143 backlog items done, 173/173 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 188/191 tasks done, 142/144 backlog items done, 174/174 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -387,6 +391,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run web:vercel:workflow`: passed and wrote `docs/sdlc/vercel-workflow-report.json` plus
   `docs/sdlc/vercel-workflow-report.md` with status `template-ready`, 3/5 verified checks, 0 blocked checks, and 2
   workflow activation actions remaining outside the repository.
+- `npm run web:vercel:handoff`: passed and wrote `docs/sdlc/vercel-deployment-handoff.json` plus
+  `docs/sdlc/vercel-deployment-handoff.md` with status `handoff-ready`, 3/7 ready phases, 3 external actions,
+  0 blocked phases, prebuilt deploy commands, post-deploy smoke, inspect, and rollback guidance.
 - `npm run validation:cue:starter`: passed and wrote `docs/sdlc/cue-validation-starter-kit-report.json` plus blank
   seed, intake manifest, reviewer onboarding, and worksheet JSON/CSV artifacts with status `needs-seed`.
 - `npm run validation:cue:doctor`: passed as a command and wrote
@@ -400,14 +407,14 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/license-review-packet.md`, and `docs/legal/THIRD_PARTY_NOTICES.md` with status `review`, 15 obligations,
   14 review obligations, 0 blocked obligations, and explicit no-legal-clearance claim.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 32/32 fresh artifacts, and 0 stale artifacts.
+  status `ready`, 33/33 fresh artifacts, and 0 stale artifacts.
 - `npm run release:acquisition`: passed and wrote `docs/sdlc/acquisition-readiness-packet.json` plus
   `docs/sdlc/acquisition-readiness-packet.md` with status `needs-external-clearance`, 5/9 ready signals, 0 blocked
-  signals, 3 review signals, 10 external blockers, and 17/17 due-diligence artifacts ready.
+  signals, 3 review signals, 10 external blockers, and 18/18 due-diligence artifacts ready.
 - `npm run release:data-room`: passed and wrote `docs/sdlc/data-room-index.json` plus
-  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 16/33 ready items, 14 external-required items,
+  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 17/34 ready items, 14 external-required items,
   3 review items, 0 missing items, and 0 blocked items.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 37/37 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 38/38 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

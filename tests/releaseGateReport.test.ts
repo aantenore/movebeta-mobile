@@ -57,6 +57,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('webSmokeReport');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelDeploymentReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelWorkflowReadiness');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelDeploymentHandoff');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('dependencyLicenses');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('licenseReviewPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('acquisitionReadinessPacket');

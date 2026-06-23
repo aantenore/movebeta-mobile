@@ -59,6 +59,7 @@
     "web:smoke:report": "node scripts/web_smoke_report.mjs",
     "web:vercel:check": "node scripts/vercel_deployment_doctor.mjs",
     "web:vercel:workflow": "node scripts/vercel_workflow_doctor.mjs",
+    "web:vercel:handoff": "tsx scripts/vercel_deployment_handoff.ts",
     "preview:web": "node scripts/serve-web.mjs dist 8082",
     "store:manifest": "node scripts/generate_store_manifest.mjs",
     "store:submission": "tsx scripts/store_submission_packet.ts",

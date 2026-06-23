@@ -233,6 +233,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate durable Playwright evidence for the exported PWA, offline cache, and model-delivery smoke path.',
     },
     {
+      command: 'npm run web:vercel:handoff',
+      key: 'vercel-deployment-handoff',
+      label: 'Vercel deployment handoff',
+      owner: 'release',
+      purpose: 'Generate the no-backend Vercel prebuilt deploy, post-deploy smoke, inspect, and rollback handoff packet.',
+    },
+    {
       command: 'npm run model:verification:suite',
       key: 'model-verification-suite',
       label: 'Model verification suite',
@@ -428,6 +435,13 @@ export function buildReleaseEvidencePacket({
       key: 'web-smoke-report',
       label: 'Web smoke report',
       path: 'docs/sdlc/web-smoke-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'webSmoke')),
+    },
+    {
+      command: 'npm run web:vercel:handoff',
+      key: 'vercel-deployment-handoff',
+      label: 'Vercel deployment handoff',
+      path: 'docs/sdlc/vercel-deployment-handoff.json',
       status: artifactStatus(findCheck(launchReadiness, 'webSmoke')),
     },
     {

@@ -93,6 +93,11 @@ function readyReports() {
       schemaVersion: 'movebeta.store-submission-packet.v1',
       summary: { status: 'metadata-ready' },
     },
+    vercelDeploymentHandoff: {
+      generatedAt,
+      schemaVersion: 'movebeta.vercel-deployment-handoff.v1',
+      summary: { status: 'handoff-ready' },
+    },
     vercelDeploymentReport: {
       generatedAt,
       schemaVersion: 'movebeta.vercel-deployment-readiness.v1',
@@ -123,6 +128,7 @@ function allArtifactsAvailable() {
     'docs/sdlc/release-gate-report.json': true,
     'docs/sdlc/release-handoff-packet.json': true,
     'docs/sdlc/vercel-deployment-report.json': true,
+    'docs/sdlc/vercel-deployment-handoff.json': true,
     'docs/sdlc/web-smoke-report.json': true,
     'docs/store/store-submission-packet.json': true,
     'docs/legal/THIRD_PARTY_NOTICES.md': true,
@@ -141,7 +147,7 @@ describe('acquisition readiness packet', () => {
     expect(packet.schemaVersion).toBe(acquisitionReadinessPacketSchemaVersion);
     expect(packet.summary).toMatchObject({
       blockedSignalCount: 0,
-      dueDiligenceArtifactCount: 17,
+      dueDiligenceArtifactCount: 18,
       externalBlockerCount: 0,
       readySignalCount: 9,
       reviewSignalCount: 0,
@@ -153,6 +159,7 @@ describe('acquisition readiness packet', () => {
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('License review packet');
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Third-party notices');
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Web smoke report');
+    expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Vercel deployment handoff');
     expect(JSON.stringify(packet)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
   });
 

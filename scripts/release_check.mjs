@@ -37,6 +37,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'web:smoke:report'], key: 'webSmokeReport', label: 'Exported web smoke report' },
   { command: ['npm', 'run', 'web:vercel:check'], key: 'vercelDeploymentReadiness', label: 'Vercel deployment readiness doctor' },
   { command: ['npm', 'run', 'web:vercel:workflow'], key: 'vercelWorkflowReadiness', label: 'Vercel workflow readiness doctor' },
+  { command: ['npm', 'run', 'web:vercel:handoff'], key: 'vercelDeploymentHandoff', label: 'Vercel deployment handoff packet' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },
   { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },
   { command: ['npm', 'run', 'security:licenses'], key: 'dependencyLicenses', label: 'Dependency license report' },

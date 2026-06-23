@@ -50,6 +50,7 @@ function bundle(generatedAt = '2026-06-20T10:00:00.000Z'): ReleaseEvidenceFreshn
     storeCredentialsSetupPacket: report(generatedAt),
     storeCredentialsReport: report(generatedAt),
     storeSubmissionPacket: report(generatedAt),
+    vercelDeploymentHandoff: report(generatedAt),
     vercelDeploymentReport: report(generatedAt),
     vercelWorkflowReport: report(generatedAt),
     webSmokeReport: report(generatedAt),
@@ -68,8 +69,8 @@ describe('release evidence freshness', () => {
     expect(ReleaseEvidenceFreshnessSchema.parse(freshness)).toEqual(freshness);
     expect(freshness.schemaVersion).toBe(releaseEvidenceFreshnessSchemaVersion);
     expect(freshness.summary).toMatchObject({
-      artifactCount: 32,
-      freshCount: 32,
+      artifactCount: 33,
+      freshCount: 33,
       invalidDateCount: 0,
       maxObservedAgeHours: 2,
       missingDateCount: 0,

@@ -51,6 +51,7 @@ function readyReports(): DataRoomReportBundle {
     releaseHandoffPacket: report('ready'),
     storeCredentialsSetupPacket: report('ready'),
     storeSubmissionPacket: report('metadata-ready'),
+    vercelDeploymentHandoff: report('handoff-ready'),
     vercelDeploymentReport: report('static-ready'),
     vercelWorkflowReport: report('template-ready'),
     webSmokeReport: report('pass'),
@@ -78,14 +79,15 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 28,
+      itemCount: 29,
       missingCount: 0,
-      readyCount: 28,
+      readyCount: 29,
       reviewCount: 0,
       status: 'ready',
     });
     expect(index.commands.map((command) => command.key)).toContain('data-room-index');
     expect(index.items.map((item) => item.key)).toContain('source-archive');
+    expect(index.items.map((item) => item.key)).toContain('vercel-deployment-handoff');
     expect(index.items.map((item) => item.key)).toContain('license-review-packet');
     expect(index.items.map((item) => item.key)).toContain('third-party-notices');
     expect(JSON.stringify(index)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
