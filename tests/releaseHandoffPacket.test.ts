@@ -106,6 +106,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.acquisition-readiness-packet.v1',
     summary: { status: 'needs-external-clearance' },
   });
+  writeJson(path.join(root, 'docs/sdlc/data-room-index.json'), {
+    schemaVersion: 'movebeta.data-room-index.v1',
+    summary: { status: 'needs-external-evidence' },
+  });
   writeJson(path.join(root, 'docs/sdlc/vercel-workflow-report.json'), {
     schemaVersion: 'movebeta.vercel-workflow-readiness.v1',
     summary: { status: 'template-ready' },
@@ -212,6 +216,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('model-delivery-lifecycle');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.commands.map((item) => item.key)).toContain('acquisition-readiness');
+    expect(packet.commands.map((item) => item.key)).toContain('data-room-index');
     expect(packet.commands.map((item) => item.key)).toContain('vercel-workflow');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Vercel workflow report');
@@ -229,6 +234,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence apply report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Acquisition readiness packet');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Data-room index');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model delivery lifecycle screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -261,6 +267,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Model delivery lifecycle report');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('Acquisition readiness packet');
+    expect(markdown).toContain('Data-room index');
     expect(markdown).toContain('Vercel workflow readiness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);

@@ -10,7 +10,7 @@
       "status": "fail"
     }
   ],
-  "generatedAt": "2026-06-23T14:18:54.039Z",
+  "generatedAt": "2026-06-23T15:16:01.839Z",
   "nextAction": "Create docs/sdlc/external-evidence-intake.filled.json from docs/sdlc/external-evidence-intake.template.json, fill accepted proof references, then rerun npm run release:evidence:validate.",
   "privacy": {
     "credentialValuesIncluded": false,

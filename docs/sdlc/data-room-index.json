@@ -1,0 +1,392 @@
+{
+  "commands": [
+    {
+      "command": "npm run release:data-room",
+      "key": "data-room-index",
+      "label": "Data-room index",
+      "owner": "release",
+      "purpose": "Regenerate this buyer-facing artifact inventory after evidence changes."
+    },
+    {
+      "command": "npm run release:acquisition",
+      "key": "acquisition-readiness",
+      "label": "Acquisition readiness",
+      "owner": "founder",
+      "purpose": "Refresh buyer due-diligence readiness signals."
+    },
+    {
+      "command": "npm run release:check",
+      "key": "release-check",
+      "label": "Release gate",
+      "owner": "engineering",
+      "purpose": "Refresh automated quality and release evidence."
+    },
+    {
+      "command": "npm run release:archives",
+      "key": "release-archives",
+      "label": "Release archives",
+      "owner": "release",
+      "purpose": "Refresh source and web archive checksums before transfer."
+    },
+    {
+      "command": "npm run release:handoff -- --commit-sha <delivered-commit>",
+      "key": "release-handoff",
+      "label": "Release handoff",
+      "owner": "release",
+      "purpose": "Pin final handoff to the commit being transferred."
+    }
+  ],
+  "generatedAt": "2026-06-23T15:16:26.743Z",
+  "items": [
+    {
+      "category": "release",
+      "key": "release-gate-report",
+      "label": "Release gate report",
+      "location": "docs/sdlc/release-gate-report.json",
+      "owner": "engineering",
+      "purpose": "Automated quality, model, web, security, and release evidence gate.",
+      "refreshCommand": "npm run release:check",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "release",
+      "key": "launch-readiness-report",
+      "label": "Launch readiness report",
+      "location": "docs/sdlc/launch-readiness-report.json",
+      "owner": "release",
+      "purpose": "Current demo, internal beta, and store readiness state.",
+      "refreshCommand": "npm run release:readiness",
+      "sensitivity": "share-safe",
+      "status": "external-required"
+    },
+    {
+      "category": "product",
+      "key": "feature-completion-report",
+      "label": "Feature completion report",
+      "location": "docs/sdlc/feature-completion-report.json",
+      "owner": "product",
+      "purpose": "Tracked task, backlog, and traceability completion evidence.",
+      "refreshCommand": "npm run feature:doctor",
+      "sensitivity": "share-safe",
+      "status": "external-required"
+    },
+    {
+      "category": "release",
+      "key": "acquisition-readiness-packet",
+      "label": "Acquisition readiness packet",
+      "location": "docs/sdlc/acquisition-readiness-packet.json",
+      "owner": "founder",
+      "purpose": "Buyer due-diligence summary across product, technical, commercial, model, and handoff signals.",
+      "refreshCommand": "npm run release:acquisition",
+      "sensitivity": "share-safe",
+      "status": "external-required"
+    },
+    {
+      "category": "release",
+      "key": "release-handoff-packet",
+      "label": "Release handoff packet",
+      "location": "docs/sdlc/release-handoff-packet.json",
+      "owner": "release",
+      "purpose": "Repository, commit, screenshots, blockers, artifacts, and verification commands for handoff.",
+      "refreshCommand": "npm run release:handoff",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "release",
+      "key": "release-freshness-report",
+      "label": "Release freshness report",
+      "location": "docs/sdlc/release-freshness-report.json",
+      "owner": "release",
+      "purpose": "Freshness windows for generated release evidence.",
+      "refreshCommand": "npm run release:freshness:doctor",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "release",
+      "key": "release-blocker-web-links",
+      "label": "Release blocker web links",
+      "location": "docs/sdlc/release-blocker-issue-web-links.json",
+      "owner": "release",
+      "purpose": "Prefilled issue links for external blockers without mutating GitHub automatically.",
+      "refreshCommand": "npm run release:blocker-issues:links",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "release",
+      "key": "external-evidence-intake",
+      "label": "External evidence intake",
+      "location": "docs/sdlc/external-evidence-intake-report.json",
+      "owner": "release",
+      "purpose": "Proof-reference template for blockers that require accounts, devices, or real validation data.",
+      "refreshCommand": "npm run release:evidence:intake",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "model",
+      "key": "movenet-readiness-report",
+      "label": "MoveNet readiness report",
+      "location": "docs/sdlc/movenet-readiness-report.json",
+      "owner": "engineering",
+      "purpose": "Local model load and inference budget evidence.",
+      "refreshCommand": "npm run model:movenet:readiness",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "model",
+      "key": "model-verification-suite",
+      "label": "Model verification suite",
+      "location": "docs/sdlc/model-verification-suite-report.json",
+      "owner": "engineering",
+      "purpose": "Aggregated model execution, replay, provider, and real-validation readiness checks.",
+      "refreshCommand": "npm run model:verification:suite",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "model",
+      "key": "model-delivery-lifecycle",
+      "label": "Model delivery lifecycle",
+      "location": "docs/sdlc/model-delivery-lifecycle-report.json",
+      "owner": "engineering",
+      "purpose": "Build-time vendoring, browser warmup, native delivery, and offline reuse evidence.",
+      "refreshCommand": "npm run model:delivery:lifecycle",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "legal",
+      "key": "model-asset-provenance",
+      "label": "Model asset provenance",
+      "location": "docs/sdlc/model-asset-provenance-report.json",
+      "owner": "release",
+      "purpose": "Vendored model source, hashes, attribution, and license-review state.",
+      "refreshCommand": "npm run model:assets:provenance",
+      "sensitivity": "share-safe",
+      "status": "review"
+    },
+    {
+      "category": "legal",
+      "key": "dependency-license-report",
+      "label": "Dependency license report",
+      "location": "docs/sdlc/dependency-license-report.json",
+      "owner": "release",
+      "purpose": "Dependency license inventory and notice obligations.",
+      "refreshCommand": "npm run security:licenses",
+      "sensitivity": "share-safe",
+      "status": "review"
+    },
+    {
+      "category": "distribution",
+      "key": "store-submission-packet",
+      "label": "Store submission packet",
+      "location": "docs/store/store-submission-packet.json",
+      "owner": "release",
+      "purpose": "Store metadata, privacy copy, screenshot, and command packet.",
+      "refreshCommand": "npm run store:submission",
+      "sensitivity": "public-store-copy",
+      "status": "ready"
+    },
+    {
+      "category": "distribution",
+      "key": "pwa-readiness-report",
+      "label": "PWA readiness report",
+      "location": "docs/sdlc/pwa-readiness-report.json",
+      "owner": "release",
+      "purpose": "Static installable PWA and offline app boot evidence.",
+      "refreshCommand": "npm run export:web && npm run web:pwa:check",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "distribution",
+      "key": "vercel-deployment-report",
+      "label": "Vercel deployment report",
+      "location": "docs/sdlc/vercel-deployment-report.json",
+      "owner": "release",
+      "purpose": "No-backend static Vercel deployment readiness.",
+      "refreshCommand": "npm run web:vercel:check",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "distribution",
+      "key": "vercel-workflow-report",
+      "label": "Vercel workflow report",
+      "location": "docs/sdlc/vercel-workflow-report.json",
+      "owner": "release",
+      "purpose": "GitHub Actions template readiness for Vercel deployment.",
+      "refreshCommand": "npm run web:vercel:workflow",
+      "sensitivity": "credential-names-only",
+      "status": "ready"
+    },
+    {
+      "category": "commercial",
+      "key": "store-credentials-setup",
+      "label": "Store credentials setup packet",
+      "location": "docs/sdlc/store-credentials-setup-packet.json",
+      "owner": "release",
+      "purpose": "Credential key-name setup packet without account secret values.",
+      "refreshCommand": "npm run release:credentials:starter",
+      "sensitivity": "credential-names-only",
+      "status": "external-required"
+    },
+    {
+      "category": "security",
+      "key": "github-workflow-report",
+      "label": "GitHub workflow report",
+      "location": "docs/sdlc/github-workflow-report.json",
+      "owner": "engineering",
+      "purpose": "CI workflow activation state and required token scope.",
+      "refreshCommand": "npm run release:github:doctor",
+      "sensitivity": "credential-names-only",
+      "status": "external-required"
+    },
+    {
+      "category": "native",
+      "key": "ios-toolchain-report",
+      "label": "iOS toolchain report",
+      "location": "docs/sdlc/ios-toolchain-report.json",
+      "owner": "engineering",
+      "purpose": "Full Xcode, Pods, workspace, and build-settings readiness.",
+      "refreshCommand": "npm run native:ios:doctor",
+      "sensitivity": "share-safe",
+      "status": "external-required"
+    },
+    {
+      "category": "native",
+      "key": "native-qa-starter",
+      "label": "Native QA evidence starter",
+      "location": "docs/sdlc/native-qa-evidence-starter-report.json",
+      "owner": "qa",
+      "purpose": "Template and composer report for physical-device QA evidence.",
+      "refreshCommand": "npm run native:qa:starter",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "validation",
+      "key": "cue-validation-dataset-report",
+      "label": "Cue-validation dataset report",
+      "location": "docs/sdlc/cue-validation-dataset-report.json",
+      "owner": "product",
+      "purpose": "Doctor report for real consented coach cue-validation data.",
+      "refreshCommand": "npm run validation:cue:doctor",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "archive",
+      "key": "source-archive",
+      "label": "Source archive",
+      "location": "../movebeta-mobile-source.zip",
+      "owner": "release",
+      "purpose": "Source delivery archive for transfer or review.",
+      "refreshCommand": "npm run release:archives",
+      "sensitivity": "source-archive",
+      "status": "ready"
+    },
+    {
+      "category": "archive",
+      "key": "web-dist-archive",
+      "label": "Web dist archive",
+      "location": "../movebeta-mobile-web-dist.zip",
+      "owner": "release",
+      "purpose": "Static web distribution archive for Vercel-style hosting.",
+      "refreshCommand": "npm run release:archives",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "archive",
+      "key": "release-archive-manifest",
+      "label": "Release archive manifest",
+      "location": "../movebeta-mobile-release-archives.json",
+      "owner": "release",
+      "purpose": "SHA-256 manifest and repository metadata for release archives.",
+      "refreshCommand": "npm run release:archives",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "validation",
+      "key": "external-cueValidationDataset",
+      "label": "Real cue-validation dataset proof",
+      "location": "docs/validation/cue-validation-dataset.json",
+      "owner": "product",
+      "purpose": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+      "refreshCommand": "npm run validation:cue:starter && npm run validation:cue:doctor",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "commercial",
+      "key": "external-easCredentials",
+      "label": "Store submission credentials proof",
+      "location": "external:eas-and-store-credential-values",
+      "owner": "release",
+      "purpose": "Set Expo, App Store Connect, and Google Play submission credentials outside the repository.",
+      "refreshCommand": "npm run release:credentials:starter && npm run release:credentials:doctor",
+      "sensitivity": "credential-names-only",
+      "status": "external-required"
+    },
+    {
+      "category": "commercial",
+      "key": "external-easProject",
+      "label": "EAS project binding proof",
+      "location": "app.json expo.extra.eas.projectId",
+      "owner": "release",
+      "purpose": "Run npx eas-cli@latest init and store extra.eas.projectId in app.json.",
+      "refreshCommand": "npm run release:eas:check",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "native",
+      "key": "external-iosBuild",
+      "label": "iOS build verification proof",
+      "location": "external:ios-build-log-or-ci-run",
+      "owner": "engineering",
+      "purpose": "Install full Xcode and verify an iOS simulator or device build.",
+      "refreshCommand": "npm run native:ios:doctor",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "native",
+      "key": "external-nativeDeviceQa",
+      "label": "Native device QA evidence proof",
+      "location": "docs/sdlc/native-qa-evidence.json",
+      "owner": "qa",
+      "purpose": "Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.",
+      "refreshCommand": "npm run native:qa:starter && npm run native:qa:validate",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    }
+  ],
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "paymentDataIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretsIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.data-room-index.v1",
+  "summary": {
+    "blockedCount": 0,
+    "externalRequiredCount": 14,
+    "itemCount": 30,
+    "missingCount": 0,
+    "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+    "readyCount": 14,
+    "reviewCount": 2,
+    "status": "needs-external-evidence"
+  }
+}

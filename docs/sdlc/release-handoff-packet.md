@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T14:20:49.988Z
+Generated: 2026-06-23T15:16:29.904Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 4cf54f8a0f1c161709178f50050c9baedc350b91
-- Worktree dirty at generation: no
+- Base commit at generation: 95953a456dd56f00d81699c9490eeb26becde825
+- Worktree dirty at generation: yes
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3928ms; average inference 330ms
+- MoveNet readiness: ready; load 7707ms; average inference 332ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -54,6 +54,7 @@ Generated: 2026-06-23T14:20:49.988Z
 - External evidence apply guard: `npm run release:evidence:apply`
 - Release evidence freshness doctor: `npm run release:freshness:doctor`
 - Acquisition readiness packet: `npm run release:acquisition`
+- Data-room index: `npm run release:data-room`
 - PWA static readiness doctor: `npm run export:web && npm run web:pwa:check`
 - Vercel deployment readiness doctor: `npm run web:vercel:check`
 - Vercel workflow readiness doctor: `npm run web:vercel:workflow`
@@ -90,6 +91,7 @@ Generated: 2026-06-23T14:20:49.988Z
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
 - [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
 - [x] Acquisition readiness packet: `docs/sdlc/acquisition-readiness-packet.json`
+- [x] Data-room index: `docs/sdlc/data-room-index.json`
 - [x] PWA readiness report: `docs/sdlc/pwa-readiness-report.json`
 - [x] Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`
 - [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
