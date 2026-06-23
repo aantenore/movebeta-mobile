@@ -184,3 +184,4 @@
 | T180 | Add external evidence promotion candidate report | Done |
 | T181 | Add external evidence apply guard | Done |
 | T182 | Add model delivery lifecycle evidence | Done |
+| T183 | Add explicit delivered-commit pinning to release handoff generation | Done |
