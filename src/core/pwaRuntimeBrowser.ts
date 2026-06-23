@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 import { buildPwaModelCacheWarmupResult, type PwaModelCacheWarmupResult } from './pwaModelCacheWarmup';
 import type { PwaRuntimeProbe } from './pwaRuntimeReadiness';
+import { buildPwaUpdateActivationResult, type PwaUpdateActivationResult } from './pwaUpdateActivation';
 
 export const pwaModelWarmupCacheName = 'movebeta-pwa-model-cache-warmup-v1';
 
@@ -212,5 +213,68 @@ export async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupRes
     integritySupported: modelCache.integritySupported,
     manifestCached: modelCache.manifestCached,
     online: navigator.onLine !== false,
+  });
+}
+
+function waitForControllerChange(timeoutMs = 1200): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !navigator.serviceWorker?.addEventListener) return Promise.resolve(false);
+
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => {
+      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+      resolve(false);
+    }, timeoutMs);
+    const handleControllerChange = () => {
+      window.clearTimeout(timer);
+      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+      resolve(true);
+    };
+
+    navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+  });
+}
+
+export async function activateBrowserPwaUpdate(): Promise<PwaUpdateActivationResult> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+    return buildPwaUpdateActivationResult({
+      serviceWorkerSupported: false,
+      status: 'unsupported',
+      updateAvailableBefore: false,
+      updateStillWaiting: false,
+    });
+  }
+
+  const registration = await navigator.serviceWorker.getRegistration?.();
+  const waiting = registration?.waiting;
+  const installing = registration?.installing;
+  const updateAvailableBefore = Boolean(waiting || installing);
+
+  if (!waiting && !installing) {
+    return buildPwaUpdateActivationResult({
+      serviceWorkerSupported: true,
+      status: 'not-needed',
+      updateAvailableBefore,
+      updateStillWaiting: false,
+    });
+  }
+
+  if (waiting) {
+    waiting.postMessage({ type: 'MOVEBETA_SKIP_WAITING' });
+    const activated = await waitForControllerChange();
+    const refreshedRegistration = await navigator.serviceWorker.getRegistration?.();
+
+    return buildPwaUpdateActivationResult({
+      serviceWorkerSupported: true,
+      status: activated || !refreshedRegistration?.waiting ? 'activated' : 'requested',
+      updateAvailableBefore,
+      updateStillWaiting: Boolean(refreshedRegistration?.waiting || refreshedRegistration?.installing),
+    });
+  }
+
+  return buildPwaUpdateActivationResult({
+    serviceWorkerSupported: true,
+    status: 'requested',
+    updateAvailableBefore,
+    updateStillWaiting: true,
   });
 }

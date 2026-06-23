@@ -85,6 +85,9 @@ cache warmup, integrity, and offline-use steps as a share-safe packet.
 Coach PWA preflight treats `updateAvailable` as a stale-model guard for real videos: offline analysis is blocked until
 the installed PWA refreshes and rewarms model assets, while online analysis keeps a visible refresh requirement and can
 still trigger the same-origin warmup path when assets are uncached.
+The PWA runtime action path uses `src/core/pwaUpdateActivation.ts` and `activateBrowserPwaUpdate()` to request activation
+from a waiting service worker through a `MOVEBETA_SKIP_WAITING` message. The action returns a share-safe packet and then
+refreshes runtime/cache state so the user can warm model assets against the active app version.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards
