@@ -1,0 +1,17 @@
+{
+  "instructions": [
+    "Run npx eas-cli@latest init on the target Expo account.",
+    "Copy only the generated project id into app.json at expo.extra.eas.projectId.",
+    "Do not paste Expo tokens, Apple credentials, Google service account JSON, or local credential paths into this file."
+  ],
+  "patchShape": {
+    "expo": {
+      "extra": {
+        "eas": {
+          "projectId": "replace-with-eas-project-id-from-eas-init"
+        }
+      }
+    }
+  },
+  "schemaVersion": "movebeta.store-credentials-starter.v1"
+}

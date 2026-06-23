@@ -494,6 +494,9 @@
 - Native QA evidence preparation must provide a CLI starter that writes a stable fill-in template, composes candidate
   evidence from real physical-device measurements, rejects raw media paths or secrets, and writes
   `docs/sdlc/native-qa-evidence.json` only after the composed evidence passes validation.
+- Store credential preparation must provide a CLI starter that writes share-safe setup packet, env-key template, and EAS
+  project binding template artifacts without serializing Expo, Apple, Google, service-account, project-id, or local path
+  values.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

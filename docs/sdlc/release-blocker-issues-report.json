@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T09:43:28.858Z",
+  "generatedAt": "2026-06-23T10:18:53.981Z",
   "issueTemplatePath": ".github/ISSUE_TEMPLATE/release_blocker.md",
   "issues": [
     {
@@ -96,9 +96,10 @@
         "The app is initialized in the target Expo account.",
         "The generated EAS project id is present in app configuration before strict release checks run."
       ],
-      "body": "## Release Blocker\nInitialize the app on the target Expo account and store the generated project id in config.\n\nOwner: `release`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The app is initialized in the target Expo account.\n- [ ] The generated EAS project id is present in app configuration before strict release checks run.\n\n## Required Proof\n- app.json extra.eas.projectId\n\n## Commands\n- `npx eas-cli@latest init`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nInitialize the app on the target Expo account and store the generated project id in config.\n\nOwner: `release`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The app is initialized in the target Expo account.\n- [ ] The generated EAS project id is present in app configuration before strict release checks run.\n\n## Required Proof\n- app.json extra.eas.projectId\n\n## Commands\n- `npx eas-cli@latest init`\n- `npm run release:credentials:starter`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
-        "npx eas-cli@latest init"
+        "npx eas-cli@latest init",
+        "npm run release:credentials:starter"
       ],
       "envKeys": [],
       "key": "easProject",
@@ -124,8 +125,9 @@
         "Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.",
         "Strict EAS release validation passes without committing secret values."
       ],
-      "body": "## Release Blocker\nProvide Expo, App Store Connect, and Google Play credentials outside the repository.\n\nOwner: `release`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.\n- [ ] Strict EAS release validation passes without committing secret values.\n\n## Required Proof\n- CI/EAS secret configuration\n- Strict EAS validation output\n\n## Commands\n- `npm run release:eas:strict`\n\n## Environment Key Names\n- `EXPO_TOKEN`\n- `MOVEBETA_ASC_APP_ID`\n- `MOVEBETA_APPLE_ID or ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_P8_BASE64`\n- `GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SERVICE_ACCOUNT_KEY_PATH or MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`\n\n## Secret Policy\nStore credential values outside the repository; this checklist may list key names only.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nProvide Expo, App Store Connect, and Google Play credentials outside the repository.\n\nOwner: `release`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.\n- [ ] Strict EAS release validation passes without committing secret values.\n\n## Required Proof\n- CI/EAS secret configuration\n- Strict EAS validation output\n\n## Commands\n- `npm run release:credentials:starter`\n- `npm run release:eas:strict`\n\n## Environment Key Names\n- `EXPO_TOKEN`\n- `MOVEBETA_ASC_APP_ID`\n- `MOVEBETA_APPLE_ID or ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_P8_BASE64`\n- `GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SERVICE_ACCOUNT_KEY_PATH or MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`\n\n## Secret Policy\nStore credential values outside the repository; this checklist may list key names only.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
+        "npm run release:credentials:starter",
         "npm run release:eas:strict"
       ],
       "envKeys": [
@@ -241,7 +243,8 @@
         ],
         "action": "Initialize the app on the target Expo account and store the generated project id in config.",
         "commands": [
-          "npx eas-cli@latest init"
+          "npx eas-cli@latest init",
+          "npm run release:credentials:starter"
         ],
         "envKeys": [],
         "key": "easProject",
@@ -263,6 +266,7 @@
         ],
         "action": "Provide Expo, App Store Connect, and Google Play credentials outside the repository.",
         "commands": [
+          "npm run release:credentials:starter",
           "npm run release:eas:strict"
         ],
         "envKeys": [
@@ -288,7 +292,7 @@
     "schemaVersion": "movebeta.release-unblock-checklist.v1",
     "summary": {
       "blockedItems": 5,
-      "commandCount": 8,
+      "commandCount": 10,
       "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
       "ownerCount": 4,
       "proofCount": 6,
@@ -296,7 +300,7 @@
     }
   },
   "summary": {
-    "commandCount": 8,
+    "commandCount": 10,
     "credentialKeyNameCount": 4,
     "issueCount": 5,
     "nextAction": "File one issue per external blocker, attach the required proof, then rerun release readiness checks.",

@@ -43,7 +43,7 @@ describe('release evidence packet', () => {
     expect(packet.summary).toMatchObject({
       artifactCount: 15,
       blockerCount: 5,
-      commandCount: 17,
+      commandCount: 18,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',

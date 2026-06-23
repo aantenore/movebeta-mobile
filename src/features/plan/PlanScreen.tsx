@@ -21,6 +21,7 @@ import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.
 import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-report.json';
 import nativeQaEvidenceStarterReport from '../../../docs/sdlc/native-qa-evidence-starter-report.json';
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
+import storeCredentialsSetupPacketReport from '../../../docs/sdlc/store-credentials-setup-packet.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import vercelDeploymentReport from '../../../docs/sdlc/vercel-deployment-report.json';
 import vercelWorkflowReport from '../../../docs/sdlc/vercel-workflow-report.json';
@@ -2957,6 +2958,7 @@ export function PlanScreen() {
         moveNetReadinessReport,
         nativeQaEvidenceStarterReport,
         pwaReadinessReport,
+        storeCredentialsSetupPacket: storeCredentialsSetupPacketReport,
         storeSubmissionPacket: storeSubmissionReport,
         vercelDeploymentReport,
         vercelWorkflowReport,

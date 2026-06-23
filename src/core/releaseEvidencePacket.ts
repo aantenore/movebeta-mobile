@@ -142,6 +142,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Verify .env.example covers runtime, smoke, and release key names without credential values or local paths.',
     },
     {
+      command: 'npm run release:credentials:starter',
+      key: 'store-credentials-starter',
+      label: 'Store credentials starter',
+      owner: 'release',
+      purpose: 'Generate share-safe setup templates and credential group status before strict EAS submission gates.',
+    },
+    {
       command: 'npm run release:credentials:doctor',
       key: 'store-credentials-doctor',
       label: 'Store credentials doctor',
