@@ -575,6 +575,9 @@
   proceed with explicit refresh guidance.
 - The Plan surface must provide an explicit PWA update activation action that asks a waiting service worker to activate,
   refreshes runtime update state, and exports a share-safe packet with the post-activation model warmup action.
+- The Plan surface must expose a PWA field readiness checklist that combines runtime readiness, service-worker state,
+  model-cache integrity, model download state, and pending-update state into one share-safe packet before offline
+  real-video gym use.
 - Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
   handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
