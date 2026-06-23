@@ -82,6 +82,8 @@
 - Vitest cue validation study seed tests for active cue-validation consent filtering, packet-only review tasks, privacy
   flags, private-note exclusion, no-invented-score metadata, clip intake manifests, reviewer onboarding packets, blank review
   worksheets, worksheet CSV export/escaping, and raw-artifact key rejection.
+- Vitest cue validation starter kit tests for share-safe blank artifact generation, optional exported seed input, no final
+  dataset JSON creation, release evidence report parsing, and unsafe seed rejection.
 - Vitest completed worksheet dataset tests for final dataset composition, validation-gate compatibility, missing
   reviewer rejection, seed mismatch rejection, and out-of-range score rejection.
 - Vitest in-app cue-validation gate tests for ready datasets, default production evidence gaps, and raw-artifact rejection.
@@ -288,6 +290,9 @@
 - Field validation ops packet from the Plan tab, which composes evidence collection, validation pilot, and release unblock
   contracts into ordered real-world collection, validation, and promotion phases without raw video, identities, local
   paths, credential values, or invented scores.
+- Cue validation starter kit with `npm run validation:cue:starter`, which writes the share-safe study seed, clip intake
+  manifest, reviewer onboarding packet, blank worksheet JSON/CSV, and SDLC report without creating the final production
+  dataset or inventing reviewer identities and scores.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.

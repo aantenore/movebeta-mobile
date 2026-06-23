@@ -217,6 +217,8 @@
   and include the integrity result in the share-safe warmup packet.
 - Include PWA model-cache integrity in runtime offline-readiness gating and install guidance when browser Web Crypto is
   available, without blocking browsers that only support cache-presence verification.
+- Provide a cue-validation starter kit command that generates share-safe seed, intake manifest, reviewer onboarding, and
+  blank worksheet artifacts without inventing coach identities, reviewer scores, raw video, or local paths.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
