@@ -115,6 +115,17 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.release-blocker-issue-filing.v1',
     summary: { issueCount: 1, status: 'dry-run' },
   });
+  writeJson(path.join(root, 'docs/sdlc/external-evidence-intake-report.json'), {
+    schemaVersion: 'movebeta.external-evidence-intake.v1',
+    summary: { status: 'needs-evidence' },
+  });
+  writeJson(path.join(root, 'docs/sdlc/external-evidence-intake.template.json'), {
+    schemaVersion: 'movebeta.external-evidence-intake-template.v1',
+  });
+  writeJson(path.join(root, 'docs/sdlc/external-evidence-validation-report.json'), {
+    schemaVersion: 'movebeta.external-evidence-validation-report.v1',
+    status: 'needs-evidence',
+  });
   writeJson(path.join(root, 'docs/store/store-manifest.json'), {
     screenshots: [
       { fileName: '01-analyze.png', label: 'Analyze' },
@@ -173,6 +184,8 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('feature-completion');
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issues');
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issue-filing');
+    expect(packet.commands.map((item) => item.key)).toContain('external-evidence-intake');
+    expect(packet.commands.map((item) => item.key)).toContain('external-evidence-validation');
     expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('movenet-static-assets');
     expect(packet.commands.map((item) => item.key)).toContain('model-asset-provenance');
@@ -187,6 +200,8 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Model asset attribution notice');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issue filing plan');
+    expect(packet.artifacts.map((item) => item.label)).toContain('External evidence intake report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('External evidence validation report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -209,6 +224,8 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Feature completion doctor');
     expect(markdown).toContain('Release blocker issue report');
     expect(markdown).toContain('Release blocker issue filing plan');
+    expect(markdown).toContain('External evidence intake');
+    expect(markdown).toContain('External evidence validation');
     expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('MoveNet static assets doctor');
     expect(markdown).toContain('Model asset provenance doctor');

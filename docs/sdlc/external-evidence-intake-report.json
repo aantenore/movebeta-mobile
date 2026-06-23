@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T10:35:31.015Z",
+  "generatedAt": "2026-06-23T10:58:03.603Z",
   "intakeTemplate": {
-    "generatedAt": "2026-06-23T10:35:31.015Z",
+    "generatedAt": "2026-06-23T10:58:03.603Z",
     "instructions": [
       "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
       "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",
@@ -26,9 +26,11 @@
           {
             "acceptedReferenceTypes": [
               "relative-path",
-              "report-id"
+              "report-id",
+              "issue-url"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "docs/sdlc/native-qa-evidence.json",
             "notes": "",
             "status": "missing"
@@ -61,9 +63,11 @@
           {
             "acceptedReferenceTypes": [
               "relative-path",
+              "issue-url",
               "ci-run-url"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "docs/sdlc/ios-toolchain-report.json",
             "notes": "",
             "status": "missing"
@@ -71,9 +75,11 @@
           {
             "acceptedReferenceTypes": [
               "relative-path",
+              "issue-url",
               "ci-run-url"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "iOS simulator or device build log",
             "notes": "",
             "status": "missing"
@@ -103,9 +109,11 @@
           {
             "acceptedReferenceTypes": [
               "relative-path",
-              "report-id"
+              "report-id",
+              "issue-url"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "docs/validation/cue-validation-dataset.json",
             "notes": "",
             "status": "missing"
@@ -113,9 +121,11 @@
           {
             "acceptedReferenceTypes": [
               "relative-path",
-              "report-id"
+              "report-id",
+              "issue-url"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "docs/sdlc/cue-validation-dataset-report.json",
             "notes": "",
             "status": "missing"
@@ -144,10 +154,12 @@
           {
             "acceptedReferenceTypes": [
               "report-id",
+              "issue-url",
               "ci-run-url",
               "store-console-state"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "app.json extra.eas.projectId",
             "notes": "",
             "status": "missing"
@@ -181,10 +193,12 @@
           {
             "acceptedReferenceTypes": [
               "report-id",
+              "issue-url",
               "ci-run-url",
               "store-console-state"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "CI/EAS secret configuration",
             "notes": "",
             "status": "missing"
@@ -192,10 +206,12 @@
           {
             "acceptedReferenceTypes": [
               "report-id",
+              "issue-url",
               "ci-run-url",
               "store-console-state"
             ],
             "evidenceReference": "",
+            "evidenceReferenceType": "",
             "expectedProof": "Strict EAS validation output",
             "notes": "",
             "status": "missing"
