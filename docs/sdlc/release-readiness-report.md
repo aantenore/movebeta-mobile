@@ -27,6 +27,8 @@ platforms are validated on physical climbing videos and devices.
   on-device model runs.
 - Selected long videos can be analyzed with a full, early, middle, or late local analysis window without editing or
   uploading the original file.
+- Local reports and evidence-only exports persist the effective analysis window as safe numeric metadata without raw video
+  references.
 - Reports show analysis quality, frame coverage, landmark coverage, visibility, and weak-input warnings.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Reports include a versioned local analysis evidence timeline for input normalization, pose provider, signal quality,
@@ -587,6 +589,8 @@ platforms are validated on physical climbing videos and devices.
   window labels.
 - `tests/videoWorkflow.test.ts`: passed and covers analysis-window timestamp bounds plus active-window performance budget
   behavior.
+- `tests/analysisEvidence.test.ts`: passed and covers analysis-window timeline evidence and raw video reference exclusion.
+- `tests/analysisEvidenceExport.test.ts`: passed and covers analysis-window export metadata without raw artifact leakage.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, explicit delivered-commit pinning, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks plus local

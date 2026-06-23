@@ -21,6 +21,25 @@ function formatPercent(value: number) {
   return `${Math.round(value * 100)}%`;
 }
 
+function formatMsAsSeconds(ms: number) {
+  return `${(ms / 1000).toFixed(ms % 1000 === 0 ? 0 : 1)}s`;
+}
+
+function formatAnalysisWindowEvidence(report: LocalAnalysisReport) {
+  const window = report.engine.analysisWindow;
+  if (!window || window.mode === 'full') {
+    return {
+      detail: `Full ${formatMsAsSeconds(report.session.durationMs)} source sampled for local analysis.`,
+      evidence: 'No source trimming, copy, upload, or derived video file required.',
+    };
+  }
+
+  return {
+    detail: `${window.mode} window ${formatMsAsSeconds(window.startMs)}-${formatMsAsSeconds(window.endMs)} sampled from a ${formatMsAsSeconds(window.sourceDurationMs)} source.`,
+    evidence: `${formatMsAsSeconds(window.durationMs)} active analysis duration; original file unchanged.`,
+  };
+}
+
 function evidenceStatusFromQuality(score: number) {
   if (score < 70) return 'blocked';
   if (score < 85) return 'review';
@@ -57,6 +76,7 @@ export function buildAnalysisEvidenceTimeline(
 ): AnalysisEvidenceTimeline {
   const qualityStatus = evidenceStatusFromQuality(report.analysisQuality.score);
   const performanceStatus = evidenceStatusFromPerformance(report.performance.budgetStatus);
+  const analysisWindowEvidence = formatAnalysisWindowEvidence(report);
   const privacyEvidence = [
     report.privacy.retention,
     ...report.privacy.storedArtifacts,
@@ -78,6 +98,14 @@ export function buildAnalysisEvidenceTimeline(
         evidence: `${report.session.gym} · ${report.session.grade}`,
         id: 'input-normalized',
         label: 'Input normalized',
+        status: 'pass',
+      },
+      {
+        category: 'input',
+        detail: analysisWindowEvidence.detail,
+        evidence: analysisWindowEvidence.evidence,
+        id: 'analysis-window',
+        label: 'Analysis window',
         status: 'pass',
       },
       {

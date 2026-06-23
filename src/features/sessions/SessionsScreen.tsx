@@ -56,6 +56,7 @@ import {
 import { theme } from '@/core/theme';
 import { sharePreparedExport as sharePreparedExportFile } from '@/core/preparedExportShare';
 import { selectionFeedback } from '@/core/haptics';
+import { formatVideoAnalysisWindow } from '@/video/analysisWindow';
 import { formatAnalysisDuration, formatAnalysisFrameRate } from '@/video/performanceBudget';
 import { buildSessionReviewDetail, type SessionReviewDetail, type SessionTimelineMarker } from '@/movement/sessionDetail';
 import { summarizeAnalysisEvidence } from '@/movement/analysisEvidence';
@@ -1084,6 +1085,9 @@ export function SessionsScreen() {
                 Analysis {formatAnalysisDuration(report.performance.analysisMs)} · {report.performance.budgetStatus} ·{' '}
                 {formatAnalysisFrameRate(report.performance.framesPerSecond)}
               </Text>
+              {report.engine.analysisWindow ? (
+                <Text style={styles.meta}>Window {formatVideoAnalysisWindow(report.engine.analysisWindow)}</Text>
+              ) : null}
               <Text style={styles.privacy}>{report.privacy.retention}</Text>
               <View style={styles.sessionActions}>
                 <Pressable

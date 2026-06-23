@@ -93,6 +93,9 @@ score penalties, reasons, processing budget labels, target length, and privacy-s
 `src/video/analysisWindow.ts` adds source-relative full, early, middle, and late sampling windows for long clips. The
 window is stored as optional metadata on `VideoAsset`, does not alter the raw URI or source file, and is respected by the
 browser MoveNet provider, native platform provider, and deterministic fallback provider before frames reach the analyzer.
+The movement pipeline persists the effective window into `LocalAnalysisReport.engine.analysisWindow`, and
+`src/movement/analysisEvidence.ts` adds a share-safe Analysis window evidence step so exported evidence can show what was
+processed without raw media references, landmarks, or key frames.
 `src/video/performanceBudget.ts` keeps analysis latency budgets outside product screens and writes elapsed time,
 budget status, and frame rate into every pipeline report using the active analysis-window duration.
 
