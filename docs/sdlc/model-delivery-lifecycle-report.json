@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-06-23T12:59:55.683Z",
+  "model": {
+    "assetCount": 3,
+    "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
+    "name": "MoveNet SinglePose Lightning",
+    "totalBytes": 4963342
+  },
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.model-delivery-lifecycle.v1",
+  "stages": [
+    {
+      "detail": "MoveNet SinglePose Lightning is vendored as same-origin static assets before release.",
+      "key": "build-vendoring",
+      "label": "Build-time vendoring",
+      "nextAction": "Refresh assets only when the model version changes.",
+      "status": "ready"
+    },
+    {
+      "detail": "The exported app serves /models/movenet/singlepose/lightning/4/model.json and weight shards from the app origin.",
+      "key": "app-delivery",
+      "label": "App delivery",
+      "nextAction": "Deploy the exported PWA after static asset checks pass.",
+      "status": "ready"
+    },
+    {
+      "detail": "The browser fetches model-assets.json and listed /models assets on first online launch or explicit warmup.",
+      "key": "first-online-launch",
+      "label": "First online launch",
+      "nextAction": "Open the PWA online once or use Warm model before going offline.",
+      "status": "action"
+    },
+    {
+      "detail": "Offline analysis should wait until every model asset is cached and integrity checks pass when supported.",
+      "key": "offline-reuse",
+      "label": "Offline reuse",
+      "nextAction": "Warm and verify the model cache online before offline analysis.",
+      "status": "action"
+    }
+  ],
+  "summary": {
+    "cacheReady": false,
+    "deliveryMode": "same-origin-static",
+    "downloadTrigger": "The model is vendored during build, then the browser downloads same-origin model assets on first online launch, service-worker install, or explicit warmup.",
+    "firstUseRequiresNetwork": true,
+    "nextAction": "Open the PWA online once or use Warm model before going offline.",
+    "status": "action"
+  }
+}

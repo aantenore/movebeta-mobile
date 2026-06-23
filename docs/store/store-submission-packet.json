@@ -43,7 +43,7 @@
       "purpose": "Verify physical-device evidence before claiming native release readiness."
     }
   ],
-  "generatedAt": "2026-06-23T12:43:54.666Z",
+  "generatedAt": "2026-06-23T12:59:52.483Z",
   "manifest": {
     "androidPackage": "com.movebeta.mobile",
     "androidPermissions": [

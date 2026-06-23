@@ -20,6 +20,7 @@ import iosToolchainReport from '../../../docs/sdlc/ios-toolchain-report.json';
 import modelAssetProvenanceReport from '../../../docs/sdlc/model-asset-provenance-report.json';
 import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.json';
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
+import modelDeliveryLifecycleReport from '../../../docs/sdlc/model-delivery-lifecycle-report.json';
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
 import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
 import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-report.json';
@@ -33,6 +34,7 @@ import { buildEvidenceCollectionPlan } from '@/core/evidenceCollectionPlan';
 import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/core/fieldValidationOpsPacket';
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
+import { buildModelDeliveryLifecycle, type ModelDeliveryLifecycle } from '@/core/modelDeliveryLifecycle';
 import { buildModelVerificationSuite, type ModelVerificationSuite } from '@/core/modelVerificationSuite';
 import { buildIosToolchainSetupPacket, type IosToolchainSetupPacket } from '@/core/iosToolchainSetupPacket';
 import {
@@ -207,6 +209,12 @@ function staticAssetStatusLabel(status: MoveNetStaticAssetsReport['summary']['st
 function modelAssetProvenanceStatusLabel(status: ModelAssetProvenanceReport['summary']['status']) {
   if (status === 'ready') return 'Ready';
   if (status === 'review') return 'Review';
+  return 'Blocked';
+}
+
+function modelDeliveryLifecycleStatusLabel(status: ModelDeliveryLifecycle['summary']['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'action') return 'Action';
   return 'Blocked';
 }
 
@@ -2096,6 +2104,77 @@ function ModelAssetProvenanceCard({
   );
 }
 
+function ModelDeliveryLifecycleCard({
+  lifecycle,
+  onPreparePacket,
+}: {
+  lifecycle: ModelDeliveryLifecycle;
+  onPreparePacket: () => void;
+}) {
+  const isReady = lifecycle.summary.status === 'ready';
+  const isBlocked = lifecycle.summary.status === 'blocked';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{lifecycle.summary.deliveryMode}</Text>
+          <Text style={styles.qaKitMetricLabel}>mode</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{formatBytes(lifecycle.model.totalBytes)}</Text>
+          <Text style={styles.qaKitMetricLabel}>bundle</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{lifecycle.summary.cacheReady ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>cache</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{lifecycle.summary.firstUseRequiresNetwork ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>network</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Model delivery lifecycle</Text>
+          <Text style={styles.qaKitText}>{lifecycle.summary.downloadTrigger}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {modelDeliveryLifecycleStatusLabel(lifecycle.summary.status)}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare model delivery lifecycle packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Lifecycle</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.qaKitText}>{lifecycle.summary.nextAction}</Text>
+      <View style={styles.releaseUnblockList}>
+        {lifecycle.stages.map((stage) => (
+          <View key={stage.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{stage.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{stage.detail}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  stage.status === 'ready' ? styles.launchStatusReady : stage.status === 'blocked' ? styles.launchStatusBlocked : null,
+                ]}
+              >
+                {stage.status}
+              </Text>
+            </View>
+            <Text style={styles.qaPlatformMore}>{stage.nextAction}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
   const isReady = report.summary.status === 'ready';
 
@@ -2677,6 +2756,7 @@ function buildPlanSafetySources({
   launchReadiness,
   modelEvidence,
   modelAssetProvenance,
+  modelDeliveryLifecycle,
   moveNetStaticAssets,
   modelVerificationSuite,
   recommendation,
@@ -2700,6 +2780,7 @@ function buildPlanSafetySources({
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   modelAssetProvenance: ModelAssetProvenanceReport;
+  modelDeliveryLifecycle: ModelDeliveryLifecycle;
   moveNetStaticAssets: MoveNetStaticAssetsReport;
   modelVerificationSuite: ModelVerificationSuite;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
@@ -2764,6 +2845,15 @@ function buildPlanSafetySources({
         modelAssetProvenance.summary.nextAction,
         modelAssetProvenance.source.modelUrl,
         ...modelAssetProvenance.checks.map((check) => `${check.label} ${check.detail} ${check.action}`),
+      ].join(' '),
+    },
+    {
+      key: 'model-delivery-lifecycle',
+      label: 'Model delivery lifecycle',
+      text: [
+        modelDeliveryLifecycle.summary.downloadTrigger,
+        modelDeliveryLifecycle.summary.nextAction,
+        ...modelDeliveryLifecycle.stages.map((stage) => `${stage.label} ${stage.detail} ${stage.nextAction}`),
       ].join(' '),
     },
     {
@@ -2929,6 +3019,10 @@ export function PlanScreen() {
     moveNetReadinessReport,
     realWorldValidation: appConfig.modelEvidence?.realWorldValidation,
   });
+  const modelDeliveryLifecycle = buildModelDeliveryLifecycle({
+    pwaRuntimeReadiness: pwaRuntime.readiness,
+    staticAssetsReport: moveNetStaticAssetsReport,
+  });
   const iosToolchainSetupPacket = buildIosToolchainSetupPacket({
     report: iosToolchainReport,
   });
@@ -2961,6 +3055,7 @@ export function PlanScreen() {
         launchReadinessReport,
         modelAssetProvenanceReport,
         modelAnalysisReplayReport,
+        modelDeliveryLifecycleReport,
         moveNetStaticAssetsReport,
         modelVerificationSuiteReport,
         moveNetReadinessReport,
@@ -3026,6 +3121,7 @@ export function PlanScreen() {
       launchReadiness,
       modelEvidence,
       modelAssetProvenance: modelAssetProvenanceReport,
+      modelDeliveryLifecycle,
       moveNetStaticAssets: moveNetStaticAssetsReport,
       modelVerificationSuite,
       recommendation,
@@ -3224,6 +3320,14 @@ export function PlanScreen() {
     });
   }
 
+  function prepareModelDeliveryLifecyclePacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(modelDeliveryLifecycle, null, 2),
+      title: 'Prepared model delivery lifecycle packet',
+    });
+  }
+
   async function preparePwaInstallGuidance() {
     selectionFeedback();
     await pwaRuntime.promptInstall();
@@ -3371,6 +3475,7 @@ export function PlanScreen() {
         <ModelVerificationSuiteCard suite={modelVerificationSuite} />
         <MoveNetStaticAssetsCard onPreparePacket={prepareMoveNetStaticAssetsPacket} report={moveNetStaticAssetsReport} />
         <ModelAssetProvenanceCard onPreparePacket={prepareModelAssetProvenancePacket} report={modelAssetProvenanceReport} />
+        <ModelDeliveryLifecycleCard lifecycle={modelDeliveryLifecycle} onPreparePacket={prepareModelDeliveryLifecyclePacket} />
       </Section>
 
       <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">
