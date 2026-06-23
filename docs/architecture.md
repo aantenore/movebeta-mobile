@@ -70,6 +70,10 @@ The Plan tab Warm model action uses the same manifest to populate Cache Storage 
 share-safe warmup result, keeping cache warming explicit and testable. The same path verifies cached byte counts and
 SHA-256 digests through browser Web Crypto when available, so offline model readiness can report both cache presence and
 integrity without a backend.
+The Coach tab reuses the same browser-runtime helpers through a local model preflight panel before capture. It shows
+cached/verified model asset counts, exposes Warm model next to record/import, allows online real-video analysis to fetch
+same-origin assets, blocks offline real-video analysis when the cache is missing, and bypasses browser cache checks for
+native provider builds.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards

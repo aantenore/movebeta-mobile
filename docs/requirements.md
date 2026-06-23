@@ -560,6 +560,9 @@
 - PWA model delivery must be governed by a versioned static policy that declares whether web builds download model assets
   during service-worker install, explicit warmup, or first analysis, and release checks must verify that the exported PWA
   includes and follows that policy.
+- The Coach capture flow must surface PWA model-cache readiness before recording or importing real video, provide an
+  explicit same-origin model warmup action, allow online analysis to fetch missing same-origin assets, block offline
+  real-video analysis when model assets are not cached, and bypass browser cache checks for native provider builds.
 - Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
   handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
