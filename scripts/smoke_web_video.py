@@ -49,6 +49,25 @@ def main() -> None:
         service_worker_text = page.evaluate("async () => await fetch('/sw.js').then((response) => response.text())")
         assert "self.addEventListener('fetch'" in service_worker_text
         assert "caches.open" in service_worker_text
+        assert "/model-assets.json" in service_worker_text
+        assert "cacheModelAssets" in service_worker_text
+        model_assets = page.evaluate("async () => await fetch('/model-assets.json').then((response) => response.json())")
+        assert model_assets["schemaVersion"] == "movebeta.static-model-assets.v1"
+        assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
+        assert "/models/movenet/singlepose/lightning/4/model.json" in model_assets["assets"]
+        model_json = page.evaluate(
+            "async () => await fetch('/models/movenet/singlepose/lightning/4/model.json').then((response) => response.json())"
+        )
+        assert len(model_json["weightsManifest"]) > 0
+        first_shard = model_json["weightsManifest"][0]["paths"][0]
+        shard_status = page.evaluate(
+            """async (path) => {
+              const response = await fetch(`/models/movenet/singlepose/lightning/4/${path}`);
+              return response.status;
+            }""",
+            first_shard,
+        )
+        assert shard_status == 200
 
         expect(page.get_by_text("On-device climbing coach")).to_be_visible()
         expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
@@ -338,8 +357,8 @@ def main() -> None:
         expect(page.get_by_text("Real cue-validation dataset").first).to_be_visible()
         expect(page.get_by_text("Feature completion", exact=True)).to_be_visible()
         expect(page.get_by_text("Feature completion audit")).to_be_visible()
-        expect(page.get_by_text("162/165", exact=True)).to_be_visible()
-        expect(page.get_by_text("116/118", exact=True)).to_be_visible()
+        expect(page.get_by_text("163/166", exact=True)).to_be_visible()
+        expect(page.get_by_text("117/119", exact=True)).to_be_visible()
         expect(page.get_by_text("internal gaps", exact=True)).to_be_visible()
         expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
         expect(page.get_by_text("Model evidence", exact=True)).to_be_visible()
@@ -353,6 +372,12 @@ def main() -> None:
         expect(page.get_by_text("wall angles", exact=True)).to_be_visible()
         expect(page.get_by_text("Runtime, replay, cue, metric, wall-angle, and privacy checks pass locally.")).to_be_visible()
         expect(page.get_by_text("Cue outputs: 7")).to_be_visible()
+        expect(page.get_by_text("Static MoveNet assets", exact=True).first).to_be_visible()
+        expect(page.get_by_text("Model assets", exact=True)).to_be_visible()
+        page.get_by_text("Model assets", exact=True).click()
+        expect(page.get_by_text("Prepared MoveNet static assets packet")).to_be_visible()
+        expect(page.get_by_text('"schemaVersion": "movebeta.movenet-static-assets-report.v1"')).to_be_visible()
+        expect(page.get_by_text('"modelUrl": "/models/movenet/singlepose/lightning/4/model.json"')).to_be_visible()
         expect(page.get_by_text("Provider readiness")).to_be_visible()
         expect(page.get_by_text("Provider path needs device proof")).to_be_visible()
         expect(page.get_by_text("web-tfjs-movenet", exact=True).first).to_be_visible()
@@ -471,9 +496,10 @@ def main() -> None:
         expect(page.get_by_text("oldest", exact=True)).to_be_visible()
         expect(page.get_by_text("All tracked release evidence artifacts are fresh.")).to_be_visible()
         expect(page.get_by_text("Launch readiness report", exact=True).first).to_be_visible()
+        expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
         expect(page.get_by_text("Installable PWA").first).to_be_visible()
-        expect(page.get_by_text("7/7", exact=True)).to_be_visible()
+        expect(page.get_by_text("8/8", exact=True)).to_be_visible()
         expect(page.get_by_text("backend", exact=True).first).to_be_visible()
         expect(page.get_by_text("Vercel static deployment config")).to_be_visible()
         expect(page.get_by_text("No backend surface required")).to_be_visible()
@@ -551,6 +577,7 @@ def main() -> None:
         expect(page.get_by_text("artifacts", exact=True).first).to_be_visible()
         expect(page.get_by_text("commands", exact=True).first).to_be_visible()
         expect(page.get_by_text("iOS toolchain report", exact=True)).to_be_visible()
+        expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Environment template report", exact=True)).to_be_visible()
         expect(page.get_by_text("Cue validation dataset report", exact=True)).to_be_visible()
         expect(page.get_by_text("Store credentials report", exact=True)).to_be_visible()
@@ -564,6 +591,7 @@ def main() -> None:
         expect(page.get_by_text('"command": "npm run validation:cue:doctor"')).to_be_visible()
         expect(page.get_by_text('"command": "npm run release:credentials:doctor"')).to_be_visible()
         expect(page.get_by_text('"command": "npm run release:freshness:doctor"')).to_be_visible()
+        expect(page.get_by_text('"command": "npm run model:movenet:assets:check"')).to_be_visible()
         expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
         expect(page.get_by_text("Store packet", exact=True)).to_be_visible()
         expect(page.get_by_text("0/4 credential groups ready")).to_be_visible()

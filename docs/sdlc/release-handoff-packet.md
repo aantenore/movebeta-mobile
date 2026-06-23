@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-22T16:10:27.839Z
+Generated: 2026-06-23T07:44:33.368Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 23c43519c6fd4da107f72738e67ac2f97b0c60f4
-- Worktree dirty at generation: no
+- Base commit at generation: 23d5282f32bc2cc2962e3cc21f0f9294c7b9b7dd
+- Worktree dirty at generation: yes
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4293ms; average inference 335ms
+- MoveNet readiness: ready; load 3939ms; average inference 327ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -34,6 +34,7 @@ Generated: 2026-06-22T16:10:27.839Z
 - Exported web smoke: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py`
 - Store screenshot capture: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`
 - Model verification suite: `npm run model:verification:suite`
+- MoveNet static assets doctor: `npm run model:movenet:assets:check`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Coach cue-validation gate: `npm run validation:cue`
 - GitHub workflow doctor: `npm run release:github:doctor`
@@ -59,6 +60,7 @@ Generated: 2026-06-22T16:10:27.839Z
 - [x] Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`
 - [x] Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
+- [x] MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`

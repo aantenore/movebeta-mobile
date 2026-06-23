@@ -1,6 +1,6 @@
 # Environment Template Report
 
-Generated: 2026-06-22T16:06:59.795Z
+Generated: 2026-06-23T07:42:17.150Z
 
 - Status: ready
 - Template: .env.example
@@ -9,7 +9,7 @@ Generated: 2026-06-22T16:06:59.795Z
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| Runtime public configuration | pass | 10/10 required keys are present. |
+| Runtime public configuration | pass | 11/11 required keys are present. |
 | Local operation commands | pass | 1/1 required keys are present. |
 | Release credential key names | pass | 12/12 required keys are present. |
 | Secret-free template | pass | No credential values, token-like strings, or local paths were detected. |
@@ -18,6 +18,6 @@ Generated: 2026-06-22T16:06:59.795Z
 
 | Category | Owner | Present | Missing keys |
 | --- | --- | --- | --- |
-| Runtime public configuration | engineering | 10/10 | none |
+| Runtime public configuration | engineering | 11/11 | none |
 | Local operation commands | engineering | 1/1 | none |
 | Release credential key names | release | 12/12 | none |

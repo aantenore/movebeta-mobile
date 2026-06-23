@@ -42,6 +42,9 @@ jobs:
       - name: Export static PWA
         run: npm run export:web
 
+      - name: Validate static MoveNet assets
+        run: npm run model:movenet:assets:check
+
       - name: Validate static PWA
         run: npm run web:pwa:check
 
@@ -74,7 +77,9 @@ jobs:
           path: |
             docs/sdlc/release-gate-report.json
             docs/sdlc/pwa-readiness-report.json
+            docs/sdlc/movenet-static-assets-report.json
             docs/sdlc/vercel-deployment-report.json
             docs/sdlc/release-freshness-report.json
+            dist/model-assets.json
             dist/manifest.json
             dist/sw.js

@@ -44,6 +44,7 @@ jobs:
       - run: npm ci
       - run: npm run release:check
       - run: npm run export:web
+      - run: npm run model:movenet:assets:check
       - run: npm run web:pwa:check
       - run: npm run web:vercel:check
       - run: npx vercel pull --yes --environment=production --token=\${{ secrets.VERCEL_TOKEN }}
@@ -61,6 +62,8 @@ jobs:
           name: vercel-static-pwa-evidence
           path: |
             docs/sdlc/vercel-deployment-report.json
+            docs/sdlc/movenet-static-assets-report.json
+            dist/model-assets.json
             dist/sw.js
 `;
 

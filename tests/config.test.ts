@@ -16,6 +16,7 @@ describe('app config', () => {
     expect(appConfig.launchReadinessEvidence?.iosBuild).toBe(false);
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
+    expect(appConfig.tfjsMoveNetModelUrl).toBe('/models/movenet/singlepose/lightning/4/model.json');
     expect(appConfig.coachLens).toBe('balanced');
     expect(appConfig.billingReadiness.provider).toBe('none');
     expect(appConfig.billingReadiness.entitlementSource).toBe('plan-catalog');

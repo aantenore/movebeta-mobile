@@ -50,6 +50,7 @@
       "activePlan": "free",
       "videoAnalysisProvider": "web-tfjs-movenet",
       "nativeVideoAnalysisProvider": "native-platform-pose",
+      "tfjsMoveNetModelUrl": "/models/movenet/singlepose/lightning/4/model.json",
       "coachLens": "balanced",
       "privacyMode": "on-device",
       "releaseRepository": "aantenore/movebeta-mobile",
@@ -97,7 +98,7 @@
       },
       "modelEvidence": {
         "analysisReplay": {
-          "generatedAt": "2026-06-22T16:06:59.019Z",
+          "generatedAt": "2026-06-23T07:42:16.341Z",
           "minimumQualityScore": 100,
           "passedAttempts": 3,
           "privacySafe": true,
@@ -108,16 +109,16 @@
         "modelName": "MoveNet SinglePose Lightning",
         "provider": "web-tfjs-movenet",
         "readiness": {
-          "averageInferenceMs": 335,
+          "averageInferenceMs": 327,
           "backend": "cpu",
           "budget": {
             "averageInferenceMs": 1500,
             "loadMs": 25000,
             "maxInferenceMs": 3000
           },
-          "generatedAt": "2026-06-22T16:06:53.074Z",
-          "loadMs": 4293,
-          "maxInferenceMs": 352,
+          "generatedAt": "2026-06-23T07:42:10.777Z",
+          "loadMs": 3939,
+          "maxInferenceMs": 329,
           "status": "ready"
         },
         "realWorldValidation": {

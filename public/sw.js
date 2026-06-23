@@ -2,12 +2,28 @@ const CACHE_PREFIX = 'movebeta-pwa';
 const CACHE_VERSION = 'v1';
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 const APP_SHELL = ['/', '/index.html', '/manifest.json', '/favicon.ico', '/pwa/icon-192.png', '/pwa/icon-512.png'];
+const MODEL_ASSET_MANIFEST = '/model-assets.json';
+
+async function cacheModelAssets(cache) {
+  const response = await fetch(MODEL_ASSET_MANIFEST, { cache: 'no-store' });
+  if (!response.ok) return;
+
+  const manifest = await response.json();
+  const modelAssets = Array.isArray(manifest.assets)
+    ? manifest.assets.filter((asset) => typeof asset === 'string' && asset.startsWith('/models/'))
+    : [];
+
+  await cache.addAll([MODEL_ASSET_MANIFEST, ...modelAssets]);
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
+      .then(async (cache) => {
+        await cache.addAll(APP_SHELL);
+        await cacheModelAssets(cache);
+      })
       .then(() => self.skipWaiting()),
   );
 });
@@ -63,7 +79,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/_expo/static/') || url.pathname.startsWith('/assets/') || url.pathname.startsWith('/pwa/')) {
+  if (
+    url.pathname === MODEL_ASSET_MANIFEST ||
+    url.pathname.startsWith('/models/') ||
+    url.pathname.startsWith('/_expo/static/') ||
+    url.pathname.startsWith('/assets/') ||
+    url.pathname.startsWith('/pwa/')
+  ) {
     event.respondWith(cacheFirst(request));
   }
 });
