@@ -59,6 +59,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   dependencyLicenseReport?: unknown;
   envTemplateReport?: unknown;
   externalEvidenceIntakeReport?: unknown;
+  externalEvidenceValidationReport?: unknown;
   featureCompletionReport?: unknown;
   githubWorkflowReport?: unknown;
   iosToolchainReport?: unknown;
@@ -147,6 +148,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run release:evidence:intake',
     reportKey: 'externalEvidenceIntakeReport',
     requiredFor: ['internal', 'store', 'handoff'],
+  },
+  {
+    key: 'external-evidence-validation-report',
+    label: 'External evidence validation report',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/external-evidence-validation-report.json',
+    refreshCommand: 'npm run release:evidence:validate',
+    reportKey: 'externalEvidenceValidationReport',
+    requiredFor: ['store', 'handoff'],
   },
   {
     key: 'movenet-readiness-report',
