@@ -28,6 +28,7 @@ describe('analysis evidence timeline', () => {
     expect(timeline.generatedAt).toBe('2026-06-20T12:00:00.000Z');
     expect(timeline.steps.map((step) => step.id)).toEqual([
       'input-normalized',
+      'analysis-window',
       'pose-provider',
       'quality-gate',
       'metric-cue-generation',
@@ -39,8 +40,34 @@ describe('analysis evidence timeline', () => {
     expect(summary).toMatchObject({
       blocked: 0,
       status: report.performance.budgetStatus === 'not-measured' ? 'review' : 'pass',
-      total: 6,
+      total: 7,
     });
+  });
+
+  it('records active analysis windows without raw video references', async () => {
+    const baseReport = await buildReport();
+    const report = attachAnalysisEvidence({
+      ...baseReport,
+      engine: {
+        ...baseReport.engine,
+        analysisWindow: {
+          durationMs: 45_000,
+          endMs: 80_000,
+          mode: 'late',
+          sourceDurationMs: 80_000,
+          startMs: 35_000,
+        },
+      },
+    });
+    const step = report.analysisEvidence.steps.find((item) => item.id === 'analysis-window');
+
+    expect(step).toMatchObject({
+      label: 'Analysis window',
+      status: 'pass',
+    });
+    expect(step?.detail).toContain('late window 35s-80s');
+    expect(step?.evidence).toContain('original file unchanged');
+    expect(JSON.stringify(step)).not.toMatch(/file:\/\/|content:\/\/|ph:\/\/|raw video uri|secret|token/i);
   });
 
   it('marks weak quality, over-budget runtime, and raw artifact hints as blocked evidence', async () => {

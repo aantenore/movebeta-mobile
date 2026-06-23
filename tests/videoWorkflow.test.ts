@@ -206,6 +206,12 @@ describe('video source workflow', () => {
     const report = await analyzeVideoAttempt(windowedVideo, source.session);
 
     expect(report.session.durationMs).toBe(90_000);
+    expect(report.engine.analysisWindow).toMatchObject({
+      durationMs: 45_000,
+      mode: 'middle',
+      sourceDurationMs: 90_000,
+    });
+    expect(report.analysisEvidence.steps.find((step) => step.id === 'analysis-window')?.detail).toContain('middle window');
     expect(report.performance.budgetMs).toBe(25_000);
     expect(report.engine.provider).toBe('local-video-fallback');
   });

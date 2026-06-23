@@ -143,6 +143,7 @@ export const LocalAnalysisReportSchema = z.object({
   id: z.string(),
   session: ClimbSessionSchema,
   engine: z.object({
+    analysisWindow: VideoAnalysisWindowSchema.optional(),
     coachLens: CoachLensMetadataSchema.default({
       key: 'balanced',
       label: 'Balanced',

@@ -13,9 +13,18 @@ export const AnalysisEvidenceExportSchema = z.object({
     rawVideoIncluded: z.literal(false),
     videoUriIncluded: z.literal(false),
   }),
-  report: z.object({
-    analysisQualityScore: z.number(),
-    coachLens: z.object({
+    report: z.object({
+      analysisQualityScore: z.number(),
+      analysisWindow: z
+        .object({
+          durationMs: z.number().positive(),
+          endMs: z.number().positive(),
+          mode: z.enum(['full', 'early', 'middle', 'late']),
+          sourceDurationMs: z.number().positive(),
+          startMs: z.number().nonnegative(),
+        })
+        .optional(),
+      coachLens: z.object({
       key: z.string(),
       label: z.string(),
       summary: z.string(),
@@ -78,6 +87,7 @@ export function buildAnalysisEvidenceExport(
     },
     report: {
       analysisQualityScore: report.analysisQuality.score,
+      analysisWindow: report.engine.analysisWindow,
       coachLens: report.engine.coachLens,
       engineModel: report.engine.model,
       engineProvider: report.engine.provider,

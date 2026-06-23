@@ -1095,8 +1095,9 @@ export function CoachScreen() {
             <ShieldCheck color={theme.colors.success} size={18} />
             <Text style={styles.privacyText}>
               {report.engine.provider} · {report.engine.processedFrames} frames ·{' '}
-              {formatAnalysisDuration(report.performance.analysisMs)} · {report.performance.budgetStatus} · video upload{' '}
-              {report.engine.uploadsVideo ? 'enabled' : 'disabled'}
+              {formatAnalysisDuration(report.performance.analysisMs)} · {report.performance.budgetStatus} ·{' '}
+              {report.engine.analysisWindow ? `${formatVideoAnalysisWindow(report.engine.analysisWindow)} · ` : ''}
+              video upload {report.engine.uploadsVideo ? 'enabled' : 'disabled'}
             </Text>
           </View>
 

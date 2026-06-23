@@ -48,6 +48,9 @@ type VideoAsset = {
 `analysisWindow` is optional and source-relative. When present, pose providers sample frames inside the selected window
 while preserving the original source duration and URI.
 
+`LocalAnalysisReport.engine.analysisWindow` stores the effective window used for the run. Evidence-only exports may include
+that numeric metadata, but must not include raw video URIs, local paths, landmarks, or key frames.
+
 ## Native Video Metadata
 
 ```ts
