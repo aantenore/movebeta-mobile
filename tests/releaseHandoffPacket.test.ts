@@ -145,6 +145,7 @@ function makeProjectRoot() {
     ],
   });
   writeText(path.join(root, 'docs/store/screenshots/01-analyze.png'), 'png');
+  writeText(path.join(root, 'docs/store/screenshots/12-model-delivery.png'), 'png');
   writeText(path.join(root, 'docs/sdlc/release-readiness-report.md'), '# Release');
   writeText(path.join(root, 'docs/sdlc/native-qa-runbook.json'), '{}');
   writeText(path.join(root, 'docs/screenshots.md'), '# Screenshots');
@@ -222,6 +223,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence apply report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Model delivery lifecycle screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
   });
 

@@ -1,22 +1,22 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T13:02:06.668Z
+Generated: 2026-06-23T13:59:54.746Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 152f458229c721bcdad06043d3df7a5659c19b34
-- Worktree dirty at generation: no
+- Base commit at generation: 199e70221f78a81e977ebddd25b37f239139e83a
+- Worktree dirty at generation: yes
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4751ms; average inference 323ms
+- MoveNet readiness: ready; load 5287ms; average inference 328ms
 - Model verification suite: technical-ready
-- Screenshots: 11/11
+- Screenshots: 12/12
 - Blockers: 5
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
@@ -100,6 +100,7 @@ Generated: 2026-06-23T13:02:06.668Z
 - [x] Release critical path screenshot: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Release evidence scenarios screenshot: `docs/store/screenshots/10-release-evidence-scenarios.png`
 - [x] Release evidence freshness screenshot: `docs/store/screenshots/11-release-freshness.png`
+- [x] Model delivery lifecycle screenshot: `docs/store/screenshots/12-model-delivery.png`
 - [x] Source archive: `../movebeta-mobile-source.zip`
 - [x] Web dist archive: `../movebeta-mobile-web-dist.zip`
 - [x] Release archives manifest: `../movebeta-mobile-release-archives.json`
@@ -117,4 +118,5 @@ Generated: 2026-06-23T13:02:06.668Z
 - [x] Release critical path: `docs/store/screenshots/09-release-critical-path.png`
 - [x] Release evidence scenarios: `docs/store/screenshots/10-release-evidence-scenarios.png`
 - [x] Release evidence freshness: `docs/store/screenshots/11-release-freshness.png`
+- [x] Model delivery lifecycle: `docs/store/screenshots/12-model-delivery.png`
 - [x] Local backup restore preview: `docs/store/screenshots/08-data-portability.png`
