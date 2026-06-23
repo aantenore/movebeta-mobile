@@ -54,6 +54,7 @@ export type ReleaseEvidenceFreshnessArtifact = z.infer<typeof ReleaseEvidenceFre
 export type ReleaseEvidenceFreshness = z.infer<typeof ReleaseEvidenceFreshnessSchema>;
 
 export type ReleaseEvidenceFreshnessReportBundle = {
+  acquisitionReadinessPacket?: unknown;
   cueValidationDatasetReport?: unknown;
   cueValidationStarterKitReport?: unknown;
   dependencyLicenseReport?: unknown;
@@ -341,6 +342,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run store:submission',
     reportKey: 'storeSubmissionPacket',
     requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'acquisition-readiness-packet',
+    label: 'Acquisition readiness packet',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/acquisition-readiness-packet.json',
+    refreshCommand: 'npm run release:acquisition',
+    reportKey: 'acquisitionReadinessPacket',
+    requiredFor: ['handoff'],
   },
   {
     key: 'pwa-readiness-report',

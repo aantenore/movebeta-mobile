@@ -84,6 +84,7 @@
     "release:evidence:promote": "tsx scripts/external_evidence_promote.ts",
     "release:evidence:apply": "tsx scripts/external_evidence_apply.ts",
     "release:freshness:doctor": "tsx scripts/release_freshness_doctor.ts",
+    "release:acquisition": "tsx scripts/acquisition_readiness_packet.ts",
     "feature:doctor": "node scripts/feature_completion_doctor.mjs",
     "model:movenet:assets:download": "node scripts/download_movenet_static_assets.mjs",
     "model:movenet:assets:check": "node scripts/movenet_static_assets_doctor.mjs",

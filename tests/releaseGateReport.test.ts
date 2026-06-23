@@ -57,6 +57,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelDeploymentReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelWorkflowReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('dependencyLicenses');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('acquisitionReadinessPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseFreshnessDoctor');
   });
 
