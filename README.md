@@ -195,6 +195,8 @@ web build with `npm run store:screenshots`.
   before handoff or store-readiness claims rely on them.
 - External evidence promotion CLI that creates a reviewable launch-readiness evidence candidate only after proof
   references validate, without mutating release configuration automatically.
+- External evidence apply guard that writes a share-safe dry-run report by default and applies promoted launch-readiness
+  evidence to `app.json` only with explicit `--write-app-config` approval.
 - Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
 - Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
   deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
@@ -239,6 +241,7 @@ npm run release:blocker-issues:links
 npm run release:evidence:intake
 npm run release:evidence:validate
 npm run release:evidence:promote
+npm run release:evidence:apply
 npm run model:movenet:assets:download
 npm run model:movenet:assets:check
 npm run web:pwa:check
@@ -336,6 +339,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/external-evidence-intake.filled.json` and should contain references only, not raw evidence.
 - External evidence promotion report: `docs/sdlc/external-evidence-promotion-report.json`,
   `docs/sdlc/external-evidence-promotion-report.md`; it carries the reviewable launch-readiness evidence candidate.
+- External evidence apply report: `docs/sdlc/external-evidence-apply-report.json`,
+  `docs/sdlc/external-evidence-apply-report.md`; it records dry-run/apply status without storing raw evidence.
 - PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
 - Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`,
   `docs/sdlc/vercel-deployment-report.md`.
@@ -374,6 +379,7 @@ npm run release:blocker-issues:file
 npm run release:evidence:intake
 npm run release:evidence:validate
 npm run release:evidence:promote
+npm run release:evidence:apply
 npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:starter

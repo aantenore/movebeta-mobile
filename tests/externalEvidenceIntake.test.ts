@@ -8,12 +8,15 @@ import {
   assertExternalEvidenceIntakeIsShareSafe,
   buildExternalEvidenceIntakeReport,
   buildExternalEvidencePromotionReport,
+  buildExternalEvidenceApplyReport,
   buildExternalEvidenceValidationReport,
   buildMissingExternalEvidenceValidationReport,
   ExternalEvidenceFilledIntakeSchema,
+  ExternalEvidenceApplyReportSchema,
   ExternalEvidencePromotionReportSchema,
   ExternalEvidenceValidationReportSchema,
   ExternalEvidenceIntakeReportSchema,
+  externalEvidenceApplyReportSchemaVersion,
   externalEvidenceIntakeSchemaVersion,
   externalEvidencePromotionReportSchemaVersion,
   externalEvidenceValidationReportSchemaVersion,
@@ -34,6 +37,11 @@ import {
   resolveExternalEvidencePromotionPaths,
   writeExternalEvidencePromotionReport,
 } from '../scripts/external_evidence_promote';
+import {
+  renderExternalEvidenceApplyMarkdown,
+  resolveExternalEvidenceApplyPaths,
+  writeExternalEvidenceApplyReport,
+} from '../scripts/external_evidence_apply';
 
 function tempRoot() {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'movebeta-external-evidence-intake-'));
@@ -197,6 +205,51 @@ describe('external evidence intake', () => {
     expect(renderExternalEvidencePromotionMarkdown(report)).toContain('Candidate ready: yes');
   });
 
+  it('builds an apply report that stays dry-run until write is explicitly requested', () => {
+    const promotionReport = buildExternalEvidencePromotionReport({
+      generatedAt: '2026-06-23T12:28:00.000Z',
+      input: filledDefaultIntake(),
+    });
+    const report = buildExternalEvidenceApplyReport({
+      generatedAt: '2026-06-23T12:29:00.000Z',
+      promotionReport,
+      writeRequested: false,
+    });
+
+    expect(ExternalEvidenceApplyReportSchema.parse(report)).toEqual(report);
+    expect(report.schemaVersion).toBe(externalEvidenceApplyReportSchemaVersion);
+    expect(report.status).toBe('ready-to-apply');
+    expect(report.summary).toMatchObject({
+      applied: false,
+      appliedCheckCount: 0,
+      candidateReady: true,
+      promotedCheckCount: 5,
+      writeRequested: false,
+    });
+    expect(renderExternalEvidenceApplyMarkdown(report)).toContain('Write requested: no');
+  });
+
+  it('reports applied only when a ready promotion is written with explicit approval', () => {
+    const promotionReport = buildExternalEvidencePromotionReport({
+      generatedAt: '2026-06-23T12:28:00.000Z',
+      input: filledDefaultIntake(),
+    });
+    const report = buildExternalEvidenceApplyReport({
+      applied: true,
+      generatedAt: '2026-06-23T12:29:30.000Z',
+      promotionReport,
+      writeRequested: true,
+    });
+
+    expect(report.status).toBe('applied');
+    expect(report.summary).toMatchObject({
+      applied: true,
+      appliedCheckCount: 5,
+      candidateReady: true,
+      writeRequested: true,
+    });
+  });
+
   it('reports missing filled intake as needs-evidence without failing the command contract', () => {
     const report = buildMissingExternalEvidenceValidationReport({
       generatedAt: '2026-06-23T12:30:00.000Z',
@@ -231,6 +284,30 @@ describe('external evidence intake', () => {
       easProject: false,
       iosBuild: false,
       nativeDeviceQa: false,
+    });
+  });
+
+  it('does not apply launch-readiness evidence while promotion needs evidence', () => {
+    const promotionReport = buildExternalEvidencePromotionReport({
+      generatedAt: '2026-06-23T12:31:00.000Z',
+      validationReport: buildMissingExternalEvidenceValidationReport({
+        generatedAt: '2026-06-23T12:31:00.000Z',
+        inputPath: 'docs/sdlc/external-evidence-intake.filled.json',
+      }),
+    });
+    const report = buildExternalEvidenceApplyReport({
+      applied: true,
+      generatedAt: '2026-06-23T12:31:30.000Z',
+      promotionReport,
+      writeRequested: true,
+    });
+
+    expect(report.status).toBe('needs-evidence');
+    expect(report.summary).toMatchObject({
+      applied: false,
+      appliedCheckCount: 0,
+      candidateReady: false,
+      writeRequested: true,
     });
   });
 
@@ -299,10 +376,73 @@ describe('external evidence intake', () => {
     }
   });
 
+  it('writes durable apply report without mutating app config by default', () => {
+    const rootDir = tempRoot();
+
+    try {
+      const paths = resolveExternalEvidenceApplyPaths(rootDir);
+      const before = fs.readFileSync(paths.appConfigPath, 'utf8');
+      const { report, reportOutputPath, markdownOutputPath } = writeExternalEvidenceApplyReport({
+        generatedAt: '2026-06-23T12:41:00.000Z',
+        markdownOutputPath: paths.markdownOutputPath,
+        promotionReportPath: paths.promotionReportPath,
+        reportOutputPath: paths.reportOutputPath,
+        rootDir,
+      });
+
+      expect(report.status).toBe('needs-evidence');
+      expect(report.summary.applied).toBe(false);
+      expect(fs.readFileSync(paths.appConfigPath, 'utf8')).toBe(before);
+      expect(reportOutputPath).toBe(paths.reportOutputPath);
+      expect(markdownOutputPath).toBe(paths.markdownOutputPath);
+      expect(JSON.parse(fs.readFileSync(paths.reportOutputPath, 'utf8'))).toEqual(report);
+      expect(fs.readFileSync(paths.markdownOutputPath, 'utf8')).toContain('External Evidence Apply Report');
+    } finally {
+      fs.rmSync(rootDir, { force: true, recursive: true });
+    }
+  });
+
+  it('applies ready launch evidence to app config only when write is requested', () => {
+    const rootDir = tempRoot();
+
+    try {
+      const paths = resolveExternalEvidenceApplyPaths(rootDir);
+      const promotionReport = buildExternalEvidencePromotionReport({
+        baselineEvidence: defaultLaunchReadinessEvidence,
+        generatedAt: '2026-06-23T12:42:00.000Z',
+        input: filledDefaultIntake(),
+      });
+      fs.mkdirSync(path.dirname(paths.promotionReportPath), { recursive: true });
+      fs.writeFileSync(paths.promotionReportPath, `${JSON.stringify(promotionReport, null, 2)}\n`);
+
+      const { report } = writeExternalEvidenceApplyReport({
+        generatedAt: '2026-06-23T12:43:00.000Z',
+        markdownOutputPath: paths.markdownOutputPath,
+        promotionReportPath: paths.promotionReportPath,
+        reportOutputPath: paths.reportOutputPath,
+        rootDir,
+        writeAppConfig: true,
+      });
+      const evidence = JSON.parse(fs.readFileSync(paths.appConfigPath, 'utf8')).expo.extra.launchReadinessEvidence;
+
+      expect(report.status).toBe('applied');
+      expect(evidence).toMatchObject({
+        cueValidationDataset: true,
+        easCredentials: true,
+        easProject: true,
+        iosBuild: true,
+        nativeDeviceQa: true,
+      });
+    } finally {
+      fs.rmSync(rootDir, { force: true, recursive: true });
+    }
+  });
+
   it('resolves stable output paths', () => {
     const paths = resolveExternalEvidenceIntakePaths('/tmp/project');
     const validationPaths = resolveExternalEvidenceValidationPaths('/tmp/project');
     const promotionPaths = resolveExternalEvidencePromotionPaths('/tmp/project');
+    const applyPaths = resolveExternalEvidenceApplyPaths('/tmp/project');
 
     expect(paths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake-report.json');
     expect(paths.templateOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.template.json');
@@ -310,6 +450,8 @@ describe('external evidence intake', () => {
     expect(validationPaths.inputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.filled.json');
     expect(promotionPaths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-promotion-report.json');
     expect(promotionPaths.inputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.filled.json');
+    expect(applyPaths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-apply-report.json');
+    expect(applyPaths.promotionReportPath).toBe('/tmp/project/docs/sdlc/external-evidence-promotion-report.json');
   });
 
   it('rejects local paths and token-like values before sharing', () => {

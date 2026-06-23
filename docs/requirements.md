@@ -509,6 +509,9 @@
 - External evidence promotion must create a launch-readiness evidence candidate only after external proof references
   validate, preserving the current baseline when evidence is missing and avoiding automatic mutation of app release
   configuration.
+- External evidence apply must generate a share-safe dry-run report by default and update Expo
+  `extra.launchReadinessEvidence` only when the promotion candidate is ready and `--write-app-config` is explicitly
+  requested.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

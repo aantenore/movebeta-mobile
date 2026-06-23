@@ -1,13 +1,15 @@
-# External Evidence Promotion Report
+# External Evidence Apply Report
 
-Generated: 2026-06-23T12:43:54.128Z
+Generated: 2026-06-23T12:43:54.399Z
 
 - Status: needs-evidence
-- Validation status: needs-evidence
+- Write requested: no
+- Applied: no
 - Candidate ready: no
 - Promoted checks: 0
-- Blocked checks: 0
-- Next action: Collect and validate every external proof reference before promoting launch readiness evidence.
+- Applied checks: 0
+- App config path: app.json
+- Next action: Collect, validate, and promote every external proof reference before applying launch readiness evidence.
 - Credential values included: no
 - Local paths included: no
 - Raw artifacts included: no
@@ -34,6 +36,6 @@ Generated: 2026-06-23T12:43:54.128Z
 }
 ```
 
-| Check | Key | Proofs | Status |
+| Check | Key | Proofs | Promotion status |
 | --- | --- | ---: | --- |
 | None | - | 0 | - |

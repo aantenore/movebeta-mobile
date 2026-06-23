@@ -212,6 +212,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Create a launch-readiness evidence candidate only after external proof references validate.',
     },
     {
+      command: 'npm run release:evidence:apply',
+      key: 'external-evidence-apply',
+      label: 'External evidence apply guard',
+      owner: 'release',
+      purpose: 'Apply promoted launch-readiness evidence only after explicit review and write approval.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -379,6 +386,13 @@ export function buildReleaseEvidencePacket({
       key: 'external-evidence-promotion-report',
       label: 'External evidence promotion report',
       path: 'docs/sdlc/external-evidence-promotion-report.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
+    },
+    {
+      command: 'npm run release:evidence:apply',
+      key: 'external-evidence-apply-report',
+      label: 'External evidence apply report',
+      path: 'docs/sdlc/external-evidence-apply-report.json',
       status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {

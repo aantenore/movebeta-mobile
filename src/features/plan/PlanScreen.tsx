@@ -11,6 +11,7 @@ import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import cueValidationStarterKitReport from '../../../docs/sdlc/cue-validation-starter-kit-report.json';
+import externalEvidenceApplyReport from '../../../docs/sdlc/external-evidence-apply-report.json';
 import externalEvidenceIntakeReport from '../../../docs/sdlc/external-evidence-intake-report.json';
 import externalEvidencePromotionReport from '../../../docs/sdlc/external-evidence-promotion-report.json';
 import externalEvidenceValidationReport from '../../../docs/sdlc/external-evidence-validation-report.json';
@@ -2953,6 +2954,7 @@ export function PlanScreen() {
       {
         cueValidationStarterKitReport,
         externalEvidenceIntakeReport,
+        externalEvidenceApplyReport,
         externalEvidencePromotionReport,
         externalEvidenceValidationReport,
         featureCompletionReport,
