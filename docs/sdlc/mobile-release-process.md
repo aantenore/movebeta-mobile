@@ -11,15 +11,17 @@
 1. Update requirements, changelog, and versioning notes.
 2. Run `npm run release:check`.
 3. Run `npm run release:env:doctor` and confirm `.env.example` lists runtime, smoke, and release key names without values.
-4. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
-5. Review the Plan tab release unblock checklist for remaining proof artifacts, commands, and credential key names.
-6. Run `npm run release:eas:check`.
-7. Run `npm run native:qa:runbook` before collecting physical-device evidence.
-8. Run browser smoke.
-9. For native releases, run EAS preview build.
-10. Run `npm run release:archives` after web export to refresh delivery zips and checksum manifests.
-11. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
-12. Complete privacy and permission review.
+4. Run `npm run release:credentials:starter` and confirm the setup packet, env-key template, and EAS project binding
+   template contain no credential values.
+5. Run `npm run release:readiness` and review `docs/sdlc/launch-readiness-report.json`.
+6. Review the Plan tab release unblock checklist for remaining proof artifacts, commands, and credential key names.
+7. Run `npm run release:eas:check`.
+8. Run `npm run native:qa:runbook` before collecting physical-device evidence.
+9. Run browser smoke.
+10. For native releases, run EAS preview build.
+11. Run `npm run release:archives` after web export to refresh delivery zips and checksum manifests.
+12. Run `npm run release:handoff` after screenshots, readiness reports, and archives are refreshed.
+13. Complete privacy and permission review.
 
 ## EAS Readiness
 
@@ -47,6 +49,11 @@ Strict mode requires:
 
 Credential values must stay in local shell secrets, CI secrets, or EAS credentials. Do not commit store credential files or
 secret-like values into `eas.json`.
+
+Run `npm run release:credentials:starter` before filling account-bound prerequisites. It refreshes
+`docs/sdlc/store-credentials-setup-packet.json`, `docs/sdlc/store-credentials.env.template`, and
+`docs/sdlc/eas-project-binding.template.json` so the handoff can show required key names and EAS binding instructions
+without exposing values or local files.
 
 `.env.example` is the share-safe setup contract. Regenerate `docs/sdlc/env-template-report.json` with
 `npm run release:env:doctor` after adding runtime, smoke-test, or release credential key names.

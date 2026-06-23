@@ -17,6 +17,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'validation:cue:starter'], key: 'cueValidationStarterKit', label: 'Cue validation starter kit' },
   { command: ['npm', 'run', 'validation:cue:doctor'], key: 'cueValidationDatasetDoctor', label: 'Cue validation dataset doctor' },
   { command: ['npm', 'run', 'release:env:doctor'], key: 'envTemplateDoctor', label: 'Environment template doctor' },
+  { command: ['npm', 'run', 'release:credentials:starter'], key: 'storeCredentialsStarter', label: 'Store credentials starter' },
   { command: ['npm', 'run', 'release:credentials:doctor'], key: 'storeCredentialsDoctor', label: 'Store credentials doctor' },
   { command: ['npm', 'run', 'release:github:doctor'], key: 'githubWorkflowDoctor', label: 'GitHub workflow doctor' },
   { command: ['npm', 'run', 'feature:doctor'], key: 'featureCompletionDoctor', label: 'Feature completion doctor' },

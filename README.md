@@ -196,6 +196,8 @@ web build with `npm run store:screenshots`.
   references, release gate ordering, post-deploy smoke, and artifact upload evidence without committed secret values.
 - In-app PWA runtime readiness in the Plan tab for install prompt state, standalone mode, service worker/cache readiness,
   network state, update state, and share-safe install guidance.
+- Store credentials setup starter for share-safe EAS project binding guidance, empty credential key templates, and
+  release-gate evidence without Expo, Apple, Google, service-account, or project-id values in source control.
 - GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
   shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
 - GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
@@ -223,6 +225,7 @@ npm run native:android:debug
 npm run native:android:manifest
 npm run native:ios:doctor
 npm run release:env:doctor
+npm run release:credentials:starter
 npm run release:credentials:doctor
 npm run release:blocker-issues
 npm run release:blocker-issues:file
@@ -296,6 +299,9 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/cue-validation-dataset-report.md`.
 - Environment template report: `docs/sdlc/env-template-report.json`, `docs/sdlc/env-template-report.md`.
 - Store credentials report: `docs/sdlc/store-credentials-report.json`, `docs/sdlc/store-credentials-report.md`.
+- Store credentials setup starter: `docs/sdlc/store-credentials-setup-packet.json`,
+  `docs/sdlc/store-credentials-setup-packet.md`, `docs/sdlc/store-credentials.env.template`, and
+  `docs/sdlc/eas-project-binding.template.json`.
 - GitHub workflow report: `docs/sdlc/github-workflow-report.json`, `docs/sdlc/github-workflow-report.md`.
 - Dependency license report: `docs/sdlc/dependency-license-report.json`,
   `docs/sdlc/dependency-license-report.md`.
@@ -351,6 +357,7 @@ npm run release:blocker-issues
 npm run release:blocker-issues:file
 npm run native:ios:doctor
 npm run release:env:doctor
+npm run release:credentials:starter
 npm run release:credentials:doctor
 npm run web:vercel:check
 npm run web:vercel:workflow
@@ -395,6 +402,9 @@ npm run release:eas:strict
 `release:eas:check` validates the committed build and submit configuration while reporting account-bound Expo, Apple,
 and Google prerequisites as warnings. `release:eas:strict` must pass before submitting to TestFlight, Play internal
 testing, or production, and expects the project id plus store credentials to be injected from environment or CI secrets.
+Run `npm run release:credentials:starter` before strict submission setup to refresh the share-safe packet, empty env-key
+template, and EAS project binding template. Fill credential values only in the local shell, CI secrets, EAS credentials,
+or store-provider consoles; do not commit a filled copy.
 
 Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
 `docs/sdlc/native-qa-evidence-input.template.json` as the structured run input. Generate the current runbook and input

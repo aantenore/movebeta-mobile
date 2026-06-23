@@ -72,6 +72,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   moveNetReadinessReport?: unknown;
   nativeQaEvidenceStarterReport?: unknown;
   pwaReadinessReport?: unknown;
+  storeCredentialsSetupPacket?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
   vercelDeploymentReport?: unknown;
@@ -235,6 +236,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run release:credentials:doctor',
     reportKey: 'storeCredentialsReport',
     requiredFor: ['store'],
+  },
+  {
+    key: 'store-credentials-setup-packet',
+    label: 'Store credentials setup packet',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/store-credentials-setup-packet.json',
+    refreshCommand: 'npm run release:credentials:starter',
+    reportKey: 'storeCredentialsSetupPacket',
+    requiredFor: ['store', 'handoff'],
   },
   {
     key: 'github-workflow-report',

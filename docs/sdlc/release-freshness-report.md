@@ -1,9 +1,9 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-23T09:43:42.091Z
+Generated: 2026-06-23T10:19:08.757Z
 
 - Status: ready
-- Fresh artifacts: 22/22
+- Fresh artifacts: 23/23
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
@@ -22,7 +22,7 @@ Generated: 2026-06-23T09:43:42.091Z
 | Release blocker issue filing plan | fresh | 0h | 24h | `npm run release:blocker-issues:file` |
 | Release blocker issue web links | fresh | 0h | 24h | `npm run release:blocker-issues:links` |
 | MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
-| Model-analysis replay report | fresh | 0h | 24h | `npm run model:analysis:replay` |
+| Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
 | MoveNet static assets report | fresh | 0h | 168h | `npm run model:movenet:assets:check` |
 | Model asset provenance report | fresh | 0h | 168h | `npm run model:assets:provenance` |
 | Model verification suite report | fresh | 0h | 24h | `npm run model:verification:suite` |
@@ -31,6 +31,7 @@ Generated: 2026-06-23T09:43:42.091Z
 | Cue-validation dataset report | fresh | 0h | 24h | `npm run validation:cue:doctor` |
 | Cue-validation starter kit report | fresh | 0h | 24h | `npm run validation:cue:starter` |
 | Store credentials report | fresh | 0h | 24h | `npm run release:credentials:doctor` |
+| Store credentials setup packet | fresh | 0h | 24h | `npm run release:credentials:starter` |
 | GitHub workflow report | fresh | 0h | 168h | `npm run release:github:doctor` |
 | Dependency license report | fresh | 0h | 168h | `npm run security:licenses` |
 | Environment template report | fresh | 0h | 168h | `npm run release:env:doctor` |
