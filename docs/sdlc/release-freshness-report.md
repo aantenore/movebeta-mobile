@@ -1,13 +1,13 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-23T16:05:26.010Z
+Generated: 2026-06-23T16:16:05.119Z
 
 - Status: ready
 - Fresh artifacts: 31/31
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
-- Oldest artifact: movenet-readiness-report
+- Oldest artifact: release-blocker-issues-report
 - Next action: All tracked release evidence artifacts are fresh.
 - Credential values included: no
 - Local paths included: no
@@ -16,8 +16,8 @@ Generated: 2026-06-23T16:05:26.010Z
 
 | Artifact | Status | Age | Window | Refresh |
 | --- | --- | ---: | ---: | --- |
-| Launch readiness report | fresh | 0.01h | 24h | `npm run release:readiness` |
-| Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
+| Launch readiness report | fresh | 0h | 24h | `npm run release:readiness` |
+| Feature completion report | fresh | 0h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0.01h | 24h | `npm run release:blocker-issues` |
 | Release blocker issue filing plan | fresh | 0.01h | 24h | `npm run release:blocker-issues:file` |
 | Release blocker issue web links | fresh | 0.01h | 24h | `npm run release:blocker-issues:links` |
@@ -25,7 +25,7 @@ Generated: 2026-06-23T16:05:26.010Z
 | External evidence validation report | fresh | 0.01h | 24h | `npm run release:evidence:validate` |
 | External evidence promotion report | fresh | 0.01h | 24h | `npm run release:evidence:promote` |
 | External evidence apply report | fresh | 0.01h | 24h | `npm run release:evidence:apply` |
-| MoveNet readiness report | fresh | 0.02h | 24h | `npm run model:movenet:readiness` |
+| MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
 | Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
 | MoveNet static assets report | fresh | 0.01h | 168h | `npm run model:movenet:assets:check` |
 | Model asset provenance report | fresh | 0.01h | 168h | `npm run model:assets:provenance` |

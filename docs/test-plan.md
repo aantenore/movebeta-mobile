@@ -311,8 +311,9 @@
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
-- Vitest model delivery lifecycle tests cover first-launch pending state, warmed-cache ready state, native bundled
-  delivery, static asset blockers, JSON/Markdown report writes, and unsafe-value rejection.
+- Vitest model delivery lifecycle tests cover first-launch pending state, verified delivery path without warmed runtime
+  cache, warmed-cache ready state, native bundled delivery, static asset blockers, JSON/Markdown report writes, and
+  unsafe-value rejection.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.

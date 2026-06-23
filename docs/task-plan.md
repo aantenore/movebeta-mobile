@@ -190,3 +190,4 @@
 | T186 | Add configurable PWA model delivery policy | Done |
 | T187 | Add report-derived web smoke expectations | Done |
 | T188 | Add durable web smoke evidence report | Done |
+| T189 | Separate model delivery path verification from runtime cache state | Done |

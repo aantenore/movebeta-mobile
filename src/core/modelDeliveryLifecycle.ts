@@ -54,6 +54,7 @@ export const ModelDeliveryLifecycleSchema = z.object({
   stages: z.array(ModelDeliveryLifecycleStageSchema).length(4),
   summary: z.object({
     cacheReady: z.boolean(),
+    deliveryPathVerified: z.boolean(),
     deliveryMode: z.enum(['native-bundled', 'same-origin-static']),
     downloadStrategy: ModelDownloadStrategySchema,
     downloadTrigger: z.string().min(1),
@@ -79,6 +80,23 @@ type StaticModelAssetReport = {
     sourceAssetCount?: unknown;
     status?: unknown;
     totalBytes?: unknown;
+  };
+};
+
+type PwaReadinessReport = {
+  summary?: {
+    checkCount?: unknown;
+    status?: unknown;
+    verifiedCount?: unknown;
+  };
+};
+
+type WebSmokeReport = {
+  status?: unknown;
+  summary?: {
+    passedChecks?: unknown;
+    status?: unknown;
+    totalChecks?: unknown;
   };
 };
 
@@ -161,15 +179,19 @@ export function assertModelDeliveryLifecycleIsShareSafe(lifecycle: ModelDelivery
 export function buildModelDeliveryLifecycle({
   generatedAt = new Date().toISOString(),
   modelDeliveryPolicy,
+  pwaReadinessReport,
   pwaRuntimeReadiness,
   runtime = pwaRuntimeReadiness?.summary.status === 'native' ? 'native' : 'web',
   staticAssetsReport,
+  webSmokeReport,
 }: {
   generatedAt?: string;
   modelDeliveryPolicy?: unknown;
+  pwaReadinessReport?: PwaReadinessReport;
   pwaRuntimeReadiness?: PwaRuntimeReadiness;
   runtime?: 'native' | 'web';
   staticAssetsReport?: StaticModelAssetReport;
+  webSmokeReport?: WebSmokeReport;
 }): ModelDeliveryLifecycle {
   const deliveryPolicy = parseModelDeliveryPolicy(modelDeliveryPolicy);
   const downloadStrategy = deliveryPolicy.web.downloadStrategy;
@@ -185,8 +207,18 @@ export function buildModelDeliveryLifecycle({
   );
   const totalBytes = count(staticSummary?.totalBytes);
   const staticReady = staticSummary?.status === 'ready' && modelUrl.startsWith('/models/') && totalBytes > 0;
+  const pwaReady =
+    pwaReadinessReport?.summary?.status === 'ready' &&
+    count(pwaReadinessReport.summary.verifiedCount) > 0 &&
+    count(pwaReadinessReport.summary.verifiedCount) === count(pwaReadinessReport.summary.checkCount);
+  const webSmokeReady =
+    webSmokeReport?.status === 'pass' &&
+    webSmokeReport.summary?.status === 'pass' &&
+    count(webSmokeReport.summary.passedChecks) > 0 &&
+    count(webSmokeReport.summary.passedChecks) === count(webSmokeReport.summary.totalChecks);
   const nativeRuntime = runtime === 'native';
   const cacheReady = nativeRuntime || Boolean(pwaRuntimeReadiness?.summary.modelCacheReady);
+  const deliveryPathVerified = nativeRuntime || cacheReady || (staticReady && (pwaReady || webSmokeReady));
   const expectedCacheAssets = pwaRuntimeReadiness?.summary.modelAssetsExpected ?? assetCount;
   const cachedAssets = pwaRuntimeReadiness?.summary.modelAssetsCached ?? 0;
   const integrityVerified = nativeRuntime || Boolean(pwaRuntimeReadiness?.summary.modelIntegrityVerified);
@@ -219,6 +251,8 @@ export function buildModelDeliveryLifecycle({
         ? 'No browser warmup is required for native distribution.'
         : cacheReady
           ? `Cache Storage has ${cachedAssets}/${expectedCacheAssets} model asset(s) available.`
+          : deliveryPathVerified
+            ? 'The exported PWA delivery path verifies service-worker model caching; each installed browser still downloads assets on first online launch or explicit warmup.'
           : downloadStrategy === 'precache-on-install'
             ? 'The service worker fetches model-assets.json and listed /models assets during first online install; Warm model can refresh the cache explicitly.'
             : downloadStrategy === 'warmup-only'
@@ -230,10 +264,12 @@ export function buildModelDeliveryLifecycle({
         ? 'Install the native build through the configured release channel.'
         : cacheReady
           ? 'Keep the warmup action available for cache refresh after deploys.'
+          : deliveryPathVerified
+            ? 'Keep web smoke and PWA readiness evidence fresh after model or service-worker changes.'
           : downloadStrategy === 'precache-on-install'
             ? 'Open the PWA online once or use Warm model before going offline.'
             : 'Use Warm model online before going offline.',
-      status: nativeRuntime || cacheReady ? 'ready' : 'action',
+      status: nativeRuntime || cacheReady || deliveryPathVerified ? 'ready' : 'action',
     }),
     stage({
       detail: nativeRuntime
@@ -242,6 +278,8 @@ export function buildModelDeliveryLifecycle({
           ? integrityVerified
             ? 'Offline reuse is ready with SHA-256 verified cached model assets.'
             : 'Offline reuse is ready from Cache Storage; integrity verification is not available in this browser.'
+          : deliveryPathVerified
+            ? 'Offline reuse is verified as an app delivery path; each browser must warm and keep model assets cached before offline analysis.'
           : 'Offline analysis should wait until every model asset is cached and integrity checks pass when supported.',
       key: 'offline-reuse',
       label: 'Offline reuse',
@@ -249,12 +287,18 @@ export function buildModelDeliveryLifecycle({
         ? 'Verify native offline analysis during physical-device QA.'
         : cacheReady && (!integritySupported || integrityVerified)
           ? 'Run one offline relaunch smoke before a gym session.'
+          : deliveryPathVerified
+            ? 'Warm the model cache online on each target browser before offline gym use.'
           : 'Warm and verify the model cache online before offline analysis.',
-      status: nativeRuntime || (cacheReady && (!integritySupported || integrityVerified)) ? 'ready' : 'action',
+      status: nativeRuntime || (cacheReady && (!integritySupported || integrityVerified)) || deliveryPathVerified ? 'ready' : 'action',
     }),
   ];
   const status = summaryStatus(stages);
-  const nextAction = stages.find((item) => item.status !== 'ready')?.nextAction ?? 'Model delivery is ready from build-time vendoring through offline reuse.';
+  const nextAction =
+    stages.find((item) => item.status !== 'ready')?.nextAction ??
+    (!nativeRuntime && deliveryPathVerified && !cacheReady
+      ? 'Model delivery path is verified; warm the model cache on each target browser before offline gym use.'
+      : 'Model delivery is ready from build-time vendoring through offline reuse.');
 
   const lifecycle = ModelDeliveryLifecycleSchema.parse({
     generatedAt,
@@ -275,6 +319,7 @@ export function buildModelDeliveryLifecycle({
     stages,
     summary: {
       cacheReady,
+      deliveryPathVerified,
       deliveryMode: nativeRuntime ? 'native-bundled' : 'same-origin-static',
       downloadStrategy,
       downloadTrigger: nativeRuntime

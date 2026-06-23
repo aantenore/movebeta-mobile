@@ -439,6 +439,9 @@
   cover release UI, PWA cache, model-delivery, and report-derived expectations, stay tracked by release gates,
   launch-readiness, freshness, handoff, acquisition, and data-room artifacts, and reject raw video references, local
   paths, credential values, token-like strings, and raw artifacts before sharing.
+- Model delivery lifecycle evidence must distinguish the verified app delivery path from the current browser/device
+  model cache state, so release packets can prove PWA model delivery without claiming every installed client has already
+  warmed its local cache.
 - Vercel deployment readiness reports must be generated from project configuration and current environment state, treat
   missing Vercel account binding and secrets as action-needed rather than implementation blockers, keep static deploy
   commands shareable, and reject credential values, project id values, local paths, raw artifacts, raw videos, and
