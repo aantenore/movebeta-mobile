@@ -78,6 +78,7 @@ import {
   type PwaRuntimeReadiness,
 } from '@/core/pwaRuntimeReadiness';
 import {
+  activateBrowserPwaUpdate,
   type BeforeInstallPromptEventLike,
   browserPwaProbe,
   emptyModelCacheState,
@@ -343,7 +344,28 @@ function usePwaRuntimeReadiness() {
     return modelCache;
   }
 
+  async function activateUpdate() {
+    const result = await activateBrowserPwaUpdate();
+    const modelCache =
+      Platform.OS === 'web' && typeof window !== 'undefined' && typeof navigator !== 'undefined'
+        ? await resolveBrowserModelCacheState()
+        : emptyModelCacheState();
+
+    setProbe((current) =>
+      browserPwaProbe({
+        installPromptAvailable: current.installPromptAvailable,
+        modelCache,
+        serviceWorkerControlled: current.serviceWorkerControlled || result.summary.status === 'activated',
+        serviceWorkerRegistered: current.serviceWorkerRegistered || result.summary.serviceWorkerSupported,
+        updateAvailable: result.summary.updateStillWaiting,
+      }),
+    );
+
+    return result;
+  }
+
   return {
+    activateUpdate,
     promptInstall,
     refreshModelCache,
     readiness: buildPwaRuntimeReadiness(probe),
@@ -2097,10 +2119,12 @@ function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
 }
 
 function PwaRuntimeCard({
+  onActivateUpdate,
   onInstall,
   onWarmModelCache,
   readiness,
 }: {
+  onActivateUpdate: () => void;
   onInstall: () => void;
   onWarmModelCache: () => void;
   readiness: PwaRuntimeReadiness;
@@ -2155,6 +2179,10 @@ function PwaRuntimeCard({
         <Pressable accessibilityLabel="Warm PWA model cache" onPress={onWarmModelCache} style={styles.planAction}>
           <Download color={theme.colors.brand} size={16} />
           <Text style={styles.planActionText}>Warm model</Text>
+        </Pressable>
+        <Pressable accessibilityLabel="Activate pending PWA update" onPress={onActivateUpdate} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Activate update</Text>
         </Pressable>
       </View>
       <View style={styles.releaseUnblockList}>
@@ -3250,6 +3278,15 @@ export function PlanScreen() {
     });
   }
 
+  async function preparePwaUpdateActivation() {
+    selectionFeedback();
+    const result = await pwaRuntime.activateUpdate();
+    setPreparedPlanExport({
+      body: JSON.stringify(result, null, 2),
+      title: 'Prepared PWA update activation',
+    });
+  }
+
   function updateNativeQaComposerRun(
     platform: NativeQaEvidenceComposerRun['platform'],
     patch: Partial<NativeQaEvidenceComposerRun>,
@@ -3442,6 +3479,7 @@ export function PlanScreen() {
       <Section title="Installable PWA" caption="Static Vercel-ready web install path with no backend requirement.">
         <PwaReadinessCard report={pwaReadinessReport} />
         <PwaRuntimeCard
+          onActivateUpdate={() => void preparePwaUpdateActivation()}
           onInstall={() => void preparePwaInstallGuidance()}
           onWarmModelCache={() => void preparePwaModelCacheWarmup()}
           readiness={pwaRuntime.readiness}

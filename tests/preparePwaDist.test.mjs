@@ -69,6 +69,13 @@ describe('prepare PWA dist', () => {
     expect(serviceWorker).toMatch(/const CACHE_VERSION = 'v-[a-f0-9]{16}';/);
   });
 
+  it('supports explicit service worker update activation messages', () => {
+    const serviceWorker = fs.readFileSync(path.join(process.cwd(), 'public/sw.js'), 'utf8');
+
+    expect(serviceWorker).toContain('MOVEBETA_SKIP_WAITING');
+    expect(serviceWorker).toContain('self.skipWaiting()');
+  });
+
   it('is idempotent after PWA metadata is present', () => {
     const distDir = makeDist();
     expect(preparePwaDist({ distDir })).toBe(true);

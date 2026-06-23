@@ -212,6 +212,8 @@ platforms are validated on physical climbing videos and devices.
   delivery from PWA download timing, extra bytes, cache warmup, integrity, update activation, and offline-use steps.
 - Coach PWA preflight blocks offline real-video analysis when a service-worker update is pending, preventing stale cached
   model assets from being treated as field-ready before refresh and warmup.
+- Plan tab exposes an Activate update action that requests waiting service-worker activation, refreshes runtime/cache
+  state, and prepares a `movebeta.pwa-update-activation.v1` packet with post-update model warmup guidance.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
