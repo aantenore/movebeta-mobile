@@ -146,7 +146,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T17:48:23.275Z",
+  "generatedAt": "2026-06-23T17:49:19.384Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
