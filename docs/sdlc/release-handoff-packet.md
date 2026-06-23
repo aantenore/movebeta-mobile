@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T09:44:58.872Z
+Generated: 2026-06-23T10:21:36.704Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: ddf1ac109f89b95e8be91c93750f1e0f44ccb375
+- Base commit at generation: bf0b023acff42d0781178cd103d43ce3c5f8f142
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3871ms; average inference 338ms
+- MoveNet readiness: ready; load 4561ms; average inference 347ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -40,6 +40,7 @@ Generated: 2026-06-23T09:44:58.872Z
 - Physical-device QA validator: `npm run native:qa:validate`
 - Cue-validation starter kit: `npm run validation:cue:starter`
 - Coach cue-validation gate: `npm run validation:cue`
+- Store credentials starter: `npm run release:credentials:starter`
 - GitHub workflow doctor: `npm run release:github:doctor`
 - Dependency license report: `npm run security:licenses`
 - Feature completion doctor: `npm run feature:doctor`
@@ -79,6 +80,9 @@ Generated: 2026-06-23T09:44:58.872Z
 - [x] PWA readiness report: `docs/sdlc/pwa-readiness-report.json`
 - [x] Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`
 - [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
+- [x] Store credentials setup packet: `docs/sdlc/store-credentials-setup-packet.json`
+- [x] Store credentials env template: `docs/sdlc/store-credentials.env.template`
+- [x] EAS project binding template: `docs/sdlc/eas-project-binding.template.json`
 - [x] Store manifest: `docs/store/store-manifest.json`
 - [x] Screenshot gallery: `docs/screenshots.md`
 - [x] Release unblock screenshot: `docs/store/screenshots/07-release-unblock.png`
