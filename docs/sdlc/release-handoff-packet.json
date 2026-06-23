@@ -22,6 +22,16 @@
     },
     {
       "exists": true,
+      "label": "Cue validation starter kit report",
+      "path": "docs/sdlc/cue-validation-starter-kit-report.json"
+    },
+    {
+      "exists": true,
+      "label": "Cue validation review worksheet CSV",
+      "path": "docs/validation/cue-validation-review-worksheet.csv"
+    },
+    {
+      "exists": true,
       "label": "Release blocker issues report",
       "path": "docs/sdlc/release-blocker-issues-report.json"
     },
@@ -274,6 +284,14 @@
       ]
     },
     {
+      "command": "npm run validation:cue:starter",
+      "key": "cue-validation-starter",
+      "label": "Cue-validation starter kit",
+      "requiredFor": [
+        "store"
+      ]
+    },
+    {
       "command": "npm run validation:cue",
       "key": "cue-validation",
       "label": "Coach cue-validation gate",
@@ -395,7 +413,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T08:51:10.310Z",
+  "generatedAt": "2026-06-23T09:02:47.181Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -405,9 +423,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "c269d59cee18e1be46f6d9f66048df05db99877d",
+    "baseCommitSha": "84b2ffeb40205e0e395dc8b626feea09682fee94",
     "changedPaths": [],
-    "commitSha": "c269d59cee18e1be46f6d9f66048df05db99877d",
+    "commitSha": "84b2ffeb40205e0e395dc8b626feea09682fee94",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -486,8 +504,8 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 333,
-    "moveNetLoadMs": 4041,
+    "moveNetAverageInferenceMs": 336,
+    "moveNetLoadMs": 3906,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
