@@ -47,6 +47,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseBlockerIssueLinks');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('externalEvidenceIntake');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('externalEvidenceValidation');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('externalEvidencePromotion');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeSubmissionPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('moveNetStaticAssets');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('modelAssetProvenance');

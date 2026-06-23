@@ -506,6 +506,9 @@
 - External evidence validation must verify filled proof references before release claims use them, requiring an explicit
   accepted reference type for every proof row and rejecting unsupported URLs, absolute paths, raw artifacts, credential
   values, and token-like data.
+- External evidence promotion must create a launch-readiness evidence candidate only after external proof references
+  validate, preserving the current baseline when evidence is missing and avoiding automatic mutation of app release
+  configuration.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

@@ -268,6 +268,8 @@
   durable JSON/Markdown/template writes, stable output paths, and local-path/token rejection.
 - Vitest external evidence validation tests cover filled proof-reference validation, accepted reference-type enforcement,
   missing filled-input reporting, durable JSON/Markdown writes, stable output paths, and share-safe output constraints.
+- Vitest external evidence promotion tests cover validation-gated launch-readiness candidate generation, missing evidence
+  baseline preservation, durable JSON/Markdown writes, stable output paths, and share-safe output constraints.
 - PWA readiness doctor with `npm run web:pwa:check`, which validates the exported web build includes installable
   manifest metadata, service worker registration, PWA icons, same-origin static MoveNet cache assets, offline app boot
   pre-cache coverage, content-addressed service-worker cache versioning, Vercel static config, SPA fallback, and no
