@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T09:02:47.181Z
+Generated: 2026-06-23T09:44:58.872Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 84b2ffeb40205e0e395dc8b626feea09682fee94
+- Base commit at generation: ddf1ac109f89b95e8be91c93750f1e0f44ccb375
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3906ms; average inference 336ms
+- MoveNet readiness: ready; load 3871ms; average inference 338ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -36,6 +36,7 @@ Generated: 2026-06-23T09:02:47.181Z
 - Model verification suite: `npm run model:verification:suite`
 - MoveNet static assets doctor: `npm run model:movenet:assets:check`
 - Model asset provenance doctor: `npm run model:assets:provenance`
+- Native QA evidence starter: `npm run native:qa:starter`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Cue-validation starter kit: `npm run validation:cue:starter`
 - Coach cue-validation gate: `npm run validation:cue`
@@ -70,6 +71,8 @@ Generated: 2026-06-23T09:02:47.181Z
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
+- [x] Native QA evidence starter report: `docs/sdlc/native-qa-evidence-starter-report.json`
+- [x] Native QA evidence input template: `docs/sdlc/native-qa-evidence-input.template.json`
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
 - [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
