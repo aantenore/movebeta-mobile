@@ -196,3 +196,4 @@
 | T192 | Add model update and cache-invalidation lifecycle evidence | Done |
 | T193 | Make MoveNet readiness prefer vendored static model assets | Done |
 | T194 | Add on-device live recording guide to Coach recorder | Done |
+| T195 | Add local clip triage before video analysis | Done |

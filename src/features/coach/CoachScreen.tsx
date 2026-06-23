@@ -31,6 +31,7 @@ import {
   type CaptureCalibrationAssessment,
   type CaptureCalibrationInput,
 } from '@/video/captureCalibration';
+import { buildClipTriagePlan } from '@/video/clipTriage';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
 import { buildLiveRecordingGuide, type LiveRecordingGuide } from '@/video/liveRecordingGuide';
@@ -344,8 +345,11 @@ function VideoPreview({ source }: { source: VideoSourceResult }) {
 
 function VideoIntakePanel({ source }: { source: VideoSourceResult }) {
   const assessment = assessVideoIntake(source.video);
+  const triage = buildClipTriagePlan(source.video, assessment);
   const isBlocked = assessment.status === 'blocked';
   const isReady = assessment.status === 'ready';
+  const triageBlocked = triage.status === 'blocked';
+  const triageReady = triage.decision === 'analyze';
 
   return (
     <View style={[styles.intake, isBlocked ? styles.intakeBlocked : isReady ? styles.intakeReady : null]}>
@@ -378,6 +382,41 @@ function VideoIntakePanel({ source }: { source: VideoSourceResult }) {
           <Text style={styles.intakeStatValue}>{assessment.expectedFrames}</Text>
           <Text style={styles.intakeStatLabel}>Frames</Text>
         </View>
+      </View>
+
+      <View style={[styles.triage, triageBlocked ? styles.triageBlocked : triageReady ? styles.triageReady : null]}>
+        <View style={styles.triageTop}>
+          <View style={styles.triageTitleRow}>
+            <Cpu color={triageBlocked ? theme.colors.coral : triageReady ? theme.colors.success : theme.colors.amber} size={17} />
+            <Text style={styles.triageTitle}>{triage.title}</Text>
+          </View>
+          <Text style={[styles.triageBadge, triageBlocked ? styles.triageBadgeBlocked : triageReady ? styles.triageBadgeReady : null]}>
+            {triage.decision}
+          </Text>
+        </View>
+        <Text style={styles.triageSummary}>{triage.summary}</Text>
+        <View style={styles.triageActions}>
+          <Text style={styles.triagePrimary}>{triage.primaryAction}</Text>
+          <Text style={styles.triageSecondary}>{triage.secondaryAction}</Text>
+        </View>
+        <View style={styles.triageMetrics}>
+          <Text style={styles.triageMetric}>{triage.score}/100</Text>
+          <Text style={styles.triageMetric}>{triage.processingBudgetLabel}</Text>
+          <Text style={styles.triageMetric}>{triage.targetClipLabel}</Text>
+        </View>
+        {triage.reasons.length > 0 ? (
+          <View style={styles.triageReasons}>
+            {triage.reasons.map((reason) => (
+              <Text
+                key={reason.id}
+                style={[styles.triageReason, reason.severity === 'block' ? styles.triageReasonBlocked : null]}
+              >
+                {reason.label}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+        <Text style={styles.triagePrivacy}>{triage.privacyNote}</Text>
       </View>
 
       {assessment.issues.length > 0 ? (
@@ -1751,6 +1790,118 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   intakeTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  triage: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: 8,
+    padding: theme.spacing.sm,
+  },
+  triageActions: {
+    gap: 3,
+  },
+  triageBadge: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  triageBadgeBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  triageBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  triageBlocked: {
+    borderColor: '#F0C7BD',
+  },
+  triageMetric: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.text,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  triageMetrics: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  triagePrimary: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  triagePrivacy: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  triageReady: {
+    borderColor: '#B8D8C8',
+  },
+  triageReason: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  triageReasonBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  triageReasons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  triageSecondary: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 16,
+  },
+  triageSummary: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  triageTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  triageTitleRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 7,
+  },
+  triageTop: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.spacing.sm,

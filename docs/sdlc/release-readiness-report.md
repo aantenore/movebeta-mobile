@@ -23,6 +23,8 @@ platforms are validated on physical climbing videos and devices.
   minimum-duration readiness, near-limit warnings, and progress before local analysis runs.
 - Selected local videos render a preview card and route through local analysis.
 - Selected videos show clip-readiness status, sampled-frame estimate, local-source guard, and duration/resolution warnings.
+- Selected videos show a local clip triage decision with analyze, trim, retake, or blocked recommendation before the
+  on-device model runs.
 - Reports show analysis quality, frame coverage, landmark coverage, visibility, and weak-input warnings.
 - Reports show local analysis duration, processed-frame rate, and budget status.
 - Reports include a versioned local analysis evidence timeline for input normalization, pose provider, signal quality,
@@ -577,6 +579,8 @@ platforms are validated on physical climbing videos and devices.
   durable JSON/Markdown writes, and secret/local-artifact exclusion.
 - `tests/liveRecordingGuide.test.ts`: passed and covers setup review advice, coach-lens-specific recording prompts,
   minimum-duration readiness, progress, and near-limit warnings.
+- `tests/clipTriage.test.ts`: passed and covers local analyze, trim, retake, blocked, too-short, configurable score, and
+  raw URI exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, explicit delivered-commit pinning, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks plus local
@@ -601,7 +605,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated twelve 780x1688 PNG screenshots.
 - `npm run web:smoke:report`: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
-  mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
+  mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness, clip triage,
   capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress analysis trust trend, the Progress analysis trust trend packet, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, the Progress training load packet, practice-reset planning, the Progress technique readiness, the Progress technique readiness packet
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
   comparison, the Progress history preview, Plan access cards, Progress history filters, the Sessions review detail, the
