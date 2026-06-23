@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "movebeta.model-delivery-policy.v1",
+  "web": {
+    "downloadStrategy": "precache-on-install",
+    "offlineUse": "requires-cached-assets",
+    "integrity": "sha256-manifest",
+    "userAction": "warm-model-control"
+  },
+  "native": {
+    "deliveryMode": "platform-provider-bundled"
+  }
+}

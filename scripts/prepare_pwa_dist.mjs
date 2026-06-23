@@ -3,8 +3,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const APP_SHELL = ['/', '/index.html', '/manifest.json', '/favicon.ico', '/pwa/icon-192.png', '/pwa/icon-512.png'];
+const APP_SHELL = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/favicon.ico',
+  '/pwa/icon-192.png',
+  '/pwa/icon-512.png',
+  '/model-delivery-policy.json',
+];
 const MODEL_ASSET_MANIFEST = '/model-assets.json';
+const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json';
 
 export function resolveProjectRoot() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -75,6 +84,7 @@ export function discoverCacheVersionAssetPaths({ distDir = path.join(resolveProj
   return uniqueAssetPaths([
     ...APP_SHELL,
     ...discoverOfflineExportAssets({ distDir }),
+    MODEL_DELIVERY_POLICY,
     MODEL_ASSET_MANIFEST,
     ...modelAssets,
   ]);

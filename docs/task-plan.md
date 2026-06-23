@@ -187,3 +187,4 @@
 | T183 | Add explicit delivered-commit pinning to release handoff generation | Done |
 | T184 | Add acquisition readiness packet for buyer due diligence | Done |
 | T185 | Add share-safe data-room index for buyer due diligence | Done |
+| T186 | Add configurable PWA model delivery policy | Done |

@@ -44,9 +44,12 @@ MoveNet loading remains lazy inside the active browser session, but the graph an
 from TensorFlow Hub during first user analysis. `npm run model:movenet:assets:download` vendors MoveNet SinglePose
 Lightning under `public/models/movenet/singlepose/lightning/4`, writes `public/model-assets.json`, and normalizes the
 local `model.json` to same-origin shard paths. `app.json` and `.env.example` expose the replaceable
-`tfjsMoveNetModelUrl`, while `public/sw.js` precaches `/model-assets.json` plus every listed `/models/...` file. The
-download point is build/setup time; the runtime detector loads from the app origin and can reuse the service-worker cache
-when the PWA has been installed or opened online once.
+`tfjsMoveNetModelUrl`, while `public/model-delivery-policy.json` declares when the web runtime should fetch model assets.
+The default policy is `precache-on-install`: `public/sw.js` caches `/model-delivery-policy.json`, `/model-assets.json`,
+and every listed `/models/...` file during first online service-worker install. The download point for vendoring remains
+build/setup time; the user device fetches only same-origin model files and can reuse the service-worker cache when the PWA
+has been installed or opened online once. The policy can be changed to warmup-only or lazy analysis download without
+changing the pose-estimator contract.
 `scripts/prepare_pwa_dist.mjs` also injects the exported Expo JS bundles, router image assets, and metadata into
 `dist/sw.js`, so the generated service worker has a deterministic offline app-boot cache instead of relying on a second
 controlled reload to discover hashed files.

@@ -29,6 +29,7 @@ Generated: ${lifecycle.generatedAt}
 - Status: ${lifecycle.summary.status}
 - Model: ${lifecycle.model.name}
 - Delivery mode: ${lifecycle.summary.deliveryMode}
+- Download strategy: ${lifecycle.summary.downloadStrategy}
 - Model URL: ${lifecycle.model.modelUrl}
 - Assets: ${lifecycle.model.assetCount}
 - Total bytes: ${lifecycle.model.totalBytes}
@@ -60,6 +61,7 @@ export function writeModelDeliveryLifecycleReport({
 } = {}) {
   const lifecycle = buildModelDeliveryLifecycle({
     generatedAt,
+    modelDeliveryPolicy: readJsonIfExists(rootDir, 'public/model-delivery-policy.json'),
     staticAssetsReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-static-assets-report.json'),
   });
   const jsonTarget = jsonOutputPath ?? path.join(rootDir, 'docs/sdlc/model-delivery-lifecycle-report.json');
