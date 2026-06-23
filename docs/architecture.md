@@ -73,7 +73,9 @@ integrity without a backend.
 The Coach tab reuses the same browser-runtime helpers through a local model preflight panel before capture. It shows
 cached/verified model asset counts, exposes Warm model next to record/import, allows online real-video analysis to fetch
 same-origin assets, blocks offline real-video analysis when the cache is missing, and bypasses browser cache checks for
-native provider builds.
+native provider builds. The pure preflight contract also returns `shouldWarmBeforeAnalysis`, so online uncached real-video
+analysis can warm `/model-assets.json` and listed `/models/...` files before the local pose provider starts, while offline
+uncached real-video analysis remains blocked.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards
