@@ -87,6 +87,11 @@
     },
     {
       "exists": true,
+      "label": "Model delivery lifecycle report",
+      "path": "docs/sdlc/model-delivery-lifecycle-report.json"
+    },
+    {
+      "exists": true,
       "label": "Model asset attribution notice",
       "path": "docs/sdlc/model-asset-attribution.md"
     },
@@ -325,6 +330,16 @@
       ]
     },
     {
+      "command": "npm run model:delivery:lifecycle",
+      "key": "model-delivery-lifecycle",
+      "label": "Model delivery lifecycle report",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run native:qa:starter",
       "key": "native-qa-starter",
       "label": "Native QA evidence starter",
@@ -516,7 +531,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T12:48:04.345Z",
+  "generatedAt": "2026-06-23T13:02:06.668Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -526,9 +541,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "27690f1d9e491a6e7896f21021cfe331f068e286",
+    "baseCommitSha": "152f458229c721bcdad06043d3df7a5659c19b34",
     "changedPaths": [],
-    "commitSha": "27690f1d9e491a6e7896f21021cfe331f068e286",
+    "commitSha": "152f458229c721bcdad06043d3df7a5659c19b34",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -607,8 +622,8 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 354,
-    "moveNetLoadMs": 4898,
+    "moveNetAverageInferenceMs": 323,
+    "moveNetLoadMs": 4751,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
