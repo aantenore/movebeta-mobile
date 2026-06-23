@@ -1,9 +1,9 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-23T12:44:10.589Z
+Generated: 2026-06-23T13:00:08.533Z
 
 - Status: ready
-- Fresh artifacts: 27/27
+- Fresh artifacts: 28/28
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
@@ -29,6 +29,7 @@ Generated: 2026-06-23T12:44:10.589Z
 | Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
 | MoveNet static assets report | fresh | 0h | 168h | `npm run model:movenet:assets:check` |
 | Model asset provenance report | fresh | 0h | 168h | `npm run model:assets:provenance` |
+| Model delivery lifecycle report | fresh | 0h | 168h | `npm run model:delivery:lifecycle` |
 | Model verification suite report | fresh | 0.01h | 24h | `npm run model:verification:suite` |
 | iOS toolchain report | fresh | 0.01h | 24h | `npm run native:ios:doctor` |
 | Native QA evidence starter report | fresh | 0.01h | 24h | `npm run native:qa:starter` |

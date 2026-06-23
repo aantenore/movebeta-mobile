@@ -227,6 +227,9 @@
 - Model asset provenance doctor with `npm run model:assets:provenance`, which verifies TensorFlow Hub source URLs,
   same-origin asset inventory, SHA-256 parity, attribution notice presence, explicit license-review state,
   release-gate/freshness/handoff/Vercel integration, and share-safety.
+- Model delivery lifecycle report with `npm run model:delivery:lifecycle`, which explains build-time vendoring,
+  same-origin browser download on first online launch or warmup, native bundle delivery, offline cache reuse, and
+  share-safety.
 - Vitest MoveNet static asset tests cover mocked TFHub downloads, absolute URL normalization into local shard paths,
   manifest hashing, missing-shard blockers, app model URL drift, JSON/Markdown report writes, and unsafe-value rejection.
 - Model-analysis replay with `npm run model:analysis:replay`, which writes
@@ -291,6 +294,8 @@
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
+- Vitest model delivery lifecycle tests cover first-launch pending state, warmed-cache ready state, native bundled
+  delivery, static asset blockers, JSON/Markdown report writes, and unsafe-value rejection.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.

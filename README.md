@@ -177,6 +177,8 @@ web build with `npm run store:screenshots`.
 - Release evidence freshness guard in the Plan tab and CLI to catch stale generated reports before handoff or store work.
 - Model verification suite in the Plan tab and CLI to aggregate MoveNet runtime budgets, model-shaped replay coverage,
   wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real-validation gaps.
+- Model delivery lifecycle in the Plan tab and CLI to show build-time vendoring, same-origin browser download, cache
+  warmup, and offline reuse for the shipped model assets.
 - Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
   evidence into one share-safe JSON handoff.
 - Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers
@@ -244,6 +246,7 @@ npm run release:evidence:promote
 npm run release:evidence:apply
 npm run model:movenet:assets:download
 npm run model:movenet:assets:check
+npm run model:delivery:lifecycle
 npm run web:pwa:check
 npm run web:vercel:check
 npm run web:vercel:workflow
@@ -324,6 +327,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`,
   `docs/sdlc/model-asset-provenance-report.md`, and the attribution notice at
   `docs/sdlc/model-asset-attribution.md`.
+- Model delivery lifecycle report: `docs/sdlc/model-delivery-lifecycle-report.json`,
+  `docs/sdlc/model-delivery-lifecycle-report.md`.
 - Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
@@ -371,6 +376,7 @@ npm run model:movenet:assets:download
 npm run model:analysis:replay
 npm run model:movenet:assets:check
 npm run model:assets:provenance
+npm run model:delivery:lifecycle
 npm run model:verification:suite
 npm run model:evidence:sync
 npm run validation:cue:starter
@@ -416,6 +422,9 @@ The Plan tab also includes a Warm model action that fetches and caches those sam
 prepares a share-safe warmup result before offline gym use. When Web Crypto is available, the warmup also compares cached
 byte counts and SHA-256 digests against `model-assets.json` so the packet can distinguish cached assets from verified
 assets.
+`npm run model:delivery:lifecycle` and the Plan tab Model delivery lifecycle card make the download timing explicit:
+model files are vendored during build/release, fetched from the app origin on first online PWA launch or warmup, then
+reused from Cache Storage for offline analysis after the cache is ready.
 
 The EAS release gates are:
 

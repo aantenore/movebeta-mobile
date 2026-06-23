@@ -69,6 +69,8 @@ platforms are validated on physical climbing videos and devices.
 - Model verification suite writes durable JSON and Markdown evidence that aggregates MoveNet runtime budgets,
   model-shaped replay, wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real
   validation status.
+- Model delivery lifecycle writes durable JSON and Markdown evidence that separates build-time vendoring, same-origin
+  browser download on first online launch or warmup, native bundle delivery, and offline cache reuse.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
   budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -179,6 +181,9 @@ platforms are validated on physical climbing videos and devices.
   service-worker cache coverage, exported dist parity, and a share-safe packet export.
 - Plan tab shows Model asset provenance from the generated report, including TensorFlow Hub source URL, SHA-256 parity,
   attribution notice status, explicit license-review state, and a share-safe packet export.
+- Plan tab shows Model delivery lifecycle from the generated report and live runtime state, including build-time
+  vendoring, app-origin first launch or warmup, native bundle delivery, offline cache reuse, and a share-safe packet
+  export.
 - Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
   worker/cache readiness, model-cache warmup status, model-integrity readiness, network state, update state, share-safe
   install guidance, and an explicit Warm model action with SHA-256 integrity verification for cached model assets when
@@ -246,12 +251,16 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:assets:provenance` writes `docs/sdlc/model-asset-provenance-report.json` and
   `docs/sdlc/model-asset-provenance-report.md`, verifying TensorFlow Hub source URLs, same-origin asset inventory,
   SHA-256 parity, attribution notice presence, and explicit license-review state.
+- `npm run model:delivery:lifecycle` writes `docs/sdlc/model-delivery-lifecycle-report.json` and
+  `docs/sdlc/model-delivery-lifecycle-report.md`, explaining build-time vendoring, same-origin browser fetch,
+  explicit warmup, native bundle delivery, and offline cache reuse without raw artifacts or credentials.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, static
-  MoveNet asset readiness, model asset provenance, PWA readiness, Vercel deployment readiness, Vercel workflow readiness,
-  EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
+  MoveNet asset readiness, model asset provenance, model delivery lifecycle, PWA readiness, Vercel deployment readiness,
+  Vercel workflow readiness, EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and
+  release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -280,14 +289,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 128 test files and 532 tests.
+- `npm test`: passed, 130 test files and 557 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4898ms load time, 354ms average inference, and 365ms max inference in the latest run.
+  CPU backend, 4751ms load time, 323ms average inference, and 326ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -301,6 +310,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:assets:provenance`: passed and wrote `docs/sdlc/model-asset-provenance-report.json` plus
   `docs/sdlc/model-asset-provenance-report.md` with status `review`, 5/6 verified checks, 1 license-review check,
   0 blocked checks, and SHA-256 parity across 3 vendored model files.
+- `npm run model:delivery:lifecycle`: passed and wrote `docs/sdlc/model-delivery-lifecycle-report.json` plus
+  `docs/sdlc/model-delivery-lifecycle-report.md` with status `action`, same-origin static delivery mode, 3 model
+  assets, 4,963,342 bytes, build-time vendoring ready, and browser cache warmup still runtime-dependent.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
   model-analysis replay, and ready/share-safe cue-validation dataset reports while preserving real-world validation targets
   until the real dataset doctor is ready.
@@ -322,7 +334,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 178/181 tasks done, 132/134 backlog items done, 165/165 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 179/182 tasks done, 133/135 backlog items done, 166/166 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -364,8 +376,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 27/27 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 32/32 release steps passing.
+  status `ready`, 28/28 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 33/33 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

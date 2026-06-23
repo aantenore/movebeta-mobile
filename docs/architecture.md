@@ -63,6 +63,10 @@ SHA-256 digests through browser Web Crypto when available, so offline model read
 integrity without a backend.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
+`npm run model:delivery:lifecycle` and the Plan tab Model delivery lifecycle card turn that architecture into a
+share-safe operational view: build-time vendoring, app-origin browser fetch on first online launch or warmup, and
+offline reuse from Cache Storage are tracked as separate stages. Native builds use the same lifecycle contract but report
+their model delivery mode as app-bundled instead of browser Cache Storage.
 
 `src/video/videoMetadata.ts` resolves duration and dimensions before source normalization. Custom native builds read
 metadata through `movebeta-pose`; web preview can use browser video metadata; unsupported runtimes fall back to

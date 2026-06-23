@@ -247,6 +247,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Verify vendored model source URLs, file hashes, attribution notice, and commercial license-review status before distribution.',
     },
     {
+      command: 'npm run model:delivery:lifecycle',
+      key: 'model-delivery-lifecycle',
+      label: 'Model delivery lifecycle report',
+      owner: 'engineering',
+      purpose: 'Explain when static model assets are vendored, fetched by the browser, cached, and reused offline.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -421,6 +428,13 @@ export function buildReleaseEvidencePacket({
       key: 'model-asset-provenance-report',
       label: 'Model asset provenance report',
       path: 'docs/sdlc/model-asset-provenance-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
+    },
+    {
+      command: 'npm run model:delivery:lifecycle',
+      key: 'model-delivery-lifecycle-report',
+      label: 'Model delivery lifecycle report',
+      path: 'docs/sdlc/model-delivery-lifecycle-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
     },
   ];

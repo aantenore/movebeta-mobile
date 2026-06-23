@@ -359,6 +359,9 @@
 - Vendored model assets must have release-time provenance evidence that verifies official source URLs, same-origin asset
   inventory, SHA-256 digest parity, attribution notice presence, and explicit license-review status without inferring
   final commercial legal clearance from downloaded files.
+- Model delivery timing must be visible in-app and as release evidence, separating build-time vendoring, app-origin
+  browser fetch on first online launch or warmup, native bundle delivery, and offline reuse from Cache Storage without
+  exposing raw video, local paths, credentials, or token-like values.
 - Static PWA exports must pre-cache hashed Expo JavaScript bundles, router assets, metadata, app shell files, and
   same-origin MoveNet assets so a post-install/offline reload can boot the app and fetch the model manifest without a
   backend or upstream model request.
