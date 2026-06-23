@@ -176,6 +176,10 @@
   states, due-diligence artifact inventory, command checklist, and credential/local-path/media/token rejection;
   `npm run release:acquisition` writes durable JSON/Markdown acquisition evidence and is included in release gates,
   freshness, and handoff artifacts.
+- Vitest data-room index tests for categorized due-diligence artifacts, owner/status/sensitivity/location/refresh fields,
+  external proof placeholders, missing internal artifact blocking, and credential/local-path/media/token rejection;
+  `npm run release:data-room` writes durable JSON/Markdown data-room evidence and is included in release gates,
+  freshness, and handoff artifacts.
 - Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
   secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
   durable static deployment readiness evidence and is included in `npm run release:check`.
@@ -330,6 +334,8 @@
 - Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
 - Acquisition readiness packet generation with `npm run release:acquisition` after release evidence, store metadata,
   commercial readiness, and handoff artifacts are refreshed.
+- Data-room index generation with `npm run release:data-room` after acquisition, handoff, archive, and release evidence
+  artifacts are refreshed.
 - Release handoff packet generation with `npm run release:handoff` after release readiness, screenshots, and archives are
   refreshed.
 - Release archive generation with `npm run release:archives` after `npm run export:web`; writes source/web zip files,

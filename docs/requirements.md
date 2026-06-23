@@ -521,6 +521,10 @@
   distribution, model provenance, supply review, and handoff evidence into share-safe JSON and Markdown artifacts for
   buyer due diligence, separating external clearance from internal implementation blockers and rejecting credential
   values, local paths, media references, raw artifacts, payment data, and token-like values.
+- Data-room indexes must categorize share-safe due-diligence artifacts by product, release, model, legal, distribution,
+  commercial, native, validation, security, and archive scope, list owner, status, sensitivity, location, and refresh
+  command for each item, include external proof requirements without storing private proof values, and reject credential
+  values, local paths, media references, raw artifacts, payment data, and token-like values.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

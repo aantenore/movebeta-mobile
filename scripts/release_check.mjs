@@ -40,6 +40,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'security:audit'], key: 'securityAudit', label: 'Moderate-or-higher dependency audit' },
   { command: ['npm', 'run', 'security:licenses'], key: 'dependencyLicenses', label: 'Dependency license report' },
   { command: ['npm', 'run', 'release:acquisition'], key: 'acquisitionReadinessPacket', label: 'Acquisition readiness packet' },
+  { command: ['npm', 'run', 'release:data-room'], key: 'dataRoomIndex', label: 'Data-room index' },
   { command: ['npm', 'run', 'release:freshness:doctor'], key: 'releaseFreshnessDoctor', label: 'Release evidence freshness doctor' },
 ];
 
