@@ -71,7 +71,7 @@ platforms are validated on physical climbing videos and devices.
   validation status.
 - Model delivery lifecycle writes durable JSON and Markdown evidence that separates build-time vendoring, configurable
   PWA model delivery policy, same-origin service-worker install download or warmup, native bundle delivery, and offline
-  cache reuse.
+  cache reuse while distinguishing verified delivery-path evidence from each browser's current model cache state.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
   budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -185,7 +185,7 @@ platforms are validated on physical climbing videos and devices.
   attribution notice status, explicit license-review state, and a share-safe packet export.
 - Plan tab shows Model delivery lifecycle from the generated report and live runtime state, including build-time
   vendoring, configured PWA model-delivery policy, app-origin service-worker install or warmup, native bundle delivery,
-  offline cache reuse, and a share-safe packet export.
+  offline cache reuse, delivery-path verification, per-device cache state, and a share-safe packet export.
 - Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
   worker/cache readiness, model-cache warmup status, model-integrity readiness, network state, update state, share-safe
   install guidance, and an explicit Warm model action with SHA-256 integrity verification for cached model assets when
@@ -324,9 +324,9 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/model-asset-provenance-report.md` with status `review`, 5/6 verified checks, 1 license-review check,
   0 blocked checks, and SHA-256 parity across 3 vendored model files.
 - `npm run model:delivery:lifecycle`: passed and wrote `docs/sdlc/model-delivery-lifecycle-report.json` plus
-  `docs/sdlc/model-delivery-lifecycle-report.md` with status `action`, same-origin static delivery mode, 3 model
-  assets, 4,963,342 bytes, `precache-on-install` web strategy, build-time vendoring ready, and browser cache warmup still
-  runtime-dependent.
+  `docs/sdlc/model-delivery-lifecycle-report.md` with status `ready`, same-origin static delivery mode, 3 model
+  assets, 4,963,342 bytes, `precache-on-install` web strategy, delivery path verified, and browser cache warmup still
+  per-device before offline gym use.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
   model-analysis replay, and ready/share-safe cue-validation dataset reports while preserving real-world validation targets
   until the real dataset doctor is ready.

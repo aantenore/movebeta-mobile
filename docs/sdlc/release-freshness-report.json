@@ -1,7 +1,7 @@
 {
   "artifacts": [
     {
-      "generatedAt": "2026-06-23T16:05:05.385Z",
+      "generatedAt": "2026-06-23T16:15:55.876Z",
       "key": "launch-readiness-report",
       "label": "Launch readiness report",
       "maxAgeHours": 24,
@@ -14,12 +14,12 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Launch readiness report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0,
+      "detail": "Launch readiness report is 0h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:41.339Z",
+      "generatedAt": "2026-06-23T16:15:56.082Z",
       "key": "feature-completion-report",
       "label": "Feature completion report",
       "maxAgeHours": 24,
@@ -29,12 +29,12 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Feature completion report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0,
+      "detail": "Feature completion report is 0h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:41.596Z",
+      "generatedAt": "2026-06-23T16:15:29.950Z",
       "key": "release-blocker-issues-report",
       "label": "Release blocker issues report",
       "maxAgeHours": 24,
@@ -49,7 +49,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:41.861Z",
+      "generatedAt": "2026-06-23T16:15:30.187Z",
       "key": "release-blocker-issue-filing-plan",
       "label": "Release blocker issue filing plan",
       "maxAgeHours": 24,
@@ -64,7 +64,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:42.136Z",
+      "generatedAt": "2026-06-23T16:15:30.422Z",
       "key": "release-blocker-issue-web-links",
       "label": "Release blocker issue web links",
       "maxAgeHours": 24,
@@ -79,7 +79,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:42.394Z",
+      "generatedAt": "2026-06-23T16:15:30.665Z",
       "key": "external-evidence-intake-report",
       "label": "External evidence intake report",
       "maxAgeHours": 24,
@@ -96,7 +96,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:42.672Z",
+      "generatedAt": "2026-06-23T16:15:30.899Z",
       "key": "external-evidence-validation-report",
       "label": "External evidence validation report",
       "maxAgeHours": 24,
@@ -112,7 +112,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:42.943Z",
+      "generatedAt": "2026-06-23T16:15:31.138Z",
       "key": "external-evidence-promotion-report",
       "label": "External evidence promotion report",
       "maxAgeHours": 24,
@@ -128,7 +128,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:43.205Z",
+      "generatedAt": "2026-06-23T16:15:31.378Z",
       "key": "external-evidence-apply-report",
       "label": "External evidence apply report",
       "maxAgeHours": 24,
@@ -144,7 +144,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:31.698Z",
+      "generatedAt": "2026-06-23T16:15:19.157Z",
       "key": "movenet-readiness-report",
       "label": "MoveNet readiness report",
       "maxAgeHours": 24,
@@ -156,12 +156,12 @@
         "internal",
         "store"
       ],
-      "ageHours": 0.02,
-      "detail": "MoveNet readiness report is 0.02h old and inside the 24h freshness window.",
+      "ageHours": 0.01,
+      "detail": "MoveNet readiness report is 0.01h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:38.413Z",
+      "generatedAt": "2026-06-23T16:15:27.013Z",
       "key": "model-analysis-replay-report",
       "label": "Model-analysis replay report",
       "maxAgeHours": 24,
@@ -178,7 +178,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:45.859Z",
+      "generatedAt": "2026-06-23T16:15:34.107Z",
       "key": "movenet-static-assets-report",
       "label": "MoveNet static assets report",
       "maxAgeHours": 168,
@@ -196,7 +196,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:45.991Z",
+      "generatedAt": "2026-06-23T16:15:34.235Z",
       "key": "model-asset-provenance-report",
       "label": "Model asset provenance report",
       "maxAgeHours": 168,
@@ -214,7 +214,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:46.244Z",
+      "generatedAt": "2026-06-23T16:15:34.466Z",
       "key": "model-delivery-lifecycle-report",
       "label": "Model delivery lifecycle report",
       "maxAgeHours": 168,
@@ -231,7 +231,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:38.663Z",
+      "generatedAt": "2026-06-23T16:15:27.247Z",
       "key": "model-verification-suite-report",
       "label": "Model verification suite report",
       "maxAgeHours": 24,
@@ -249,7 +249,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:39.203Z",
+      "generatedAt": "2026-06-23T16:15:27.738Z",
       "key": "ios-toolchain-report",
       "label": "iOS toolchain report",
       "maxAgeHours": 24,
@@ -264,7 +264,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:39.058Z",
+      "generatedAt": "2026-06-23T16:15:27.605Z",
       "key": "native-qa-evidence-starter-report",
       "label": "Native QA evidence starter report",
       "maxAgeHours": 24,
@@ -281,7 +281,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:39.619Z",
+      "generatedAt": "2026-06-23T16:15:28.120Z",
       "key": "cue-validation-dataset-report",
       "label": "Cue-validation dataset report",
       "maxAgeHours": 24,
@@ -296,7 +296,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:39.475Z",
+      "generatedAt": "2026-06-23T16:15:27.989Z",
       "key": "cue-validation-starter-kit-report",
       "label": "Cue-validation starter kit report",
       "maxAgeHours": 24,
@@ -312,7 +312,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:40.151Z",
+      "generatedAt": "2026-06-23T16:15:28.600Z",
       "key": "store-credentials-report",
       "label": "Store credentials report",
       "maxAgeHours": 24,
@@ -327,7 +327,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:40.008Z",
+      "generatedAt": "2026-06-23T16:15:28.472Z",
       "key": "store-credentials-setup-packet",
       "label": "Store credentials setup packet",
       "maxAgeHours": 24,
@@ -343,7 +343,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:40.279Z",
+      "generatedAt": "2026-06-23T16:15:28.727Z",
       "key": "github-workflow-report",
       "label": "GitHub workflow report",
       "maxAgeHours": 168,
@@ -358,7 +358,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:58.170Z",
+      "generatedAt": "2026-06-23T16:15:45.759Z",
       "key": "dependency-license-report",
       "label": "Dependency license report",
       "maxAgeHours": 168,
@@ -374,7 +374,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:39.762Z",
+      "generatedAt": "2026-06-23T16:15:28.249Z",
       "key": "env-template-report",
       "label": "Environment template report",
       "maxAgeHours": 168,
@@ -389,7 +389,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:43.458Z",
+      "generatedAt": "2026-06-23T16:15:31.615Z",
       "key": "store-submission-packet",
       "label": "Store submission packet",
       "maxAgeHours": 72,
@@ -405,7 +405,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:05:17.511Z",
+      "generatedAt": "2026-06-23T16:16:00.246Z",
       "key": "acquisition-readiness-packet",
       "label": "Acquisition readiness packet",
       "maxAgeHours": 72,
@@ -420,7 +420,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:05:17.562Z",
+      "generatedAt": "2026-06-23T16:16:00.518Z",
       "key": "data-room-index",
       "label": "Data-room index",
       "maxAgeHours": 72,
@@ -435,7 +435,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:46.395Z",
+      "generatedAt": "2026-06-23T16:15:34.629Z",
       "key": "pwa-readiness-report",
       "label": "PWA readiness report",
       "maxAgeHours": 72,
@@ -451,7 +451,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:56.443Z",
+      "generatedAt": "2026-06-23T16:15:43.958Z",
       "key": "web-smoke-report",
       "label": "Web smoke report",
       "maxAgeHours": 24,
@@ -468,7 +468,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:56.582Z",
+      "generatedAt": "2026-06-23T16:15:44.094Z",
       "key": "vercel-deployment-report",
       "label": "Vercel deployment report",
       "maxAgeHours": 72,
@@ -484,7 +484,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T16:04:56.722Z",
+      "generatedAt": "2026-06-23T16:15:44.231Z",
       "key": "vercel-workflow-report",
       "label": "Vercel workflow report",
       "maxAgeHours": 72,
@@ -499,7 +499,7 @@
       "status": "fresh"
     }
   ],
-  "generatedAt": "2026-06-23T16:05:26.010Z",
+  "generatedAt": "2026-06-23T16:16:05.119Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -512,10 +512,10 @@
     "artifactCount": 31,
     "freshCount": 31,
     "invalidDateCount": 0,
-    "maxObservedAgeHours": 0.02,
+    "maxObservedAgeHours": 0.01,
     "missingDateCount": 0,
     "nextAction": "All tracked release evidence artifacts are fresh.",
-    "oldestArtifactKey": "movenet-readiness-report",
+    "oldestArtifactKey": "release-blocker-issues-report",
     "staleCount": 0,
     "status": "ready"
   }

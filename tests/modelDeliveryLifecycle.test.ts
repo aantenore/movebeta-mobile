@@ -51,6 +51,31 @@ function modelDeliveryPolicy(downloadStrategy: 'precache-on-install' | 'warmup-o
   };
 }
 
+function pwaReadinessReport() {
+  return {
+    generatedAt: '2026-06-20T10:00:00.000Z',
+    schemaVersion: 'movebeta.pwa-readiness.v1',
+    summary: {
+      checkCount: 11,
+      status: 'ready',
+      verifiedCount: 11,
+    },
+  };
+}
+
+function webSmokeReport() {
+  return {
+    generatedAt: '2026-06-20T10:00:00.000Z',
+    schemaVersion: 'movebeta.web-smoke-report.v1',
+    status: 'pass',
+    summary: {
+      passedChecks: 4,
+      status: 'pass',
+      totalChecks: 4,
+    },
+  };
+}
+
 function warmedPwaRuntime() {
   return buildPwaRuntimeReadiness({
     cacheApiSupported: true,
@@ -87,6 +112,14 @@ function makeProjectRoot() {
     path.join(root, 'public/model-delivery-policy.json'),
     `${JSON.stringify(modelDeliveryPolicy(), null, 2)}\n`,
   );
+  fs.writeFileSync(
+    path.join(root, 'docs/sdlc/pwa-readiness-report.json'),
+    `${JSON.stringify(pwaReadinessReport(), null, 2)}\n`,
+  );
+  fs.writeFileSync(
+    path.join(root, 'docs/sdlc/web-smoke-report.json'),
+    `${JSON.stringify(webSmokeReport(), null, 2)}\n`,
+  );
   return root;
 }
 
@@ -106,6 +139,7 @@ describe('model delivery lifecycle', () => {
     expect(lifecycle.schemaVersion).toBe(modelDeliveryLifecycleSchemaVersion);
     expect(lifecycle.summary).toMatchObject({
       cacheReady: false,
+      deliveryPathVerified: false,
       deliveryMode: 'same-origin-static',
       downloadStrategy: 'precache-on-install',
       firstUseRequiresNetwork: true,
@@ -122,6 +156,27 @@ describe('model delivery lifecycle', () => {
       ['first-online-launch', 'action'],
       ['offline-reuse', 'action'],
     ]);
+  });
+
+  it('marks the delivery path ready when PWA readiness or web smoke proves exported model caching', () => {
+    const lifecycle = buildModelDeliveryLifecycle({
+      generatedAt: '2026-06-20T10:00:00.000Z',
+      pwaReadinessReport: pwaReadinessReport(),
+      staticAssetsReport: staticAssetsReport(),
+      webSmokeReport: webSmokeReport(),
+    });
+
+    expect(lifecycle.summary).toMatchObject({
+      cacheReady: false,
+      deliveryPathVerified: true,
+      firstUseRequiresNetwork: true,
+      status: 'ready',
+    });
+    expect(lifecycle.summary.nextAction).toContain('warm the model cache on each target browser');
+    expect(lifecycle.stages.find((stage) => stage.key === 'first-online-launch')).toMatchObject({
+      status: 'ready',
+    });
+    expect(lifecycle.stages.find((stage) => stage.key === 'offline-reuse')?.detail).toContain('each browser must warm');
   });
 
   it('explains explicit warmup-only delivery when the static policy disables install precache', () => {
@@ -145,6 +200,7 @@ describe('model delivery lifecycle', () => {
 
     expect(lifecycle.summary).toMatchObject({
       cacheReady: true,
+      deliveryPathVerified: true,
       firstUseRequiresNetwork: false,
       status: 'ready',
     });
@@ -188,6 +244,7 @@ describe('model delivery lifecycle', () => {
     expect(fs.existsSync(markdownTarget)).toBe(true);
     expect(lifecycle.schemaVersion).toBe(modelDeliveryLifecycleSchemaVersion);
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('First online launch');
+    expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Delivery path verified: yes');
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Download strategy: precache-on-install');
     expect(fs.readFileSync(markdownTarget, 'utf8')).toContain('Model Delivery Lifecycle Report');
   });

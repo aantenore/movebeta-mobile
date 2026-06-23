@@ -34,6 +34,7 @@ Generated: ${lifecycle.generatedAt}
 - Assets: ${lifecycle.model.assetCount}
 - Total bytes: ${lifecycle.model.totalBytes}
 - Cache ready: ${lifecycle.summary.cacheReady ? 'yes' : 'no'}
+- Delivery path verified: ${lifecycle.summary.deliveryPathVerified ? 'yes' : 'no'}
 - First use requires network: ${lifecycle.summary.firstUseRequiresNetwork ? 'yes' : 'no'}
 - Download trigger: ${lifecycle.summary.downloadTrigger}
 - Next action: ${lifecycle.summary.nextAction}
@@ -62,7 +63,9 @@ export function writeModelDeliveryLifecycleReport({
   const lifecycle = buildModelDeliveryLifecycle({
     generatedAt,
     modelDeliveryPolicy: readJsonIfExists(rootDir, 'public/model-delivery-policy.json'),
+    pwaReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/pwa-readiness-report.json'),
     staticAssetsReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-static-assets-report.json'),
+    webSmokeReport: readJsonIfExists(rootDir, 'docs/sdlc/web-smoke-report.json'),
   });
   const jsonTarget = jsonOutputPath ?? path.join(rootDir, 'docs/sdlc/model-delivery-lifecycle-report.json');
   const markdownTarget = markdownOutputPath ?? path.join(rootDir, 'docs/sdlc/model-delivery-lifecycle-report.md');
