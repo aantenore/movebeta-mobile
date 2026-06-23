@@ -334,6 +334,8 @@
   offline real-video block state, and native provider bypass.
 - Vitest Coach PWA analysis preflight tests also cover `shouldWarmBeforeAnalysis`, proving automatic warmup is requested
   only for online uncached real-video analysis and not for cached, native, demo, or offline blocked states.
+- Vitest Coach PWA analysis preflight tests cover pending PWA update behavior, blocking offline real-video analysis as a
+  stale-model risk while allowing online analysis with explicit refresh guidance and automatic warmup when uncached.
 - Vitest Coach workflow-state tests cover idle, model warmup, analysis, recording, and warmup-over-analysis priority for
   disabled controls and state copy.
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.

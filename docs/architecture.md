@@ -82,6 +82,9 @@ controls.
 The Plan tab also derives `src/core/modelDownloadPlan.ts` from lifecycle and runtime readiness, separating packaged native
 model delivery from PWA model download planning. The plan reports additional bytes, network preference, update activation,
 cache warmup, integrity, and offline-use steps as a share-safe packet.
+Coach PWA preflight treats `updateAvailable` as a stale-model guard for real videos: offline analysis is blocked until
+the installed PWA refreshes and rewarms model assets, while online analysis keeps a visible refresh requirement and can
+still trigger the same-origin warmup path when assets are uncached.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards
