@@ -76,6 +76,9 @@ same-origin assets, blocks offline real-video analysis when the cache is missing
 native provider builds. The pure preflight contract also returns `shouldWarmBeforeAnalysis`, so online uncached real-video
 analysis can warm `/model-assets.json` and listed `/models/...` files before the local pose provider starts, while offline
 uncached real-video analysis remains blocked.
+Coach workflow lock state is derived by `src/features/coach/coachWorkflowState.ts`, so warmup, analysis, and recording
+phases share one disabled-state and action-label contract across analyze, record, import, metadata, calibration, and lens
+controls.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards

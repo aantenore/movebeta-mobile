@@ -61,6 +61,8 @@ import {
   type VideoSourceResult,
 } from '@/video/videoSource';
 
+import { buildCoachWorkflowState } from './coachWorkflowState';
+
 const attempts = listDemoAttempts();
 const coachLenses = listCoachLenses();
 
@@ -923,6 +925,11 @@ export function CoachScreen() {
     online: pwaPreflight.online,
     readiness: pwaPreflight.readiness,
   });
+  const workflow = buildCoachWorkflowState({
+    analyzing: loading,
+    recording,
+    warmingModel: modelWarmupLoading,
+  });
   const captureSetupAssessment = assessCaptureCalibration(captureCalibration);
   const capturePrepProtocol = buildCapturePrepProtocol({
     calibration: captureSetupAssessment,
@@ -1191,9 +1198,13 @@ export function CoachScreen() {
         title="On-device climbing coach"
         subtitle="Record or import a climbing video, keep it local, and get movement cues from the on-device pipeline."
         action={
-          <Pressable disabled={loading} onPress={() => void runAnalysis()} style={[styles.action, loading ? styles.disabled : null]}>
+          <Pressable
+            disabled={workflow.actionDisabled}
+            onPress={() => void runAnalysis()}
+            style={[styles.action, workflow.actionDisabled ? styles.disabled : null]}
+          >
             <Cpu color="#FFFFFF" size={17} />
-            <Text style={styles.actionText}>{loading ? 'Analyzing' : 'Analyze'}</Text>
+            <Text style={styles.actionText}>{workflow.actionLabel}</Text>
           </Pressable>
         }
       />
@@ -1210,11 +1221,19 @@ export function CoachScreen() {
             provider contract.
           </Text>
           <View style={styles.captureActions}>
-            <Pressable onPress={() => void openRecorder()} style={styles.secondaryAction}>
+            <Pressable
+              disabled={workflow.captureDisabled}
+              onPress={() => void openRecorder()}
+              style={[styles.secondaryAction, workflow.captureDisabled ? styles.disabled : null]}
+            >
               <Camera color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Record</Text>
             </Pressable>
-            <Pressable onPress={() => void importVideo()} style={styles.secondaryAction}>
+            <Pressable
+              disabled={workflow.captureDisabled}
+              onPress={() => void importVideo()}
+              style={[styles.secondaryAction, workflow.captureDisabled ? styles.disabled : null]}
+            >
               <Upload color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Import</Text>
             </Pressable>
@@ -1223,7 +1242,7 @@ export function CoachScreen() {
       </View>
 
       <PwaModelPreflightPanel
-        disabled={loading || recording}
+        disabled={workflow.captureDisabled}
         onWarmModelCache={() => void warmCoachModelCache()}
         preflight={modelPreflight}
         readiness={pwaPreflight.readiness}
@@ -1233,12 +1252,12 @@ export function CoachScreen() {
       <CaptureCalibrationPanel
         assessment={captureSetupAssessment}
         calibration={captureCalibration}
-        disabled={loading || recording}
+        disabled={workflow.captureDisabled}
         onChange={setCaptureCalibration}
       />
       <CapturePrepProtocolPanel protocol={capturePrepProtocol} />
-      <SessionMetadataEditor disabled={loading || recording} metadata={sessionMetadata} onChange={updateSessionMetadata} />
-      <CoachLensSelector disabled={loading || recording} onChange={selectCoachLens} selectedLens={selectedCoachLens} />
+      <SessionMetadataEditor disabled={workflow.captureDisabled} metadata={sessionMetadata} onChange={updateSessionMetadata} />
+      <CoachLensSelector disabled={workflow.captureDisabled} onChange={selectCoachLens} selectedLens={selectedCoachLens} />
 
       {cameraOpen ? (
         <Section title="Recorder" caption="Frame the climber side-on and keep the full body visible.">
@@ -1328,8 +1347,8 @@ export function CoachScreen() {
         </View>
       </Section>
 
-      {loading ? (
-        <StateView loading title="Running local analysis" message="No upload, no cloud processing." />
+      {workflow.stateTitle ? (
+        <StateView loading title={workflow.stateTitle} message={workflow.stateMessage ?? ''} />
       ) : !report ? (
         <StateView title="No analysis yet" message="Choose a valid local video or one of the bundled attempts." />
       ) : (

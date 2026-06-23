@@ -1,12 +1,12 @@
 # Web Smoke Report
 
-Generated: 2026-06-23T21:51:33.230Z
+Generated: 2026-06-23T21:59:01.254Z
 
 - Status: pass
 - Target: http://127.0.0.1:8083/
 - Mode: local-static-dist
 - Command: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083/ python3 scripts/smoke_web_video.py`
-- Duration: 10012ms
+- Duration: 9884ms
 - Checks: 4/4
 - Next action: Keep the exported PWA smoke report fresh after UI, PWA, model-delivery, or release-evidence changes.
 - Credential values included: no
