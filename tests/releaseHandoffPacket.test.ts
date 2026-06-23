@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   buildReleaseHandoffPacket,
+  parseReleaseHandoffCliOptions,
   RELEASE_HANDOFF_PACKET_SCHEMA_VERSION,
   renderReleaseHandoffMarkdown,
   writeReleaseHandoffPacket,
@@ -263,6 +264,7 @@ describe('release handoff packet', () => {
     const jsonOutputPath = path.join(rootDir, 'docs/sdlc/release-handoff-packet.json');
     const markdownOutputPath = path.join(rootDir, 'docs/sdlc/release-handoff-packet.md');
     const { jsonTarget, markdownTarget, packet } = writeReleaseHandoffPacket({
+      commitSha: 'delivered123',
       generatedAt: '2026-06-20T10:00:00.000Z',
       jsonOutputPath,
       markdownOutputPath,
@@ -271,8 +273,16 @@ describe('release handoff packet', () => {
 
     expect(jsonTarget).toBe(jsonOutputPath);
     expect(markdownTarget).toBe(markdownOutputPath);
+    expect(packet.repository.commitSha).toBe('delivered123');
     expect(JSON.parse(fs.readFileSync(jsonOutputPath, 'utf8'))).toEqual(packet);
     expect(fs.readFileSync(markdownOutputPath, 'utf8')).toContain('## Verification Commands');
+  });
+
+  it('parses an explicit delivered commit from CLI options', () => {
+    expect(parseReleaseHandoffCliOptions(['--commit-sha', 'abc123'])).toEqual({ commitSha: 'abc123' });
+    expect(parseReleaseHandoffCliOptions(['--commit-sha=def456'])).toEqual({ commitSha: 'def456' });
+    expect(() => parseReleaseHandoffCliOptions(['--commit-sha'])).toThrow('--commit-sha requires a value');
+    expect(() => parseReleaseHandoffCliOptions(['--unknown'])).toThrow('Unknown release handoff option');
   });
 
   it('ignores generated packet files but reports real source changes in repository state', () => {

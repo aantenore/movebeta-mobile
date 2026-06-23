@@ -515,6 +515,8 @@
 - External evidence apply must generate a share-safe dry-run report by default and update Expo
   `extra.launchReadinessEvidence` only when the promotion candidate is ready and `--write-app-config` is explicitly
   requested.
+- Release handoff generation must support an explicit delivered commit SHA so final handoff artifacts can point at the
+  implementation commit being sold, reviewed, or transferred without hand-editing JSON.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

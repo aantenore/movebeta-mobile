@@ -290,14 +290,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 130 test files and 557 tests.
+- `npm test`: passed, 130 test files and 558 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4751ms load time, 323ms average inference, and 326ms max inference in the latest run.
+  CPU backend, 5220ms load time, 336ms average inference, and 349ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -335,7 +335,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 179/182 tasks done, 133/135 backlog items done, 166/166 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 180/183 tasks done, 134/136 backlog items done, 167/167 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -534,7 +534,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/featureCompletionDoctor.test.ts`: passed and covers external-blocker classification, internal-gap detection,
   durable JSON/Markdown writes, and secret/local-artifact exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
-  completeness, verification commands, Markdown rendering, and durable JSON/Markdown writes.
+  completeness, explicit delivered-commit pinning, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
   the model in unit tests.
 - `tests/modelEvidence.test.ts`: passed and covers technical-ready, validated, degraded, missing, environment JSON, and
