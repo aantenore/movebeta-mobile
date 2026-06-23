@@ -51,6 +51,7 @@ def main() -> None:
         assert "caches.open" in service_worker_text
         assert "/model-assets.json" in service_worker_text
         assert "cacheModelAssets" in service_worker_text
+        assert "EXPORT_ASSETS" in service_worker_text
         model_assets = page.evaluate("async () => await fetch('/model-assets.json').then((response) => response.json())")
         assert model_assets["schemaVersion"] == "movebeta.static-model-assets.v1"
         assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
@@ -68,6 +69,67 @@ def main() -> None:
             first_shard,
         )
         assert shard_status == 200
+        export_assets = page.evaluate(
+            """async () => {
+              const text = await fetch('/sw.js').then((response) => response.text());
+              return [...text.matchAll(/"([^"]+)"/g)]
+                .map((match) => match[1])
+                .filter((value) => value === '/metadata.json' || value.startsWith('/_expo/static/') || value.startsWith('/assets/'));
+            }"""
+        )
+        assert any(asset.startswith("/_expo/static/js/web/entry-") for asset in export_assets)
+
+        page.evaluate(
+            """async () => {
+              if (!('serviceWorker' in navigator)) throw new Error('Service worker unavailable');
+              await navigator.serviceWorker.ready;
+              if (navigator.serviceWorker.controller) return true;
+              await new Promise((resolve) => {
+                const timeout = setTimeout(resolve, 3000);
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  clearTimeout(timeout);
+                  resolve();
+                }, { once: true });
+              });
+              return true;
+            }"""
+        )
+        cache_state = page.evaluate(
+            """async () => {
+              const keys = await caches.keys();
+              const paths = new Set();
+              for (const key of keys) {
+                const cache = await caches.open(key);
+                const requests = await cache.keys();
+                for (const request of requests) {
+                  paths.add(new URL(request.url).pathname);
+                }
+              }
+              return {
+                controlled: Boolean(navigator.serviceWorker.controller),
+                keys,
+                paths: [...paths].sort(),
+              };
+            }"""
+        )
+        required_cached_paths = ["/index.html", "/model-assets.json", model_assets["modelUrl"], *model_assets["assets"], *export_assets]
+        for cached_path in required_cached_paths:
+            assert cached_path in cache_state["paths"], cached_path
+
+        page.context.set_offline(True)
+        try:
+            page.goto(base_url)
+            page.wait_for_load_state("networkidle")
+            expect(page.get_by_text("On-device climbing coach")).to_be_visible()
+            offline_model_status = page.evaluate(
+                "async (path) => await fetch(path).then((response) => response.status)",
+                model_assets["modelUrl"],
+            )
+            assert offline_model_status == 200
+        finally:
+            page.context.set_offline(False)
+        page.goto(base_url)
+        page.wait_for_load_state("networkidle")
 
         expect(page.get_by_text("On-device climbing coach")).to_be_visible()
         expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
@@ -357,8 +419,8 @@ def main() -> None:
         expect(page.get_by_text("Real cue-validation dataset").first).to_be_visible()
         expect(page.get_by_text("Feature completion", exact=True)).to_be_visible()
         expect(page.get_by_text("Feature completion audit")).to_be_visible()
-        expect(page.get_by_text("164/167", exact=True)).to_be_visible()
-        expect(page.get_by_text("118/120", exact=True)).to_be_visible()
+        expect(page.get_by_text("165/168", exact=True)).to_be_visible()
+        expect(page.get_by_text("119/121", exact=True)).to_be_visible()
         expect(page.get_by_text("internal gaps", exact=True)).to_be_visible()
         expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
         expect(page.get_by_text("Model evidence", exact=True)).to_be_visible()
@@ -505,7 +567,7 @@ def main() -> None:
         expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
         expect(page.get_by_text("Installable PWA").first).to_be_visible()
-        expect(page.get_by_text("8/8", exact=True)).to_be_visible()
+        expect(page.get_by_text("9/9", exact=True).first).to_be_visible()
         expect(page.get_by_text("backend", exact=True).first).to_be_visible()
         expect(page.get_by_text("Vercel static deployment config")).to_be_visible()
         expect(page.get_by_text("No backend surface required")).to_be_visible()

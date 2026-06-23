@@ -3,7 +3,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { preparePwaDist } from '../scripts/prepare_pwa_dist.mjs';
+import {
+  buildExportAssetsDeclaration,
+  discoverOfflineExportAssets,
+  preparePwaDist,
+  preparePwaServiceWorker,
+} from '../scripts/prepare_pwa_dist.mjs';
 
 const tmpRoots = [];
 
@@ -12,7 +17,13 @@ function makeDist(html = '<html><head><title>MoveBeta</title></head><body><div i
   tmpRoots.push(root);
   const distDir = path.join(root, 'dist');
   fs.mkdirSync(distDir, { recursive: true });
+  fs.mkdirSync(path.join(distDir, '_expo/static/js/web'), { recursive: true });
+  fs.mkdirSync(path.join(distDir, 'assets'), { recursive: true });
   fs.writeFileSync(path.join(distDir, 'index.html'), html);
+  fs.writeFileSync(path.join(distDir, 'metadata.json'), '{}');
+  fs.writeFileSync(path.join(distDir, '_expo/static/js/web/entry-test.js'), 'js');
+  fs.writeFileSync(path.join(distDir, 'assets/image-test.png'), 'png');
+  fs.writeFileSync(path.join(distDir, 'sw.js'), 'const EXPORT_ASSETS = [];');
   return distDir;
 }
 
@@ -32,11 +43,25 @@ describe('prepare PWA dist', () => {
     expect(html).toContain('href="/manifest.json"');
     expect(html).toContain("navigator.serviceWorker.register('/sw.js')");
     expect(html).toContain('name="theme-color"');
+    expect(fs.readFileSync(path.join(distDir, 'sw.js'), 'utf8')).toContain('/_expo/static/js/web/entry-test.js');
   });
 
   it('is idempotent after PWA metadata is present', () => {
     const distDir = makeDist();
     expect(preparePwaDist({ distDir })).toBe(true);
     expect(preparePwaDist({ distDir })).toBe(false);
+  });
+
+  it('discovers and injects offline export assets into the service worker', () => {
+    const distDir = makeDist('<html><head><link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script></head><body></body></html>');
+
+    expect(discoverOfflineExportAssets({ distDir })).toEqual([
+      '/_expo/static/js/web/entry-test.js',
+      '/assets/image-test.png',
+      '/metadata.json',
+    ]);
+    expect(buildExportAssetsDeclaration(['/metadata.json'])).toContain('"/metadata.json"');
+    expect(preparePwaServiceWorker({ distDir })).toBe(true);
+    expect(preparePwaServiceWorker({ distDir })).toBe(false);
   });
 });

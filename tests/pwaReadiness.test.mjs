@@ -40,7 +40,7 @@ function makeReadyFixture() {
   });
   writeText(
     path.join(root, 'public/sw.js'),
-    "const MODEL_ASSET_MANIFEST = '/model-assets.json'; async function cacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v1')); self.addEventListener('fetch', () => { if (url.pathname.startsWith('/models/')) {} });",
+    "const EXPORT_ASSETS = []; const MODEL_ASSET_MANIFEST = '/model-assets.json'; async function cacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v1')); self.addEventListener('fetch', () => { if (url.pathname.startsWith('/models/')) {} });",
   );
   writeJson(path.join(root, 'public/model-assets.json'), {
     assets: [
@@ -66,8 +66,14 @@ function makeReadyFixture() {
     modelUrl: '/models/movenet/singlepose/lightning/4/model.json',
     schemaVersion: 'movebeta.static-model-assets.v1',
   });
-  writeText(path.join(root, 'dist/sw.js'), 'sw');
+  writeText(
+    path.join(root, 'dist/sw.js'),
+    'const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"];',
+  );
   writeText(path.join(root, 'dist/index.html'), '<link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script>');
+  writeText(path.join(root, 'dist/metadata.json'), '{}');
+  writeText(path.join(root, 'dist/_expo/static/js/web/entry-test.js'), 'js');
+  writeText(path.join(root, 'dist/assets/image-test.png'), 'png');
   writeText(path.join(root, 'dist/models/movenet/singlepose/lightning/4/model.json'), '{}');
   writeText(path.join(root, 'dist/models/movenet/singlepose/lightning/4/group1-shard1of1.bin'), 'bin');
   writeText(path.join(root, 'dist/pwa/icon-192.png'), 'png');
@@ -91,9 +97,9 @@ describe('pwa readiness doctor', () => {
 
     expect(report.schemaVersion).toBe(PWA_READINESS_SCHEMA_VERSION);
     expect(report.summary).toMatchObject({
-      checkCount: 8,
+      checkCount: 9,
       status: 'ready',
-      verifiedCount: 8,
+      verifiedCount: 9,
     });
     expect(report.privacy).toMatchObject({
       backendRequired: false,
@@ -109,6 +115,15 @@ describe('pwa readiness doctor', () => {
 
     expect(report.summary.status).toBe('blocked');
     expect(report.checks.find((item) => item.key === 'html-registration')?.status).toBe('blocked');
+  });
+
+  it('blocks when exported offline boot assets are not pre-cached by the service worker', () => {
+    const root = makeReadyFixture();
+    writeText(path.join(root, 'dist/sw.js'), 'const EXPORT_ASSETS = ["/metadata.json"];');
+    const report = buildPwaReadinessReport({ rootDir: root });
+
+    expect(report.summary.status).toBe('blocked');
+    expect(report.checks.find((item) => item.key === 'exported-offline-cache-assets')?.status).toBe('blocked');
   });
 
   it('writes JSON and Markdown reports', () => {

@@ -22,6 +22,45 @@ export function buildPwaHeadMarkup() {
   ].join('\n');
 }
 
+function walkFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const filePath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkFiles(filePath);
+    if (entry.isFile()) return [filePath];
+    return [];
+  });
+}
+
+export function discoverOfflineExportAssets({ distDir = path.join(resolveProjectRoot(), 'dist') } = {}) {
+  return walkFiles(distDir)
+    .map((filePath) => `/${path.relative(distDir, filePath).split(path.sep).join('/')}`)
+    .filter(
+      (assetPath) =>
+        assetPath === '/metadata.json' ||
+        assetPath.startsWith('/_expo/static/') ||
+        assetPath.startsWith('/assets/'),
+    )
+    .sort((a, b) => a.localeCompare(b));
+}
+
+export function buildExportAssetsDeclaration(assetPaths) {
+  return `const EXPORT_ASSETS = ${JSON.stringify(assetPaths, null, 2)};`;
+}
+
+export function preparePwaServiceWorker({ distDir = path.join(resolveProjectRoot(), 'dist') } = {}) {
+  const serviceWorkerPath = path.join(distDir, 'sw.js');
+  if (!fs.existsSync(serviceWorkerPath)) return false;
+
+  const serviceWorker = fs.readFileSync(serviceWorkerPath, 'utf8');
+  const nextDeclaration = buildExportAssetsDeclaration(discoverOfflineExportAssets({ distDir }));
+  const nextServiceWorker = serviceWorker.replace(/const EXPORT_ASSETS = \[[\s\S]*?\];/, nextDeclaration);
+  if (nextServiceWorker === serviceWorker) return false;
+
+  fs.writeFileSync(serviceWorkerPath, nextServiceWorker);
+  return true;
+}
+
 export function preparePwaDist({
   distDir = path.join(resolveProjectRoot(), 'dist'),
 } = {}) {
@@ -29,7 +68,8 @@ export function preparePwaDist({
   const html = fs.readFileSync(indexPath, 'utf8');
   const needsManifest = !html.includes('href="/manifest.json"');
   const needsServiceWorker = !html.includes("register('/sw.js')") && !html.includes('register("/sw.js")');
-  if (!needsManifest && !needsServiceWorker) return false;
+  const serviceWorkerChanged = preparePwaServiceWorker({ distDir });
+  if (!needsManifest && !needsServiceWorker) return serviceWorkerChanged;
 
   const injected = html.replace('</head>', `${buildPwaHeadMarkup()}\n</head>`);
   fs.writeFileSync(indexPath, injected);
