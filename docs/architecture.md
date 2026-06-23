@@ -52,6 +52,8 @@ when the PWA has been installed or opened online once.
 controlled reload to discover hashed files.
 The exported service worker cache version is content-addressed from app shell, Expo export, metadata, and static model
 assets, which makes cache invalidation explicit when a shipped bundle or model file changes.
+The in-app PWA runtime readiness probe also checks Cache Storage for the model manifest and listed `/models/...` files,
+separating generic offline app startup from offline model-analysis readiness.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 
