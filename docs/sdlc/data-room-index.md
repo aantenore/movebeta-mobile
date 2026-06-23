@@ -1,11 +1,11 @@
 # Data Room Index
 
-Generated: 2026-06-23T16:31:49.047Z
+Generated: 2026-06-23T16:49:35.496Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 16/33
+- Items ready: 17/34
 - Review items: 3
 - External-required items: 14
 - Missing items: 0
@@ -45,6 +45,7 @@ Generated: 2026-06-23T16:31:49.047Z
 | Web smoke report | distribution | ready | qa | share-safe | `docs/sdlc/web-smoke-report.json` | `npm run web:smoke:report` |
 | Vercel deployment report | distribution | ready | release | share-safe | `docs/sdlc/vercel-deployment-report.json` | `npm run web:vercel:check` |
 | Vercel workflow report | distribution | ready | release | credential-names-only | `docs/sdlc/vercel-workflow-report.json` | `npm run web:vercel:workflow` |
+| Vercel deployment handoff | distribution | ready | release | credential-names-only | `docs/sdlc/vercel-deployment-handoff.json` | `npm run web:vercel:handoff` |
 | Store credentials setup packet | commercial | external-required | release | credential-names-only | `docs/sdlc/store-credentials-setup-packet.json` | `npm run release:credentials:starter` |
 | GitHub workflow report | security | external-required | engineering | credential-names-only | `docs/sdlc/github-workflow-report.json` | `npm run release:github:doctor` |
 | iOS toolchain report | native | external-required | engineering | share-safe | `docs/sdlc/ios-toolchain-report.json` | `npm run native:ios:doctor` |

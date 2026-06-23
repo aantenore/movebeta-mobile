@@ -195,6 +195,10 @@
   missing deployment contract snippets, active workflow drift, JSON/Markdown report writes, and raw credential-like
   value rejection; `npm run web:vercel:workflow` writes durable static deployment workflow evidence and is included in
   `npm run release:check`.
+- Vitest Vercel deployment handoff tests for static-ready handoff state, blocked deployment evidence, prebuilt deploy
+  command coverage, post-deploy smoke, rollback guidance, and credential/project-id/local-path/media/token rejection;
+  `npm run web:vercel:handoff` writes durable JSON/Markdown handoff evidence and is included in release gates,
+  freshness, handoff, acquisition, data-room, and release-evidence packets.
 - Vitest PWA runtime readiness tests for standalone launches, browser install prompt availability, manual install
   fallback, native install path, and unsafe guidance packet rejection.
 - Vitest release evidence packet tests for aggregated launch/model/provider/native QA evidence, all-ready state, artifact
@@ -327,6 +331,8 @@
 - Vercel workflow readiness doctor with `npm run web:vercel:workflow`, which validates the documented production
   deploy workflow template, release gate ordering, static export/PWA/Vercel checks, prebuilt deploy command, post-deploy
   smoke, required GitHub secret names, artifact uploads, and active workflow parity.
+- Vercel deployment handoff packet with `npm run web:vercel:handoff`, which combines current release gate, PWA, smoke,
+  deployment, and workflow reports into prebuilt deploy, post-deploy smoke, inspect, and rollback phases.
 - Feature completion doctor with `npm run feature:doctor`, which writes `docs/sdlc/feature-completion-report.json`,
   separates internal implementation gaps from external evidence blockers, and is included in `npm run release:check`.
 - Validation pilot kit from the Plan tab, which turns collection targets into consent-safe pilot sprints without raw

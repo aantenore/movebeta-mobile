@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-23T16:31:49.047Z",
+  "generatedAt": "2026-06-23T16:49:35.496Z",
   "items": [
     {
       "category": "release",
@@ -259,6 +259,17 @@
       "status": "ready"
     },
     {
+      "category": "distribution",
+      "key": "vercel-deployment-handoff",
+      "label": "Vercel deployment handoff",
+      "location": "docs/sdlc/vercel-deployment-handoff.json",
+      "owner": "release",
+      "purpose": "Operational no-backend Vercel deployment handoff with prebuilt deploy, smoke, inspect, and rollback commands.",
+      "refreshCommand": "npm run web:vercel:handoff",
+      "sensitivity": "credential-names-only",
+      "status": "ready"
+    },
+    {
       "category": "commercial",
       "key": "store-credentials-setup",
       "label": "Store credentials setup packet",
@@ -415,10 +426,10 @@
   "summary": {
     "blockedCount": 0,
     "externalRequiredCount": 14,
-    "itemCount": 33,
+    "itemCount": 34,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readyCount": 16,
+    "readyCount": 17,
     "reviewCount": 3,
     "status": "needs-external-evidence"
   }

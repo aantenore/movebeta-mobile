@@ -124,6 +124,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.vercel-workflow-readiness.v1',
     summary: { status: 'template-ready' },
   });
+  writeJson(path.join(root, 'docs/sdlc/vercel-deployment-handoff.json'), {
+    schemaVersion: 'movebeta.vercel-deployment-handoff.v1',
+    summary: { status: 'handoff-ready' },
+  });
   writeJson(path.join(root, 'docs/sdlc/feature-completion-report.json'), {
     schemaVersion: 'movebeta.feature-completion-report.v1',
     status: 'external-blocked',
@@ -230,6 +234,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('data-room-index');
     expect(packet.commands.map((item) => item.key)).toContain('web-smoke');
     expect(packet.commands.map((item) => item.key)).toContain('vercel-workflow');
+    expect(packet.commands.map((item) => item.key)).toContain('vercel-handoff');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Vercel workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
@@ -250,6 +255,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Acquisition readiness packet');
     expect(packet.artifacts.map((item) => item.label)).toContain('Data-room index');
     expect(packet.artifacts.map((item) => item.label)).toContain('Web smoke report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Vercel deployment handoff');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model delivery lifecycle screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -286,6 +292,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Data-room index');
     expect(markdown).toContain('Exported web smoke report');
     expect(markdown).toContain('Vercel workflow readiness doctor');
+    expect(markdown).toContain('Vercel deployment handoff');
     expect(markdown).toContain('npm run release:eas:strict');
     expect(markdown).not.toMatch(/BEGIN PRIVATE KEY|ghp_|pat_|eyJ/i);
   });

@@ -229,6 +229,9 @@
 - Generate a release handoff packet that summarizes commit, repo, product identity, gate status, launch blockers,
   screenshots, delivery artifacts, and verification commands for buyer or stakeholder review.
 - Generate release source and web-dist archives with a SHA-256 manifest for integrity checks before handoff.
+- Generate a share-safe Vercel deployment handoff packet that combines release gate, PWA, web smoke, Vercel deployment,
+  and Vercel workflow evidence into prebuilt deploy, post-deploy smoke, inspect, and rollback phases without requiring
+  a backend or exposing credential/project-id values.
 - Generate an iOS toolchain report that checks the selected Developer directory, full Xcode availability, workspace,
   Pods, and build-settings probe before marking iOS build evidence ready.
 - Prepare a share-safe iOS toolchain setup packet from the Plan tab with sanitized full-Xcode, Developer directory,
@@ -538,6 +541,9 @@
   commercial, native, validation, security, and archive scope, list owner, status, sensitivity, location, and refresh
   command for each item, include external proof requirements without storing private proof values, and reject credential
   values, local paths, media references, raw artifacts, payment data, and token-like values.
+- Vercel deployment handoff evidence must remain no-backend, use prebuilt production deploy commands, separate project
+  binding and secret configuration as external actions, include post-deploy smoke and rollback commands, and be tracked by
+  release gate, freshness, handoff, acquisition, data-room, and release-evidence artifacts.
 - PWA model delivery must be governed by a versioned static policy that declares whether web builds download model assets
   during service-worker install, explicit warmup, or first analysis, and release checks must verify that the exported PWA
   includes and follows that policy.
