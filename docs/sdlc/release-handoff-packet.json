@@ -57,6 +57,11 @@
     },
     {
       "exists": true,
+      "label": "External evidence validation report",
+      "path": "docs/sdlc/external-evidence-validation-report.json"
+    },
+    {
+      "exists": true,
       "label": "MoveNet readiness report",
       "path": "docs/sdlc/movenet-readiness-report.json"
     },
@@ -421,6 +426,15 @@
       ]
     },
     {
+      "command": "npm run release:evidence:validate",
+      "key": "external-evidence-validation",
+      "label": "External evidence validation",
+      "requiredFor": [
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run release:freshness:doctor",
       "key": "release-freshness",
       "label": "Release evidence freshness doctor",
@@ -474,7 +488,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T10:40:12.043Z",
+  "generatedAt": "2026-06-23T10:59:20.791Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -484,9 +498,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "cbd7a0468da8c338538b651ae0bbb4f4877810ff",
+    "baseCommitSha": "f477be3ebf6c8b045ea0d151f4a7e5cf550ea7a2",
     "changedPaths": [],
-    "commitSha": "cbd7a0468da8c338538b651ae0bbb4f4877810ff",
+    "commitSha": "f477be3ebf6c8b045ea0d151f4a7e5cf550ea7a2",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -565,8 +579,8 @@
     "expectedScreenshots": 11,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 329,
-    "moveNetLoadMs": 3963,
+    "moveNetAverageInferenceMs": 330,
+    "moveNetLoadMs": 3904,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
