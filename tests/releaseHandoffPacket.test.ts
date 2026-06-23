@@ -130,6 +130,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.external-evidence-promotion-report.v1',
     status: 'needs-evidence',
   });
+  writeJson(path.join(root, 'docs/sdlc/external-evidence-apply-report.json'), {
+    schemaVersion: 'movebeta.external-evidence-apply-report.v1',
+    status: 'needs-evidence',
+  });
   writeJson(path.join(root, 'docs/store/store-manifest.json'), {
     screenshots: [
       { fileName: '01-analyze.png', label: 'Analyze' },
@@ -191,6 +195,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('external-evidence-intake');
     expect(packet.commands.map((item) => item.key)).toContain('external-evidence-validation');
     expect(packet.commands.map((item) => item.key)).toContain('external-evidence-promotion');
+    expect(packet.commands.map((item) => item.key)).toContain('external-evidence-apply');
     expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('movenet-static-assets');
     expect(packet.commands.map((item) => item.key)).toContain('model-asset-provenance');
@@ -208,6 +213,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence intake report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence validation report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence promotion report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('External evidence apply report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness screenshot');
     expect(packet.artifacts.map((item) => item.label)).toContain('Feature completion report');
@@ -233,6 +239,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('External evidence intake');
     expect(markdown).toContain('External evidence validation');
     expect(markdown).toContain('External evidence promotion');
+    expect(markdown).toContain('External evidence apply');
     expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('MoveNet static assets doctor');
     expect(markdown).toContain('Model asset provenance doctor');

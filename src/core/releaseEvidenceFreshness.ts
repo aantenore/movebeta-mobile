@@ -58,6 +58,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   cueValidationStarterKitReport?: unknown;
   dependencyLicenseReport?: unknown;
   envTemplateReport?: unknown;
+  externalEvidenceApplyReport?: unknown;
   externalEvidenceIntakeReport?: unknown;
   externalEvidencePromotionReport?: unknown;
   externalEvidenceValidationReport?: unknown;
@@ -168,6 +169,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/external-evidence-promotion-report.json',
     refreshCommand: 'npm run release:evidence:promote',
     reportKey: 'externalEvidencePromotionReport',
+    requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'external-evidence-apply-report',
+    label: 'External evidence apply report',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/external-evidence-apply-report.json',
+    refreshCommand: 'npm run release:evidence:apply',
+    reportKey: 'externalEvidenceApplyReport',
     requiredFor: ['store', 'handoff'],
   },
   {
