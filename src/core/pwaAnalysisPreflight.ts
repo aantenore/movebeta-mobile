@@ -33,6 +33,32 @@ export function buildPwaAnalysisPreflight({
     };
   }
 
+  if (readiness.summary.updateAvailable && hasLocalVideo) {
+    if (!online) {
+      return {
+        action: 'Reconnect, refresh the PWA update, then warm the model cache before offline real-video analysis.',
+        badge: 'update',
+        canAnalyze: false,
+        detail: 'A service-worker update is waiting, so cached model assets may be stale for this installed PWA.',
+        shouldWarmBeforeAnalysis: false,
+        status: 'blocked',
+        title: 'Refresh model before offline use',
+      };
+    }
+
+    return {
+      action: readiness.summary.modelCacheReady
+        ? 'Local analysis can run online, but refresh the PWA and warm the model again before going offline.'
+        : 'Analyze will warm the current model cache first; refresh the PWA before relying on offline analysis.',
+      badge: 'update',
+      canAnalyze: true,
+      detail: 'A service-worker update is waiting; activate it before treating the model cache as field-ready.',
+      shouldWarmBeforeAnalysis: !readiness.summary.modelCacheReady,
+      status: 'action',
+      title: 'PWA update pending',
+    };
+  }
+
   if (readiness.summary.modelCacheReady) {
     return {
       action: readiness.summary.modelIntegrityVerified
