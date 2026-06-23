@@ -205,3 +205,4 @@
 | T201 | Add explicit model download plan for native and PWA runtimes | Done |
 | T202 | Guard Coach PWA analysis when a model update is pending | Done |
 | T203 | Add explicit PWA update activation action and packet | Done |
+| T204 | Add PWA field readiness checklist and packet | Done |

@@ -146,7 +146,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T22:23:04.426Z",
+  "generatedAt": "2026-06-23T22:56:08.092Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -159,7 +159,7 @@
   "schemaVersion": "movebeta.acquisition-readiness-packet.v1",
   "signals": [
     {
-      "detail": "Tracked delivery scope has no internal gaps and 186/186 traceability rows covered.",
+      "detail": "Tracked delivery scope has no internal gaps and 187/187 traceability rows covered.",
       "evidence": [
         "docs/sdlc/feature-completion-report.json",
         "docs/task-plan.md",
@@ -173,16 +173,16 @@
       "status": "ready"
     },
     {
-      "detail": "The automated release gate is passing.",
+      "detail": "The latest release gate report contains a failing step.",
       "evidence": [
         "docs/sdlc/release-gate-report.json",
         "npm run release:check"
       ],
       "key": "release-gate",
       "label": "Release gate",
-      "nextAction": "Regenerate the gate after any source or evidence change.",
+      "nextAction": "Run npm run release:check and fix the first failing gate.",
       "owner": "engineering",
-      "status": "ready"
+      "status": "blocked"
     },
     {
       "detail": "1/3 launch track(s) ready with 10 external blocker reference(s) still tracked.",
@@ -276,13 +276,13 @@
     }
   ],
   "summary": {
-    "blockedSignalCount": 0,
+    "blockedSignalCount": 1,
     "dueDiligenceArtifactCount": 18,
     "externalBlockerCount": 10,
-    "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readySignalCount": 5,
+    "nextAction": "Run npm run release:check and fix the first failing gate.",
+    "readySignalCount": 4,
     "reviewSignalCount": 3,
     "signalCount": 9,
-    "status": "needs-external-clearance"
+    "status": "blocked"
   }
 }

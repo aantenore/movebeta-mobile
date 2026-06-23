@@ -38,6 +38,7 @@ import { buildModelDeliveryLifecycle, type ModelDeliveryLifecycle } from '@/core
 import { buildModelDownloadPlan, type ModelDownloadPlan } from '@/core/modelDownloadPlan';
 import { buildModelVerificationSuite, type ModelVerificationSuite } from '@/core/modelVerificationSuite';
 import { buildIosToolchainSetupPacket, type IosToolchainSetupPacket } from '@/core/iosToolchainSetupPacket';
+import { buildPwaFieldReadiness, type PwaFieldReadiness } from '@/core/pwaFieldReadiness';
 import {
   buildNativeQaEvidenceComposerExport,
   buildNativeQaEvidenceComposerPreview,
@@ -2210,6 +2211,83 @@ function PwaRuntimeCard({
   );
 }
 
+function PwaFieldReadinessCard({
+  onPreparePacket,
+  readiness,
+}: {
+  onPreparePacket: () => void;
+  readiness: PwaFieldReadiness;
+}) {
+  const isReady = readiness.summary.status === 'ready';
+  const isBlocked = readiness.summary.status === 'blocked';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.readyForOfflineVideo ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>field</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.blockerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blockers</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.actionCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>actions</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{formatBytes(readiness.summary.modelBytesMissing)}</Text>
+          <Text style={styles.qaKitMetricLabel}>missing</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.updateAvailable ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>update</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>PWA field readiness</Text>
+          <Text style={styles.qaKitText}>{readiness.summary.nextAction}</Text>
+          <Text style={styles.qaPlatformMore}>
+            {readiness.summary.deliveryRuntime} · {pwaRuntimeStatusLabel(readiness.summary.runtimeStatus)}
+          </Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {readiness.summary.status}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare PWA field readiness packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Field packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {readiness.steps.map((step) => (
+          <View key={step.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{step.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{step.detail}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  step.status === 'ready' ? styles.launchStatusReady : step.status === 'blocked' ? styles.launchStatusBlocked : null,
+                ]}
+              >
+                {step.status}
+              </Text>
+            </View>
+            <Text style={styles.qaPlatformMore}>{step.action}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function VercelDeploymentCard({
   onPreparePacket,
   report,
@@ -2671,6 +2749,7 @@ function buildPlanSafetySources({
   releaseEvidenceReconciliation,
   releaseBlockerIssueFilingPlan,
   releaseBlockerIssueWebLinksPacket,
+  pwaFieldReadiness,
   pwaReadiness,
   pwaRuntimeReadiness,
   vercelDeploymentReadiness,
@@ -2696,6 +2775,7 @@ function buildPlanSafetySources({
   releaseEvidenceReconciliation: ReleaseEvidenceReconciliation;
   releaseBlockerIssueFilingPlan: ReleaseBlockerIssueFilingPlan;
   releaseBlockerIssueWebLinksPacket: ReleaseBlockerIssueWebLinksPacket;
+  pwaFieldReadiness: PwaFieldReadiness;
   pwaReadiness: typeof pwaReadinessReport;
   pwaRuntimeReadiness: PwaRuntimeReadiness;
   vercelDeploymentReadiness: VercelDeploymentReport;
@@ -2894,6 +2974,15 @@ function buildPlanSafetySources({
       ].join(' '),
     },
     {
+      key: 'pwa-field-readiness',
+      label: 'PWA field readiness',
+      text: [
+        pwaFieldReadiness.summary.nextAction,
+        pwaFieldReadiness.summary.status,
+        ...pwaFieldReadiness.steps.flatMap((step) => [step.label, step.detail, step.status, step.action]),
+      ].join(' '),
+    },
+    {
       key: 'vercel-deployment-readiness',
       label: 'Vercel deployment readiness',
       text: [
@@ -2943,6 +3032,10 @@ export function PlanScreen() {
     network: 'unknown',
     preference: 'wifi-only',
     runtimeReadiness: pwaRuntime.readiness,
+  });
+  const pwaFieldReadiness = buildPwaFieldReadiness({
+    modelDownloadPlan,
+    readiness: pwaRuntime.readiness,
   });
   const iosToolchainSetupPacket = buildIosToolchainSetupPacket({
     report: iosToolchainReport,
@@ -3053,6 +3146,7 @@ export function PlanScreen() {
       releaseEvidenceReconciliation,
       releaseBlockerIssueFilingPlan,
       releaseBlockerIssueWebLinksPacket,
+      pwaFieldReadiness,
       pwaReadiness: pwaReadinessReport,
       pwaRuntimeReadiness: pwaRuntime.readiness,
       vercelDeploymentReadiness: vercelDeploymentReport,
@@ -3287,6 +3381,14 @@ export function PlanScreen() {
     });
   }
 
+  function preparePwaFieldReadinessPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(pwaFieldReadiness, null, 2),
+      title: 'Prepared PWA field readiness',
+    });
+  }
+
   function updateNativeQaComposerRun(
     platform: NativeQaEvidenceComposerRun['platform'],
     patch: Partial<NativeQaEvidenceComposerRun>,
@@ -3484,6 +3586,7 @@ export function PlanScreen() {
           onWarmModelCache={() => void preparePwaModelCacheWarmup()}
           readiness={pwaRuntime.readiness}
         />
+        <PwaFieldReadinessCard onPreparePacket={preparePwaFieldReadinessPacket} readiness={pwaFieldReadiness} />
       </Section>
 
       <Section title="Vercel deployment" caption="Static prebuilt deployment readiness without backend or committed secrets.">

@@ -88,6 +88,9 @@ still trigger the same-origin warmup path when assets are uncached.
 The PWA runtime action path uses `src/core/pwaUpdateActivation.ts` and `activateBrowserPwaUpdate()` to request activation
 from a waiting service worker through a `MOVEBETA_SKIP_WAITING` message. The action returns a share-safe packet and then
 refreshes runtime/cache state so the user can warm model assets against the active app version.
+`src/core/pwaFieldReadiness.ts` aggregates runtime readiness and the model download plan into a field-use checklist for
+offline real-video analysis. It keeps install/runtime, service-worker, model-cache, update-state, and offline-video
+decisions in one schema-versioned packet, with pending PWA updates treated as blockers rather than advisory copy.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards
