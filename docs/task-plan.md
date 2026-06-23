@@ -188,3 +188,4 @@
 | T184 | Add acquisition readiness packet for buyer due diligence | Done |
 | T185 | Add share-safe data-room index for buyer due diligence | Done |
 | T186 | Add configurable PWA model delivery policy | Done |
+| T187 | Add report-derived web smoke expectations | Done |

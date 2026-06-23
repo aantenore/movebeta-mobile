@@ -248,7 +248,8 @@
   included in `npm run release:check`.
 - Model evidence sync with `npm run model:evidence:sync`, which promotes the latest model reports into Expo
   `extra.modelEvidence` and promotes real-world validation only from a ready, share-safe cue-validation dataset report.
-- Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`.
+- Playwright smoke against exported web bundle with `scripts/smoke_web_video.py`, using generated SDLC reports for
+  release count expectations instead of duplicated numeric literals.
 - Store screenshot generation with `npm run store:screenshots`.
 - Android native debug build with `./gradlew :app:assembleDebug` plus merged manifest validation.
 - iOS Pods install with `npm run native:ios:pods`.
@@ -293,6 +294,8 @@
   model precache, cache-version inclusion, and lifecycle download-strategy reporting.
 - Browser smoke verifies service worker installation, content-addressed cache keys, cache inventory, offline reload, and
   cached same-origin model policy and manifest access from the exported PWA.
+- Browser smoke derives launch-track, feature-completion, model-verification, and PWA readiness count expectations from
+  generated reports before asserting Plan-tab release UI.
 - Vitest PWA runtime readiness tests cover model-cache ready, partial-cache pending, native bypass, install-prompt, and
   share-safety states.
 - Browser smoke verifies the Plan tab model-cache preflight and prepared PWA install guidance include model-cache

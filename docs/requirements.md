@@ -528,6 +528,8 @@
 - PWA model delivery must be governed by a versioned static policy that declares whether web builds download model assets
   during service-worker install, explicit warmup, or first analysis, and release checks must verify that the exported PWA
   includes and follows that policy.
+- Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
+  task, backlog, launch-track, model-verification, or PWA check counts.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

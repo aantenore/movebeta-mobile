@@ -122,7 +122,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T15:25:01.725Z",
+  "generatedAt": "2026-06-23T15:52:01.821Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -135,7 +135,7 @@
   "schemaVersion": "movebeta.acquisition-readiness-packet.v1",
   "signals": [
     {
-      "detail": "Tracked delivery scope has no internal gaps and 170/170 traceability rows covered.",
+      "detail": "Tracked delivery scope has no internal gaps and 171/171 traceability rows covered.",
       "evidence": [
         "docs/sdlc/feature-completion-report.json",
         "docs/task-plan.md",
