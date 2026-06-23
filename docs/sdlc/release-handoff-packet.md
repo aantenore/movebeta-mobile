@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T16:17:06.040Z
+Generated: 2026-06-23T16:35:43.522Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 2ba4b24
+- Base commit at generation: 10712a8571c53da0a4dae738ccf539a2d67d3dd0
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 6274ms; average inference 320ms
+- MoveNet readiness: ready; load 4519ms; average inference 335ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -44,6 +44,7 @@ Generated: 2026-06-23T16:17:06.040Z
 - Store credentials starter: `npm run release:credentials:starter`
 - GitHub workflow doctor: `npm run release:github:doctor`
 - Dependency license report: `npm run security:licenses`
+- License review packet: `npm run release:license-review`
 - Feature completion doctor: `npm run feature:doctor`
 - Release blocker issue report: `npm run release:blocker-issues`
 - Release blocker issue filing plan: `npm run release:blocker-issues:file`
@@ -89,6 +90,8 @@ Generated: 2026-06-23T16:17:06.040Z
 - [x] Native QA evidence input template: `docs/sdlc/native-qa-evidence-input.template.json`
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`
 - [x] Dependency license report: `docs/sdlc/dependency-license-report.json`
+- [x] License review packet: `docs/sdlc/license-review-packet.json`
+- [x] Third-party notices: `docs/legal/THIRD_PARTY_NOTICES.md`
 - [x] Release evidence freshness report: `docs/sdlc/release-freshness-report.json`
 - [x] Acquisition readiness packet: `docs/sdlc/acquisition-readiness-packet.json`
 - [x] Data-room index: `docs/sdlc/data-room-index.json`
