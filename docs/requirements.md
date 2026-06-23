@@ -15,6 +15,8 @@
 - Preview the selected local video before or after analysis.
 - Validate selected video intake before analysis, including local URI, minimum duration, expected sampled frames, and
   resolution warnings.
+- Triage selected clips locally before analysis with a configurable analyze, trim, retake, or blocked recommendation,
+  score, reasons, processing budget, and privacy-safe metadata.
 - Analyze a short climbing attempt locally from camera, import, or fixture input in this runnable MVP.
 - Keep camera capture, video import, fixture input, and native pose providers behind replaceable contracts.
 - Let users choose between multiple bundled local attempts as a fallback/demo path.
