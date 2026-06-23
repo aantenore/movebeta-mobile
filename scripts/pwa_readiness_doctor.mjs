@@ -40,6 +40,29 @@ function manifestHasIcon(manifest, size) {
   return Array.isArray(manifest?.icons) && manifest.icons.some((icon) => String(icon?.sizes ?? '').includes(size));
 }
 
+function walkFiles(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const filePath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkFiles(filePath);
+    if (entry.isFile()) return [filePath];
+    return [];
+  });
+}
+
+function exportedOfflineAssetPaths(rootDir) {
+  const distDir = path.join(rootDir, 'dist');
+  return walkFiles(distDir)
+    .map((filePath) => `/${path.relative(distDir, filePath).split(path.sep).join('/')}`)
+    .filter(
+      (assetPath) =>
+        assetPath === '/metadata.json' ||
+        assetPath.startsWith('/_expo/static/') ||
+        assetPath.startsWith('/assets/'),
+    )
+    .sort((a, b) => a.localeCompare(b));
+}
+
 export function buildPwaReadinessReport({
   generatedAt = new Date().toISOString(),
   rootDir = resolveProjectRoot(),
@@ -56,8 +79,10 @@ export function buildPwaReadinessReport({
   const distModelAssetManifest = readJsonIfExists(distModelAssetManifestPath);
   const vercelConfig = readJsonIfExists(vercelConfigPath);
   const serviceWorker = readTextIfExists(serviceWorkerPath) ?? '';
+  const distServiceWorker = readTextIfExists(distServiceWorkerPath) ?? '';
   const distIndex = readTextIfExists(distIndexPath) ?? '';
   const modelAssets = Array.isArray(modelAssetManifest?.assets) ? modelAssetManifest.assets : [];
+  const offlineExportAssets = exportedOfflineAssetPaths(rootDir);
   const exportedModelAssetsPresent =
     fs.existsSync(distModelAssetManifestPath) &&
     distModelAssetManifest?.schemaVersion === 'movebeta.static-model-assets.v1' &&
@@ -119,6 +144,14 @@ export function buildPwaReadinessReport({
         serviceWorker.includes("url.pathname.startsWith('/models/')") &&
         exportedModelAssetsPresent,
       'Exported dist includes the static MoveNet manifest and every listed model file, and the service worker cache path covers them.',
+    ),
+    check(
+      'exported-offline-cache-assets',
+      'Exported offline app cache assets',
+      offlineExportAssets.length > 0 &&
+        distServiceWorker.includes('const EXPORT_ASSETS = [') &&
+        offlineExportAssets.every((assetPath) => distServiceWorker.includes(`"${assetPath}"`)),
+      'Exported service worker pre-caches Expo JS bundles, router assets, and metadata needed for offline app boot.',
     ),
     check(
       'vercel-static-config',
