@@ -83,6 +83,9 @@ export function buildPwaReadinessReport({
   const distIndex = readTextIfExists(distIndexPath) ?? '';
   const modelAssets = Array.isArray(modelAssetManifest?.assets) ? modelAssetManifest.assets : [];
   const offlineExportAssets = exportedOfflineAssetPaths(rootDir);
+  const cacheVersionMatch = distServiceWorker.match(/const CACHE_VERSION = ['"]([^'"]+)['"];/);
+  const cacheVersion = cacheVersionMatch?.[1] ?? '';
+  const contentAddressedCacheVersion = /^v-[a-f0-9]{16}$/.test(cacheVersion);
   const exportedModelAssetsPresent =
     fs.existsSync(distModelAssetManifestPath) &&
     distModelAssetManifest?.schemaVersion === 'movebeta.static-model-assets.v1' &&
@@ -152,6 +155,12 @@ export function buildPwaReadinessReport({
         distServiceWorker.includes('const EXPORT_ASSETS = [') &&
         offlineExportAssets.every((assetPath) => distServiceWorker.includes(`"${assetPath}"`)),
       'Exported service worker pre-caches Expo JS bundles, router assets, and metadata needed for offline app boot.',
+    ),
+    check(
+      'content-addressed-cache-version',
+      'Content-addressed service worker cache',
+      contentAddressedCacheVersion && !['v1', 'v-dev'].includes(cacheVersion),
+      'Exported service worker cache version is derived from the exported app, model, and shell asset contents.',
     ),
     check(
       'vercel-static-config',
