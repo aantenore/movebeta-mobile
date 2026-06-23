@@ -628,7 +628,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 46 current artifacts including the
+  `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 47 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
   provenance report, model delivery lifecycle report, PWA readiness report, web smoke report, Vercel deployment report,
   Vercel workflow report, acquisition readiness packet, data-room index, release archive artifacts, and 30 verification
