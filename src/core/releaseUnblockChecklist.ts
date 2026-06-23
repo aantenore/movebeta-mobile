@@ -68,7 +68,7 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.',
       'Strict EAS release validation passes without committing secret values.',
     ],
-    commands: ['npm run release:eas:strict'],
+    commands: ['npm run release:credentials:starter', 'npm run release:eas:strict'],
     envKeys: [
       'EXPO_TOKEN',
       'MOVEBETA_ASC_APP_ID',
@@ -83,7 +83,7 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'The app is initialized in the target Expo account.',
       'The generated EAS project id is present in app configuration before strict release checks run.',
     ],
-    commands: ['npx eas-cli@latest init'],
+    commands: ['npx eas-cli@latest init', 'npm run release:credentials:starter'],
     proof: ['app.json extra.eas.projectId'],
   },
   iosBuild: {

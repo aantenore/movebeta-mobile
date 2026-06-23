@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T09:43:29.113Z",
+  "generatedAt": "2026-06-23T10:18:54.241Z",
   "issues": [
     {
       "bodyPreviewLineCount": 26,
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "bodyPreviewLineCount": 24,
+      "bodyPreviewLineCount": 25,
       "commandPreview": "gh issue create --title \"[Release Blocker] EAS project binding\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:release,track:store,check:easProject\"",
       "filingStatus": "planned",
       "key": "easProject",
@@ -72,7 +72,7 @@
       ]
     },
     {
-      "bodyPreviewLineCount": 28,
+      "bodyPreviewLineCount": 29,
       "commandPreview": "gh issue create --title \"[Release Blocker] Store submission credentials\" --body-file <generated-release-blocker-body.md> --label \"release-blocker,owner:release,track:store,check:easCredentials\"",
       "filingStatus": "planned",
       "key": "easCredentials",

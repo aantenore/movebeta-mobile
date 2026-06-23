@@ -142,6 +142,8 @@
   JSON/Markdown report writes.
 - Vitest store credentials setup packet tests for blocked/ready credential-group summaries, required key names, and
   credential/local-path/service-account body rejection before sharing.
+- Vitest store credentials starter tests for stable setup packet generation, empty env-key template output, EAS project
+  binding template output, ready/blocked group detection, deterministic paths, and credential/local-path/token rejection.
 - Vitest native QA evidence validation tests for app/CLI parity, draft blocker state, ready physical-device evidence, and
   raw local artifact rejection.
 - Vitest native QA evidence import tests for empty state, invalid JSON, ready evidence summaries, blocking checks, and
@@ -244,6 +246,8 @@
   credential values, token-like strings, and local paths.
 - Store credentials doctor with `npm run release:credentials:doctor`, which writes
   `docs/sdlc/store-credentials-report.json` and is included in `npm run release:check`.
+- Store credentials starter with `npm run release:credentials:starter`, which writes the share-safe setup packet, empty
+  env-key template, and EAS project binding template without exposing values and is included in `npm run release:check`.
 - Store credentials setup packet from the Plan tab, which keeps release key names shareable without exposing values.
 - Release blocker issue report with `npm run release:blocker-issues`, which writes
   `docs/sdlc/release-blocker-issues-report.json` and `docs/sdlc/release-blocker-issues-report.md`, keeps GitHub issue

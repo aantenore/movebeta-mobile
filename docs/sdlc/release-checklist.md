@@ -14,6 +14,8 @@
 - [x] `npm run native:ios:pods` passes with local Ruby/CocoaPods.
 - [x] `npm run native:ios:doctor` generates the current full-Xcode blocker report.
 - [x] `npm run release:env:doctor` verifies `.env.example` covers runtime, smoke, and release key names without values.
+- [x] `npm run release:credentials:starter` refreshes the share-safe store credentials setup packet, env-key template,
+  and EAS project binding template without values.
 - [x] `npm run release:credentials:doctor` generates the current store credential blocker report without values.
 - [x] Versioning is aligned across `package.json`, `app.json`, and native build numbers.
 - [x] Browser smoke passes on desktop and 390px mobile viewport.
@@ -36,6 +38,8 @@
 - [ ] Native QA evidence file is captured and passes `npm run native:qa:validate`.
 - [ ] Cue validation dataset is captured and passes `npm run validation:cue`.
 - [ ] EAS project id, `EXPO_TOKEN`, App Store Connect, and Play Console credentials are configured outside the repository.
+- [ ] Filled store credential values are present only in local shell secrets, CI secrets, EAS credentials, or provider
+  consoles, never in the generated starter templates.
 - [ ] `npm run release:credentials:doctor` reports `ready` before store submission.
 - [ ] `npm run release:eas:strict` passes before TestFlight, internal Play, or production submission.
 - [ ] Thermal and battery behavior are measured within the native QA evidence budget.

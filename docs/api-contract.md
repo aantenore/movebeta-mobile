@@ -90,6 +90,37 @@ writes candidate evidence and a composer export. It writes `docs/sdlc/native-qa-
 `--write-evidence` is provided and the composed candidate passes validation. The command rejects raw media paths,
 content URIs, local filesystem paths, credential values, and token-like values.
 
+## Store Credentials Starter
+
+The store credentials starter is a local release-prep boundary. It turns current app config and release environment key
+presence into share-safe setup artifacts without serializing account-bound values:
+
+```ts
+type StoreCredentialsStarterOutput = {
+  envTemplate: string;
+  packet: StoreCredentialsSetupPacket;
+  projectBindingTemplate: {
+    schemaVersion: 'movebeta.store-credentials-starter.v1';
+    instructions: string[];
+    patchShape: {
+      expo: {
+        extra: {
+          eas: {
+            projectId: 'replace-with-eas-project-id-from-eas-init';
+          };
+        };
+      };
+    };
+  };
+};
+```
+
+`npm run release:credentials:starter` writes `docs/sdlc/store-credentials-setup-packet.json`,
+`docs/sdlc/store-credentials-setup-packet.md`, `docs/sdlc/store-credentials.env.template`, and
+`docs/sdlc/eas-project-binding.template.json`. The packet may report ready or blocked groups based on configured key
+names, but Expo tokens, App Store Connect values, Google service-account JSON, EAS project ids, and local credential
+paths are excluded from generated artifacts.
+
 ## Local Report
 
 Reports contain:
