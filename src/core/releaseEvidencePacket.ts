@@ -198,6 +198,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate a share-safe proof intake template for every external blocker before real evidence is collected.',
     },
     {
+      command: 'npm run release:evidence:validate',
+      key: 'external-evidence-validation',
+      label: 'External evidence validation',
+      owner: 'release',
+      purpose: 'Validate filled external proof references before release readiness or handoff claims rely on them.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -351,6 +358,13 @@ export function buildReleaseEvidencePacket({
       key: 'external-evidence-intake-report',
       label: 'External evidence intake report',
       path: 'docs/sdlc/external-evidence-intake-report.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
+    },
+    {
+      command: 'npm run release:evidence:validate',
+      key: 'external-evidence-validation-report',
+      label: 'External evidence validation report',
+      path: 'docs/sdlc/external-evidence-validation-report.json',
       status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {

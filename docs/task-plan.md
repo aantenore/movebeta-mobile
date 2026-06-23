@@ -180,3 +180,4 @@
 | T176 | Add store credentials setup starter CLI | Done |
 | T177 | Expand external blocker command coverage | Done |
 | T178 | Add external evidence intake report and template | Done |
+| T179 | Add external evidence validation report | Done |

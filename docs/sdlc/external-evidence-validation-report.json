@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "detail": "Create docs/sdlc/external-evidence-intake.filled.json from docs/sdlc/external-evidence-intake.template.json and fill every proof row.",
+      "expectedProof": "Filled external evidence intake file",
+      "id": "external-evidence-input-file",
+      "itemKey": "externalEvidence",
+      "label": "External evidence input",
+      "referenceType": "",
+      "status": "fail"
+    }
+  ],
+  "generatedAt": "2026-06-23T10:58:03.846Z",
+  "nextAction": "Create docs/sdlc/external-evidence-intake.filled.json from docs/sdlc/external-evidence-intake.template.json, fill accepted proof references, then rerun npm run release:evidence:validate.",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.external-evidence-validation-report.v1",
+  "status": "needs-evidence",
+  "summary": {
+    "acceptedProofs": 0,
+    "failedChecks": 1,
+    "intakeItemCount": 0,
+    "missingProofs": 1,
+    "providedProofs": 0,
+    "requiredProofs": 1
+  }
+}

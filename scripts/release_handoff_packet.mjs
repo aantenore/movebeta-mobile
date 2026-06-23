@@ -124,6 +124,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release blocker issue web links', 'docs/sdlc/release-blocker-issue-web-links.json'),
       artifact(rootDir, 'External evidence intake report', 'docs/sdlc/external-evidence-intake-report.json'),
       artifact(rootDir, 'External evidence intake template', 'docs/sdlc/external-evidence-intake.template.json'),
+      artifact(rootDir, 'External evidence validation report', 'docs/sdlc/external-evidence-validation-report.json'),
       artifact(rootDir, 'MoveNet readiness report', 'docs/sdlc/movenet-readiness-report.json'),
       artifact(rootDir, 'MoveNet static assets report', 'docs/sdlc/movenet-static-assets-report.json'),
       artifact(rootDir, 'Model asset provenance report', 'docs/sdlc/model-asset-provenance-report.json'),
@@ -204,6 +205,10 @@ export function buildReleaseHandoffPacket({
         'store',
       ]),
       command('external-evidence-intake', 'External evidence intake', 'npm run release:evidence:intake', [
+        'internal',
+        'store',
+      ]),
+      command('external-evidence-validation', 'External evidence validation', 'npm run release:evidence:validate', [
         'internal',
         'store',
       ]),

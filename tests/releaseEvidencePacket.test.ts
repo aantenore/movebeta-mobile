@@ -41,9 +41,9 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 16,
+      artifactCount: 17,
       blockerCount: 5,
-      commandCount: 21,
+      commandCount: 22,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
@@ -59,6 +59,7 @@ describe('release evidence packet', () => {
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:blocker-issues');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:blocker-issues:file');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:evidence:intake');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run release:evidence:validate');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:freshness:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:verification:suite');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:movenet:assets:check');
@@ -76,6 +77,7 @@ describe('release evidence packet', () => {
       ['release-blocker-issues-report', 'blocked'],
       ['release-blocker-issue-filing-plan', 'blocked'],
       ['external-evidence-intake-report', 'blocked'],
+      ['external-evidence-validation-report', 'blocked'],
       ['release-freshness-report', 'ready'],
       ['model-verification-suite-report', 'ready'],
       ['movenet-static-assets-report', 'ready'],

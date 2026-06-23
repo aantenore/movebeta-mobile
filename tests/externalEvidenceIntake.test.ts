@@ -7,8 +7,13 @@ import { describe, expect, it } from 'vitest';
 import {
   assertExternalEvidenceIntakeIsShareSafe,
   buildExternalEvidenceIntakeReport,
+  buildExternalEvidenceValidationReport,
+  buildMissingExternalEvidenceValidationReport,
+  ExternalEvidenceFilledIntakeSchema,
+  ExternalEvidenceValidationReportSchema,
   ExternalEvidenceIntakeReportSchema,
   externalEvidenceIntakeSchemaVersion,
+  externalEvidenceValidationReportSchemaVersion,
 } from '../src/core/externalEvidenceIntake';
 import { defaultLaunchReadinessEvidence, type LaunchReadinessEvidence } from '../src/core/launchReadiness';
 import {
@@ -16,6 +21,11 @@ import {
   resolveExternalEvidenceIntakePaths,
   writeExternalEvidenceIntake,
 } from '../scripts/external_evidence_intake';
+import {
+  renderExternalEvidenceValidationMarkdown,
+  resolveExternalEvidenceValidationPaths,
+  writeExternalEvidenceValidationReport,
+} from '../scripts/external_evidence_validate';
 
 function tempRoot() {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'movebeta-external-evidence-intake-'));
@@ -63,11 +73,13 @@ describe('external evidence intake', () => {
       status: 'needs-evidence',
     });
     expect(report.intakeTemplate.items.find((item) => item.key === 'iosBuild')?.commands).toContain('npm run native:ios:pods');
+    expect(report.intakeTemplate.items.find((item) => item.key === 'iosBuild')?.proof[0]?.acceptedReferenceTypes).toContain('issue-url');
     expect(report.intakeTemplate.items.find((item) => item.key === 'cueValidationDataset')?.commands).toContain(
       'npm run validation:cue:starter',
     );
     expect(JSON.stringify(report)).not.toMatch(/\/Users\/|file:\/\/|ghp_|BEGIN PRIVATE KEY|rawVideoUri/i);
     expect(report.intakeTemplate.items.flatMap((item) => item.proof).every((proof) => proof.evidenceReference === '')).toBe(true);
+    expect(report.intakeTemplate.items.flatMap((item) => item.proof).every((proof) => proof.evidenceReferenceType === '')).toBe(true);
   });
 
   it('marks intake ready when all external blockers are already cleared', () => {
@@ -107,11 +119,111 @@ describe('external evidence intake', () => {
     }
   });
 
+  it('validates a filled intake only when every proof has an accepted share-safe reference', () => {
+    const intake = buildExternalEvidenceIntakeReport({
+      generatedAt: '2026-06-23T12:20:00.000Z',
+    }).intakeTemplate;
+    const filled = ExternalEvidenceFilledIntakeSchema.parse({
+      ...intake,
+      schemaVersion: 'movebeta.external-evidence-filled-intake.v1',
+      items: intake.items.map((item) => ({
+        ...item,
+        proof: item.proof.map((proof, index) => ({
+          ...proof,
+          evidenceReference:
+            proof.acceptedReferenceTypes.includes('relative-path') && index === 0
+              ? proof.expectedProof.split(' ')[0]
+              : `https://github.com/aantenore/movebeta-mobile/issues/${100 + index}`,
+          evidenceReferenceType: proof.acceptedReferenceTypes.includes('relative-path') && index === 0 ? 'relative-path' : 'issue-url',
+          notes: 'Reference reviewed without raw artifacts.',
+          status: 'provided',
+        })),
+      })),
+    });
+
+    const report = buildExternalEvidenceValidationReport({
+      generatedAt: '2026-06-23T12:25:00.000Z',
+      input: filled,
+    });
+
+    expect(ExternalEvidenceValidationReportSchema.parse(report)).toEqual(report);
+    expect(report.schemaVersion).toBe(externalEvidenceValidationReportSchemaVersion);
+    expect(report.summary).toMatchObject({
+      acceptedProofs: 8,
+      failedChecks: 0,
+      missingProofs: 0,
+      providedProofs: 8,
+      requiredProofs: 8,
+    });
+    expect(report.status).toBe('ready');
+    expect(renderExternalEvidenceValidationMarkdown(report)).toContain('Accepted proofs: 8');
+  });
+
+  it('reports missing filled intake as needs-evidence without failing the command contract', () => {
+    const report = buildMissingExternalEvidenceValidationReport({
+      generatedAt: '2026-06-23T12:30:00.000Z',
+      inputPath: 'docs/sdlc/external-evidence-intake.filled.json',
+    });
+
+    expect(report).toMatchObject({
+      status: 'needs-evidence',
+      summary: {
+        acceptedProofs: 0,
+        failedChecks: 1,
+        missingProofs: 1,
+      },
+    });
+  });
+
+  it('marks validation ready when a filled intake has no open external proof rows', () => {
+    const intake = buildExternalEvidenceIntakeReport({
+      evidence: allReadyEvidence(),
+      generatedAt: '2026-06-23T12:32:00.000Z',
+    }).intakeTemplate;
+    const report = buildExternalEvidenceValidationReport({
+      generatedAt: '2026-06-23T12:33:00.000Z',
+      input: ExternalEvidenceFilledIntakeSchema.parse({
+        ...intake,
+        schemaVersion: 'movebeta.external-evidence-filled-intake.v1',
+      }),
+    });
+
+    expect(report.status).toBe('ready');
+    expect(report.summary.requiredProofs).toBe(0);
+    expect(report.checks).toEqual([]);
+  });
+
+  it('writes durable validation report and Markdown files', () => {
+    const rootDir = tempRoot();
+
+    try {
+      const paths = resolveExternalEvidenceValidationPaths(rootDir);
+      const { report, reportOutputPath, markdownOutputPath } = writeExternalEvidenceValidationReport({
+        generatedAt: '2026-06-23T12:35:00.000Z',
+        inputPath: paths.inputPath,
+        markdownOutputPath: paths.markdownOutputPath,
+        reportOutputPath: paths.reportOutputPath,
+        rootDir,
+      });
+
+      expect(report.status).toBe('needs-evidence');
+      expect(reportOutputPath).toBe(paths.reportOutputPath);
+      expect(markdownOutputPath).toBe(paths.markdownOutputPath);
+      expect(JSON.parse(fs.readFileSync(paths.reportOutputPath, 'utf8'))).toEqual(report);
+      expect(fs.readFileSync(paths.markdownOutputPath, 'utf8')).toContain('External Evidence Validation Report');
+    } finally {
+      fs.rmSync(rootDir, { force: true, recursive: true });
+    }
+  });
+
   it('resolves stable output paths', () => {
     const paths = resolveExternalEvidenceIntakePaths('/tmp/project');
+    const validationPaths = resolveExternalEvidenceValidationPaths('/tmp/project');
 
     expect(paths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake-report.json');
     expect(paths.templateOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.template.json');
+    expect(validationPaths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-validation-report.json');
+    expect(validationPaths.inputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.filled.json');
   });
 
   it('rejects local paths and token-like values before sharing', () => {

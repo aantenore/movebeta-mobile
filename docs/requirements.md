@@ -503,6 +503,9 @@
 - External evidence intake must provide a share-safe report and fill-in template for every remaining external blocker,
   accepting only relative repository paths, report identifiers, issue URLs, CI run URLs, or provider-console state
   references while rejecting credential values, raw video paths, local machine paths, and token-like values.
+- External evidence validation must verify filled proof references before release claims use them, requiring an explicit
+  accepted reference type for every proof row and rejecting unsupported URLs, absolute paths, raw artifacts, credential
+  values, and token-like data.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.
