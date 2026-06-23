@@ -566,7 +566,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T15:27:37.169Z",
+  "generatedAt": "2026-06-23T15:46:55.202Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -576,9 +576,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "ad23fad33bcccc6e0546967d8b01cb4a684489b7",
+    "baseCommitSha": "1fa1ef5e7fa24600e94479ff6b49323bd73cd0a9",
     "changedPaths": [],
-    "commitSha": "ad23fad33bcccc6e0546967d8b01cb4a684489b7",
+    "commitSha": "1fa1ef5e7fa24600e94479ff6b49323bd73cd0a9",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
