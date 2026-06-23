@@ -193,3 +193,5 @@
 | T189 | Separate model delivery path verification from runtime cache state | Done |
 | T190 | Add share-safe license review packet and third-party notices | Done |
 | T191 | Add no-backend Vercel deployment handoff packet | Done |
+| T192 | Add model update and cache-invalidation lifecycle evidence | Done |
+| T193 | Make MoveNet readiness prefer vendored static model assets | Done |

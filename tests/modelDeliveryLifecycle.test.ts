@@ -20,6 +20,12 @@ const tmpRoots: string[] = [];
 
 function staticAssetsReport(status: 'blocked' | 'ready' = 'ready') {
   return {
+    checks: [
+      {
+        key: 'manifest-asset-list',
+        status: status === 'ready' ? 'verified' : 'blocked',
+      },
+    ],
     generatedAt: '2026-06-20T10:00:00.000Z',
     modelName: 'MoveNet SinglePose Lightning',
     modelUrl: '/models/movenet/singlepose/lightning/4/model.json',
@@ -53,6 +59,12 @@ function modelDeliveryPolicy(downloadStrategy: 'precache-on-install' | 'warmup-o
 
 function pwaReadinessReport() {
   return {
+    checks: [
+      {
+        key: 'content-addressed-cache-version',
+        status: 'verified',
+      },
+    ],
     generatedAt: '2026-06-20T10:00:00.000Z',
     schemaVersion: 'movebeta.pwa-readiness.v1',
     summary: {
@@ -76,7 +88,7 @@ function webSmokeReport() {
   };
 }
 
-function warmedPwaRuntime() {
+function warmedPwaRuntime({ updateAvailable = false }: { updateAvailable?: boolean } = {}) {
   return buildPwaRuntimeReadiness({
     cacheApiSupported: true,
     installPromptAvailable: false,
@@ -95,7 +107,7 @@ function warmedPwaRuntime() {
     serviceWorkerControlled: true,
     serviceWorkerRegistered: true,
     serviceWorkerSupported: true,
-    updateAvailable: false,
+    updateAvailable,
   });
 }
 
@@ -139,6 +151,7 @@ describe('model delivery lifecycle', () => {
     expect(lifecycle.schemaVersion).toBe(modelDeliveryLifecycleSchemaVersion);
     expect(lifecycle.summary).toMatchObject({
       cacheReady: false,
+      contentAddressedCache: false,
       deliveryPathVerified: false,
       deliveryMode: 'same-origin-static',
       downloadStrategy: 'precache-on-install',
@@ -153,6 +166,7 @@ describe('model delivery lifecycle', () => {
     expect(lifecycle.stages.map((stage) => [stage.key, stage.status])).toEqual([
       ['build-vendoring', 'ready'],
       ['app-delivery', 'ready'],
+      ['asset-versioning', 'action'],
       ['first-online-launch', 'action'],
       ['offline-reuse', 'action'],
     ]);
@@ -168,12 +182,16 @@ describe('model delivery lifecycle', () => {
 
     expect(lifecycle.summary).toMatchObject({
       cacheReady: false,
+      contentAddressedCache: true,
       deliveryPathVerified: true,
       firstUseRequiresNetwork: true,
       status: 'ready',
     });
     expect(lifecycle.summary.nextAction).toContain('warm the model cache on each target browser');
     expect(lifecycle.stages.find((stage) => stage.key === 'first-online-launch')).toMatchObject({
+      status: 'ready',
+    });
+    expect(lifecycle.stages.find((stage) => stage.key === 'asset-versioning')).toMatchObject({
       status: 'ready',
     });
     expect(lifecycle.stages.find((stage) => stage.key === 'offline-reuse')?.detail).toContain('each browser must warm');
@@ -202,10 +220,32 @@ describe('model delivery lifecycle', () => {
       cacheReady: true,
       deliveryPathVerified: true,
       firstUseRequiresNetwork: false,
-      status: 'ready',
+      status: 'action',
+    });
+    expect(lifecycle.stages.find((stage) => stage.key === 'asset-versioning')).toMatchObject({
+      status: 'action',
     });
     expect(lifecycle.stages.find((stage) => stage.key === 'offline-reuse')).toMatchObject({
       status: 'ready',
+    });
+  });
+
+  it('surfaces waiting service-worker updates before offline model analysis', () => {
+    const lifecycle = buildModelDeliveryLifecycle({
+      generatedAt: '2026-06-20T10:00:00.000Z',
+      pwaReadinessReport: pwaReadinessReport(),
+      pwaRuntimeReadiness: warmedPwaRuntime({ updateAvailable: true }),
+      staticAssetsReport: staticAssetsReport(),
+    });
+
+    expect(lifecycle.summary).toMatchObject({
+      contentAddressedCache: true,
+      updateAvailable: true,
+      status: 'action',
+    });
+    expect(lifecycle.stages.find((stage) => stage.key === 'asset-versioning')).toMatchObject({
+      nextAction: 'Refresh the PWA to activate the waiting service worker before offline analysis.',
+      status: 'action',
     });
   });
 
@@ -218,6 +258,7 @@ describe('model delivery lifecycle', () => {
 
     expect(lifecycle.summary.deliveryMode).toBe('native-bundled');
     expect(lifecycle.summary.firstUseRequiresNetwork).toBe(false);
+    expect(lifecycle.summary.contentAddressedCache).toBe(true);
     expect(lifecycle.stages.find((stage) => stage.key === 'first-online-launch')?.detail).toContain('No browser warmup');
   });
 
@@ -246,6 +287,8 @@ describe('model delivery lifecycle', () => {
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('First online launch');
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Delivery path verified: yes');
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Download strategy: precache-on-install');
+    expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Content-addressed cache: yes');
+    expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Update trigger: Model updates ship with a new static deploy');
     expect(fs.readFileSync(markdownTarget, 'utf8')).toContain('Model Delivery Lifecycle Report');
   });
 

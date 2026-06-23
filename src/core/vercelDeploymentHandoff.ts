@@ -205,6 +205,7 @@ export function buildVercelDeploymentHandoff({
   const deploymentLinked = deploymentStatus === 'linked' || deploymentStatus === 'ready';
   const workflowActive = workflowStatus === 'active-ready' || workflowStatus === 'ready';
   const productionProofReady = deploymentLinked && workflowActive && webSmokeStatus === 'pass';
+  const staticReleaseEvidenceReady = pwaStatus === 'ready' && webSmokeStatus === 'pass';
 
   const phases = [
     phase({
@@ -214,9 +215,11 @@ export function buildVercelDeploymentHandoff({
       nextAction: 'Run npm run release:check before deployment.',
       owner: 'engineering',
       status:
-        releaseGateStatus === 'pass' && pwaStatus === 'ready' && webSmokeStatus === 'pass'
+        releaseGateStatus === 'pass' && staticReleaseEvidenceReady
           ? 'verified'
-          : 'blocked',
+          : staticReleaseEvidenceReady
+            ? 'ready-to-run'
+            : 'blocked',
     }),
     phase({
       evidence: ['docs/sdlc/vercel-deployment-report.json', 'vercel.json'],

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T16:48:01.011Z",
+  "generatedAt": "2026-06-23T17:17:40.928Z",
   "model": {
     "assetCount": 3,
     "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
@@ -30,6 +30,13 @@
       "status": "ready"
     },
     {
+      "detail": "Service-worker cache versioning is derived from app shell, metadata, exported assets, and static model assets.",
+      "key": "asset-versioning",
+      "label": "Asset versioning",
+      "nextAction": "Rerun export, PWA check, and web smoke whenever the model graph or weight shards change.",
+      "status": "ready"
+    },
+    {
       "detail": "The exported PWA delivery path verifies service-worker model caching; each installed browser still downloads assets on first online launch or explicit warmup.",
       "key": "first-online-launch",
       "label": "First online launch",
@@ -46,12 +53,15 @@
   ],
   "summary": {
     "cacheReady": false,
+    "contentAddressedCache": true,
     "deliveryPathVerified": true,
     "deliveryMode": "same-origin-static",
     "downloadStrategy": "precache-on-install",
     "downloadTrigger": "The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.",
     "firstUseRequiresNetwork": true,
     "nextAction": "Model delivery path is verified; warm the model cache on each target browser before offline gym use.",
-    "status": "ready"
+    "status": "ready",
+    "updateAvailable": false,
+    "updateTrigger": "Model updates ship with a new static deploy; the content-addressed service-worker cache version invalidates old app and model assets."
   }
 }

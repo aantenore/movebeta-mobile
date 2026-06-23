@@ -1,6 +1,6 @@
 # Dependency License Report
 
-Generated: 2026-06-23T16:48:13.392Z
+Generated: 2026-06-23T17:17:58.226Z
 
 - Status: review
 - Packages: 768
