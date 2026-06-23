@@ -171,3 +171,4 @@
 | T167 | Add model asset provenance and attribution evidence | Done |
 | T168 | Add offline PWA boot cache verification | Done |
 | T169 | Add content-addressed PWA service-worker cache versioning | Done |
+| T170 | Add PWA model-cache runtime preflight before offline analysis | Done |

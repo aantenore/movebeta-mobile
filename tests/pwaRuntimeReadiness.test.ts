@@ -11,6 +11,11 @@ const readyWebProbe: PwaRuntimeProbe = {
   cacheApiSupported: true,
   installPromptAvailable: false,
   installedStandalone: false,
+  modelCache: {
+    cachedCount: 3,
+    expectedCount: 3,
+    manifestCached: true,
+  },
   online: true,
   runtime: 'web',
   serviceWorkerControlled: true,
@@ -29,10 +34,12 @@ describe('PWA runtime readiness', () => {
     expect(readiness.schemaVersion).toBe(pwaRuntimeReadinessSchemaVersion);
     expect(readiness.summary).toMatchObject({
       installedStandalone: true,
+      modelCacheReady: true,
       offlineReady: true,
       status: 'installed',
     });
     expect(readiness.checks.find((check) => check.key === 'install-surface')?.status).toBe('ready');
+    expect(readiness.checks.find((check) => check.key === 'model-cache')?.status).toBe('ready');
   });
 
   it('surfaces browser install prompt availability as an action state', () => {
@@ -43,6 +50,8 @@ describe('PWA runtime readiness', () => {
 
     expect(readiness.summary).toMatchObject({
       installPromptAvailable: true,
+      modelAssetsCached: 3,
+      modelAssetsExpected: 3,
       offlineReady: true,
       status: 'installable',
     });
@@ -55,6 +64,7 @@ describe('PWA runtime readiness', () => {
 
     expect(readiness.summary.status).toBe('runtime-ready');
     expect(readiness.summary.nextAction).toContain('browser install control');
+    expect(packet.actions).toContain('The same-origin model cache is ready for offline analysis.');
     expect(packet.schemaVersion).toBe(pwaRuntimeReadinessSchemaVersion);
     expect(packet.privacy).toMatchObject({
       credentialValuesIncluded: false,
@@ -67,6 +77,11 @@ describe('PWA runtime readiness', () => {
       cacheApiSupported: false,
       installPromptAvailable: false,
       installedStandalone: false,
+      modelCache: {
+        cachedCount: 0,
+        expectedCount: 0,
+        manifestCached: false,
+      },
       online: true,
       runtime: 'native',
       serviceWorkerControlled: false,
@@ -76,8 +91,31 @@ describe('PWA runtime readiness', () => {
     });
 
     expect(readiness.summary.status).toBe('native');
+    expect(readiness.summary.modelCacheReady).toBe(true);
     expect(readiness.summary.offlineReady).toBe(true);
     expect(readiness.checks.every((check) => check.status === 'ready')).toBe(true);
+  });
+
+  it('keeps offline analysis pending until model assets are cached', () => {
+    const readiness = buildPwaRuntimeReadiness({
+      ...readyWebProbe,
+      modelCache: {
+        cachedCount: 1,
+        expectedCount: 3,
+        manifestCached: true,
+      },
+    });
+    const packet = buildPwaInstallGuidancePacket(readiness);
+
+    expect(readiness.summary).toMatchObject({
+      modelAssetsCached: 1,
+      modelAssetsExpected: 3,
+      modelCacheReady: false,
+      offlineReady: false,
+      status: 'runtime-ready',
+    });
+    expect(readiness.checks.find((check) => check.key === 'model-cache')?.status).toBe('action');
+    expect(packet.actions).toContain('Open once online before a gym session to warm the same-origin model cache.');
   });
 
   it('rejects unsafe guidance packet values before sharing', () => {

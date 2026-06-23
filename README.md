@@ -370,6 +370,8 @@ from the upstream catalog during the first user analysis. The post-export step i
 assets, and metadata into `dist/sw.js`; the service worker also caches `/model-assets.json` and every listed
 `/models/...` asset, then derives the service-worker cache version from those app, shell, metadata, and model asset
 contents so installed clients receive a fresh cache name when shipped assets change.
+The Plan tab PWA runtime check reads Cache Storage for `/model-assets.json` and the listed same-origin model assets, so
+offline video-analysis readiness is not claimed until the model cache is warm.
 
 The EAS release gates are:
 

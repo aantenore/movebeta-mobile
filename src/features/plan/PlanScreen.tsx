@@ -215,6 +215,11 @@ function nativePwaProbe(): PwaRuntimeProbe {
     cacheApiSupported: false,
     installPromptAvailable: false,
     installedStandalone: false,
+    modelCache: {
+      cachedCount: 0,
+      expectedCount: 0,
+      manifestCached: false,
+    },
     online: true,
     runtime: 'native',
     serviceWorkerControlled: false,
@@ -237,6 +242,11 @@ function browserPwaProbe(patch: Partial<PwaRuntimeProbe> = {}): PwaRuntimeProbe 
     installPromptAvailable: false,
     installedStandalone:
       window.matchMedia?.('(display-mode: standalone)')?.matches === true || navigatorWithStandalone.standalone === true,
+    modelCache: {
+      cachedCount: 0,
+      expectedCount: 0,
+      manifestCached: false,
+    },
     online: navigator.onLine !== false,
     runtime: 'web',
     serviceWorkerControlled: Boolean(serviceWorkerContainer?.controller),
@@ -264,11 +274,44 @@ function usePwaRuntimeReadiness() {
       setProbe((current) =>
         browserPwaProbe({
           installPromptAvailable: current.installPromptAvailable,
+          modelCache: current.modelCache,
           serviceWorkerRegistered: current.serviceWorkerRegistered,
           updateAvailable: current.updateAvailable,
           ...patch,
         }),
       );
+    };
+
+    const readModelAssetManifest = async () => {
+      const cached = await window.caches?.match?.('/model-assets.json');
+      if (cached?.ok) return cached.json().catch(() => undefined);
+
+      if (navigator.onLine === false) return undefined;
+      const response = await fetch('/model-assets.json').catch(() => undefined);
+      if (!response?.ok) return undefined;
+      return response.json().catch(() => undefined);
+    };
+
+    const refreshModelCacheState = async () => {
+      if (!('caches' in window)) {
+        mergeProbe({ modelCache: { cachedCount: 0, expectedCount: 0, manifestCached: false } });
+        return;
+      }
+
+      const manifest = await readModelAssetManifest();
+      const modelAssets: string[] = Array.isArray(manifest?.assets)
+        ? manifest.assets.filter((asset: unknown): asset is string => typeof asset === 'string' && asset.startsWith('/models/'))
+        : [];
+      const cachedManifest = await window.caches.match('/model-assets.json');
+      const cachedAssets = await Promise.all(modelAssets.map((asset) => window.caches.match(asset)));
+
+      mergeProbe({
+        modelCache: {
+          cachedCount: cachedAssets.filter(Boolean).length,
+          expectedCount: modelAssets.length,
+          manifestCached: Boolean(cachedManifest),
+        },
+      });
     };
 
     const refreshServiceWorkerState = async () => {
@@ -306,7 +349,11 @@ function usePwaRuntimeReadiness() {
     window.addEventListener('offline', handleOnlineState);
     navigator.serviceWorker?.addEventListener('controllerchange', handleControllerChange);
     void refreshServiceWorkerState();
-    void navigator.serviceWorker?.ready.then(() => mergeProbe({ serviceWorkerRegistered: true }));
+    void refreshModelCacheState();
+    void navigator.serviceWorker?.ready.then(() => {
+      mergeProbe({ serviceWorkerRegistered: true });
+      void refreshModelCacheState();
+    });
 
     return () => {
       cancelled = true;
@@ -326,6 +373,7 @@ function usePwaRuntimeReadiness() {
       browserPwaProbe({
         installPromptAvailable: false,
         installedStandalone: choice?.outcome === 'accepted' || current.installedStandalone,
+        modelCache: current.modelCache,
         serviceWorkerRegistered: current.serviceWorkerRegistered,
         updateAvailable: current.updateAvailable,
       }),
@@ -1956,6 +2004,10 @@ function PwaRuntimeCard({
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{readiness.summary.offlineReady ? 'yes' : 'no'}</Text>
           <Text style={styles.qaKitMetricLabel}>offline</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{readiness.summary.modelCacheReady ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>model</Text>
         </View>
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{readiness.summary.updateAvailable ? 'yes' : 'no'}</Text>
