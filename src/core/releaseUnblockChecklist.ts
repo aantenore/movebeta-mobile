@@ -102,7 +102,7 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.',
       'The native QA evidence validator passes with real measured values.',
     ],
-    commands: ['npm run native:qa:runbook', 'npm run native:qa:validate'],
+    commands: ['npm run native:qa:runbook', 'npm run native:qa:starter', 'npm run native:qa:validate'],
     proof: ['docs/sdlc/native-qa-evidence.json'],
   },
 };

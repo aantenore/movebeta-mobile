@@ -19,6 +19,7 @@ import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
 import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
 import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-report.json';
+import nativeQaEvidenceStarterReport from '../../../docs/sdlc/native-qa-evidence-starter-report.json';
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import vercelDeploymentReport from '../../../docs/sdlc/vercel-deployment-report.json';
@@ -2954,6 +2955,7 @@ export function PlanScreen() {
         moveNetStaticAssetsReport,
         modelVerificationSuiteReport,
         moveNetReadinessReport,
+        nativeQaEvidenceStarterReport,
         pwaReadinessReport,
         storeSubmissionPacket: storeSubmissionReport,
         vercelDeploymentReport,

@@ -491,6 +491,9 @@
 - Completed worksheet CSV imports must reject missing reviewer identities, missing scores, out-of-range scores, duplicate
   rows, unknown rows, and rows that do not match the source study seed.
 - Completed worksheet dataset preparation must surface parse or validation failures without crashing the Sessions UI.
+- Native QA evidence preparation must provide a CLI starter that writes a stable fill-in template, composes candidate
+  evidence from real physical-device measurements, rejects raw media paths or secrets, and writes
+  `docs/sdlc/native-qa-evidence.json` only after the composed evidence passes validation.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

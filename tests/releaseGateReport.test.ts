@@ -34,6 +34,7 @@ describe('release gate report', () => {
     );
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('iosToolchainDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('modelVerificationSuite');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('nativeQaEvidenceStarter');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationStarterKit');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationDatasetDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('envTemplateDoctor');

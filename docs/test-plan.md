@@ -149,6 +149,8 @@
 - Vitest native QA evidence composer tests for structured Android/iOS run inputs, second-to-millisecond normalization,
   incomplete workflow blocking, and raw artifact rejection through the shared validator.
 - Vitest native QA evidence composer export tests for versioned share-safe payloads and raw URI/path/token rejection.
+- Vitest native QA evidence starter tests for stable input template generation, blocked candidate output, final evidence
+  write gating, validator-ready real-run input, and unsafe input rejection.
 - Vitest evidence collection plan tests for cue-validation targets, estimated review rows, native QA workflow checks,
   configurable acceptance thresholds, balanced wall-angle batches, review-row distribution, and raw-artifact exclusion.
 - Vitest validation collection packet tests for schema version, balanced batch derivation, reviewer slot templates,
@@ -296,6 +298,9 @@
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.
+- Native QA evidence starter with `npm run native:qa:starter`, which writes the structured fill-in template and SDLC
+  report, composes candidate evidence from filled physical-device measurements, and writes final evidence only when the
+  candidate passes validation and `--write-evidence` is provided.
 - Native QA evidence validation with `npm run native:qa:validate` after real device runs are captured.
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.

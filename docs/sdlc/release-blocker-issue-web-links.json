@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-06-23T09:01:00.680Z",
+  "generatedAt": "2026-06-23T09:43:29.368Z",
   "issues": [
     {
-      "bodyPreviewLineCount": 25,
+      "bodyPreviewLineCount": 26,
       "key": "nativeDeviceQa",
       "labels": [
         "release-blocker",
@@ -18,8 +18,8 @@
         "internal",
         "store"
       ],
-      "urlLength": 1317,
-      "webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?body=%23%23%20Release%20Blocker%0ACapture%20physical%20iOS%20and%20Android%20evidence%20for%20camera%2C%20import%2C%20latency%2C%20battery%2C%20thermal%2C%20and%20airplane%20mode.%0A%0AOwner%3A%20%60qa%60%0ATracks%3A%20%60internal%60%2C%20%60store%60%0AStatus%3A%20%60blocked%60%0A%0A%23%23%20Acceptance%0A-%20%5B%20%5D%20Physical%20iOS%20and%20Android%20runs%20cover%20camera%2C%20import%2C%20latency%2C%20battery%2C%20thermal%2C%20and%20airplane-mode%20workflows.%0A-%20%5B%20%5D%20The%20native%20QA%20evidence%20validator%20passes%20with%20real%20measured%20values.%0A%0A%23%23%20Required%20Proof%0A-%20docs%2Fsdlc%2Fnative-qa-evidence.json%0A%0A%23%23%20Commands%0A-%20%60npm%20run%20native%3Aqa%3Arunbook%60%0A-%20%60npm%20run%20native%3Aqa%3Avalidate%60%0A%0A%23%23%20Environment%20Key%20Names%0A-%20None%0A%0A%23%23%20Secret%20Policy%0ANo%20secret%20values%20or%20raw%20local%20artifacts%20should%20be%20committed%20as%20proof.%0A%0ADo%20not%20attach%20credential%20values%2C%20private%20keys%2C%20raw%20video%2C%20absolute%20local%20paths%2C%20or%20raw%20local%20artifacts%20to%20this%20issue.&labels=release-blocker%2Cowner%3Aqa%2Ctrack%3Ainternal%2Ctrack%3Astore%2Ccheck%3AnativeDeviceQa&title=%5BRelease%20Blocker%5D%20Native%20device%20QA%20evidence"
+      "urlLength": 1363,
+      "webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?body=%23%23%20Release%20Blocker%0ACapture%20physical%20iOS%20and%20Android%20evidence%20for%20camera%2C%20import%2C%20latency%2C%20battery%2C%20thermal%2C%20and%20airplane%20mode.%0A%0AOwner%3A%20%60qa%60%0ATracks%3A%20%60internal%60%2C%20%60store%60%0AStatus%3A%20%60blocked%60%0A%0A%23%23%20Acceptance%0A-%20%5B%20%5D%20Physical%20iOS%20and%20Android%20runs%20cover%20camera%2C%20import%2C%20latency%2C%20battery%2C%20thermal%2C%20and%20airplane-mode%20workflows.%0A-%20%5B%20%5D%20The%20native%20QA%20evidence%20validator%20passes%20with%20real%20measured%20values.%0A%0A%23%23%20Required%20Proof%0A-%20docs%2Fsdlc%2Fnative-qa-evidence.json%0A%0A%23%23%20Commands%0A-%20%60npm%20run%20native%3Aqa%3Arunbook%60%0A-%20%60npm%20run%20native%3Aqa%3Astarter%60%0A-%20%60npm%20run%20native%3Aqa%3Avalidate%60%0A%0A%23%23%20Environment%20Key%20Names%0A-%20None%0A%0A%23%23%20Secret%20Policy%0ANo%20secret%20values%20or%20raw%20local%20artifacts%20should%20be%20committed%20as%20proof.%0A%0ADo%20not%20attach%20credential%20values%2C%20private%20keys%2C%20raw%20video%2C%20absolute%20local%20paths%2C%20or%20raw%20local%20artifacts%20to%20this%20issue.&labels=release-blocker%2Cowner%3Aqa%2Ctrack%3Ainternal%2Ctrack%3Astore%2Ccheck%3AnativeDeviceQa&title=%5BRelease%20Blocker%5D%20Native%20device%20QA%20evidence"
     },
     {
       "bodyPreviewLineCount": 25,

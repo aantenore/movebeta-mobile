@@ -163,6 +163,13 @@ export function buildFieldValidationOpsPacket({
           owner: 'qa',
           purpose: 'Generate the physical-device workflow checklist before measuring device runs.',
         },
+        {
+          command: 'npm run native:qa:starter',
+          key: 'native-qa-starter',
+          label: 'Prepare native QA evidence input',
+          owner: 'qa',
+          purpose: 'Generate the structured input template before composing measured device evidence.',
+        },
       ],
       duration: 'Days 1-7',
       key: 'collect',

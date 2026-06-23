@@ -1,0 +1,61 @@
+{
+  "appVersion": "1.0.0",
+  "generatedAt": "replace-with-real-run-generated-at-iso",
+  "instructions": [
+    "Replace every placeholder with real Android and iOS physical-device measurements.",
+    "Use clip ids, not local video paths, content URIs, raw media names, account ids, credentials, or tokens.",
+    "Run npm run native:qa:starter -- --input <filled-template.json> to produce a candidate evidence payload.",
+    "Add --write-evidence only after the candidate is ready and should become docs/sdlc/native-qa-evidence.json."
+  ],
+  "runs": [
+    {
+      "allWorkflowsPassed": false,
+      "analysisSeconds": null,
+      "batteryDropPct": null,
+      "buildId": "replace-with-internal-build-id",
+      "clipDurationSeconds": null,
+      "clipId": "replace-with-android-consented-clip-id",
+      "deviceName": "replace-with-android-physical-device-name",
+      "osVersion": "replace-with-android-os-version",
+      "platform": "android",
+      "provider": "native-platform-pose",
+      "recordedAt": "replace-with-real-run-recorded-at-iso",
+      "source": "camera",
+      "thermalState": null,
+      "workflows": {
+        "cameraPermission": "pending",
+        "recordVideo": "pending",
+        "mutedRecording": "pending",
+        "metadataRead": "pending",
+        "importVideo": "pending",
+        "airplaneModeAnalysis": "pending",
+        "deleteReport": "pending"
+      }
+    },
+    {
+      "allWorkflowsPassed": false,
+      "analysisSeconds": null,
+      "batteryDropPct": null,
+      "buildId": "replace-with-internal-build-id",
+      "clipDurationSeconds": null,
+      "clipId": "replace-with-ios-consented-clip-id",
+      "deviceName": "replace-with-ios-physical-device-name",
+      "osVersion": "replace-with-ios-os-version",
+      "platform": "ios",
+      "provider": "native-platform-pose",
+      "recordedAt": "replace-with-real-run-recorded-at-iso",
+      "source": "camera",
+      "thermalState": null,
+      "workflows": {
+        "cameraPermission": "pending",
+        "recordVideo": "pending",
+        "mutedRecording": "pending",
+        "metadataRead": "pending",
+        "importVideo": "pending",
+        "airplaneModeAnalysis": "pending",
+        "deleteReport": "pending"
+      }
+    }
+  ],
+  "schemaVersion": "movebeta.native-qa-evidence-composer-input.v1"
+}

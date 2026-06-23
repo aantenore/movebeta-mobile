@@ -60,6 +60,36 @@ type NativeVideoMetadata = {
 fall back to picker metadata, recorder timer values, browser metadata, or configured defaults when the native bridge is
 not available.
 
+## Native QA Evidence Starter
+
+The native QA starter is a local CLI boundary for turning real physical-device measurements into validator-ready release
+evidence:
+
+```ts
+type NativeQaEvidenceComposerInput = {
+  schemaVersion: 'movebeta.native-qa-evidence-composer-input.v1';
+  appVersion: string;
+  generatedAt: string;
+  runs: Array<{
+    platform: 'android' | 'ios';
+    deviceName: string;
+    osVersion: string;
+    buildId: string;
+    clipId: string;
+    clipDurationSeconds: number | string;
+    analysisSeconds: number | string;
+    batteryDropPct: number | string;
+    thermalState: 'nominal' | 'fair' | string;
+    allWorkflowsPassed?: boolean;
+  }>;
+};
+```
+
+`npm run native:qa:starter` writes a stable input template and report. With `-- --input <filled-template.json>`, it
+writes candidate evidence and a composer export. It writes `docs/sdlc/native-qa-evidence.json` only when
+`--write-evidence` is provided and the composed candidate passes validation. The command rejects raw media paths,
+content URIs, local filesystem paths, credential values, and token-like values.
+
 ## Local Report
 
 Reports contain:
