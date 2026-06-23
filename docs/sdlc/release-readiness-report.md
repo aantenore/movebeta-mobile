@@ -201,6 +201,9 @@ platforms are validated on physical climbing videos and devices.
   worker/cache readiness, model-cache warmup status, model-integrity readiness, network state, update state, share-safe
   install guidance, and an explicit Warm model action with SHA-256 integrity verification for cached model assets when
   Web Crypto is available.
+- Coach tab shows a PWA model-cache preflight before record/import, reuses shared browser cache helpers, exposes Warm
+  model in the capture workflow, allows online real-video analysis, blocks offline real-video analysis when MoveNet
+  assets are missing, and bypasses browser cache checks for native builds.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
@@ -634,6 +637,8 @@ platforms are validated on physical climbing videos and devices.
   manifest access from the exported PWA.
 - Browser smoke verifies the Plan tab PWA runtime model-cache preflight and confirms the prepared install guidance packet
   includes `modelCacheReady`, expected model asset counts, verified asset counts, cached bytes, and integrity flags.
+- Browser smoke verifies the Coach tab model-cache preflight shows cached model counts and the dedicated Warm model
+  action before capture.
 - Browser smoke derives launch-track, feature-completion, model-verification, and PWA readiness count assertions from
   generated SDLC reports before checking the Plan release UI, avoiding stale hard-coded release counts, and persists
   pass/fail evidence in `docs/sdlc/web-smoke-report.json`.

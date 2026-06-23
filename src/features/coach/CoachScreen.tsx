@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { Camera, Clock, Cpu, Gauge, RotateCcw, ShieldCheck, Square, TriangleAlert, Upload, Video } from 'lucide-react-native';
+import { Camera, Clock, Cpu, Download, Gauge, RotateCcw, ShieldCheck, Square, TriangleAlert, Upload, Video } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { AnalysisTrustPanel } from '@/components/AnalysisTrustPanel';
@@ -15,6 +15,15 @@ import { Section } from '@/components/Section';
 import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
 import { selectionFeedback } from '@/core/haptics';
+import { buildPwaAnalysisPreflight, type PwaAnalysisPreflight } from '@/core/pwaAnalysisPreflight';
+import {
+  browserPwaProbe,
+  emptyModelCacheState,
+  nativePwaProbe,
+  resolveBrowserModelCacheState,
+  warmBrowserPwaModelCache,
+} from '@/core/pwaRuntimeBrowser';
+import { buildPwaRuntimeReadiness, type PwaRuntimeProbe, type PwaRuntimeReadiness } from '@/core/pwaRuntimeReadiness';
 import { theme } from '@/core/theme';
 import type { AnalysisWindowMode, CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
@@ -723,6 +732,173 @@ function CapturePrepProtocolPanel({ protocol }: { protocol: CapturePrepProtocol 
   );
 }
 
+function usePwaModelPreflight() {
+  const [probe, setProbe] = useState<PwaRuntimeProbe>(() => browserPwaProbe());
+
+  useEffect(() => {
+    const initialProbe = browserPwaProbe();
+    if (initialProbe.runtime !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+      setProbe(nativePwaProbe());
+      return undefined;
+    }
+
+    let cancelled = false;
+
+    const mergeProbe = (patch: Partial<PwaRuntimeProbe> = {}) => {
+      if (cancelled) return;
+      setProbe((current) =>
+        browserPwaProbe({
+          installPromptAvailable: current.installPromptAvailable,
+          modelCache: current.modelCache,
+          serviceWorkerRegistered: current.serviceWorkerRegistered,
+          updateAvailable: current.updateAvailable,
+          ...patch,
+        }),
+      );
+    };
+
+    const refreshModelCacheState = async () => {
+      mergeProbe({ modelCache: await resolveBrowserModelCacheState() });
+    };
+
+    const refreshServiceWorkerState = async () => {
+      if (!('serviceWorker' in navigator)) {
+        mergeProbe({ serviceWorkerRegistered: false, serviceWorkerSupported: false });
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.getRegistration?.();
+      mergeProbe({
+        serviceWorkerRegistered: Boolean(registration),
+        updateAvailable: Boolean(registration?.waiting || registration?.installing),
+      });
+    };
+
+    const handleOnlineState = () => {
+      mergeProbe();
+      void refreshModelCacheState();
+    };
+    const handleControllerChange = () => {
+      mergeProbe({ serviceWorkerControlled: true, serviceWorkerRegistered: true });
+      void refreshModelCacheState();
+    };
+
+    window.addEventListener('online', handleOnlineState);
+    window.addEventListener('offline', handleOnlineState);
+    navigator.serviceWorker?.addEventListener('controllerchange', handleControllerChange);
+    void refreshServiceWorkerState();
+    void refreshModelCacheState();
+    void navigator.serviceWorker?.ready.then(() => {
+      mergeProbe({ serviceWorkerRegistered: true });
+      void refreshModelCacheState();
+    });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('online', handleOnlineState);
+      window.removeEventListener('offline', handleOnlineState);
+      navigator.serviceWorker?.removeEventListener('controllerchange', handleControllerChange);
+    };
+  }, []);
+
+  async function refreshModelCache() {
+    const nextProbe = browserPwaProbe();
+    if (nextProbe.runtime !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+      const nativeProbe = nativePwaProbe();
+      setProbe(nativeProbe);
+      return nativeProbe.modelCache ?? emptyModelCacheState();
+    }
+
+    const modelCache = await resolveBrowserModelCacheState();
+    setProbe((current) =>
+      browserPwaProbe({
+        installPromptAvailable: current.installPromptAvailable,
+        modelCache,
+        serviceWorkerRegistered: current.serviceWorkerRegistered,
+        updateAvailable: current.updateAvailable,
+      }),
+    );
+    return modelCache;
+  }
+
+  async function warmModelCache() {
+    const result = await warmBrowserPwaModelCache();
+    await refreshModelCache();
+    return result;
+  }
+
+  return {
+    online: probe.online,
+    readiness: buildPwaRuntimeReadiness(probe),
+    refreshModelCache,
+    warmModelCache,
+  };
+}
+
+function formatCacheBytes(value: number) {
+  if (value >= 1_000_000) return `${Math.round(value / 100_000) / 10} MB`;
+  if (value >= 1_000) return `${Math.round(value / 100) / 10} KB`;
+  return `${value} B`;
+}
+
+function PwaModelPreflightPanel({
+  disabled,
+  onWarmModelCache,
+  preflight,
+  readiness,
+  warming,
+}: {
+  disabled: boolean;
+  onWarmModelCache: () => void;
+  preflight: PwaAnalysisPreflight;
+  readiness: PwaRuntimeReadiness;
+  warming: boolean;
+}) {
+  const isReady = preflight.status === 'ready' || preflight.status === 'native';
+  const isBlocked = preflight.status === 'blocked';
+
+  return (
+    <View style={[styles.modelPreflight, isBlocked ? styles.modelPreflightBlocked : isReady ? styles.modelPreflightReady : null]}>
+      <View style={styles.modelPreflightTop}>
+        <View style={styles.modelPreflightTitleRow}>
+          {isBlocked ? (
+            <TriangleAlert color={theme.colors.coral} size={18} />
+          ) : (
+            <ShieldCheck color={isReady ? theme.colors.success : theme.colors.amber} size={18} />
+          )}
+          <View style={styles.modelPreflightTitleGroup}>
+            <Text style={styles.modelPreflightTitle}>{preflight.title}</Text>
+            <Text style={styles.modelPreflightDetail}>{preflight.detail}</Text>
+          </View>
+        </View>
+        <Text style={[styles.modelPreflightBadge, isBlocked ? styles.modelPreflightBadgeBlocked : isReady ? styles.modelPreflightBadgeReady : null]}>
+          {preflight.badge}
+        </Text>
+      </View>
+
+      <Text style={styles.modelPreflightAction}>{preflight.action}</Text>
+      <View style={styles.modelPreflightMetrics}>
+        <Text style={styles.modelPreflightMetric}>
+          Assets {readiness.summary.modelAssetsCached}/{readiness.summary.modelAssetsExpected}
+        </Text>
+        <Text style={styles.modelPreflightMetric}>Verified {readiness.summary.modelAssetsVerified}</Text>
+        <Text style={styles.modelPreflightMetric}>{formatCacheBytes(readiness.summary.modelBytesCached)}</Text>
+      </View>
+      {readiness.summary.status !== 'native' ? (
+        <Pressable
+          accessibilityLabel="Warm model cache"
+          disabled={disabled || warming}
+          onPress={onWarmModelCache}
+          style={[styles.modelPreflightButton, disabled || warming ? styles.disabled : null]}
+        >
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.modelPreflightButtonText}>{warming ? 'Warming' : 'Warm model'}</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
 export function CoachScreen() {
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
@@ -733,13 +909,20 @@ export function CoachScreen() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
+  const [modelWarmupLoading, setModelWarmupLoading] = useState(false);
   const [selectedAttemptId, setSelectedAttemptId] = useState(attempts[0].session.id);
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
+  const pwaPreflight = usePwaModelPreflight();
   const intakeSource = activeSource ?? getDemoVideoSource(selectedAttemptId);
+  const modelPreflight = buildPwaAnalysisPreflight({
+    hasLocalVideo: Boolean(activeSource),
+    online: pwaPreflight.online,
+    readiness: pwaPreflight.readiness,
+  });
   const captureSetupAssessment = assessCaptureCalibration(captureCalibration);
   const capturePrepProtocol = buildCapturePrepProtocol({
     calibration: captureSetupAssessment,
@@ -783,6 +966,18 @@ export function CoachScreen() {
         setErrorMessage(intake.action);
         return;
       }
+
+      const runtimePreflight = buildPwaAnalysisPreflight({
+        hasLocalVideo: true,
+        online: pwaPreflight.online,
+        readiness: pwaPreflight.readiness,
+      });
+      if (!runtimePreflight.canAnalyze) {
+        setLoading(false);
+        setReport(null);
+        setErrorMessage(runtimePreflight.action);
+        return;
+      }
     }
 
     setLoading(true);
@@ -798,6 +993,27 @@ export function CoachScreen() {
       setErrorMessage(message);
     } finally {
       setLoading(false);
+      if (sourceForAnalysis) {
+        void pwaPreflight.refreshModelCache();
+      }
+    }
+  }
+
+  async function warmCoachModelCache() {
+    selectionFeedback();
+    setModelWarmupLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const result = await pwaPreflight.warmModelCache();
+      if (result.summary.status !== 'ready') {
+        setErrorMessage(result.summary.nextAction);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Model cache warmup failed.';
+      setErrorMessage(message);
+    } finally {
+      setModelWarmupLoading(false);
     }
   }
 
@@ -984,6 +1200,14 @@ export function CoachScreen() {
           </View>
         </View>
       </View>
+
+      <PwaModelPreflightPanel
+        disabled={loading || recording}
+        onWarmModelCache={() => void warmCoachModelCache()}
+        preflight={modelPreflight}
+        readiness={pwaPreflight.readiness}
+        warming={modelWarmupLoading}
+      />
 
       <CaptureCalibrationPanel
         assessment={captureSetupAssessment}
@@ -1322,6 +1546,102 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
     lineHeight: 18,
+  },
+  modelPreflight: {
+    backgroundColor: theme.colors.surface,
+    borderColor: '#E3BB77',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  modelPreflightAction: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  modelPreflightBadge: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  modelPreflightBadgeBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  modelPreflightBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  modelPreflightBlocked: {
+    borderColor: '#F0C7BD',
+  },
+  modelPreflightButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: 7,
+    minHeight: 38,
+    paddingHorizontal: 12,
+  },
+  modelPreflightButtonText: {
+    color: theme.colors.brand,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  modelPreflightDetail: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  modelPreflightMetric: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.text,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  modelPreflightMetrics: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  modelPreflightReady: {
+    borderColor: '#B8D8C8',
+  },
+  modelPreflightTitle: {
+    color: theme.colors.ink,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  modelPreflightTitleGroup: {
+    flex: 1,
+    gap: 2,
+  },
+  modelPreflightTitleRow: {
+    alignItems: 'flex-start',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 7,
+  },
+  modelPreflightTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
   },
   metadataField: {
     flex: 1,

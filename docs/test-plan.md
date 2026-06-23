@@ -330,6 +330,8 @@
   guidance fields.
 - Vitest PWA model-cache warmup tests cover ready, partial, unsupported, and share-safety states.
 - Browser smoke clicks the Plan tab Warm model action and verifies the prepared warmup packet before offline use.
+- Vitest Coach PWA analysis preflight tests cover cached-web ready state, demo fallback, online real-video allow state,
+  offline real-video block state, and native provider bypass.
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
