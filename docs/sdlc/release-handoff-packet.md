@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T22:22:59.335Z
+Generated: 2026-06-23T22:56:51.300Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 1edfa0e10756aa968207d12875020601fd796ab3
+- Base commit at generation: 59dd6db0e1a3ad20a6249e099850e50dfc0b7aeb
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 10ms; average inference 305ms
+- MoveNet readiness: ready; load 12ms; average inference 296ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
