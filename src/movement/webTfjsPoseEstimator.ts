@@ -1,4 +1,5 @@
 import { videoAnalysisConfig } from '@/video/videoConfig';
+import { appConfig } from '@/core/config';
 
 import type { PoseFrame, VideoAsset } from './contracts';
 import { tryMapMoveNetPoseToFrame } from './movenetPoseMapper';
@@ -68,9 +69,11 @@ async function createDetector() {
   await tf.ready();
 
   const poseDetection: PoseDetectionModule = await import('@tensorflow-models/pose-detection');
-  return poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
+  const modelConfig = {
     modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
-  });
+    ...(appConfig.tfjsMoveNetModelUrl ? { modelUrl: appConfig.tfjsMoveNetModelUrl } : {}),
+  };
+  return poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, modelConfig);
 }
 
 async function getDetector() {

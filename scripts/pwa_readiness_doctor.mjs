@@ -49,11 +49,25 @@ export function buildPwaReadinessReport({
   const vercelConfigPath = path.join(rootDir, 'vercel.json');
   const distManifestPath = path.join(rootDir, 'dist/manifest.json');
   const distServiceWorkerPath = path.join(rootDir, 'dist/sw.js');
+  const distModelAssetManifestPath = path.join(rootDir, 'dist/model-assets.json');
   const distIndexPath = path.join(rootDir, 'dist/index.html');
   const manifest = readJsonIfExists(manifestPath);
+  const modelAssetManifest = readJsonIfExists(path.join(rootDir, 'public/model-assets.json'));
+  const distModelAssetManifest = readJsonIfExists(distModelAssetManifestPath);
   const vercelConfig = readJsonIfExists(vercelConfigPath);
   const serviceWorker = readTextIfExists(serviceWorkerPath) ?? '';
   const distIndex = readTextIfExists(distIndexPath) ?? '';
+  const modelAssets = Array.isArray(modelAssetManifest?.assets) ? modelAssetManifest.assets : [];
+  const exportedModelAssetsPresent =
+    fs.existsSync(distModelAssetManifestPath) &&
+    distModelAssetManifest?.schemaVersion === 'movebeta.static-model-assets.v1' &&
+    modelAssets.length > 0 &&
+    modelAssets.every(
+      (assetPath) =>
+        typeof assetPath === 'string' &&
+        assetPath.startsWith('/models/') &&
+        fs.existsSync(path.join(rootDir, 'dist', assetPath.replace(/^\//, ''))),
+    );
 
   const checks = [
     check(
@@ -96,6 +110,15 @@ export function buildPwaReadinessReport({
         fs.existsSync(path.join(rootDir, 'dist/pwa/icon-192.png')) &&
         fs.existsSync(path.join(rootDir, 'dist/pwa/icon-512.png')),
       'Expo web export copied manifest, service worker, and PWA icons into dist.',
+    ),
+    check(
+      'exported-model-cache-assets',
+      'Exported static model cache assets',
+      serviceWorker.includes('/model-assets.json') &&
+        serviceWorker.includes('cacheModelAssets') &&
+        serviceWorker.includes("url.pathname.startsWith('/models/')") &&
+        exportedModelAssetsPresent,
+      'Exported dist includes the static MoveNet manifest and every listed model file, and the service worker cache path covers them.',
     ),
     check(
       'vercel-static-config',

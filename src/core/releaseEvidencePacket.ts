@@ -184,6 +184,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Aggregate MoveNet runtime, replay, wall-angle, cue, metric, privacy, and real-validation readiness evidence.',
     },
     {
+      command: 'npm run model:movenet:assets:check',
+      key: 'movenet-static-assets',
+      label: 'MoveNet static assets doctor',
+      owner: 'engineering',
+      purpose: 'Verify vendored same-origin MoveNet graph and weight shards are present in public and exported PWA assets.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -310,6 +317,13 @@ export function buildReleaseEvidencePacket({
       label: 'Model verification suite report',
       path: 'docs/sdlc/model-verification-suite-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'modelAnalysisReplay')),
+    },
+    {
+      command: 'npm run model:movenet:assets:check',
+      key: 'movenet-static-assets-report',
+      label: 'MoveNet static assets report',
+      path: 'docs/sdlc/movenet-static-assets-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
     },
   ];
   const status =

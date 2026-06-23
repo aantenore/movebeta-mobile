@@ -340,6 +340,10 @@
   `PoseFrame` data before the local movement analyzer consumes it.
 - MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
   backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
+- Static MoveNet assets must be generated before release by downloading the TFJS graph and weight shards into
+  `public/models`, normalizing model weight references to same-origin paths, exposing the configured model URL through
+  app configuration, precaching model files in the service worker, verifying exported `dist` parity, and writing
+  share-safe JSON/Markdown evidence without raw video, local paths, credentials, or token-like values.
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.

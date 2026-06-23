@@ -65,6 +65,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   releaseBlockerIssueWebLinks?: unknown;
   releaseBlockerIssuesReport?: unknown;
   modelAnalysisReplayReport?: unknown;
+  moveNetStaticAssetsReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
   pwaReadinessReport?: unknown;
@@ -151,6 +152,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run model:analysis:replay',
     reportKey: 'modelAnalysisReplayReport',
     requiredFor: ['demo', 'internal', 'store'],
+  },
+  {
+    key: 'movenet-static-assets-report',
+    label: 'MoveNet static assets report',
+    maxAgeHours: 168,
+    owner: 'engineering',
+    path: 'docs/sdlc/movenet-static-assets-report.json',
+    refreshCommand: 'npm run model:movenet:assets:check',
+    reportKey: 'moveNetStaticAssetsReport',
+    requiredFor: ['demo', 'internal', 'store', 'handoff'],
   },
   {
     key: 'model-verification-suite-report',

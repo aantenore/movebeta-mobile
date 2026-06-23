@@ -43,6 +43,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseBlockerIssueFiling');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseBlockerIssueLinks');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeSubmissionPacket');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('moveNetStaticAssets');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('pwaReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelDeploymentReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelWorkflowReadiness');
