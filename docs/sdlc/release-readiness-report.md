@@ -214,6 +214,9 @@ platforms are validated on physical climbing videos and devices.
   model assets from being treated as field-ready before refresh and warmup.
 - Plan tab exposes an Activate update action that requests waiting service-worker activation, refreshes runtime/cache
   state, and prepares a `movebeta.pwa-update-activation.v1` packet with post-update model warmup guidance.
+- Plan tab shows a PWA field readiness checklist that aggregates runtime, service-worker, model-cache, integrity, model
+  download, and pending-update state before offline real-video gym use, and prepares a
+  `movebeta.pwa-field-readiness.v1` packet.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
