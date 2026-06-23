@@ -10,6 +10,8 @@ runMoveNetReadinessProbe({ runs: 1 })
           input: report.input.kind,
           keypoints: report.output.maxKeypoints,
           model: report.model,
+          modelSource: report.modelSource,
+          modelUrl: report.modelUrl,
           poses: report.output.maxPoses,
           status: report.output.poseArrayReturned ? 'executed' : 'failed',
         },

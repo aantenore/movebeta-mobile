@@ -99,6 +99,45 @@ describe('Vercel deployment handoff', () => {
     expect(packet.summary.nextAction).toBe('Fix Vercel static config or PWA readiness before deployment.');
   });
 
+  it('does not block handoff on a stale failing release gate when current PWA and smoke evidence are ready', () => {
+    const packet = buildVercelDeploymentHandoff({
+      ...readyInputs(),
+      generatedAt,
+      releaseGateReport: {
+        completedAt: generatedAt,
+        schemaVersion: 'movebeta.release-gate-report.v1',
+        status: 'fail',
+      },
+    });
+
+    expect(packet.summary).toMatchObject({
+      blockedPhaseCount: 0,
+      readyPhaseCount: 2,
+      status: 'handoff-ready',
+    });
+    expect(packet.phases.find((phase) => phase.key === 'static-release-proof')).toMatchObject({
+      nextAction: 'Run npm run release:check before deployment.',
+      status: 'ready-to-run',
+    });
+  });
+
+  it('blocks static release proof when PWA or web smoke evidence is not ready', () => {
+    const packet = buildVercelDeploymentHandoff({
+      ...readyInputs(),
+      generatedAt,
+      pwaReadinessReport: {
+        generatedAt,
+        schemaVersion: 'movebeta.pwa-readiness.v1',
+        summary: { status: 'blocked' },
+      },
+    });
+
+    expect(packet.summary.status).toBe('blocked');
+    expect(packet.phases.find((phase) => phase.key === 'static-release-proof')).toMatchObject({
+      status: 'blocked',
+    });
+  });
+
   it('rejects credential values, local paths, raw media references, and token-like values before sharing', () => {
     const packet = buildVercelDeploymentHandoff({
       ...readyInputs(),

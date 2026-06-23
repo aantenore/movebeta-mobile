@@ -241,9 +241,11 @@
   `docs/legal/THIRD_PARTY_NOTICES.md` without claiming external legal clearance.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
-  Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
+  Lightning from vendored same-origin static model assets when present and runs inference on a synthetic local frame; it
+  verifies model execution, not climbing-coach accuracy.
 - MoveNet readiness report with `npm run model:movenet:readiness`, which writes
-  `docs/sdlc/movenet-readiness-report.json` and is included in `npm run release:check`.
+  `docs/sdlc/movenet-readiness-report.json` from vendored same-origin static model assets when present and is included
+  in `npm run release:check`.
 - MoveNet static assets doctor with `npm run model:movenet:assets:check`, which verifies same-origin model graph and
   weight shards in `public` and exported `dist`, service-worker model cache coverage, app config URL alignment,
   JSON/Markdown evidence, and release-gate/freshness/handoff integration.
@@ -255,6 +257,8 @@
   share-safety.
 - Vitest MoveNet static asset tests cover mocked TFHub downloads, absolute URL normalization into local shard paths,
   manifest hashing, missing-shard blockers, app model URL drift, JSON/Markdown report writes, and unsafe-value rejection.
+- Vitest MoveNet readiness tests cover ready/degraded budget reports plus local static manifest resolution and IOHandler
+  loading so the release gate does not regress to a TFHub fetch when vendored assets are present.
 - Model-analysis replay with `npm run model:analysis:replay`, which writes
   `docs/sdlc/model-analysis-replay-report.json` and is included in `npm run release:check`.
 - Model verification suite with `npm run model:verification:suite`, which writes
@@ -323,8 +327,8 @@
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
 - Vitest model delivery lifecycle tests cover first-launch pending state, verified delivery path without warmed runtime
-  cache, warmed-cache ready state, native bundled delivery, static asset blockers, JSON/Markdown report writes, and
-  unsafe-value rejection.
+  cache, model asset versioning, pending service-worker update handling, warmed-cache ready state, native bundled
+  delivery, static asset blockers, JSON/Markdown report writes, and unsafe-value rejection.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.

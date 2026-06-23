@@ -1,5 +1,5 @@
 {
-  "averageInferenceMs": 336,
+  "averageInferenceMs": 299,
   "backend": "cpu",
   "budget": {
     "averageInferenceMs": 1500,
@@ -8,7 +8,7 @@
   },
   "checks": [
     {
-      "detail": "6333ms / 25000ms",
+      "detail": "11ms / 25000ms",
       "key": "model-load",
       "label": "Model loads inside budget",
       "status": "pass"
@@ -20,19 +20,19 @@
       "status": "pass"
     },
     {
-      "detail": "336ms / 1500ms",
+      "detail": "299ms / 1500ms",
       "key": "average-inference-budget",
       "label": "Average inference stays inside budget",
       "status": "pass"
     },
     {
-      "detail": "340ms / 3000ms",
+      "detail": "303ms / 3000ms",
       "key": "max-inference-budget",
       "label": "Worst inference stays inside budget",
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-06-23T16:47:45.345Z",
+  "generatedAt": "2026-06-23T17:17:07.958Z",
   "input": {
     "kind": "synthetic-blank-frame",
     "shape": [
@@ -42,16 +42,16 @@
     ]
   },
   "inferenceRunsMs": [
-    334,
-    335,
-    340
+    303,
+    299,
+    296
   ],
   "limitations": [
     "Synthetic blank-frame inference proves local model execution only.",
     "Real climbing-video accuracy still requires consented clips, coach scores, and physical-device QA."
   ],
-  "loadMs": 6333,
-  "maxInferenceMs": 340,
+  "loadMs": 11,
+  "maxInferenceMs": 303,
   "memory": {
     "unreliable": true,
     "reasons": [
@@ -62,6 +62,8 @@
     "numBytes": 9742376
   },
   "model": "MoveNet SinglePose Lightning",
+  "modelSource": "same-origin-static-assets",
+  "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
   "output": {
     "maxKeypoints": 0,
     "maxPoses": 0,
@@ -69,5 +71,5 @@
   },
   "schemaVersion": "movebeta.movenet-readiness-report.v1",
   "status": "ready",
-  "warmupMs": 391
+  "warmupMs": 345
 }

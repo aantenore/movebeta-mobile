@@ -62,16 +62,18 @@ platforms are validated on physical climbing videos and devices.
   practice logging, and coach pack preview.
 - Web builds use TensorFlow.js MoveNet when local browser video decoding is available.
 - MoveNet-shaped keypoints map through a reusable pose-frame contract before reaching the local movement analyzer.
-- MoveNet model readiness writes a durable local report with CPU backend, model load time, average and max inference
-  time, memory evidence, and explicit synthetic-frame limitations.
+- MoveNet model readiness loads the vendored same-origin static MoveNet graph and shards, then writes a durable local
+  report with CPU backend, model source, model URL, load time, average and max inference time, memory evidence, and
+  explicit synthetic-frame limitations.
 - Model-analysis replay writes a durable local report proving MoveNet-shaped keypoints produce privacy-safe metrics and
   cues across bundled slab, vertical, and overhang attempts.
 - Model verification suite writes durable JSON and Markdown evidence that aggregates MoveNet runtime budgets,
   model-shaped replay, wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real
   validation status.
 - Model delivery lifecycle writes durable JSON and Markdown evidence that separates build-time vendoring, configurable
-  PWA model delivery policy, same-origin service-worker install download or warmup, native bundle delivery, and offline
-  cache reuse while distinguishing verified delivery-path evidence from each browser's current model cache state.
+  PWA model delivery policy, same-origin service-worker install download or warmup, content-addressed model update
+  invalidation, pending PWA update handling, native bundle delivery, and offline cache reuse while distinguishing verified
+  delivery-path evidence from each browser's current model cache state.
 - Native QA runbook generation prepares iOS and Android physical-device validation workflows from the same workflow and
   budget contract used by the native QA evidence validator.
 - Android custom native builds compile the `native-platform-pose` provider backed by ML Kit and local video metadata reads.
@@ -184,8 +186,9 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab shows Model asset provenance from the generated report, including TensorFlow Hub source URL, SHA-256 parity,
   attribution notice status, explicit license-review state, and a share-safe packet export.
 - Plan tab shows Model delivery lifecycle from the generated report and live runtime state, including build-time
-  vendoring, configured PWA model-delivery policy, app-origin service-worker install or warmup, native bundle delivery,
-  offline cache reuse, delivery-path verification, per-device cache state, and a share-safe packet export.
+  vendoring, configured PWA model-delivery policy, app-origin service-worker install or warmup, content-addressed model
+  update invalidation, pending service-worker update handling, native bundle delivery, offline cache reuse, delivery-path
+  verification, per-device cache state, and a share-safe packet export.
 - Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
   worker/cache readiness, model-cache warmup status, model-integrity readiness, network state, update state, share-safe
   install guidance, and an explicit Warm model action with SHA-256 integrity verification for cached model assets when
@@ -309,14 +312,15 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 132 test files and 568 tests.
+- `npm test`: passed, 135 test files and 583 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
-- `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
-  inference on a synthetic 192x192 frame with the CPU backend.
+- `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning from the vendored
+  same-origin static model assets, then executed local inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4613ms load time, 340ms average inference, and 343ms max inference in the latest run.
+  CPU backend, model source `same-origin-static-assets`, model URL `/models/movenet/singlepose/lightning/4/model.json`,
+  11ms load time, 299ms average inference, and 303ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -355,7 +359,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 188/191 tasks done, 142/144 backlog items done, 174/174 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 190/193 tasks done, 144/146 backlog items done, 176/176 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -571,8 +575,8 @@ platforms are validated on physical climbing videos and devices.
   durable JSON/Markdown writes, and secret/local-artifact exclusion.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, explicit delivered-commit pinning, verification commands, Markdown rendering, and durable JSON/Markdown writes.
-- `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks without loading
-  the model in unit tests.
+- `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks plus local
+  static MoveNet manifest resolution and IOHandler loading without loading the full model in unit tests.
 - `tests/modelEvidence.test.ts`: passed and covers technical-ready, validated, degraded, missing, environment JSON, and
   privacy-safe model evidence states.
 - `tests/modelEvidenceSync.test.ts`: passed and covers report-to-app-config mapping, real-world validation preservation,

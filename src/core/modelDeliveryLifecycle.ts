@@ -10,6 +10,7 @@ const ModelDownloadStrategySchema = z.enum(['precache-on-install', 'warmup-only'
 const ModelDeliveryLifecycleStageKeySchema = z.enum([
   'build-vendoring',
   'app-delivery',
+  'asset-versioning',
   'first-online-launch',
   'offline-reuse',
 ]);
@@ -51,9 +52,10 @@ export const ModelDeliveryLifecycleSchema = z.object({
     tokenLikeValuesIncluded: z.literal(false),
   }),
   schemaVersion: z.literal(modelDeliveryLifecycleSchemaVersion),
-  stages: z.array(ModelDeliveryLifecycleStageSchema).length(4),
+  stages: z.array(ModelDeliveryLifecycleStageSchema).length(5),
   summary: z.object({
     cacheReady: z.boolean(),
+    contentAddressedCache: z.boolean(),
     deliveryPathVerified: z.boolean(),
     deliveryMode: z.enum(['native-bundled', 'same-origin-static']),
     downloadStrategy: ModelDownloadStrategySchema,
@@ -61,6 +63,8 @@ export const ModelDeliveryLifecycleSchema = z.object({
     firstUseRequiresNetwork: z.boolean(),
     nextAction: z.string().min(1),
     status: ModelDeliveryLifecycleStatusSchema,
+    updateAvailable: z.boolean(),
+    updateTrigger: z.string().min(1),
   }),
 });
 
@@ -70,6 +74,10 @@ export type ModelDeliveryLifecycleStage = z.infer<typeof ModelDeliveryLifecycleS
 export type ModelDeliveryPolicy = z.infer<typeof ModelDeliveryPolicySchema>;
 
 type StaticModelAssetReport = {
+  checks?: Array<{
+    key?: unknown;
+    status?: unknown;
+  }>;
   modelName?: unknown;
   modelUrl?: unknown;
   summary?: {
@@ -84,6 +92,10 @@ type StaticModelAssetReport = {
 };
 
 type PwaReadinessReport = {
+  checks?: Array<{
+    key?: unknown;
+    status?: unknown;
+  }>;
   summary?: {
     checkCount?: unknown;
     status?: unknown;
@@ -137,6 +149,10 @@ function parseModelDeliveryPolicy(value: unknown): ModelDeliveryPolicy {
   };
 }
 
+function hasVerifiedCheck(report: { checks?: Array<{ key?: unknown; status?: unknown }> } | undefined, key: string) {
+  return Boolean(report?.checks?.some((check) => check.key === key && check.status === 'verified'));
+}
+
 function webDownloadTrigger(strategy: z.infer<typeof ModelDownloadStrategySchema>) {
   if (strategy === 'precache-on-install') {
     return 'The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.';
@@ -145,6 +161,20 @@ function webDownloadTrigger(strategy: z.infer<typeof ModelDownloadStrategySchema
     return 'The model is vendored during build, then the browser downloads same-origin model assets only when the Warm model action or analysis path requests them.';
   }
   return 'The model is vendored during build, then the browser downloads same-origin model assets lazily when local video analysis starts.';
+}
+
+function updateTriggerFor({
+  contentAddressedCache,
+  nativeRuntime,
+}: {
+  contentAddressedCache: boolean;
+  nativeRuntime: boolean;
+}) {
+  if (nativeRuntime) return 'Model updates ship with native app releases and provider-bundle updates.';
+  if (contentAddressedCache) {
+    return 'Model updates ship with a new static deploy; the content-addressed service-worker cache version invalidates old app and model assets.';
+  }
+  return 'Model updates require a new static export and PWA readiness proof before automatic cache invalidation can be claimed.';
 }
 
 function stage({
@@ -218,6 +248,11 @@ export function buildModelDeliveryLifecycle({
     count(webSmokeReport.summary.passedChecks) === count(webSmokeReport.summary.totalChecks);
   const nativeRuntime = runtime === 'native';
   const cacheReady = nativeRuntime || Boolean(pwaRuntimeReadiness?.summary.modelCacheReady);
+  const updateAvailable = !nativeRuntime && Boolean(pwaRuntimeReadiness?.summary.updateAvailable);
+  const contentAddressedCache =
+    nativeRuntime ||
+    (hasVerifiedCheck(pwaReadinessReport, 'content-addressed-cache-version') &&
+      hasVerifiedCheck(staticAssetsReport, 'manifest-asset-list'));
   const deliveryPathVerified = nativeRuntime || cacheReady || (staticReady && (pwaReady || webSmokeReady));
   const expectedCacheAssets = pwaRuntimeReadiness?.summary.modelAssetsExpected ?? assetCount;
   const cachedAssets = pwaRuntimeReadiness?.summary.modelAssetsCached ?? 0;
@@ -245,6 +280,27 @@ export function buildModelDeliveryLifecycle({
       label: 'App delivery',
       nextAction: nativeRuntime ? 'Keep native provider assets tied to app versioning.' : 'Deploy the exported PWA after static asset checks pass.',
       status: staticReady || nativeRuntime ? 'ready' : 'blocked',
+    }),
+    stage({
+      detail: nativeRuntime
+        ? 'Model updates are coupled to native app releases and provider bundle changes.'
+        : contentAddressedCache
+          ? 'Service-worker cache versioning is derived from app shell, metadata, exported assets, and static model assets.'
+          : staticReady
+            ? 'Static model assets are versioned, but exported service-worker cache invalidation still needs PWA readiness evidence.'
+            : 'Model update handling cannot be claimed until static model assets are ready.',
+      key: 'asset-versioning',
+      label: 'Asset versioning',
+      nextAction: nativeRuntime
+        ? 'Keep native model/provider changes tied to app release notes and physical-device QA.'
+        : updateAvailable
+          ? 'Refresh the PWA to activate the waiting service worker before offline analysis.'
+          : contentAddressedCache
+            ? 'Rerun export, PWA check, and web smoke whenever the model graph or weight shards change.'
+            : staticReady
+              ? 'Run npm run export:web and npm run web:pwa:check to verify content-addressed cache invalidation.'
+              : 'Run npm run model:movenet:assets:download before export.',
+      status: nativeRuntime || contentAddressedCache ? (updateAvailable ? 'action' : 'ready') : staticReady ? 'action' : 'blocked',
     }),
     stage({
       detail: nativeRuntime
@@ -319,6 +375,7 @@ export function buildModelDeliveryLifecycle({
     stages,
     summary: {
       cacheReady,
+      contentAddressedCache,
       deliveryPathVerified,
       deliveryMode: nativeRuntime ? 'native-bundled' : 'same-origin-static',
       downloadStrategy,
@@ -328,6 +385,8 @@ export function buildModelDeliveryLifecycle({
       firstUseRequiresNetwork,
       nextAction,
       status,
+      updateAvailable,
+      updateTrigger: updateTriggerFor({ contentAddressedCache, nativeRuntime }),
     },
   });
 

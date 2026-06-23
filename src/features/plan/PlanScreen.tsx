@@ -2133,11 +2133,16 @@ function ModelDeliveryLifecycleCard({
           <Text style={styles.qaKitMetricValue}>{lifecycle.summary.firstUseRequiresNetwork ? 'yes' : 'no'}</Text>
           <Text style={styles.qaKitMetricLabel}>network</Text>
         </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{lifecycle.summary.contentAddressedCache ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>versioned</Text>
+        </View>
       </View>
       <View style={styles.qaValidationTop}>
         <View style={styles.launchTrackTitleGroup}>
           <Text style={styles.qaValidationTitle}>Model delivery lifecycle</Text>
           <Text style={styles.qaKitText}>{lifecycle.summary.downloadTrigger}</Text>
+          <Text style={styles.qaKitText}>{lifecycle.summary.updateTrigger}</Text>
         </View>
         <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
           {modelDeliveryLifecycleStatusLabel(lifecycle.summary.status)}
