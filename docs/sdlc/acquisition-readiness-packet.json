@@ -128,7 +128,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T16:05:17.511Z",
+  "generatedAt": "2026-06-23T16:16:00.246Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -179,7 +179,7 @@
       "status": "external-required"
     },
     {
-      "detail": "Model provenance is review; delivery lifecycle is action.",
+      "detail": "Model provenance is review; delivery lifecycle is ready.",
       "evidence": [
         "docs/sdlc/model-asset-provenance-report.json",
         "docs/sdlc/model-delivery-lifecycle-report.json",
