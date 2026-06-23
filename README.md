@@ -372,6 +372,8 @@ assets, and metadata into `dist/sw.js`; the service worker also caches `/model-a
 contents so installed clients receive a fresh cache name when shipped assets change.
 The Plan tab PWA runtime check reads Cache Storage for `/model-assets.json` and the listed same-origin model assets, so
 offline video-analysis readiness is not claimed until the model cache is warm.
+The Plan tab also includes a Warm model action that fetches and caches those same-origin model files explicitly and
+prepares a share-safe warmup result before offline gym use.
 
 The EAS release gates are:
 
