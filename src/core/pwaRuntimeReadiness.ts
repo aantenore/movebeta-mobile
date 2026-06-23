@@ -15,9 +15,13 @@ export type PwaRuntimeProbe = {
   installPromptAvailable: boolean;
   installedStandalone: boolean;
   modelCache?: {
+    bytesCached?: number;
     cachedCount: number;
     expectedCount: number;
+    integritySupported?: boolean;
+    integrityVerified?: boolean;
     manifestCached: boolean;
+    verifiedCount?: number;
   };
   online: boolean;
   runtime: PwaRuntimeKind;
@@ -50,7 +54,11 @@ export const PwaRuntimeReadinessSchema = z.object({
     installedStandalone: z.boolean(),
     modelAssetsCached: z.number().int().nonnegative(),
     modelAssetsExpected: z.number().int().nonnegative(),
+    modelAssetsVerified: z.number().int().nonnegative(),
+    modelBytesCached: z.number().int().nonnegative(),
     modelCacheReady: z.boolean(),
+    modelIntegritySupported: z.boolean(),
+    modelIntegrityVerified: z.boolean(),
     nextAction: z.string(),
     offlineReady: z.boolean(),
     status: PwaRuntimeStatusSchema,
@@ -105,15 +113,26 @@ function offlineReady(probe: PwaRuntimeProbe) {
 }
 
 function modelCacheState(probe: PwaRuntimeProbe) {
+  const bytesCached = Math.max(0, Math.trunc(Number(probe.modelCache?.bytesCached ?? 0)));
   const cachedCount = Math.max(0, Math.trunc(Number(probe.modelCache?.cachedCount ?? 0)));
   const expectedCount = Math.max(0, Math.trunc(Number(probe.modelCache?.expectedCount ?? 0)));
+  const integritySupported = Boolean(probe.modelCache?.integritySupported);
+  const verifiedCount = Math.max(0, Math.trunc(Number(probe.modelCache?.verifiedCount ?? 0)));
   const manifestCached = Boolean(probe.modelCache?.manifestCached);
+  const cacheReady = expectedCount > 0 && manifestCached && cachedCount >= expectedCount;
+  const integrityVerified = integritySupported && expectedCount > 0 && verifiedCount >= expectedCount && Boolean(probe.modelCache?.integrityVerified ?? true);
+  const ready = cacheReady && (!integritySupported || integrityVerified);
 
   return {
+    bytesCached,
     cachedCount,
+    cacheReady,
     expectedCount,
+    integritySupported,
+    integrityVerified,
     manifestCached,
-    ready: expectedCount > 0 && manifestCached && cachedCount >= expectedCount,
+    ready,
+    verifiedCount,
   };
 }
 
@@ -200,13 +219,13 @@ export function buildPwaRuntimeReadiness(probe: PwaRuntimeProbe): PwaRuntimeRead
         ? 'Use local native storage and bundled assets for offline review.'
         : nextOfflineReady
           ? 'Keep manifest, service worker, app shell, and model assets in the exported dist.'
-          : 'Verify Cache API, service worker registration, and model cache readiness before relying on offline launch.',
+          : 'Verify Cache API, service worker registration, model cache readiness, and model integrity before relying on offline launch.',
       detail: nativeRuntime
         ? 'Offline support is handled by native bundles and local storage.'
         : nextOfflineReady
           ? 'Cache API, service worker registration, and model assets are available for static offline startup.'
           : browserRuntimeReady
-            ? 'Cache API and service worker registration are ready, but the same-origin model cache still needs warming.'
+            ? 'Cache API and service worker registration are ready, but the same-origin model cache or integrity still needs warming.'
           : probe.cacheApiSupported
             ? 'Cache API is available, but the service worker lifecycle is not ready yet.'
             : 'Cache API is not available in this runtime.',
@@ -232,6 +251,25 @@ export function buildPwaRuntimeReadiness(probe: PwaRuntimeProbe): PwaRuntimeRead
       key: 'model-cache',
       label: 'Model cache',
       status: nativeRuntime || modelCache.ready ? 'ready' : probe.cacheApiSupported ? 'action' : 'blocked',
+    }),
+    check({
+      action: nativeRuntime
+        ? 'Use native package integrity and store signing for bundled model assets.'
+        : modelCache.integritySupported && modelCache.integrityVerified
+          ? 'Keep manifest byte counts and SHA-256 digests aligned with the vendored model assets.'
+          : modelCache.integritySupported
+            ? 'Warm the model cache online until every cached MoveNet asset passes SHA-256 verification.'
+            : 'Use a browser with Web Crypto SHA-256 support for stronger cached-model verification when available.',
+      detail: nativeRuntime
+        ? 'Native distribution integrity is handled outside browser Cache Storage.'
+        : modelCache.integritySupported && modelCache.integrityVerified
+          ? `Cache Storage verified ${modelCache.verifiedCount}/${modelCache.expectedCount} model asset(s), ${modelCache.bytesCached} byte(s).`
+          : modelCache.integritySupported
+            ? `Cache Storage verified ${modelCache.verifiedCount}/${modelCache.expectedCount} model asset(s), ${modelCache.bytesCached} byte(s).`
+            : 'Web Crypto SHA-256 is not available; runtime readiness falls back to manifest and Cache Storage presence.',
+      key: 'model-integrity',
+      label: 'Model integrity',
+      status: nativeRuntime || modelCache.integrityVerified || !modelCache.integritySupported ? 'ready' : probe.cacheApiSupported ? 'action' : 'blocked',
     }),
     check({
       action: probe.online ? 'Run deployed smoke while online, then verify offline relaunch after first load.' : 'Reconnect before fetching any uncached deployment assets.',
@@ -271,7 +309,11 @@ export function buildPwaRuntimeReadiness(probe: PwaRuntimeProbe): PwaRuntimeRead
       installedStandalone: probe.installedStandalone,
       modelAssetsCached: nativeRuntime ? 0 : modelCache.cachedCount,
       modelAssetsExpected: nativeRuntime ? 0 : modelCache.expectedCount,
+      modelAssetsVerified: nativeRuntime ? 0 : modelCache.verifiedCount,
+      modelBytesCached: nativeRuntime ? 0 : modelCache.bytesCached,
       modelCacheReady: nativeRuntime || modelCache.ready,
+      modelIntegritySupported: nativeRuntime ? false : modelCache.integritySupported,
+      modelIntegrityVerified: nativeRuntime ? false : modelCache.integrityVerified,
       nextAction: nextActionFor(status, probe.updateAvailable),
       offlineReady: nativeRuntime || nextOfflineReady,
       status,
@@ -290,8 +332,12 @@ export function buildPwaInstallGuidancePacket(readiness: PwaRuntimeReadiness): P
       ? 'After first load, relaunch once from the installed app surface to verify offline startup.'
       : 'Reload after service worker registration before claiming offline startup.',
     readiness.summary.modelCacheReady
-      ? 'The same-origin model cache is ready for offline analysis.'
-      : 'Open once online before a gym session to warm the same-origin model cache.',
+      ? readiness.summary.modelIntegrityVerified
+        ? 'The same-origin model cache is ready and SHA-256 verified for offline analysis.'
+        : 'The same-origin model cache is ready for offline analysis.'
+      : readiness.summary.modelIntegritySupported
+        ? 'Open once online before a gym session to warm and verify the same-origin model cache.'
+        : 'Open once online before a gym session to warm the same-origin model cache.',
   ];
   const packet = PwaInstallGuidancePacketSchema.parse({
     actions,
