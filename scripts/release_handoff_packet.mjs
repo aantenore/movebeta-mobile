@@ -148,6 +148,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Web smoke report', 'docs/sdlc/web-smoke-report.json'),
       artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
       artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
+      artifact(rootDir, 'Vercel deployment handoff', 'docs/sdlc/vercel-deployment-handoff.json'),
       artifact(rootDir, 'Store credentials setup packet', 'docs/sdlc/store-credentials-setup-packet.json'),
       artifact(rootDir, 'Store credentials env template', 'docs/sdlc/store-credentials.env.template'),
       artifact(rootDir, 'EAS project binding template', 'docs/sdlc/eas-project-binding.template.json'),
@@ -263,6 +264,10 @@ export function buildReleaseHandoffPacket({
         'internal',
       ]),
       command('vercel-workflow', 'Vercel workflow readiness doctor', 'npm run web:vercel:workflow', [
+        'demo',
+        'internal',
+      ]),
+      command('vercel-handoff', 'Vercel deployment handoff', 'npm run web:vercel:handoff', [
         'demo',
         'internal',
       ]),

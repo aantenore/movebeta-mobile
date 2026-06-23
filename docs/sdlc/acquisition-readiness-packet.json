@@ -85,6 +85,12 @@
       "status": "ready"
     },
     {
+      "key": "docs-sdlc-vercel-deployment-handoff-json",
+      "label": "Vercel deployment handoff",
+      "path": "docs/sdlc/vercel-deployment-handoff.json",
+      "status": "ready"
+    },
+    {
       "key": "docs-screenshots-md",
       "label": "Screenshot gallery",
       "path": "docs/screenshots.md",
@@ -140,7 +146,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T16:31:48.978Z",
+  "generatedAt": "2026-06-23T16:49:31.347Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -153,7 +159,7 @@
   "schemaVersion": "movebeta.acquisition-readiness-packet.v1",
   "signals": [
     {
-      "detail": "Tracked delivery scope has no internal gaps and 173/173 traceability rows covered.",
+      "detail": "Tracked delivery scope has no internal gaps and 174/174 traceability rows covered.",
       "evidence": [
         "docs/sdlc/feature-completion-report.json",
         "docs/task-plan.md",
@@ -216,12 +222,13 @@
       "status": "review"
     },
     {
-      "detail": "Store metadata is metadata-ready; PWA readiness is ready; web smoke is pass; Vercel static readiness is static-ready.",
+      "detail": "Store metadata is metadata-ready; PWA readiness is ready; web smoke is pass; Vercel static readiness is static-ready; Vercel handoff is handoff-ready.",
       "evidence": [
         "docs/store/store-submission-packet.json",
         "docs/sdlc/pwa-readiness-report.json",
         "docs/sdlc/web-smoke-report.json",
-        "docs/sdlc/vercel-deployment-report.json"
+        "docs/sdlc/vercel-deployment-report.json",
+        "docs/sdlc/vercel-deployment-handoff.json"
       ],
       "key": "distribution",
       "label": "Distribution",
@@ -270,7 +277,7 @@
   ],
   "summary": {
     "blockedSignalCount": 0,
-    "dueDiligenceArtifactCount": 17,
+    "dueDiligenceArtifactCount": 18,
     "externalBlockerCount": 10,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readySignalCount": 5,

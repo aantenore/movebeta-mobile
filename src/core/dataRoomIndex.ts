@@ -103,6 +103,7 @@ export type DataRoomReportBundle = {
   releaseHandoffPacket?: unknown;
   storeCredentialsSetupPacket?: unknown;
   storeSubmissionPacket?: unknown;
+  vercelDeploymentHandoff?: unknown;
   vercelDeploymentReport?: unknown;
   vercelWorkflowReport?: unknown;
   webSmokeReport?: unknown;
@@ -389,6 +390,18 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready', 'template-ready'],
     refreshCommand: 'npm run web:vercel:workflow',
     reportKey: 'vercelWorkflowReport',
+    sensitivity: 'credential-names-only',
+  },
+  {
+    category: 'distribution',
+    key: 'vercel-deployment-handoff',
+    label: 'Vercel deployment handoff',
+    location: 'docs/sdlc/vercel-deployment-handoff.json',
+    owner: 'release',
+    purpose: 'Operational no-backend Vercel deployment handoff with prebuilt deploy, smoke, inspect, and rollback commands.',
+    readyStatuses: ['handoff-ready', 'linked-ready', 'deployed-ready'],
+    refreshCommand: 'npm run web:vercel:handoff',
+    reportKey: 'vercelDeploymentHandoff',
     sensitivity: 'credential-names-only',
   },
   {

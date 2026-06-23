@@ -128,6 +128,7 @@ export function writeAcquisitionReadinessPacket({
     'docs/sdlc/pwa-readiness-report.json',
     'docs/sdlc/web-smoke-report.json',
     'docs/sdlc/vercel-deployment-report.json',
+    'docs/sdlc/vercel-deployment-handoff.json',
     'docs/screenshots.md',
     '../movebeta-mobile-source.zip',
     '../movebeta-mobile-web-dist.zip',
@@ -153,6 +154,7 @@ export function writeAcquisitionReadinessPacket({
     releaseGateReport: readJsonIfExists(rootDir, 'docs/sdlc/release-gate-report.json'),
     releaseHandoffPacket: readJsonIfExists(rootDir, 'docs/sdlc/release-handoff-packet.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),
+    vercelDeploymentHandoff: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-handoff.json'),
     vercelDeploymentReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-report.json'),
     webSmokeReport: readJsonIfExists(rootDir, 'docs/sdlc/web-smoke-report.json'),
   });

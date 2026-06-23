@@ -83,6 +83,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   storeCredentialsSetupPacket?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
+  vercelDeploymentHandoff?: unknown;
   vercelDeploymentReport?: unknown;
   vercelWorkflowReport?: unknown;
   webSmokeReport?: unknown;
@@ -404,6 +405,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/vercel-deployment-report.json',
     refreshCommand: 'npm run web:vercel:check',
     reportKey: 'vercelDeploymentReport',
+    requiredFor: ['demo', 'handoff'],
+  },
+  {
+    key: 'vercel-deployment-handoff',
+    label: 'Vercel deployment handoff',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/vercel-deployment-handoff.json',
+    refreshCommand: 'npm run web:vercel:handoff',
+    reportKey: 'vercelDeploymentHandoff',
     requiredFor: ['demo', 'handoff'],
   },
   {

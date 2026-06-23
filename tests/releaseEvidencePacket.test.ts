@@ -41,9 +41,9 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 22,
+      artifactCount: 23,
       blockerCount: 5,
-      commandCount: 27,
+      commandCount: 28,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
@@ -64,6 +64,7 @@ describe('release evidence packet', () => {
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:evidence:apply');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:freshness:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run web:smoke:report');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run web:vercel:handoff');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:verification:suite');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:movenet:assets:check');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:assets:provenance');
@@ -87,6 +88,7 @@ describe('release evidence packet', () => {
       ['external-evidence-apply-report', 'blocked'],
       ['release-freshness-report', 'ready'],
       ['web-smoke-report', 'ready'],
+      ['vercel-deployment-handoff', 'ready'],
       ['model-verification-suite-report', 'ready'],
       ['movenet-static-assets-report', 'ready'],
       ['model-asset-provenance-report', 'ready'],

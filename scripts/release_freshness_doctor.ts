@@ -50,6 +50,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     storeCredentialsSetupPacket: readJsonIfExists(rootDir, 'docs/sdlc/store-credentials-setup-packet.json'),
     storeCredentialsReport: readJsonIfExists(rootDir, 'docs/sdlc/store-credentials-report.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),
+    vercelDeploymentHandoff: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-handoff.json'),
     vercelDeploymentReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-report.json'),
     vercelWorkflowReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-workflow-report.json'),
     webSmokeReport: readJsonIfExists(rootDir, 'docs/sdlc/web-smoke-report.json'),
