@@ -35,6 +35,7 @@ import { buildFieldValidationOpsPacket, type FieldValidationOpsPacket } from '@/
 import { buildLaunchReadinessSummary, type LaunchReadinessTrack } from '@/core/launchReadiness';
 import { buildModelEvidenceSummary } from '@/core/modelEvidence';
 import { buildModelDeliveryLifecycle, type ModelDeliveryLifecycle } from '@/core/modelDeliveryLifecycle';
+import { buildModelDownloadPlan, type ModelDownloadPlan } from '@/core/modelDownloadPlan';
 import { buildModelVerificationSuite, type ModelVerificationSuite } from '@/core/modelVerificationSuite';
 import { buildIosToolchainSetupPacket, type IosToolchainSetupPacket } from '@/core/iosToolchainSetupPacket';
 import {
@@ -1974,6 +1975,82 @@ function ModelDeliveryLifecycleCard({
   );
 }
 
+function ModelDownloadPlanCard({
+  onPreparePacket,
+  plan,
+}: {
+  onPreparePacket: () => void;
+  plan: ModelDownloadPlan;
+}) {
+  const isReady = plan.summary.status === 'ready';
+  const isBlocked = plan.summary.status === 'blocked';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{plan.summary.runtime}</Text>
+          <Text style={styles.qaKitMetricLabel}>runtime</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.cacheReady ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>cache</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.offlineReady ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>offline</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{formatBytes(plan.model.additionalDownloadBytes)}</Text>
+          <Text style={styles.qaKitMetricLabel}>download</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{plan.summary.updateAvailable ? 'yes' : 'no'}</Text>
+          <Text style={styles.qaKitMetricLabel}>update</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Model download plan</Text>
+          <Text style={styles.qaKitText}>{plan.summary.downloadTrigger}</Text>
+          <Text style={styles.qaKitText}>{plan.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : isBlocked ? styles.launchStatusBlocked : null]}>
+          {plan.summary.status}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare model download plan packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Download plan</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {plan.steps.map((step) => (
+          <View key={step.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{step.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{step.timing}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  step.status === 'ready' ? styles.launchStatusReady : step.status === 'blocked' ? styles.launchStatusBlocked : null,
+                ]}
+              >
+                {step.status}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{step.detail}</Text>
+            <Text style={styles.qaPlatformMore}>{step.action}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
   const isReady = report.summary.status === 'ready';
 
@@ -2556,6 +2633,7 @@ function buildPlanSafetySources({
   modelEvidence,
   modelAssetProvenance,
   modelDeliveryLifecycle,
+  modelDownloadPlan,
   moveNetStaticAssets,
   modelVerificationSuite,
   recommendation,
@@ -2580,6 +2658,7 @@ function buildPlanSafetySources({
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
   modelAssetProvenance: ModelAssetProvenanceReport;
   modelDeliveryLifecycle: ModelDeliveryLifecycle;
+  modelDownloadPlan: ModelDownloadPlan;
   moveNetStaticAssets: MoveNetStaticAssetsReport;
   modelVerificationSuite: ModelVerificationSuite;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
@@ -2653,6 +2732,15 @@ function buildPlanSafetySources({
         modelDeliveryLifecycle.summary.downloadTrigger,
         modelDeliveryLifecycle.summary.nextAction,
         ...modelDeliveryLifecycle.stages.map((stage) => `${stage.label} ${stage.detail} ${stage.nextAction}`),
+      ].join(' '),
+    },
+    {
+      key: 'model-download-plan',
+      label: 'Model download plan',
+      text: [
+        modelDownloadPlan.summary.downloadTrigger,
+        modelDownloadPlan.summary.nextAction,
+        ...modelDownloadPlan.steps.map((step) => `${step.label} ${step.detail} ${step.action}`),
       ].join(' '),
     },
     {
@@ -2822,6 +2910,12 @@ export function PlanScreen() {
     pwaRuntimeReadiness: pwaRuntime.readiness,
     staticAssetsReport: moveNetStaticAssetsReport,
   });
+  const modelDownloadPlan = buildModelDownloadPlan({
+    lifecycle: modelDeliveryLifecycle,
+    network: 'unknown',
+    preference: 'wifi-only',
+    runtimeReadiness: pwaRuntime.readiness,
+  });
   const iosToolchainSetupPacket = buildIosToolchainSetupPacket({
     report: iosToolchainReport,
   });
@@ -2921,6 +3015,7 @@ export function PlanScreen() {
       modelEvidence,
       modelAssetProvenance: modelAssetProvenanceReport,
       modelDeliveryLifecycle,
+      modelDownloadPlan,
       moveNetStaticAssets: moveNetStaticAssetsReport,
       modelVerificationSuite,
       recommendation,
@@ -3127,6 +3222,14 @@ export function PlanScreen() {
     });
   }
 
+  function prepareModelDownloadPlanPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(modelDownloadPlan, null, 2),
+      title: 'Prepared model download plan',
+    });
+  }
+
   async function preparePwaInstallGuidance() {
     selectionFeedback();
     await pwaRuntime.promptInstall();
@@ -3275,6 +3378,7 @@ export function PlanScreen() {
         <MoveNetStaticAssetsCard onPreparePacket={prepareMoveNetStaticAssetsPacket} report={moveNetStaticAssetsReport} />
         <ModelAssetProvenanceCard onPreparePacket={prepareModelAssetProvenancePacket} report={modelAssetProvenanceReport} />
         <ModelDeliveryLifecycleCard lifecycle={modelDeliveryLifecycle} onPreparePacket={prepareModelDeliveryLifecyclePacket} />
+        <ModelDownloadPlanCard onPreparePacket={prepareModelDownloadPlanPacket} plan={modelDownloadPlan} />
       </Section>
 
       <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">

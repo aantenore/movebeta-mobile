@@ -208,6 +208,8 @@ platforms are validated on physical climbing videos and devices.
   the offline block when model assets are not cached.
 - Coach workflow derives Warming model/Analyzing/Recording labels and disabled capture/edit states from a tested contract
   to prevent duplicate record/import/analyze actions during local model preparation.
+- Plan tab shows a model download plan derived from lifecycle and runtime readiness, distinguishing native packaged
+  delivery from PWA download timing, extra bytes, cache warmup, integrity, update activation, and offline-use steps.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
