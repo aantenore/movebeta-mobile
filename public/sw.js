@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'movebeta-pwa';
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v-dev';
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 const APP_SHELL = ['/', '/index.html', '/manifest.json', '/favicon.ico', '/pwa/icon-192.png', '/pwa/icon-512.png'];
 const EXPORT_ASSETS = [];

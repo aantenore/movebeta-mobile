@@ -368,7 +368,8 @@ The web MoveNet graph and weight shards are downloaded during setup or release w
 `public/model-assets.json`. Runtime analysis loads the configured same-origin model URL instead of fetching model weights
 from the upstream catalog during the first user analysis. The post-export step injects hashed Expo bundles, router
 assets, and metadata into `dist/sw.js`; the service worker also caches `/model-assets.json` and every listed
-`/models/...` asset, so the installed PWA can boot and reuse the model cache after the first online load.
+`/models/...` asset, then derives the service-worker cache version from those app, shell, metadata, and model asset
+contents so installed clients receive a fresh cache name when shipped assets change.
 
 The EAS release gates are:
 
