@@ -132,6 +132,16 @@
     },
     {
       "exists": true,
+      "label": "License review packet",
+      "path": "docs/sdlc/license-review-packet.json"
+    },
+    {
+      "exists": true,
+      "label": "Third-party notices",
+      "path": "docs/legal/THIRD_PARTY_NOTICES.md"
+    },
+    {
+      "exists": true,
       "label": "Release evidence freshness report",
       "path": "docs/sdlc/release-freshness-report.json"
     },
@@ -422,6 +432,16 @@
       ]
     },
     {
+      "command": "npm run release:license-review",
+      "key": "license-review",
+      "label": "License review packet",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run feature:doctor",
       "key": "feature-completion",
       "label": "Feature completion doctor",
@@ -571,7 +591,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T16:17:06.040Z",
+  "generatedAt": "2026-06-23T16:35:43.522Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -581,9 +601,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "2ba4b24",
+    "baseCommitSha": "10712a8571c53da0a4dae738ccf539a2d67d3dd0",
     "changedPaths": [],
-    "commitSha": "2ba4b24",
+    "commitSha": "10712a8571c53da0a4dae738ccf539a2d67d3dd0",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -668,8 +688,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 320,
-    "moveNetLoadMs": 6274,
+    "moveNetAverageInferenceMs": 335,
+    "moveNetLoadMs": 4519,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
