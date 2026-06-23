@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T12:36:08.096Z
+Generated: 2026-06-23T12:48:04.345Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 536c9a3fd604369385122e76988b36e69b4f8874
+- Base commit at generation: 27690f1d9e491a6e7896f21021cfe331f068e286
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4870ms; average inference 337ms
+- MoveNet readiness: ready; load 4898ms; average inference 354ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -50,6 +50,7 @@ Generated: 2026-06-23T12:36:08.096Z
 - External evidence intake: `npm run release:evidence:intake`
 - External evidence validation: `npm run release:evidence:validate`
 - External evidence promotion candidate: `npm run release:evidence:promote`
+- External evidence apply guard: `npm run release:evidence:apply`
 - Release evidence freshness doctor: `npm run release:freshness:doctor`
 - PWA static readiness doctor: `npm run export:web && npm run web:pwa:check`
 - Vercel deployment readiness doctor: `npm run web:vercel:check`
@@ -72,6 +73,7 @@ Generated: 2026-06-23T12:36:08.096Z
 - [x] External evidence intake template: `docs/sdlc/external-evidence-intake.template.json`
 - [x] External evidence validation report: `docs/sdlc/external-evidence-validation-report.json`
 - [x] External evidence promotion report: `docs/sdlc/external-evidence-promotion-report.json`
+- [x] External evidence apply report: `docs/sdlc/external-evidence-apply-report.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`
 - [x] Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`
