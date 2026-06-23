@@ -67,6 +67,10 @@ import {
   type PwaRuntimeProbe,
   type PwaRuntimeReadiness,
 } from '@/core/pwaRuntimeReadiness';
+import {
+  buildPwaModelCacheWarmupResult,
+  type PwaModelCacheWarmupResult,
+} from '@/core/pwaModelCacheWarmup';
 import { buildReleaseEvidenceScenarioPlanner, type ReleaseEvidenceScenarioPlanner } from '@/core/releaseEvidenceScenarios';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
@@ -210,16 +214,101 @@ type BeforeInstallPromptEventLike = Event & {
   userChoice?: Promise<{ outcome?: string }>;
 };
 
+const pwaModelWarmupCacheName = 'movebeta-pwa-model-cache-warmup-v1';
+type BrowserModelCacheState = NonNullable<PwaRuntimeProbe['modelCache']>;
+
+function emptyModelCacheState(): BrowserModelCacheState {
+  return {
+    cachedCount: 0,
+    expectedCount: 0,
+    manifestCached: false,
+  };
+}
+
+function sameOriginModelAssets(manifest: unknown): string[] {
+  const assets = (manifest as { assets?: unknown[] } | undefined)?.assets;
+  return Array.isArray(assets)
+    ? assets.filter((asset): asset is string => typeof asset === 'string' && asset.startsWith('/models/'))
+    : [];
+}
+
+async function readBrowserModelAssetManifest() {
+  const cached = await window.caches?.match?.('/model-assets.json');
+  if (cached?.ok) return cached.json().catch(() => undefined);
+
+  if (navigator.onLine === false) return undefined;
+  const response = await fetch('/model-assets.json').catch(() => undefined);
+  if (!response?.ok) return undefined;
+  return response.json().catch(() => undefined);
+}
+
+async function resolveBrowserModelCacheState(): Promise<BrowserModelCacheState> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined' || !('caches' in window)) {
+    return emptyModelCacheState();
+  }
+
+  const manifest = await readBrowserModelAssetManifest();
+  const modelAssets = sameOriginModelAssets(manifest);
+  const cachedManifest = await window.caches.match('/model-assets.json');
+  const cachedAssets = await Promise.all(modelAssets.map((asset) => window.caches.match(asset)));
+
+  return {
+    cachedCount: cachedAssets.filter(Boolean).length,
+    expectedCount: modelAssets.length,
+    manifestCached: Boolean(cachedManifest),
+  };
+}
+
+async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupResult> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined' || !('caches' in window)) {
+    return buildPwaModelCacheWarmupResult({
+      assetsCached: 0,
+      assetsExpected: 0,
+      cacheApiSupported: false,
+      manifestCached: false,
+      online: true,
+    });
+  }
+
+  const cache = await window.caches.open(pwaModelWarmupCacheName);
+  let manifest = await readBrowserModelAssetManifest();
+
+  if (navigator.onLine !== false) {
+    const response = await fetch('/model-assets.json', { cache: 'no-store' }).catch(() => undefined);
+    if (response?.ok) {
+      await cache.put('/model-assets.json', response.clone());
+      manifest = await response.clone().json().catch(() => manifest);
+    }
+  }
+
+  const modelAssets = sameOriginModelAssets(manifest);
+  await Promise.all(
+    modelAssets.map(async (asset) => {
+      const cached = await window.caches.match(asset);
+      if (cached) return;
+      const response = await fetch(asset, { cache: 'no-store' }).catch(() => undefined);
+      if (response?.ok) {
+        await cache.put(asset, response.clone());
+      }
+    }),
+  );
+
+  const modelCache = await resolveBrowserModelCacheState();
+  return buildPwaModelCacheWarmupResult({
+    assetsCached: modelCache.cachedCount,
+    assetsExpected: modelCache.expectedCount,
+    cacheApiSupported: true,
+    manifestCached: modelCache.manifestCached,
+    online: navigator.onLine !== false,
+  });
+}
+
 function nativePwaProbe(): PwaRuntimeProbe {
   return {
     cacheApiSupported: false,
     installPromptAvailable: false,
     installedStandalone: false,
-    modelCache: {
-      cachedCount: 0,
-      expectedCount: 0,
-      manifestCached: false,
-    },
+    modelCache: emptyModelCacheState(),
     online: true,
     runtime: 'native',
     serviceWorkerControlled: false,
@@ -242,11 +331,7 @@ function browserPwaProbe(patch: Partial<PwaRuntimeProbe> = {}): PwaRuntimeProbe 
     installPromptAvailable: false,
     installedStandalone:
       window.matchMedia?.('(display-mode: standalone)')?.matches === true || navigatorWithStandalone.standalone === true,
-    modelCache: {
-      cachedCount: 0,
-      expectedCount: 0,
-      manifestCached: false,
-    },
+    modelCache: emptyModelCacheState(),
     online: navigator.onLine !== false,
     runtime: 'web',
     serviceWorkerControlled: Boolean(serviceWorkerContainer?.controller),
@@ -282,36 +367,8 @@ function usePwaRuntimeReadiness() {
       );
     };
 
-    const readModelAssetManifest = async () => {
-      const cached = await window.caches?.match?.('/model-assets.json');
-      if (cached?.ok) return cached.json().catch(() => undefined);
-
-      if (navigator.onLine === false) return undefined;
-      const response = await fetch('/model-assets.json').catch(() => undefined);
-      if (!response?.ok) return undefined;
-      return response.json().catch(() => undefined);
-    };
-
     const refreshModelCacheState = async () => {
-      if (!('caches' in window)) {
-        mergeProbe({ modelCache: { cachedCount: 0, expectedCount: 0, manifestCached: false } });
-        return;
-      }
-
-      const manifest = await readModelAssetManifest();
-      const modelAssets: string[] = Array.isArray(manifest?.assets)
-        ? manifest.assets.filter((asset: unknown): asset is string => typeof asset === 'string' && asset.startsWith('/models/'))
-        : [];
-      const cachedManifest = await window.caches.match('/model-assets.json');
-      const cachedAssets = await Promise.all(modelAssets.map((asset) => window.caches.match(asset)));
-
-      mergeProbe({
-        modelCache: {
-          cachedCount: cachedAssets.filter(Boolean).length,
-          expectedCount: modelAssets.length,
-          manifestCached: Boolean(cachedManifest),
-        },
-      });
+      mergeProbe({ modelCache: await resolveBrowserModelCacheState() });
     };
 
     const refreshServiceWorkerState = async () => {
@@ -380,8 +437,28 @@ function usePwaRuntimeReadiness() {
     );
   }
 
+  async function refreshModelCache() {
+    if (Platform.OS !== 'web' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+      const nativeProbe = nativePwaProbe();
+      setProbe(nativeProbe);
+      return nativeProbe.modelCache ?? emptyModelCacheState();
+    }
+
+    const modelCache = await resolveBrowserModelCacheState();
+    setProbe((current) =>
+      browserPwaProbe({
+        installPromptAvailable: current.installPromptAvailable,
+        modelCache,
+        serviceWorkerRegistered: current.serviceWorkerRegistered,
+        updateAvailable: current.updateAvailable,
+      }),
+    );
+    return modelCache;
+  }
+
   return {
     promptInstall,
+    refreshModelCache,
     readiness: buildPwaRuntimeReadiness(probe),
   };
 }
@@ -1982,9 +2059,11 @@ function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
 
 function PwaRuntimeCard({
   onInstall,
+  onWarmModelCache,
   readiness,
 }: {
   onInstall: () => void;
+  onWarmModelCache: () => void;
   readiness: PwaRuntimeReadiness;
 }) {
   const isReady =
@@ -2027,6 +2106,10 @@ function PwaRuntimeCard({
         <Pressable accessibilityLabel="Install app or prepare PWA install guidance" onPress={onInstall} style={styles.planAction}>
           <Download color={theme.colors.brand} size={16} />
           <Text style={styles.planActionText}>Install app</Text>
+        </Pressable>
+        <Pressable accessibilityLabel="Warm PWA model cache" onPress={onWarmModelCache} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Warm model</Text>
         </Pressable>
       </View>
       <View style={styles.releaseUnblockList}>
@@ -3054,6 +3137,16 @@ export function PlanScreen() {
     });
   }
 
+  async function preparePwaModelCacheWarmup() {
+    selectionFeedback();
+    const result = await warmBrowserPwaModelCache();
+    await pwaRuntime.refreshModelCache();
+    setPreparedPlanExport({
+      body: JSON.stringify(result, null, 2),
+      title: 'Prepared PWA model cache warmup',
+    });
+  }
+
   function updateNativeQaComposerRun(
     platform: NativeQaEvidenceComposerRun['platform'],
     patch: Partial<NativeQaEvidenceComposerRun>,
@@ -3243,7 +3336,11 @@ export function PlanScreen() {
 
       <Section title="Installable PWA" caption="Static Vercel-ready web install path with no backend requirement.">
         <PwaReadinessCard report={pwaReadinessReport} />
-        <PwaRuntimeCard onInstall={() => void preparePwaInstallGuidance()} readiness={pwaRuntime.readiness} />
+        <PwaRuntimeCard
+          onInstall={() => void preparePwaInstallGuidance()}
+          onWarmModelCache={() => void preparePwaModelCacheWarmup()}
+          readiness={pwaRuntime.readiness}
+        />
       </Section>
 
       <Section title="Vercel deployment" caption="Static prebuilt deployment readiness without backend or committed secrets.">
