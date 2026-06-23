@@ -16,7 +16,7 @@ import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
 import { selectionFeedback } from '@/core/haptics';
 import { theme } from '@/core/theme';
-import type { CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
+import type { AnalysisWindowMode, CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { buildCapturePrepProtocol, type CapturePrepProtocol } from '@/movement/capturePrepProtocol';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
@@ -31,6 +31,12 @@ import {
   type CaptureCalibrationAssessment,
   type CaptureCalibrationInput,
 } from '@/video/captureCalibration';
+import {
+  analysisWindowModes,
+  buildVideoAnalysisWindow,
+  formatVideoAnalysisWindow,
+  withVideoAnalysisWindow,
+} from '@/video/analysisWindow';
 import { buildClipTriagePlan } from '@/video/clipTriage';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
@@ -343,9 +349,19 @@ function VideoPreview({ source }: { source: VideoSourceResult }) {
   );
 }
 
-function VideoIntakePanel({ source }: { source: VideoSourceResult }) {
+function VideoIntakePanel({
+  analysisWindowMode,
+  onAnalysisWindowModeChange,
+  source,
+}: {
+  analysisWindowMode: AnalysisWindowMode;
+  onAnalysisWindowModeChange: (mode: AnalysisWindowMode) => void;
+  source: VideoSourceResult;
+}) {
   const assessment = assessVideoIntake(source.video);
   const triage = buildClipTriagePlan(source.video, assessment);
+  const analysisWindow = buildVideoAnalysisWindow(source.video, analysisWindowMode);
+  const windowControlsVisible = source.video.durationMs > videoAnalysisConfig.recommendedAnalysisDurationMs;
   const isBlocked = assessment.status === 'blocked';
   const isReady = assessment.status === 'ready';
   const triageBlocked = triage.status === 'blocked';
@@ -417,6 +433,41 @@ function VideoIntakePanel({ source }: { source: VideoSourceResult }) {
           </View>
         ) : null}
         <Text style={styles.triagePrivacy}>{triage.privacyNote}</Text>
+      </View>
+
+      <View style={[styles.analysisWindow, analysisWindow.mode !== 'full' ? styles.analysisWindowActive : null]}>
+        <View style={styles.analysisWindowTop}>
+          <View style={styles.analysisWindowTitleGroup}>
+            <Text style={styles.analysisWindowTitle}>Analysis window</Text>
+            <Text style={styles.analysisWindowMeta}>{formatVideoAnalysisWindow(analysisWindow)}</Text>
+          </View>
+          <Text style={[styles.analysisWindowBadge, analysisWindow.mode !== 'full' ? styles.analysisWindowBadgeActive : null]}>
+            {analysisWindow.mode}
+          </Text>
+        </View>
+        <Text style={styles.analysisWindowText}>
+          Original file is unchanged; the local model samples only this window when analysis runs.
+        </Text>
+        {windowControlsVisible ? (
+          <View style={styles.analysisWindowOptions}>
+            {analysisWindowModes.map((mode) => {
+              const selected = analysisWindow.mode === mode;
+              return (
+                <Pressable
+                  accessibilityLabel={`Analysis window ${mode}`}
+                  accessibilityRole="button"
+                  key={mode}
+                  onPress={() => onAnalysisWindowModeChange(mode)}
+                  style={[styles.analysisWindowOption, selected ? styles.analysisWindowOptionSelected : null]}
+                >
+                  <Text style={[styles.analysisWindowOptionText, selected ? styles.analysisWindowOptionTextSelected : null]}>
+                    {mode}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
       </View>
 
       {assessment.issues.length > 0 ? (
@@ -684,6 +735,7 @@ export function CoachScreen() {
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [selectedAttemptId, setSelectedAttemptId] = useState(attempts[0].session.id);
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
+  const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
@@ -716,8 +768,15 @@ export function CoachScreen() {
   ) {
     if (withFeedback) selectionFeedback();
 
-    if (nextSource) {
-      const intake = assessVideoIntake(nextSource.video);
+    const sourceForAnalysis = nextSource
+      ? {
+          ...nextSource,
+          video: withVideoAnalysisWindow(nextSource.video, analysisWindowMode),
+        }
+      : null;
+
+    if (sourceForAnalysis) {
+      const intake = assessVideoIntake(sourceForAnalysis.video);
       if (!intake.canAnalyze) {
         setLoading(false);
         setReport(null);
@@ -730,8 +789,8 @@ export function CoachScreen() {
     setErrorMessage(null);
 
     try {
-      const nextReport = nextSource
-        ? await analyzeVideoAttempt(nextSource.video, nextSource.session, coachLens)
+      const nextReport = sourceForAnalysis
+        ? await analyzeVideoAttempt(sourceForAnalysis.video, sourceForAnalysis.session, coachLens)
         : await analyzeDemoAttempt(sessionId, coachLens);
       setReport(nextReport);
     } catch (error) {
@@ -984,7 +1043,14 @@ export function CoachScreen() {
           <VideoPreview source={activeSource} />
         </>
       ) : null}
-      <VideoIntakePanel source={intakeSource} />
+      <VideoIntakePanel
+        analysisWindowMode={analysisWindowMode}
+        onAnalysisWindowModeChange={(mode) => {
+          selectionFeedback();
+          setAnalysisWindowMode(mode);
+        }}
+        source={intakeSource}
+      />
 
       {errorMessage ? (
         <View style={styles.error}>
@@ -1790,6 +1856,84 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   intakeTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  analysisWindow: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: 8,
+    padding: theme.spacing.sm,
+  },
+  analysisWindowActive: {
+    borderColor: '#B8D8C8',
+  },
+  analysisWindowBadge: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  analysisWindowBadgeActive: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  analysisWindowMeta: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  analysisWindowOption: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  analysisWindowOptionSelected: {
+    backgroundColor: theme.colors.brand,
+    borderColor: theme.colors.brand,
+  },
+  analysisWindowOptionText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'capitalize',
+  },
+  analysisWindowOptionTextSelected: {
+    color: '#FFFFFF',
+  },
+  analysisWindowOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 7,
+  },
+  analysisWindowText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  analysisWindowTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  analysisWindowTitleGroup: {
+    flex: 1,
+    gap: 2,
+  },
+  analysisWindowTop: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.spacing.sm,

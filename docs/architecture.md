@@ -13,7 +13,7 @@ estimation providers without changing the product screens.
 | `src/features` | Screen-level composition and product workflows |
 | `src/components` | Reusable visual components |
 | `src/core` | Configuration, haptics, theme tokens |
-| `src/video` | Video capture/import normalization, metadata resolution, intake readiness, clip triage, and source defaults |
+| `src/video` | Video capture/import normalization, metadata resolution, intake readiness, clip triage, analysis windows, and source defaults |
 | `src/movement/contracts.ts` | Typed schemas for videos, landmarks, sessions, metrics, cues, and reports |
 | `src/movement/onDevicePipeline.ts` | Provider selection and local analysis orchestration |
 | `src/movement/localAnalyzer.ts` | Deterministic coaching rule engine |
@@ -90,8 +90,11 @@ reasonable for on-device processing, and high enough resolution to keep hands, h
 stop analysis before provider execution; warnings remain visible so users can still analyze borderline clips.
 `src/video/clipTriage.ts` turns the intake result into a local analyze, trim, retake, or blocked plan with configurable
 score penalties, reasons, processing budget labels, target length, and privacy-safe output for the Coach intake panel.
+`src/video/analysisWindow.ts` adds source-relative full, early, middle, and late sampling windows for long clips. The
+window is stored as optional metadata on `VideoAsset`, does not alter the raw URI or source file, and is respected by the
+browser MoveNet provider, native platform provider, and deterministic fallback provider before frames reach the analyzer.
 `src/video/performanceBudget.ts` keeps analysis latency budgets outside product screens and writes elapsed time,
-budget status, and frame rate into every pipeline report.
+budget status, and frame rate into every pipeline report using the active analysis-window duration.
 
 ## Provider Strategy
 
