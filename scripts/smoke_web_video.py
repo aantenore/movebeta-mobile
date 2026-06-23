@@ -59,6 +59,7 @@ def main() -> None:
         assert model_assets["schemaVersion"] == "movebeta.static-model-assets.v1"
         assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
         assert "/models/movenet/singlepose/lightning/4/model.json" in model_assets["assets"]
+        model_asset_bytes = model_assets["summary"]["totalBytes"]
         model_json = page.evaluate(
             "async () => await fetch('/models/movenet/singlepose/lightning/4/model.json').then((response) => response.json())"
         )
@@ -587,7 +588,7 @@ def main() -> None:
         expect(page.get_by_text('"schemaVersion": "movebeta.pwa-model-cache-warmup.v1"')).to_be_visible()
         expect(page.get_by_text('"assetsExpected": 3')).to_be_visible()
         expect(page.get_by_text('"assetsVerified": 3')).to_be_visible()
-        expect(page.get_by_text('"bytesCached": 324508')).to_be_visible()
+        expect(page.get_by_text(f'"bytesCached": {model_asset_bytes}')).to_be_visible()
         expect(page.get_by_text('"integritySupported": true')).to_be_visible()
         expect(page.get_by_text('"integrityVerified": true')).to_be_visible()
         expect(page.get_by_text('"status": "ready"').first).to_be_visible()
@@ -598,7 +599,7 @@ def main() -> None:
         expect(page.get_by_text('"modelCacheReady": true')).to_be_visible()
         expect(page.get_by_text('"modelAssetsExpected": 3')).to_be_visible()
         expect(page.get_by_text('"modelAssetsVerified": 3')).to_be_visible()
-        expect(page.get_by_text('"modelBytesCached": 324508')).to_be_visible()
+        expect(page.get_by_text(f'"modelBytesCached": {model_asset_bytes}')).to_be_visible()
         expect(page.get_by_text('"modelIntegritySupported": true')).to_be_visible()
         expect(page.get_by_text('"modelIntegrityVerified": true')).to_be_visible()
         expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()

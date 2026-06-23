@@ -39,6 +39,25 @@ function existsAndNonEmpty(filePath) {
   return fs.existsSync(filePath) && fs.statSync(filePath).size > 0;
 }
 
+function looksLikeHtml(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  const descriptor = fs.openSync(filePath, 'r');
+  try {
+    const buffer = Buffer.alloc(256);
+    const bytesRead = fs.readSync(descriptor, buffer, 0, buffer.length, 0);
+    const prefix = buffer.subarray(0, bytesRead).toString('utf8').trimStart().toLowerCase();
+    return prefix.startsWith('<!doctype html') || prefix.startsWith('<html');
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
+function validStaticAsset(filePath, publicAssetPath) {
+  if (!existsAndNonEmpty(filePath)) return false;
+  if (publicAssetPath.endsWith('.bin') && looksLikeHtml(filePath)) return false;
+  return true;
+}
+
 function check({ action, detail, key, label, status }) {
   return { action, detail, key, label, status };
 }
@@ -90,11 +109,11 @@ export function buildMoveNetStaticAssetsReport({
   const manifestAssets = Array.isArray(publicManifest?.assets) ? publicManifest.assets : [];
   const expectedAssets = [modelUrl, ...sourceShards];
   const sourceAssetsPresent =
-    expectedAssets.length > 1 && expectedAssets.every((assetPath) => existsAndNonEmpty(assetFilePath(rootDir, assetPath)));
+    expectedAssets.length > 1 && expectedAssets.every((assetPath) => validStaticAsset(assetFilePath(rootDir, assetPath), assetPath));
   const distAssetsPresent =
     expectedAssets.length > 1 &&
     fs.existsSync(path.join(rootDir, 'dist/model-assets.json')) &&
-    expectedAssets.every((assetPath) => existsAndNonEmpty(distAssetFilePath(rootDir, assetPath)));
+    expectedAssets.every((assetPath) => validStaticAsset(distAssetFilePath(rootDir, assetPath), assetPath));
   const appModelUrl = appConfig.tfjsMoveNetModelUrl;
 
   const checks = [
@@ -131,8 +150,8 @@ export function buildMoveNetStaticAssetsReport({
     check({
       action: 'Keep every weight shard referenced by model.json present under public/models.',
       detail: sourceAssetsPresent
-        ? `Source model graph and ${sourceShards.length} weight shard(s) are present and non-empty.`
-        : 'One or more source model graph or weight shard files are missing or empty.',
+        ? `Source model graph and ${sourceShards.length} weight shard(s) are present, non-empty, and not HTML responses.`
+        : 'One or more source model graph or weight shard files are missing, empty, or contain an HTML response.',
       key: 'source-weight-shards',
       label: 'Source weight shards',
       status: sourceAssetsPresent ? 'verified' : 'blocked',
@@ -157,8 +176,8 @@ export function buildMoveNetStaticAssetsReport({
     check({
       action: 'Run npm run export:web after refreshing model assets so dist contains the same static model files.',
       detail: distAssetsPresent
-        ? `Exported dist contains model-assets.json, model.json, and ${sourceShards.length} weight shard(s).`
-        : 'Exported dist is missing model-assets.json, model.json, or one or more weight shard files.',
+        ? `Exported dist contains model-assets.json, model.json, and ${sourceShards.length} valid weight shard(s).`
+        : 'Exported dist is missing model-assets.json, model.json, or one or more valid weight shard files.',
       key: 'exported-model-assets',
       label: 'Exported model assets',
       status: distAssetsPresent ? 'verified' : 'blocked',

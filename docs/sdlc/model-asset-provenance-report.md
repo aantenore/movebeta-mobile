@@ -1,6 +1,6 @@
 # Model Asset Provenance Report
 
-Generated: 2026-06-23T12:25:21.357Z
+Generated: 2026-06-23T12:34:03.485Z
 
 - Status: review
 - Checks: 5/6 verified
@@ -10,7 +10,7 @@ Generated: 2026-06-23T12:25:21.357Z
 - Source provider: TensorFlow Hub
 - Source model URL: https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/model.json?tfjs-format=file
 - Files: 3
-- Total bytes: 324508
+- Total bytes: 4963342
 - Credential values included: no
 - Local paths included: no
 - Raw video included: no
