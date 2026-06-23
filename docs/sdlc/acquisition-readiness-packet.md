@@ -1,16 +1,16 @@
 # Acquisition Readiness Packet
 
-Generated: 2026-06-23T21:46:49.333Z
+Generated: 2026-06-23T21:47:48.797Z
 
 ## Summary
 
-- Status: blocked
-- Signals ready: 4/9
+- Status: needs-external-clearance
+- Signals ready: 5/9
 - Review signals: 3
-- Blocked signals: 1
+- Blocked signals: 0
 - External blockers: 10
 - Due diligence artifacts ready: 18/18
-- Next action: Run npm run release:check and fix the first failing gate.
+- Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
 ## Privacy
 
@@ -26,7 +26,7 @@ Generated: 2026-06-23T21:46:49.333Z
 | Signal | Status | Owner | Detail | Next action |
 | --- | --- | --- | --- | --- |
 | Product scope | ready | product | Tracked delivery scope has no internal gaps and 181/181 traceability rows covered. | Keep feature-completion evidence fresh before buyer review. |
-| Release gate | blocked | engineering | The latest release gate report contains a failing step. | Run npm run release:check and fix the first failing gate. |
+| Release gate | ready | engineering | The automated release gate is passing. | Regenerate the gate after any source or evidence change. |
 | Launch clearance | external-required | release | 1/3 launch track(s) ready with 10 external blocker reference(s) still tracked. | Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate. |
 | Model provenance | review | release | Model provenance is review; delivery lifecycle is ready. | Complete commercial review for upstream model terms before final buyer reliance. |
 | Commercial path | review | founder | Commercial path is review; billing provider Not connected; paid plan mapping 0/2. | Choose a billing adapter and map paid plan keys when subscriptions enter scope. |
