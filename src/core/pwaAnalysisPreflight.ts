@@ -7,6 +7,7 @@ export type PwaAnalysisPreflight = {
   badge: string;
   canAnalyze: boolean;
   detail: string;
+  shouldWarmBeforeAnalysis: boolean;
   status: PwaAnalysisPreflightStatus;
   title: string;
 };
@@ -26,6 +27,7 @@ export function buildPwaAnalysisPreflight({
       badge: 'native',
       canAnalyze: true,
       detail: 'Browser Cache Storage is not part of the native analysis path.',
+      shouldWarmBeforeAnalysis: false,
       status: 'native',
       title: 'Native model path ready',
     };
@@ -39,6 +41,7 @@ export function buildPwaAnalysisPreflight({
       badge: 'ready',
       canAnalyze: true,
       detail: `${readiness.summary.modelAssetsCached}/${readiness.summary.modelAssetsExpected} model asset(s) cached.`,
+      shouldWarmBeforeAnalysis: false,
       status: 'ready',
       title: 'Model cache ready',
     };
@@ -50,6 +53,7 @@ export function buildPwaAnalysisPreflight({
       badge: 'warm',
       canAnalyze: true,
       detail: 'Bundled demo attempts can still use local fixture analysis.',
+      shouldWarmBeforeAnalysis: false,
       status: 'action',
       title: 'Warm model before field use',
     };
@@ -57,10 +61,11 @@ export function buildPwaAnalysisPreflight({
 
   if (online) {
     return {
-      action: 'Use Warm model to make offline gym analysis deterministic before leaving the network.',
+      action: 'Analyze will warm the model cache first; use Warm model manually before leaving the network.',
       badge: 'online',
       canAnalyze: true,
       detail: 'Online real-video analysis can fetch same-origin model assets if the cache is not warm yet.',
+      shouldWarmBeforeAnalysis: true,
       status: 'action',
       title: 'Model cache can warm online',
     };
@@ -71,6 +76,7 @@ export function buildPwaAnalysisPreflight({
     badge: 'blocked',
     canAnalyze: false,
     detail: 'Offline real-video analysis needs the MoveNet manifest and model shards in Cache Storage.',
+    shouldWarmBeforeAnalysis: false,
     status: 'blocked',
     title: 'Offline model cache missing',
   };

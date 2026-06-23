@@ -35,6 +35,7 @@ describe('PWA analysis preflight', () => {
     expect(preflight).toMatchObject({
       badge: 'ready',
       canAnalyze: true,
+      shouldWarmBeforeAnalysis: false,
       status: 'ready',
       title: 'Model cache ready',
     });
@@ -63,11 +64,12 @@ describe('PWA analysis preflight', () => {
     expect(preflight).toMatchObject({
       badge: 'warm',
       canAnalyze: true,
+      shouldWarmBeforeAnalysis: false,
       status: 'action',
     });
   });
 
-  it('allows online real-video analysis while recommending explicit warmup', () => {
+  it('allows online real-video analysis while requesting automatic warmup first', () => {
     const preflight = buildPwaAnalysisPreflight({
       hasLocalVideo: true,
       online: true,
@@ -88,8 +90,10 @@ describe('PWA analysis preflight', () => {
     expect(preflight).toMatchObject({
       badge: 'online',
       canAnalyze: true,
+      shouldWarmBeforeAnalysis: true,
       status: 'action',
     });
+    expect(preflight.action).toContain('Analyze will warm');
   });
 
   it('blocks offline real-video analysis until the web model cache is warm', () => {
@@ -114,6 +118,7 @@ describe('PWA analysis preflight', () => {
     expect(preflight).toMatchObject({
       badge: 'blocked',
       canAnalyze: false,
+      shouldWarmBeforeAnalysis: false,
       status: 'blocked',
       title: 'Offline model cache missing',
     });
@@ -149,6 +154,7 @@ describe('PWA analysis preflight', () => {
     expect(preflight).toMatchObject({
       badge: 'native',
       canAnalyze: true,
+      shouldWarmBeforeAnalysis: false,
       status: 'native',
     });
   });

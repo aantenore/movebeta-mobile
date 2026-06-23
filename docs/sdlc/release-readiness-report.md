@@ -204,6 +204,8 @@ platforms are validated on physical climbing videos and devices.
 - Coach tab shows a PWA model-cache preflight before record/import, reuses shared browser cache helpers, exposes Warm
   model in the capture workflow, allows online real-video analysis, blocks offline real-video analysis when MoveNet
   assets are missing, and bypasses browser cache checks for native builds.
+- Coach analysis automatically runs same-origin model warmup before online uncached real-video analysis, while preserving
+  the offline block when model assets are not cached.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active

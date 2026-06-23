@@ -978,6 +978,27 @@ export function CoachScreen() {
         setErrorMessage(runtimePreflight.action);
         return;
       }
+
+      if (runtimePreflight.shouldWarmBeforeAnalysis) {
+        setModelWarmupLoading(true);
+        try {
+          const warmup = await pwaPreflight.warmModelCache();
+          if (warmup.summary.status !== 'ready' && !warmup.summary.online) {
+            setLoading(false);
+            setReport(null);
+            setErrorMessage(warmup.summary.nextAction);
+            return;
+          }
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Model cache warmup failed before analysis.';
+          setLoading(false);
+          setReport(null);
+          setErrorMessage(message);
+          return;
+        } finally {
+          setModelWarmupLoading(false);
+        }
+      }
     }
 
     setLoading(true);

@@ -29,9 +29,9 @@
     "timeoutMs": 180000,
     "value": "MOVEBETA_SMOKE_URL=http://127.0.0.1:8083/ python3 scripts/smoke_web_video.py"
   },
-  "completedAt": "2026-06-23T21:46:46.719Z",
-  "durationMs": 9906,
-  "generatedAt": "2026-06-23T21:46:46.719Z",
+  "completedAt": "2026-06-23T21:51:33.230Z",
+  "durationMs": 10012,
+  "generatedAt": "2026-06-23T21:51:33.230Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -40,7 +40,7 @@
     "tokenLikeValuesIncluded": false
   },
   "schemaVersion": "movebeta.web-smoke-report.v1",
-  "startedAt": "2026-06-23T21:46:36.809Z",
+  "startedAt": "2026-06-23T21:51:23.214Z",
   "status": "pass",
   "summary": {
     "failedChecks": 0,

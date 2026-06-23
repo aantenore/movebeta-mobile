@@ -563,6 +563,8 @@
 - The Coach capture flow must surface PWA model-cache readiness before recording or importing real video, provide an
   explicit same-origin model warmup action, allow online analysis to fetch missing same-origin assets, block offline
   real-video analysis when model assets are not cached, and bypass browser cache checks for native provider builds.
+- Online PWA real-video analysis must automatically run the same-origin model warmup path before starting the local pose
+  provider when model assets are not cached, while keeping offline uncached real-video analysis blocked.
 - Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
   handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded

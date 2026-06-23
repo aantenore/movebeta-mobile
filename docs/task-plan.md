@@ -200,3 +200,4 @@
 | T196 | Add configurable local analysis windows for long clips | Done |
 | T197 | Persist analysis-window evidence in reports and exports | Done |
 | T198 | Add Coach-tab PWA model preflight before real-video analysis | Done |
+| T199 | Auto-warm PWA model cache before online real-video analysis | Done |

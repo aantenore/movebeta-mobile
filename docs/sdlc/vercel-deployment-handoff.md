@@ -1,13 +1,13 @@
 # Vercel Deployment Handoff
 
-Generated: 2026-06-23T21:46:47.254Z
+Generated: 2026-06-23T21:51:33.762Z
 
 ## Summary
 
 - Status: handoff-ready
 - Deployment report status: static-ready
 - Workflow report status: template-ready
-- Phases ready: 2/7
+- Phases ready: 3/7
 - External actions: 3
 - Blocked phases: 0
 - Backend required: no
@@ -19,7 +19,7 @@ Generated: 2026-06-23T21:46:47.254Z
 
 | Phase | Status | Owner | Next action |
 | --- | --- | --- | --- |
-| Static release proof | ready-to-run | engineering | Run npm run release:check before deployment. |
+| Static release proof | verified | engineering | Run npm run release:check before deployment. |
 | Static Vercel config | verified | release | Keep vercel.json on the static prebuilt PWA contract before deployment. |
 | Project binding | external-required | release | Run npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN on the target Vercel account. |
 | Deployment secrets | external-required | release | Set VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID only in local shell, Vercel settings, or GitHub secrets. |
