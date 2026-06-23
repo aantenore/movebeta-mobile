@@ -159,6 +159,12 @@ export const defaultStoreScreenshots = [
     viewport: { height: 844, width: 390 },
   },
   {
+    fileName: '12-model-delivery.png',
+    label: 'Model delivery lifecycle',
+    route: 'plan',
+    viewport: { height: 844, width: 390 },
+  },
+  {
     fileName: '08-data-portability.png',
     label: 'Checksum-aware local backup restore preview',
     route: 'privacy',

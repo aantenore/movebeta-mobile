@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T12:59:51.454Z",
+  "generatedAt": "2026-06-23T13:57:58.947Z",
   "instructions": [
     "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
     "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",

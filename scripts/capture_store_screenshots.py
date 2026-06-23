@@ -20,6 +20,7 @@ SCREENSHOTS = [
     ("09-release-critical-path.png", "Plan", "Release critical path"),
     ("10-release-evidence-scenarios.png", "Plan", "Release evidence scenarios"),
     ("11-release-freshness.png", "Plan", "Release evidence freshness"),
+    ("12-model-delivery.png", "Plan", "Model delivery lifecycle"),
     ("08-data-portability.png", "Privacy", "Data portability"),
 ]
 
@@ -74,6 +75,7 @@ def main() -> None:
                 "09-release-critical-path.png",
                 "10-release-evidence-scenarios.png",
                 "11-release-freshness.png",
+                "12-model-delivery.png",
             }:
                 page.get_by_text(expected_text).first.scroll_into_view_if_needed()
             elif file_name == "08-data-portability.png":
@@ -90,6 +92,7 @@ def main() -> None:
                 "09-release-critical-path.png",
                 "10-release-evidence-scenarios.png",
                 "11-release-freshness.png",
+                "12-model-delivery.png",
                 "08-data-portability.png",
             }:
                 pass
