@@ -339,15 +339,16 @@ ${screenshotLines}
 }
 
 /**
- * @param {{ generatedAt?: string, jsonOutputPath?: string, markdownOutputPath?: string, rootDir?: string }} [options]
+ * @param {{ commitSha?: string, generatedAt?: string, jsonOutputPath?: string, markdownOutputPath?: string, rootDir?: string }} [options]
  */
 export function writeReleaseHandoffPacket({
+  commitSha,
   generatedAt,
   jsonOutputPath,
   markdownOutputPath,
   rootDir = resolveProjectRoot(),
 } = {}) {
-  const packet = buildReleaseHandoffPacket({ generatedAt, rootDir });
+  const packet = buildReleaseHandoffPacket({ commitSha, generatedAt, rootDir });
   const jsonTarget = jsonOutputPath ?? resolveDefaultJsonOutputPath(rootDir);
   const markdownTarget = markdownOutputPath ?? resolveDefaultMarkdownOutputPath(rootDir);
 
@@ -359,9 +360,42 @@ export function writeReleaseHandoffPacket({
   return { jsonTarget, markdownTarget, packet };
 }
 
+export function parseReleaseHandoffCliOptions(argv = process.argv.slice(2)) {
+  const options = {};
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === '--commit-sha') {
+      const value = argv[index + 1];
+      if (!value || value.startsWith('--')) {
+        throw new Error('--commit-sha requires a value.');
+      }
+      options.commitSha = value;
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith('--commit-sha=')) {
+      const value = arg.slice('--commit-sha='.length);
+      if (!value) {
+        throw new Error('--commit-sha requires a value.');
+      }
+      options.commitSha = value;
+      continue;
+    }
+    throw new Error(`Unknown release handoff option: ${arg}`);
+  }
+
+  return options;
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const { jsonTarget, markdownTarget, packet } = writeReleaseHandoffPacket();
-  console.log(`Wrote release handoff packet to ${jsonTarget}`);
-  console.log(`Wrote release handoff summary to ${markdownTarget}`);
-  console.log(`Status: ${packet.summary.launchStatus}; blockers: ${packet.summary.blockerCount}`);
+  try {
+    const { jsonTarget, markdownTarget, packet } = writeReleaseHandoffPacket(parseReleaseHandoffCliOptions());
+    console.log(`Wrote release handoff packet to ${jsonTarget}`);
+    console.log(`Wrote release handoff summary to ${markdownTarget}`);
+    console.log(`Status: ${packet.summary.launchStatus}; blockers: ${packet.summary.blockerCount}`);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }
