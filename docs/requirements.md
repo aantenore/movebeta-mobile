@@ -497,6 +497,9 @@
 - Store credential preparation must provide a CLI starter that writes share-safe setup packet, env-key template, and EAS
   project binding template artifacts without serializing Expo, Apple, Google, service-account, project-id, or local path
   values.
+- External release blocker guidance must include the preparatory starter, doctor, install, validation, and strict-gate
+  commands needed to clear cue-validation, iOS build, native QA, EAS project, and store-credential blockers without
+  exposing secret values or raw local artifacts.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

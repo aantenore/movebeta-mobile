@@ -42,8 +42,18 @@ describe('release unblock checklist', () => {
   it('lists commands, proof artifacts, and secret key names without secret values', () => {
     const checklist = buildReleaseUnblockChecklist();
     const credentials = checklist.items.find((item) => item.key === 'easCredentials');
+    const cueValidation = checklist.items.find((item) => item.key === 'cueValidationDataset');
+    const iosBuild = checklist.items.find((item) => item.key === 'iosBuild');
 
     expect(credentials?.commands).toContain('npm run release:eas:strict');
+    expect(cueValidation?.commands).toEqual([
+      'npm run validation:cue:starter',
+      'npm run validation:cue',
+      'npm run validation:cue:doctor',
+    ]);
+    expect(iosBuild?.commands).toContain('npm run toolchain:ios');
+    expect(iosBuild?.commands).toContain('npm run native:ios:pods');
+    expect(iosBuild?.proof).toContain('docs/sdlc/ios-toolchain-report.json');
     expect(credentials?.proof).toContain('CI/EAS secret configuration');
     expect(credentials?.envKeys).toContain('EXPO_TOKEN');
     expect(credentials?.envKeys.join(' ')).not.toMatch(/eyJ|BEGIN PRIVATE KEY|ghp_|pat_/i);

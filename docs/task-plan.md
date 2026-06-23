@@ -178,3 +178,4 @@
 | T174 | Add share-safe cue-validation starter kit generator | Done |
 | T175 | Add native QA evidence starter CLI | Done |
 | T176 | Add store credentials setup starter CLI | Done |
+| T177 | Expand external blocker command coverage | Done |
