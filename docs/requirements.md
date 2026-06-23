@@ -211,6 +211,8 @@
   without requiring a backend.
 - Provide in-app PWA model-cache preflight that checks whether `/model-assets.json` and listed same-origin MoveNet model
   assets are present in browser Cache Storage before claiming offline video-analysis readiness.
+- Provide an in-app PWA model-cache warmup action that fetches and caches `/model-assets.json` plus listed same-origin
+  MoveNet assets before offline video analysis, with a share-safe warmup result packet.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
