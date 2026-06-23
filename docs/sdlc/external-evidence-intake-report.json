@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T18:00:51.234Z",
+  "generatedAt": "2026-06-23T21:46:32.381Z",
   "intakeTemplate": {
-    "generatedAt": "2026-06-23T18:00:51.234Z",
+    "generatedAt": "2026-06-23T21:46:32.381Z",
     "instructions": [
       "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
       "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",
