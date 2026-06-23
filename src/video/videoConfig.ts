@@ -11,6 +11,18 @@ export const videoAnalysisConfig = {
   maxRecordingFileSizeBytes: 350_000_000,
   maxRecordingDurationSeconds: 45,
   maxTfjsFrames: 48,
+  clipTriage: {
+    issuePenalties: {
+      longDuration: 22,
+      lowResolution: 18,
+      missingUri: 100,
+      remoteUri: 100,
+      reviewDuration: 12,
+      tooShort: 100,
+    },
+    readyScore: 90,
+    reviewScore: 70,
+  },
   recordingVideoBitrate: 6_000_000,
   recordingVideoQuality: '1080p' as const,
   captureCalibration: {

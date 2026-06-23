@@ -54,6 +54,7 @@
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
 - Vitest live recording guide tests for setup review advice, coach-lens-specific recording prompts, minimum-duration
   analysis readiness, progress, and near-limit warnings.
+- Vitest clip triage tests for local analyze, trim, retake, blocked, too-short, configurable score, and raw URI exclusion.
 - Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
   and local privacy copy.
 - Vitest analysis trust tests for coaching-ready local reports, retake decisions from weak pose signal, local-only privacy

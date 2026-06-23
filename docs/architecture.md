@@ -13,7 +13,7 @@ estimation providers without changing the product screens.
 | `src/features` | Screen-level composition and product workflows |
 | `src/components` | Reusable visual components |
 | `src/core` | Configuration, haptics, theme tokens |
-| `src/video` | Video capture/import normalization, metadata resolution, intake readiness, and source defaults |
+| `src/video` | Video capture/import normalization, metadata resolution, intake readiness, clip triage, and source defaults |
 | `src/movement/contracts.ts` | Typed schemas for videos, landmarks, sessions, metrics, cues, and reports |
 | `src/movement/onDevicePipeline.ts` | Provider selection and local analysis orchestration |
 | `src/movement/localAnalyzer.ts` | Deterministic coaching rule engine |
@@ -88,6 +88,8 @@ analysis does not need microphone permission or stored audio.
 Before analysis, `src/video/videoIntake.ts` checks that the selected clip is local, long enough for the sampler,
 reasonable for on-device processing, and high enough resolution to keep hands, hips, and feet visible. Blocking issues
 stop analysis before provider execution; warnings remain visible so users can still analyze borderline clips.
+`src/video/clipTriage.ts` turns the intake result into a local analyze, trim, retake, or blocked plan with configurable
+score penalties, reasons, processing budget labels, target length, and privacy-safe output for the Coach intake panel.
 `src/video/performanceBudget.ts` keeps analysis latency budgets outside product screens and writes elapsed time,
 budget status, and frame rate into every pipeline report.
 
