@@ -14,8 +14,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Launch readiness report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "Launch readiness report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -29,8 +29,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Feature completion report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Feature completion report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -44,8 +44,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Release blocker issues report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Release blocker issues report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -59,8 +59,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Release blocker issue filing plan is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Release blocker issue filing plan is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -74,8 +74,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Release blocker issue web links is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Release blocker issue web links is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -91,8 +91,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "External evidence intake report is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "External evidence intake report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -107,8 +107,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "External evidence validation report is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "External evidence validation report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -123,8 +123,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "External evidence promotion report is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "External evidence promotion report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -139,8 +139,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "External evidence apply report is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "External evidence apply report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -156,8 +156,8 @@
         "internal",
         "store"
       ],
-      "ageHours": 0.01,
-      "detail": "MoveNet readiness report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "MoveNet readiness report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -173,8 +173,8 @@
         "internal",
         "store"
       ],
-      "ageHours": 0.01,
-      "detail": "Model-analysis replay report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "Model-analysis replay report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -191,8 +191,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "MoveNet static assets report is 0h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "MoveNet static assets report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -209,8 +209,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Model asset provenance report is 0h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Model asset provenance report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -226,8 +226,8 @@
         "internal",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Model delivery lifecycle report is 0h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Model delivery lifecycle report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -244,8 +244,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Model verification suite report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "Model verification suite report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -259,8 +259,8 @@
       "requiredFor": [
         "store"
       ],
-      "ageHours": 0.01,
-      "detail": "iOS toolchain report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "iOS toolchain report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -276,8 +276,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Native QA evidence starter report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "Native QA evidence starter report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -291,8 +291,8 @@
       "requiredFor": [
         "store"
       ],
-      "ageHours": 0.01,
-      "detail": "Cue-validation dataset report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Cue-validation dataset report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -307,8 +307,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Cue-validation starter kit report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.03,
+      "detail": "Cue-validation starter kit report is 0.03h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -322,8 +322,8 @@
       "requiredFor": [
         "store"
       ],
-      "ageHours": 0.01,
-      "detail": "Store credentials report is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Store credentials report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -338,8 +338,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Store credentials setup packet is 0.01h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Store credentials setup packet is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -353,8 +353,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "GitHub workflow report is 0.01h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "GitHub workflow report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -369,8 +369,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Dependency license report is 0h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Dependency license report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -385,8 +385,8 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "License review packet is 0h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "License review packet is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -400,8 +400,8 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0.01,
-      "detail": "Environment template report is 0.01h old and inside the 168h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Environment template report is 0.02h old and inside the 168h freshness window.",
       "status": "fresh"
     },
     {
@@ -416,12 +416,12 @@
         "store",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Store submission packet is 0h old and inside the 72h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Store submission packet is 0.02h old and inside the 72h freshness window.",
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T21:59:04.204Z",
+      "generatedAt": "2026-06-23T21:59:52.521Z",
       "key": "acquisition-readiness-packet",
       "label": "Acquisition readiness packet",
       "maxAgeHours": 72,
@@ -436,7 +436,7 @@
       "status": "fresh"
     },
     {
-      "generatedAt": "2026-06-23T21:59:04.456Z",
+      "generatedAt": "2026-06-23T21:59:52.516Z",
       "key": "data-room-index",
       "label": "Data-room index",
       "maxAgeHours": 72,
@@ -462,8 +462,8 @@
         "demo",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "PWA readiness report is 0h old and inside the 72h freshness window.",
+      "ageHours": 0.02,
+      "detail": "PWA readiness report is 0.02h old and inside the 72h freshness window.",
       "status": "fresh"
     },
     {
@@ -479,8 +479,8 @@
         "internal",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Web smoke report is 0h old and inside the 24h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Web smoke report is 0.02h old and inside the 24h freshness window.",
       "status": "fresh"
     },
     {
@@ -495,8 +495,8 @@
         "demo",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Vercel deployment report is 0h old and inside the 72h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Vercel deployment report is 0.02h old and inside the 72h freshness window.",
       "status": "fresh"
     },
     {
@@ -511,8 +511,8 @@
         "demo",
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Vercel deployment handoff is 0h old and inside the 72h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Vercel deployment handoff is 0.02h old and inside the 72h freshness window.",
       "status": "fresh"
     },
     {
@@ -526,12 +526,12 @@
       "requiredFor": [
         "handoff"
       ],
-      "ageHours": 0,
-      "detail": "Vercel workflow report is 0h old and inside the 72h freshness window.",
+      "ageHours": 0.02,
+      "detail": "Vercel workflow report is 0.02h old and inside the 72h freshness window.",
       "status": "fresh"
     }
   ],
-  "generatedAt": "2026-06-23T21:59:04.703Z",
+  "generatedAt": "2026-06-23T22:00:01.670Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -544,7 +544,7 @@
     "artifactCount": 33,
     "freshCount": 33,
     "invalidDateCount": 0,
-    "maxObservedAgeHours": 0.01,
+    "maxObservedAgeHours": 0.03,
     "missingDateCount": 0,
     "nextAction": "All tracked release evidence artifacts are fresh.",
     "oldestArtifactKey": "launch-readiness-report",
