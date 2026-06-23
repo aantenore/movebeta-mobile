@@ -174,3 +174,4 @@
 | T170 | Add PWA model-cache runtime preflight before offline analysis | Done |
 | T171 | Add explicit PWA model-cache warmup action and packet | Done |
 | T172 | Add SHA-256 integrity verification to PWA model-cache warmup | Done |
+| T173 | Add PWA runtime model integrity readiness gating | Done |

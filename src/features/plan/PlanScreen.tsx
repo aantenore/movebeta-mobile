@@ -230,9 +230,13 @@ type BrowserModelCacheVerification = {
 
 function emptyModelCacheState(): BrowserModelCacheState {
   return {
+    bytesCached: 0,
     cachedCount: 0,
     expectedCount: 0,
+    integritySupported: false,
+    integrityVerified: false,
     manifestCached: false,
+    verifiedCount: 0,
   };
 }
 
@@ -285,11 +289,16 @@ async function resolveBrowserModelCacheState(): Promise<BrowserModelCacheState> 
   const modelAssets = sameOriginModelAssets(manifest);
   const cachedManifest = await window.caches.match('/model-assets.json');
   const cachedAssets = await Promise.all(modelAssets.map((asset) => window.caches.match(asset)));
+  const verification = await verifyCachedBrowserModelAssets(manifest);
 
   return {
+    bytesCached: verification.bytesCached,
     cachedCount: cachedAssets.filter(Boolean).length,
     expectedCount: modelAssets.length,
+    integritySupported: verification.integritySupported,
+    integrityVerified: verification.integritySupported && modelAssets.length > 0 && verification.assetsVerified >= modelAssets.length,
     manifestCached: Boolean(cachedManifest),
+    verifiedCount: verification.assetsVerified,
   };
 }
 
@@ -359,14 +368,13 @@ async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupResult> {
   );
 
   const modelCache = await resolveBrowserModelCacheState();
-  const verification = await verifyCachedBrowserModelAssets(manifest);
   return buildPwaModelCacheWarmupResult({
     assetsCached: modelCache.cachedCount,
     assetsExpected: modelCache.expectedCount,
-    assetsVerified: verification.assetsVerified,
-    bytesCached: verification.bytesCached,
+    assetsVerified: modelCache.verifiedCount,
+    bytesCached: modelCache.bytesCached,
     cacheApiSupported: true,
-    integritySupported: verification.integritySupported,
+    integritySupported: modelCache.integritySupported,
     manifestCached: modelCache.manifestCached,
     online: navigator.onLine !== false,
   });
@@ -2156,6 +2164,12 @@ function PwaRuntimeCard({
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{readiness.summary.modelCacheReady ? 'yes' : 'no'}</Text>
           <Text style={styles.qaKitMetricLabel}>model</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {readiness.summary.modelIntegrityVerified ? 'yes' : readiness.summary.modelIntegritySupported ? 'no' : 'n/a'}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>integrity</Text>
         </View>
         <View style={styles.qaKitMetric}>
           <Text style={styles.qaKitMetricValue}>{readiness.summary.updateAvailable ? 'yes' : 'no'}</Text>
