@@ -52,6 +52,8 @@
 - Vitest cue feedback insight tests for useful rate, top useful cue, review cue, orphan skipping, and empty state.
 - Vitest progress filter tests for wall-angle, grade, and gym option derivation, report filtering, and active filter count.
 - Vitest capture-calibration tests for ideal setup, review-grade setup, and blockers caused by privacy or poor pose input.
+- Vitest live recording guide tests for setup review advice, coach-lens-specific recording prompts, minimum-duration
+  analysis readiness, progress, and near-limit warnings.
 - Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
   and local privacy copy.
 - Vitest analysis trust tests for coaching-ready local reports, retake decisions from weak pose signal, local-only privacy
@@ -471,6 +473,8 @@
   production accuracy claims.
 - Analyze tab shows the Coach lens selector, default Balanced metadata, and lens options for footwork, body position, and
   power conservation before local camera, import, or demo analysis.
+- Analyze tab recorder shows the live recording guide with setup-aware prompts, coach-lens-specific filming focus,
+  minimum-duration readiness, and progress before local analysis.
 - Sessions validation campaign shows reviewer consensus, prepared dataset exports include reliability and max spread, and
   Plan evidence collection shows the configured max reviewer score spread.
 - Plan tab shows provider readiness for primary video provider, fallback provider, native target, and device-proof state.
@@ -561,6 +565,7 @@ MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py
 - iOS toolchain setup packet export before the iOS build blocker is assigned or handed off.
 - Camera permission flow.
 - Capture setup blocks recording when visible bystanders, cropped framing, backlighting, or unusable distance are selected.
+- Recorder live guide prompts are visible during recording without requiring network or cloud analysis.
 - Imported video flow.
 - Recorded video flow.
 - Recorded videos are muted, use the configured quality/bitrate/file-size profile, and do not request microphone access.
