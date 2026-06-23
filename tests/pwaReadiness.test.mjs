@@ -23,6 +23,21 @@ function writeText(filePath, value) {
   fs.writeFileSync(filePath, value);
 }
 
+function modelDeliveryPolicy() {
+  return {
+    native: {
+      deliveryMode: 'platform-provider-bundled',
+    },
+    schemaVersion: 'movebeta.model-delivery-policy.v1',
+    web: {
+      downloadStrategy: 'precache-on-install',
+      integrity: 'sha256-manifest',
+      offlineUse: 'requires-cached-assets',
+      userAction: 'warm-model-control',
+    },
+  };
+}
+
 function makeReadyFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'movebeta-pwa-'));
   tmpRoots.push(root);
@@ -41,8 +56,9 @@ function makeReadyFixture() {
   });
   writeText(
     path.join(root, 'public/sw.js'),
-    "const CACHE_VERSION = 'v-dev'; const EXPORT_ASSETS = []; const MODEL_ASSET_MANIFEST = '/model-assets.json'; async function cacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v-dev')); self.addEventListener('fetch', () => { if (url.pathname.startsWith('/models/')) {} });",
+    "const CACHE_VERSION = 'v-dev'; const EXPORT_ASSETS = []; const MODEL_ASSET_MANIFEST = '/model-assets.json'; const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json'; async function cacheModelAssets() {} function shouldPrecacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v-dev')); self.addEventListener('fetch', () => { if (url.pathname === '/model-delivery-policy.json' || url.pathname.startsWith('/models/')) {} });",
   );
+  writeJson(path.join(root, 'public/model-delivery-policy.json'), modelDeliveryPolicy());
   writeJson(path.join(root, 'public/model-assets.json'), {
     assets: [
       '/models/movenet/singlepose/lightning/4/model.json',
@@ -59,6 +75,7 @@ function makeReadyFixture() {
     rewrites: [{ destination: '/index.html', source: '/(.*)' }],
   });
   writeJson(path.join(root, 'dist/manifest.json'), {});
+  writeJson(path.join(root, 'dist/model-delivery-policy.json'), modelDeliveryPolicy());
   writeJson(path.join(root, 'dist/model-assets.json'), {
     assets: [
       '/models/movenet/singlepose/lightning/4/model.json',
@@ -77,7 +94,7 @@ function makeReadyFixture() {
   writeText(path.join(root, 'dist/pwa/icon-512.png'), 'png');
   writeText(
     path.join(root, 'dist/sw.js'),
-    `const CACHE_VERSION = "${buildCacheVersion({ distDir: path.join(root, 'dist') })}"; const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"];`,
+    `const CACHE_VERSION = "${buildCacheVersion({ distDir: path.join(root, 'dist') })}"; const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"]; const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json';`,
   );
   return root;
 }
@@ -98,9 +115,9 @@ describe('pwa readiness doctor', () => {
 
     expect(report.schemaVersion).toBe(PWA_READINESS_SCHEMA_VERSION);
     expect(report.summary).toMatchObject({
-      checkCount: 10,
+      checkCount: 11,
       status: 'ready',
-      verifiedCount: 10,
+      verifiedCount: 11,
     });
     expect(report.privacy).toMatchObject({
       backendRequired: false,
@@ -128,6 +145,15 @@ describe('pwa readiness doctor', () => {
 
     expect(report.summary.status).toBe('blocked');
     expect(report.checks.find((item) => item.key === 'exported-offline-cache-assets')?.status).toBe('blocked');
+  });
+
+  it('blocks when the model delivery policy is not exported with the PWA', () => {
+    const root = makeReadyFixture();
+    fs.rmSync(path.join(root, 'dist/model-delivery-policy.json'));
+    const report = buildPwaReadinessReport({ rootDir: root });
+
+    expect(report.summary.status).toBe('blocked');
+    expect(report.checks.find((item) => item.key === 'model-delivery-policy')?.status).toBe('blocked');
   });
 
   it('blocks when the exported service worker keeps a static cache version', () => {

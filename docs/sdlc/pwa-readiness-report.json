@@ -37,6 +37,12 @@
       "status": "verified"
     },
     {
+      "detail": "Source and exported PWA include a versioned model-delivery policy, and the service worker uses it before model precache.",
+      "key": "model-delivery-policy",
+      "label": "Model delivery policy",
+      "status": "verified"
+    },
+    {
       "detail": "Exported service worker pre-caches Expo JS bundles, router assets, and metadata needed for offline app boot.",
       "key": "exported-offline-cache-assets",
       "label": "Exported offline app cache assets",
@@ -61,7 +67,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-23T15:16:06.056Z",
+  "generatedAt": "2026-06-23T15:24:39.691Z",
   "privacy": {
     "backendRequired": false,
     "credentialValuesIncluded": false,
@@ -71,9 +77,9 @@
   },
   "schemaVersion": "movebeta.pwa-readiness.v1",
   "summary": {
-    "checkCount": 10,
+    "checkCount": 11,
     "nextAction": "Deploy the static dist output to Vercel, then run the web smoke against the deployment URL.",
     "status": "ready",
-    "verifiedCount": 10
+    "verifiedCount": 11
   }
 }

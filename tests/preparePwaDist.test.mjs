@@ -26,6 +26,18 @@ function makeDist(html = '<html><head><title>MoveBeta</title></head><body><div i
   fs.writeFileSync(path.join(distDir, 'metadata.json'), '{}');
   fs.writeFileSync(path.join(distDir, '_expo/static/js/web/entry-test.js'), 'js');
   fs.writeFileSync(path.join(distDir, 'assets/image-test.png'), 'png');
+  fs.writeFileSync(path.join(distDir, 'model-delivery-policy.json'), JSON.stringify({
+    native: {
+      deliveryMode: 'platform-provider-bundled',
+    },
+    schemaVersion: 'movebeta.model-delivery-policy.v1',
+    web: {
+      downloadStrategy: 'precache-on-install',
+      integrity: 'sha256-manifest',
+      offlineUse: 'requires-cached-assets',
+      userAction: 'warm-model-control',
+    },
+  }));
   fs.writeFileSync(path.join(distDir, 'model-assets.json'), JSON.stringify({
     assets: ['/models/movenet/singlepose/lightning/4/model.json'],
     schemaVersion: 'movebeta.static-model-assets.v1',
@@ -71,6 +83,7 @@ describe('prepare PWA dist', () => {
       '/assets/image-test.png',
       '/metadata.json',
     ]);
+    expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/model-delivery-policy.json');
     expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/models/movenet/singlepose/lightning/4/model.json');
     expect(buildExportAssetsDeclaration(['/metadata.json'])).toContain('"/metadata.json"');
     expect(buildCacheVersionDeclaration('v-1234567890abcdef')).toBe("const CACHE_VERSION = 'v-1234567890abcdef';");

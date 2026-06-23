@@ -1,13 +1,13 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-23T15:16:26.875Z
+Generated: 2026-06-23T15:25:10.576Z
 
 - Status: ready
 - Fresh artifacts: 30/30
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
-- Oldest artifact: feature-completion-report
+- Oldest artifact: launch-readiness-report
 - Next action: All tracked release evidence artifacts are fresh.
 - Credential values included: no
 - Local paths included: no
@@ -16,8 +16,8 @@ Generated: 2026-06-23T15:16:26.875Z
 
 | Artifact | Status | Age | Window | Refresh |
 | --- | --- | ---: | ---: | --- |
-| Launch readiness report | fresh | 0h | 24h | `npm run release:readiness` |
-| Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
+| Launch readiness report | fresh | 0.01h | 24h | `npm run release:readiness` |
+| Feature completion report | fresh | 0h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0.01h | 24h | `npm run release:blocker-issues` |
 | Release blocker issue filing plan | fresh | 0.01h | 24h | `npm run release:blocker-issues:file` |
 | Release blocker issue web links | fresh | 0.01h | 24h | `npm run release:blocker-issues:links` |

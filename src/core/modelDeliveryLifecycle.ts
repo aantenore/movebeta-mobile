@@ -3,14 +3,29 @@ import { z } from 'zod';
 import { type PwaRuntimeReadiness } from './pwaRuntimeReadiness';
 
 export const modelDeliveryLifecycleSchemaVersion = 'movebeta.model-delivery-lifecycle.v1';
+export const modelDeliveryPolicySchemaVersion = 'movebeta.model-delivery-policy.v1';
 
 const ModelDeliveryLifecycleStatusSchema = z.enum(['action', 'blocked', 'ready']);
+const ModelDownloadStrategySchema = z.enum(['precache-on-install', 'warmup-only', 'lazy-on-analysis']);
 const ModelDeliveryLifecycleStageKeySchema = z.enum([
   'build-vendoring',
   'app-delivery',
   'first-online-launch',
   'offline-reuse',
 ]);
+
+export const ModelDeliveryPolicySchema = z.object({
+  native: z.object({
+    deliveryMode: z.literal('platform-provider-bundled'),
+  }),
+  schemaVersion: z.literal(modelDeliveryPolicySchemaVersion),
+  web: z.object({
+    downloadStrategy: ModelDownloadStrategySchema,
+    integrity: z.enum(['sha256-manifest', 'cache-presence']),
+    offlineUse: z.enum(['requires-cached-assets', 'online-first']),
+    userAction: z.string().min(1),
+  }),
+});
 
 export const ModelDeliveryLifecycleStageSchema = z.object({
   detail: z.string().min(1),
@@ -40,6 +55,7 @@ export const ModelDeliveryLifecycleSchema = z.object({
   summary: z.object({
     cacheReady: z.boolean(),
     deliveryMode: z.enum(['native-bundled', 'same-origin-static']),
+    downloadStrategy: ModelDownloadStrategySchema,
     downloadTrigger: z.string().min(1),
     firstUseRequiresNetwork: z.boolean(),
     nextAction: z.string().min(1),
@@ -50,6 +66,7 @@ export const ModelDeliveryLifecycleSchema = z.object({
 export type ModelDeliveryLifecycle = z.infer<typeof ModelDeliveryLifecycleSchema>;
 export type ModelDeliveryLifecycleStatus = z.infer<typeof ModelDeliveryLifecycleStatusSchema>;
 export type ModelDeliveryLifecycleStage = z.infer<typeof ModelDeliveryLifecycleStageSchema>;
+export type ModelDeliveryPolicy = z.infer<typeof ModelDeliveryPolicySchema>;
 
 type StaticModelAssetReport = {
   modelName?: unknown;
@@ -84,6 +101,34 @@ function text(value: unknown, fallback: string) {
   return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
 }
 
+function parseModelDeliveryPolicy(value: unknown): ModelDeliveryPolicy {
+  const parsed = ModelDeliveryPolicySchema.safeParse(value);
+  if (parsed.success) return parsed.data;
+
+  return {
+    native: {
+      deliveryMode: 'platform-provider-bundled',
+    },
+    schemaVersion: modelDeliveryPolicySchemaVersion,
+    web: {
+      downloadStrategy: 'precache-on-install',
+      integrity: 'sha256-manifest',
+      offlineUse: 'requires-cached-assets',
+      userAction: 'warm-model-control',
+    },
+  };
+}
+
+function webDownloadTrigger(strategy: z.infer<typeof ModelDownloadStrategySchema>) {
+  if (strategy === 'precache-on-install') {
+    return 'The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.';
+  }
+  if (strategy === 'warmup-only') {
+    return 'The model is vendored during build, then the browser downloads same-origin model assets only when the Warm model action or analysis path requests them.';
+  }
+  return 'The model is vendored during build, then the browser downloads same-origin model assets lazily when local video analysis starts.';
+}
+
 function stage({
   detail,
   key,
@@ -115,15 +160,19 @@ export function assertModelDeliveryLifecycleIsShareSafe(lifecycle: ModelDelivery
 
 export function buildModelDeliveryLifecycle({
   generatedAt = new Date().toISOString(),
+  modelDeliveryPolicy,
   pwaRuntimeReadiness,
   runtime = pwaRuntimeReadiness?.summary.status === 'native' ? 'native' : 'web',
   staticAssetsReport,
 }: {
   generatedAt?: string;
+  modelDeliveryPolicy?: unknown;
   pwaRuntimeReadiness?: PwaRuntimeReadiness;
   runtime?: 'native' | 'web';
   staticAssetsReport?: StaticModelAssetReport;
 }): ModelDeliveryLifecycle {
+  const deliveryPolicy = parseModelDeliveryPolicy(modelDeliveryPolicy);
+  const downloadStrategy = deliveryPolicy.web.downloadStrategy;
   const staticSummary = staticAssetsReport?.summary;
   const modelName = text(staticAssetsReport?.modelName, 'MoveNet SinglePose Lightning');
   const modelUrl = text(staticAssetsReport?.modelUrl, '/models/movenet/singlepose/lightning/4/model.json');
@@ -170,14 +219,20 @@ export function buildModelDeliveryLifecycle({
         ? 'No browser warmup is required for native distribution.'
         : cacheReady
           ? `Cache Storage has ${cachedAssets}/${expectedCacheAssets} model asset(s) available.`
-          : 'The browser fetches model-assets.json and listed /models assets on first online launch or explicit warmup.',
+          : downloadStrategy === 'precache-on-install'
+            ? 'The service worker fetches model-assets.json and listed /models assets during first online install; Warm model can refresh the cache explicitly.'
+            : downloadStrategy === 'warmup-only'
+              ? 'The browser waits for the explicit Warm model action or the analysis path before fetching model-assets.json and listed /models assets.'
+              : 'The browser waits until local video analysis starts before fetching model-assets.json and listed /models assets.',
       key: 'first-online-launch',
       label: 'First online launch',
       nextAction: nativeRuntime
         ? 'Install the native build through the configured release channel.'
         : cacheReady
           ? 'Keep the warmup action available for cache refresh after deploys.'
-          : 'Open the PWA online once or use Warm model before going offline.',
+          : downloadStrategy === 'precache-on-install'
+            ? 'Open the PWA online once or use Warm model before going offline.'
+            : 'Use Warm model online before going offline.',
       status: nativeRuntime || cacheReady ? 'ready' : 'action',
     }),
     stage({
@@ -221,9 +276,10 @@ export function buildModelDeliveryLifecycle({
     summary: {
       cacheReady,
       deliveryMode: nativeRuntime ? 'native-bundled' : 'same-origin-static',
+      downloadStrategy,
       downloadTrigger: nativeRuntime
         ? 'The model is delivered with the native build; updates arrive with app releases.'
-        : 'The model is vendored during build, then the browser downloads same-origin model assets on first online launch, service-worker install, or explicit warmup.',
+        : webDownloadTrigger(downloadStrategy),
       firstUseRequiresNetwork,
       nextAction,
       status,

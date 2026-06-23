@@ -288,9 +288,11 @@
   pre-cache coverage, content-addressed service-worker cache versioning, Vercel static config, SPA fallback, and no
   backend/API route surface.
 - Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, static or mismatched
-  cache-version blockers, and JSON/Markdown report writes.
+  cache-version blockers, model-delivery policy export blockers, and JSON/Markdown report writes.
+- Vitest PWA model delivery policy tests cover exported `model-delivery-policy.json`, service-worker policy lookup before
+  model precache, cache-version inclusion, and lifecycle download-strategy reporting.
 - Browser smoke verifies service worker installation, content-addressed cache keys, cache inventory, offline reload, and
-  cached same-origin model manifest access from the exported PWA.
+  cached same-origin model policy and manifest access from the exported PWA.
 - Vitest PWA runtime readiness tests cover model-cache ready, partial-cache pending, native bypass, install-prompt, and
   share-safety states.
 - Browser smoke verifies the Plan tab model-cache preflight and prepared PWA install guidance include model-cache
