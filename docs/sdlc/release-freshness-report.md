@@ -1,9 +1,9 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-23T09:01:13.887Z
+Generated: 2026-06-23T09:43:42.091Z
 
 - Status: ready
-- Fresh artifacts: 21/21
+- Fresh artifacts: 22/22
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
@@ -27,6 +27,7 @@ Generated: 2026-06-23T09:01:13.887Z
 | Model asset provenance report | fresh | 0h | 168h | `npm run model:assets:provenance` |
 | Model verification suite report | fresh | 0h | 24h | `npm run model:verification:suite` |
 | iOS toolchain report | fresh | 0h | 24h | `npm run native:ios:doctor` |
+| Native QA evidence starter report | fresh | 0h | 24h | `npm run native:qa:starter` |
 | Cue-validation dataset report | fresh | 0h | 24h | `npm run validation:cue:doctor` |
 | Cue-validation starter kit report | fresh | 0h | 24h | `npm run validation:cue:starter` |
 | Store credentials report | fresh | 0h | 24h | `npm run release:credentials:doctor` |

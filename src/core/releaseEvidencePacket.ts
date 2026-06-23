@@ -212,6 +212,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate the physical-device workflow packet and blocked draft evidence template.',
     },
     {
+      command: 'npm run native:qa:starter',
+      key: 'native-qa-starter',
+      label: 'Native QA evidence starter',
+      owner: 'qa',
+      purpose: 'Generate the structured input template and compose candidate native QA evidence before validator proof is written.',
+    },
+    {
       command: 'npm run native:qa:validate',
       key: 'native-qa-validate',
       label: 'Native QA validator',

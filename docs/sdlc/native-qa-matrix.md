@@ -26,11 +26,18 @@ Generate the current runbook first:
 
 ```bash
 npm run native:qa:runbook
+npm run native:qa:starter
 ```
 
-Then copy either `docs/sdlc/native-qa-runbook.json` → `evidenceDraft` or
-`docs/sdlc/native-qa-evidence.template.json` to `docs/sdlc/native-qa-evidence.json`, replace placeholders with real
-device results, and run:
+Then fill `docs/sdlc/native-qa-evidence-input.template.json` with real device measurements, compose candidate evidence,
+and write the final validator input only after the candidate is ready:
+
+```bash
+npm run native:qa:starter -- --input <filled-template.json>
+npm run native:qa:starter -- --input <filled-template.json> --write-evidence
+```
+
+Finally run:
 
 ```bash
 npm run native:qa:validate
