@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "detail": "Runs the exported bundle in Playwright against the selected smoke URL.",
+      "key": "playwright-exported-bundle-smoke",
+      "label": "Playwright exported-bundle smoke",
+      "status": "pass"
+    },
+    {
+      "detail": "Covers mobile and desktop release workflows asserted by scripts/smoke_web_video.py.",
+      "key": "responsive-release-ui",
+      "label": "Responsive release UI",
+      "status": "pass"
+    },
+    {
+      "detail": "Covers installable PWA, service worker, offline boot, and static model cache checks.",
+      "key": "pwa-offline-model-cache",
+      "label": "PWA offline model cache",
+      "status": "pass"
+    },
+    {
+      "detail": "Uses SDLC report-derived counts for launch, feature, model, and PWA expectations.",
+      "key": "report-derived-expectations",
+      "label": "Report-derived expectations",
+      "status": "pass"
+    }
+  ],
+  "command": {
+    "timeoutMs": 180000,
+    "value": "MOVEBETA_SMOKE_URL=http://127.0.0.1:8083/ python3 scripts/smoke_web_video.py"
+  },
+  "completedAt": "2026-06-23T16:04:56.443Z",
+  "durationMs": 9873,
+  "generatedAt": "2026-06-23T16:04:56.443Z",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.web-smoke-report.v1",
+  "startedAt": "2026-06-23T16:04:46.566Z",
+  "status": "pass",
+  "summary": {
+    "failedChecks": 0,
+    "nextAction": "Keep the exported PWA smoke report fresh after UI, PWA, model-delivery, or release-evidence changes.",
+    "passedChecks": 4,
+    "status": "pass",
+    "totalChecks": 4
+  },
+  "target": {
+    "distDir": "dist",
+    "mode": "local-static-dist",
+    "url": "http://127.0.0.1:8083/"
+  },
+  "tool": {
+    "runner": "playwright-python",
+    "script": "scripts/smoke_web_video.py"
+  }
+}

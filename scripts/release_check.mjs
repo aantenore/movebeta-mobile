@@ -34,6 +34,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'model:assets:provenance'], key: 'modelAssetProvenance', label: 'Model asset provenance doctor' },
   { command: ['npm', 'run', 'model:delivery:lifecycle'], key: 'modelDeliveryLifecycle', label: 'Model delivery lifecycle report' },
   { command: ['npm', 'run', 'web:pwa:check'], key: 'pwaReadiness', label: 'PWA static readiness doctor' },
+  { command: ['npm', 'run', 'web:smoke:report'], key: 'webSmokeReport', label: 'Exported web smoke report' },
   { command: ['npm', 'run', 'web:vercel:check'], key: 'vercelDeploymentReadiness', label: 'Vercel deployment readiness doctor' },
   { command: ['npm', 'run', 'web:vercel:workflow'], key: 'vercelWorkflowReadiness', label: 'Vercel workflow readiness doctor' },
   { command: ['npm', 'run', 'release:eas:check'], key: 'easStandard', label: 'EAS standard release check' },

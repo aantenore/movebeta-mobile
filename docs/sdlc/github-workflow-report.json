@@ -36,7 +36,7 @@
       "status": "fail"
     }
   ],
-  "generatedAt": "2026-06-23T15:51:05.699Z",
+  "generatedAt": "2026-06-23T16:04:40.279Z",
   "nextAction": "Copy the quality workflow template to .github/workflows/quality.yml after the GitHub token has workflow scope.",
   "privacy": {
     "checkedOauthScopes": [

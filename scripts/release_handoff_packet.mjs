@@ -143,6 +143,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Acquisition readiness packet', 'docs/sdlc/acquisition-readiness-packet.json'),
       artifact(rootDir, 'Data-room index', 'docs/sdlc/data-room-index.json'),
       artifact(rootDir, 'PWA readiness report', 'docs/sdlc/pwa-readiness-report.json'),
+      artifact(rootDir, 'Web smoke report', 'docs/sdlc/web-smoke-report.json'),
       artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
       artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
       artifact(rootDir, 'Store credentials setup packet', 'docs/sdlc/store-credentials-setup-packet.json'),
@@ -163,7 +164,7 @@ export function buildReleaseHandoffPacket({
     blockers,
     commands: [
       command('release-full', 'Full local release gate', 'npm run release:full', ['demo', 'internal', 'store']),
-      command('web-smoke', 'Exported web smoke', 'MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py', [
+      command('web-smoke', 'Exported web smoke report', 'npm run web:smoke:report', [
         'demo',
         'internal',
         'store',

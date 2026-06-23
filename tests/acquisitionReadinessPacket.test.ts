@@ -93,6 +93,12 @@ function readyReports() {
       schemaVersion: 'movebeta.vercel-deployment-readiness.v1',
       summary: { status: 'ready' },
     },
+    webSmokeReport: {
+      generatedAt,
+      schemaVersion: 'movebeta.web-smoke-report.v1',
+      status: 'pass',
+      summary: { status: 'pass' },
+    },
   };
 }
 
@@ -111,6 +117,7 @@ function allArtifactsAvailable() {
     'docs/sdlc/release-gate-report.json': true,
     'docs/sdlc/release-handoff-packet.json': true,
     'docs/sdlc/vercel-deployment-report.json': true,
+    'docs/sdlc/web-smoke-report.json': true,
     'docs/store/store-submission-packet.json': true,
   };
 }
@@ -127,7 +134,7 @@ describe('acquisition readiness packet', () => {
     expect(packet.schemaVersion).toBe(acquisitionReadinessPacketSchemaVersion);
     expect(packet.summary).toMatchObject({
       blockedSignalCount: 0,
-      dueDiligenceArtifactCount: 14,
+      dueDiligenceArtifactCount: 15,
       externalBlockerCount: 0,
       readySignalCount: 9,
       reviewSignalCount: 0,
@@ -136,6 +143,7 @@ describe('acquisition readiness packet', () => {
     });
     expect(packet.commands.map((command) => command.key)).toContain('acquisition-readiness');
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Acquisition readiness packet');
+    expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Web smoke report');
     expect(JSON.stringify(packet)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
   });
 

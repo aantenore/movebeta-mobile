@@ -52,6 +52,7 @@ function readyReports(): DataRoomReportBundle {
     storeSubmissionPacket: report('metadata-ready'),
     vercelDeploymentReport: report('static-ready'),
     vercelWorkflowReport: report('template-ready'),
+    webSmokeReport: report('pass'),
   };
 }
 
@@ -76,9 +77,9 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 25,
+      itemCount: 26,
       missingCount: 0,
-      readyCount: 25,
+      readyCount: 26,
       reviewCount: 0,
       status: 'ready',
     });

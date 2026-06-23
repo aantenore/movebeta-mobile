@@ -72,7 +72,7 @@ export const CHECK_DEFINITIONS = {
     owner: 'product',
   },
   webSmoke: {
-    action: 'Run scripts/smoke_web_video.py against the exported web bundle.',
+    action: 'Run npm run web:smoke:report against the exported web bundle.',
     label: 'Web preview smoke',
     owner: 'qa',
   },
@@ -115,11 +115,6 @@ const TRACK_LABELS = {
 function readJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) return undefined;
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function readTextIfExists(filePath) {
-  if (!fs.existsSync(filePath)) return '';
-  return fs.readFileSync(filePath, 'utf8');
 }
 
 function exists(rootDir, relativePath) {
@@ -186,13 +181,13 @@ function getConfiguredEvidence(rootDir, env = process.env) {
  */
 export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
   const appConfig = readJsonIfExists(path.join(rootDir, 'app.json'))?.expo ?? {};
-  const releaseReport = readTextIfExists(path.join(rootDir, 'docs/sdlc/release-readiness-report.md'));
   const releaseGateReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/release-gate-report.json')) ?? {};
   const iosToolchainReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/ios-toolchain-report.json')) ?? {};
   const storeCredentialsReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/store-credentials-report.json')) ?? {};
   const moveNetReadinessReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
   const modelAnalysisReplayReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/model-analysis-replay-report.json')) ?? {};
   const nativeQaRunbook = readJsonIfExists(path.join(rootDir, 'docs/sdlc/native-qa-runbook.json')) ?? {};
+  const webSmokeReport = readJsonIfExists(path.join(rootDir, 'docs/sdlc/web-smoke-report.json')) ?? {};
 
   return {
     androidDebugBuild: exists(rootDir, 'android/app/build/outputs/apk/debug/app-debug.apk'),
@@ -228,9 +223,14 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       releaseGateReport.steps.some((step) => step.key === 'iosToolchainDoctor') &&
       releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetDoctor') &&
       releaseGateReport.steps.some((step) => step.key === 'storeCredentialsDoctor') &&
+      releaseGateReport.steps.some((step) => step.key === 'webSmokeReport') &&
       releaseGateReport.steps.every((step) => step.status === 'pass'),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),
-    webSmoke: exists(rootDir, 'dist/index.html') && releaseReport.includes('Playwright exported-bundle smoke: passed'),
+    webSmoke:
+      exists(rootDir, 'dist/index.html') &&
+      webSmokeReport.schemaVersion === 'movebeta.web-smoke-report.v1' &&
+      webSmokeReport.status === 'pass' &&
+      webSmokeReport.summary?.status === 'pass',
   };
 }
 

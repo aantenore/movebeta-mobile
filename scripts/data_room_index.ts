@@ -57,6 +57,7 @@ function readReports(rootDir: string): DataRoomReportBundle {
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),
     vercelDeploymentReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-report.json'),
     vercelWorkflowReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-workflow-report.json'),
+    webSmokeReport: readJsonIfExists(rootDir, 'docs/sdlc/web-smoke-report.json'),
   };
 }
 

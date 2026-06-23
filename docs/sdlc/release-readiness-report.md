@@ -242,6 +242,9 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/pwa-readiness-report.md`, verifying the installable static PWA path, offline app boot cache coverage,
   exact content-addressed service-worker cache versioning, same-origin model cache assets, exported model-delivery
   policy, and no API routes or backend.
+- `npm run web:smoke:report` writes `docs/sdlc/web-smoke-report.json` and
+  `docs/sdlc/web-smoke-report.md`, serving the exported bundle, running the Playwright smoke runner, and recording
+  share-safe pass/fail evidence for release UI, PWA cache, model-delivery, and report-derived expectations.
 - `npm run web:vercel:check` writes `docs/sdlc/vercel-deployment-report.json` and
   `docs/sdlc/vercel-deployment-report.md`, verifying static prebuilt deployment readiness without committing Vercel
   account values or adding backend routes.
@@ -262,9 +265,9 @@ platforms are validated on physical climbing videos and devices.
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, static
-  MoveNet asset readiness, model asset provenance, model delivery lifecycle, PWA readiness, Vercel deployment readiness,
-  Vercel workflow readiness, EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and
-  acquisition readiness plus release evidence freshness.
+  MoveNet asset readiness, model asset provenance, model delivery lifecycle, PWA readiness, web smoke report, Vercel
+  deployment readiness, Vercel workflow readiness, EAS standard check, moderate-or-higher dependency audit, dependency
+  license inventory, and acquisition readiness plus release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -372,6 +375,9 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/pwa-readiness-report.md` with status `ready`, 11/11 checks, offline app boot cache coverage,
   exported model-delivery policy coverage, exact content-addressed service-worker cache versioning, and backend required
   `false`.
+- `npm run web:smoke:report`: passed and wrote `docs/sdlc/web-smoke-report.json` plus
+  `docs/sdlc/web-smoke-report.md` with status `pass`, 4/4 checks, release UI, responsive workflow, PWA offline model
+  cache, and report-derived expectation coverage.
 - `npm run web:vercel:check`: passed and wrote `docs/sdlc/vercel-deployment-report.json` plus
   `docs/sdlc/vercel-deployment-report.md` with status `static-ready`, 4/6 verified checks, 0 blocked checks, and 2
   account-binding/secret actions remaining outside the repository.
@@ -388,14 +394,14 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 30/30 fresh artifacts, and 0 stale artifacts.
+  status `ready`, 31/31 fresh artifacts, and 0 stale artifacts.
 - `npm run release:acquisition`: passed and wrote `docs/sdlc/acquisition-readiness-packet.json` plus
   `docs/sdlc/acquisition-readiness-packet.md` with status `needs-external-clearance`, 5/9 ready signals, 0 blocked
-  signals, 10 external blockers, and 14/14 due-diligence artifacts ready.
+  signals, 10 external blockers, and 15/15 due-diligence artifacts ready.
 - `npm run release:data-room`: passed and wrote `docs/sdlc/data-room-index.json` plus
-  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 14/30 ready items, 14 external-required items,
+  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 15/31 ready items, 14 external-required items,
   2 review items, 0 missing items, and 0 blocked items.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 35/35 release steps passing.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 36/36 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -573,7 +579,7 @@ platforms are validated on physical climbing videos and devices.
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
 - `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated twelve 780x1688 PNG screenshots.
-- Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
+- `npm run web:smoke:report`: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress analysis trust trend, the Progress analysis trust trend packet, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, the Progress training load packet, practice-reset planning, the Progress technique readiness, the Progress technique readiness packet
   panel, the Progress personal benchmarks panel, the Progress cue patterns panel, the Progress cue usefulness panel, the Progress practice consistency panel, the Progress attempt
@@ -593,7 +599,8 @@ platforms are validated on physical climbing videos and devices.
 - Browser smoke verifies the Plan tab PWA runtime model-cache preflight and confirms the prepared install guidance packet
   includes `modelCacheReady`, expected model asset counts, verified asset counts, cached bytes, and integrity flags.
 - Browser smoke derives launch-track, feature-completion, model-verification, and PWA readiness count assertions from
-  generated SDLC reports before checking the Plan release UI, avoiding stale hard-coded release counts.
+  generated SDLC reports before checking the Plan release UI, avoiding stale hard-coded release counts, and persists
+  pass/fail evidence in `docs/sdlc/web-smoke-report.json`.
 - Browser smoke clicks the Plan tab Warm model action and verifies the share-safe model-cache warmup packet.
 - Browser smoke verifies the prepared warmup packet includes cached byte totals, verified asset counts, and SHA-256
   integrity flags.
@@ -623,8 +630,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
   `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 46 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
-  provenance report, model delivery lifecycle report, PWA readiness report, Vercel deployment report, Vercel workflow
-  report, acquisition readiness packet, data-room index, release archive artifacts, and 30 verification commands.
+  provenance report, model delivery lifecycle report, PWA readiness report, web smoke report, Vercel deployment report,
+  Vercel workflow report, acquisition readiness packet, data-room index, release archive artifacts, and 30 verification
+  commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.

@@ -1,11 +1,11 @@
 # Data Room Index
 
-Generated: 2026-06-23T15:52:06.179Z
+Generated: 2026-06-23T16:05:17.562Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 14/30
+- Items ready: 15/31
 - Review items: 2
 - External-required items: 14
 - Missing items: 0
@@ -40,6 +40,7 @@ Generated: 2026-06-23T15:52:06.179Z
 | Dependency license report | legal | review | release | share-safe | `docs/sdlc/dependency-license-report.json` | `npm run security:licenses` |
 | Store submission packet | distribution | ready | release | public-store-copy | `docs/store/store-submission-packet.json` | `npm run store:submission` |
 | PWA readiness report | distribution | ready | release | share-safe | `docs/sdlc/pwa-readiness-report.json` | `npm run export:web && npm run web:pwa:check` |
+| Web smoke report | distribution | ready | qa | share-safe | `docs/sdlc/web-smoke-report.json` | `npm run web:smoke:report` |
 | Vercel deployment report | distribution | ready | release | share-safe | `docs/sdlc/vercel-deployment-report.json` | `npm run web:vercel:check` |
 | Vercel workflow report | distribution | ready | release | credential-names-only | `docs/sdlc/vercel-workflow-report.json` | `npm run web:vercel:workflow` |
 | Store credentials setup packet | commercial | external-required | release | credential-names-only | `docs/sdlc/store-credentials-setup-packet.json` | `npm run release:credentials:starter` |

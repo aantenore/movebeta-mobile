@@ -104,6 +104,7 @@ export type DataRoomReportBundle = {
   storeSubmissionPacket?: unknown;
   vercelDeploymentReport?: unknown;
   vercelWorkflowReport?: unknown;
+  webSmokeReport?: unknown;
 };
 
 export type DataRoomIndexInput = {
@@ -327,6 +328,18 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready'],
     refreshCommand: 'npm run export:web && npm run web:pwa:check',
     reportKey: 'pwaReadinessReport',
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'distribution',
+    key: 'web-smoke-report',
+    label: 'Web smoke report',
+    location: 'docs/sdlc/web-smoke-report.json',
+    owner: 'qa',
+    purpose: 'Exported web bundle smoke evidence across release UI, PWA cache, and model delivery paths.',
+    readyStatuses: ['pass'],
+    refreshCommand: 'npm run web:smoke:report',
+    reportKey: 'webSmokeReport',
     sensitivity: 'share-safe',
   },
   {
