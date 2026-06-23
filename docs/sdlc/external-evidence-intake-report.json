@@ -1,0 +1,378 @@
+{
+  "generatedAt": "2026-06-23T10:35:31.015Z",
+  "intakeTemplate": {
+    "generatedAt": "2026-06-23T10:35:31.015Z",
+    "instructions": [
+      "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
+      "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",
+      "After proof is collected, run the listed commands and regenerate release readiness, freshness, blocker issues, and handoff reports."
+    ],
+    "items": [
+      {
+        "acceptance": [
+          "Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.",
+          "The native QA evidence validator passes with real measured values."
+        ],
+        "commands": [
+          "npm run native:qa:runbook",
+          "npm run native:qa:starter",
+          "npm run native:qa:validate"
+        ],
+        "envKeys": [],
+        "key": "nativeDeviceQa",
+        "label": "Native device QA evidence",
+        "owner": "qa",
+        "proof": [
+          {
+            "acceptedReferenceTypes": [
+              "relative-path",
+              "report-id"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "docs/sdlc/native-qa-evidence.json",
+            "notes": "",
+            "status": "missing"
+          }
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "sourceStatus": "blocked",
+        "tracks": [
+          "internal",
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "Full Xcode is installed on the release machine.",
+          "An iOS simulator or physical-device build reaches the app shell with local analysis available."
+        ],
+        "commands": [
+          "npm run toolchain:ios",
+          "npm run native:ios:pods",
+          "npm run native:ios:doctor",
+          "npx expo run:ios --device",
+          "xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator"
+        ],
+        "envKeys": [],
+        "key": "iosBuild",
+        "label": "iOS build verification",
+        "owner": "engineering",
+        "proof": [
+          {
+            "acceptedReferenceTypes": [
+              "relative-path",
+              "ci-run-url"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "docs/sdlc/ios-toolchain-report.json",
+            "notes": "",
+            "status": "missing"
+          },
+          {
+            "acceptedReferenceTypes": [
+              "relative-path",
+              "ci-run-url"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "iOS simulator or device build log",
+            "notes": "",
+            "status": "missing"
+          }
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "sourceStatus": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "The cue-validation dataset uses consented climbing clips and real coach review rows.",
+          "The dataset validator passes without template placeholders or local raw-video references."
+        ],
+        "commands": [
+          "npm run validation:cue:starter",
+          "npm run validation:cue",
+          "npm run validation:cue:doctor"
+        ],
+        "envKeys": [],
+        "key": "cueValidationDataset",
+        "label": "Real cue-validation dataset",
+        "owner": "product",
+        "proof": [
+          {
+            "acceptedReferenceTypes": [
+              "relative-path",
+              "report-id"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "docs/validation/cue-validation-dataset.json",
+            "notes": "",
+            "status": "missing"
+          },
+          {
+            "acceptedReferenceTypes": [
+              "relative-path",
+              "report-id"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "docs/sdlc/cue-validation-dataset-report.json",
+            "notes": "",
+            "status": "missing"
+          }
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "sourceStatus": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "The app is initialized in the target Expo account.",
+          "The generated EAS project id is present in app configuration before strict release checks run."
+        ],
+        "commands": [
+          "npx eas-cli@latest init",
+          "npm run release:credentials:starter"
+        ],
+        "envKeys": [],
+        "key": "easProject",
+        "label": "EAS project binding",
+        "owner": "release",
+        "proof": [
+          {
+            "acceptedReferenceTypes": [
+              "report-id",
+              "ci-run-url",
+              "store-console-state"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "app.json extra.eas.projectId",
+            "notes": "",
+            "status": "missing"
+          }
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "sourceStatus": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.",
+          "Strict EAS release validation passes without committing secret values."
+        ],
+        "commands": [
+          "npm run release:credentials:starter",
+          "npm run release:eas:strict"
+        ],
+        "envKeys": [
+          "EXPO_TOKEN",
+          "MOVEBETA_ASC_APP_ID",
+          "MOVEBETA_APPLE_ID or ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_P8_BASE64",
+          "GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SERVICE_ACCOUNT_KEY_PATH or MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+        ],
+        "key": "easCredentials",
+        "label": "Store submission credentials",
+        "owner": "release",
+        "proof": [
+          {
+            "acceptedReferenceTypes": [
+              "report-id",
+              "ci-run-url",
+              "store-console-state"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "CI/EAS secret configuration",
+            "notes": "",
+            "status": "missing"
+          },
+          {
+            "acceptedReferenceTypes": [
+              "report-id",
+              "ci-run-url",
+              "store-console-state"
+            ],
+            "evidenceReference": "",
+            "expectedProof": "Strict EAS validation output",
+            "notes": "",
+            "status": "missing"
+          }
+        ],
+        "secretPolicy": "Store credential values outside the repository; this checklist may list key names only.",
+        "sourceStatus": "blocked",
+        "tracks": [
+          "store"
+        ]
+      }
+    ],
+    "privacy": {
+      "credentialValuesIncluded": false,
+      "localPathsIncluded": false,
+      "rawArtifactsIncluded": false,
+      "rawVideoIncluded": false,
+      "tokenLikeValuesIncluded": false
+    },
+    "schemaVersion": "movebeta.external-evidence-intake-template.v1"
+  },
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.external-evidence-intake.v1",
+  "sourceChecklist": {
+    "items": [
+      {
+        "acceptance": [
+          "Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.",
+          "The native QA evidence validator passes with real measured values."
+        ],
+        "action": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
+        "commands": [
+          "npm run native:qa:runbook",
+          "npm run native:qa:starter",
+          "npm run native:qa:validate"
+        ],
+        "envKeys": [],
+        "key": "nativeDeviceQa",
+        "label": "Native device QA evidence",
+        "owner": "qa",
+        "proof": [
+          "docs/sdlc/native-qa-evidence.json"
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "status": "blocked",
+        "tracks": [
+          "internal",
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "Full Xcode is installed on the release machine.",
+          "An iOS simulator or physical-device build reaches the app shell with local analysis available."
+        ],
+        "action": "Install full Xcode and verify an iOS simulator or device build.",
+        "commands": [
+          "npm run toolchain:ios",
+          "npm run native:ios:pods",
+          "npm run native:ios:doctor",
+          "npx expo run:ios --device",
+          "xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator"
+        ],
+        "envKeys": [],
+        "key": "iosBuild",
+        "label": "iOS build verification",
+        "owner": "engineering",
+        "proof": [
+          "docs/sdlc/ios-toolchain-report.json",
+          "iOS simulator or device build log"
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "status": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "The cue-validation dataset uses consented climbing clips and real coach review rows.",
+          "The dataset validator passes without template placeholders or local raw-video references."
+        ],
+        "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
+        "commands": [
+          "npm run validation:cue:starter",
+          "npm run validation:cue",
+          "npm run validation:cue:doctor"
+        ],
+        "envKeys": [],
+        "key": "cueValidationDataset",
+        "label": "Real cue-validation dataset",
+        "owner": "product",
+        "proof": [
+          "docs/validation/cue-validation-dataset.json",
+          "docs/sdlc/cue-validation-dataset-report.json"
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "status": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "The app is initialized in the target Expo account.",
+          "The generated EAS project id is present in app configuration before strict release checks run."
+        ],
+        "action": "Initialize the app on the target Expo account and store the generated project id in config.",
+        "commands": [
+          "npx eas-cli@latest init",
+          "npm run release:credentials:starter"
+        ],
+        "envKeys": [],
+        "key": "easProject",
+        "label": "EAS project binding",
+        "owner": "release",
+        "proof": [
+          "app.json extra.eas.projectId"
+        ],
+        "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
+        "status": "blocked",
+        "tracks": [
+          "store"
+        ]
+      },
+      {
+        "acceptance": [
+          "Expo, App Store Connect, and Google Play credentials are available only in shell, CI, or EAS secret storage.",
+          "Strict EAS release validation passes without committing secret values."
+        ],
+        "action": "Provide Expo, App Store Connect, and Google Play credentials outside the repository.",
+        "commands": [
+          "npm run release:credentials:starter",
+          "npm run release:eas:strict"
+        ],
+        "envKeys": [
+          "EXPO_TOKEN",
+          "MOVEBETA_ASC_APP_ID",
+          "MOVEBETA_APPLE_ID or ASC_API_KEY_ID + ASC_API_ISSUER_ID + ASC_API_KEY_P8_BASE64",
+          "GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SERVICE_ACCOUNT_KEY_PATH or MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+        ],
+        "key": "easCredentials",
+        "label": "Store submission credentials",
+        "owner": "release",
+        "proof": [
+          "CI/EAS secret configuration",
+          "Strict EAS validation output"
+        ],
+        "secretPolicy": "Store credential values outside the repository; this checklist may list key names only.",
+        "status": "blocked",
+        "tracks": [
+          "store"
+        ]
+      }
+    ],
+    "schemaVersion": "movebeta.release-unblock-checklist.v1",
+    "summary": {
+      "blockedItems": 5,
+      "commandCount": 15,
+      "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
+      "ownerCount": 4,
+      "proofCount": 8,
+      "status": "needs-external-access"
+    }
+  },
+  "summary": {
+    "commandCount": 15,
+    "intakeItemCount": 5,
+    "nextAction": "Fill the template with share-safe references to real proof artifacts, then rerun release readiness checks.",
+    "ownerCount": 4,
+    "proofReferenceCount": 8,
+    "status": "needs-evidence"
+  }
+}

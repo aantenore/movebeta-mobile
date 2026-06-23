@@ -287,7 +287,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4940ms load time, 330ms average inference, and 333ms max inference in the latest run.
+  CPU backend, 3963ms load time, 329ms average inference, and 331ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -322,7 +322,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 174/177 tasks done, 128/130 backlog items done, 161/161 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 175/178 tasks done, 129/131 backlog items done, 162/162 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -333,6 +333,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:blocker-issues:links`: passed and wrote `docs/sdlc/release-blocker-issue-web-links.json` plus
   `docs/sdlc/release-blocker-issue-web-links.md` with status `ready`, 5/5 ready links, and repository
   `aantenore/movebeta-mobile`.
+- `npm run release:evidence:intake`: passed and wrote `docs/sdlc/external-evidence-intake-report.json`,
+  `docs/sdlc/external-evidence-intake-report.md`, and `docs/sdlc/external-evidence-intake.template.json` with status
+  `needs-evidence`, 5 intake items, 8 proof references, and no credential values, local paths, raw artifacts, or raw video.
 - `npm run web:pwa:check`: passed and wrote `docs/sdlc/pwa-readiness-report.json` plus
   `docs/sdlc/pwa-readiness-report.md` with status `ready`, 10/10 checks, offline app boot cache coverage,
   exact content-addressed service-worker cache versioning, and backend required `false`.
@@ -352,8 +355,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 23/23 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 28/28 release steps passing.
+  status `ready`, 24/24 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 29/29 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
