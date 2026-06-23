@@ -19,6 +19,8 @@ platforms are validated on physical climbing videos and devices.
 - User can set session metadata for recorded/imported attempts before analysis.
 - User can calibrate capture setup before recording, including framing, view angle, distance, lighting, wall contrast,
   phone stability, and visible bystanders.
+- Coach recorder shows an on-device live recording guide with setup-aware prompts, coach-lens-specific filming focus,
+  minimum-duration readiness, near-limit warnings, and progress before local analysis runs.
 - Selected local videos render a preview card and route through local analysis.
 - Selected videos show clip-readiness status, sampled-frame estimate, local-source guard, and duration/resolution warnings.
 - Reports show analysis quality, frame coverage, landmark coverage, visibility, and weak-input warnings.
@@ -312,7 +314,7 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 135 test files and 583 tests.
+- `npm test`: passed, 136 test files and 587 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
@@ -320,7 +322,7 @@ platforms are validated on physical climbing videos and devices.
   same-origin static model assets, then executed local inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
   CPU backend, model source `same-origin-static-assets`, model URL `/models/movenet/singlepose/lightning/4/model.json`,
-  11ms load time, 299ms average inference, and 303ms max inference in the latest run.
+  12ms load time, 297ms average inference, and 299ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -359,7 +361,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 190/193 tasks done, 144/146 backlog items done, 176/176 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 191/194 tasks done, 145/147 backlog items done, 177/177 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -573,6 +575,8 @@ platforms are validated on physical climbing videos and devices.
   and credential/local-path/service-account body rejection before sharing.
 - `tests/featureCompletionDoctor.test.ts`: passed and covers external-blocker classification, internal-gap detection,
   durable JSON/Markdown writes, and secret/local-artifact exclusion.
+- `tests/liveRecordingGuide.test.ts`: passed and covers setup review advice, coach-lens-specific recording prompts,
+  minimum-duration readiness, progress, and near-limit warnings.
 - `tests/releaseHandoffPacket.test.ts`: passed and covers release status aggregation, blocker tracks, screenshot
   completeness, explicit delivered-commit pinning, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - `tests/movenetReadinessReport.test.ts`: passed and covers ready/degraded model readiness budget checks plus local
