@@ -43,7 +43,7 @@
       "status": "verified"
     },
     {
-      "detail": "Exported service worker cache version is derived from the exported app, model, and shell asset contents.",
+      "detail": "Exported service worker cache version matches the app, model, metadata, and shell asset content hash.",
       "key": "content-addressed-cache-version",
       "label": "Content-addressed service worker cache",
       "status": "verified"
@@ -61,7 +61,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-23T08:16:11.118Z",
+  "generatedAt": "2026-06-23T08:20:27.690Z",
   "privacy": {
     "backendRequired": false,
     "credentialValuesIncluded": false,

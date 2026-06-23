@@ -231,7 +231,7 @@ platforms are validated on physical climbing videos and devices.
   `aantenore/movebeta-mobile` repository.
 - `npm run web:pwa:check` writes `docs/sdlc/pwa-readiness-report.json` and
   `docs/sdlc/pwa-readiness-report.md`, verifying the installable static PWA path, offline app boot cache coverage,
-  content-addressed service-worker cache versioning, same-origin model cache assets, and no API routes or backend.
+  exact content-addressed service-worker cache versioning, same-origin model cache assets, and no API routes or backend.
 - `npm run web:vercel:check` writes `docs/sdlc/vercel-deployment-report.json` and
   `docs/sdlc/vercel-deployment-report.md`, verifying static prebuilt deployment readiness without committing Vercel
   account values or adding backend routes.
@@ -326,7 +326,7 @@ platforms are validated on physical climbing videos and devices.
   `aantenore/movebeta-mobile`.
 - `npm run web:pwa:check`: passed and wrote `docs/sdlc/pwa-readiness-report.json` plus
   `docs/sdlc/pwa-readiness-report.md` with status `ready`, 10/10 checks, offline app boot cache coverage,
-  content-addressed service-worker cache versioning, and backend required `false`.
+  exact content-addressed service-worker cache versioning, and backend required `false`.
 - `npm run web:vercel:check`: passed and wrote `docs/sdlc/vercel-deployment-report.json` plus
   `docs/sdlc/vercel-deployment-report.md` with status `static-ready`, 4/6 verified checks, 0 blocked checks, and 2
   account-binding/secret actions remaining outside the repository.

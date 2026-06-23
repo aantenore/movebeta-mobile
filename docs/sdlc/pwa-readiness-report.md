@@ -1,6 +1,6 @@
 # PWA Readiness Report
 
-Generated: 2026-06-23T08:16:11.118Z
+Generated: 2026-06-23T08:20:27.690Z
 
 - Status: ready
 - Checks: 10/10
@@ -20,6 +20,6 @@ Generated: 2026-06-23T08:16:11.118Z
 | Exported PWA static assets | verified | Expo web export copied manifest, service worker, and PWA icons into dist. |
 | Exported static model cache assets | verified | Exported dist includes the static MoveNet manifest and every listed model file, and the service worker cache path covers them. |
 | Exported offline app cache assets | verified | Exported service worker pre-caches Expo JS bundles, router assets, and metadata needed for offline app boot. |
-| Content-addressed service worker cache | verified | Exported service worker cache version is derived from the exported app, model, and shell asset contents. |
+| Content-addressed service worker cache | verified | Exported service worker cache version matches the app, model, metadata, and shell asset content hash. |
 | Vercel static deployment config | verified | vercel.json deploys the Expo web export from dist with static headers and SPA fallback. |
 | No backend surface required | verified | Repository does not include Vercel API routes or a backend directory for the PWA path. |

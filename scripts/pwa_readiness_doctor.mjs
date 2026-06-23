@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { buildCacheVersion } from './prepare_pwa_dist.mjs';
+
 export const PWA_READINESS_SCHEMA_VERSION = 'movebeta.pwa-readiness.v1';
 
 export function resolveProjectRoot() {
@@ -25,6 +27,14 @@ function readJsonIfExists(filePath) {
   const text = readTextIfExists(filePath);
   if (!text) return undefined;
   return JSON.parse(text);
+}
+
+function buildExpectedCacheVersion(rootDir) {
+  try {
+    return buildCacheVersion({ distDir: path.join(rootDir, 'dist') });
+  } catch {
+    return '';
+  }
 }
 
 function check(key, label, passed, detail) {
@@ -86,6 +96,7 @@ export function buildPwaReadinessReport({
   const cacheVersionMatch = distServiceWorker.match(/const CACHE_VERSION = ['"]([^'"]+)['"];/);
   const cacheVersion = cacheVersionMatch?.[1] ?? '';
   const contentAddressedCacheVersion = /^v-[a-f0-9]{16}$/.test(cacheVersion);
+  const expectedCacheVersion = buildExpectedCacheVersion(rootDir);
   const exportedModelAssetsPresent =
     fs.existsSync(distModelAssetManifestPath) &&
     distModelAssetManifest?.schemaVersion === 'movebeta.static-model-assets.v1' &&
@@ -159,8 +170,8 @@ export function buildPwaReadinessReport({
     check(
       'content-addressed-cache-version',
       'Content-addressed service worker cache',
-      contentAddressedCacheVersion && !['v1', 'v-dev'].includes(cacheVersion),
-      'Exported service worker cache version is derived from the exported app, model, and shell asset contents.',
+      contentAddressedCacheVersion && cacheVersion === expectedCacheVersion,
+      'Exported service worker cache version matches the app, model, metadata, and shell asset content hash.',
     ),
     check(
       'vercel-static-config',
