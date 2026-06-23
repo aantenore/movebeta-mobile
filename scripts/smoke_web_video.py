@@ -1,9 +1,43 @@
 import csv
 import io
+import json
 import os
 import re
+from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def read_report(relative_path: str) -> dict:
+    with (REPO_ROOT / relative_path).open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def count_pair(done: int, total: int) -> str:
+    return f"{done}/{total}"
+
+
+def build_release_expectations() -> dict[str, str]:
+    launch = read_report("docs/sdlc/launch-readiness-report.json")
+    feature = read_report("docs/sdlc/feature-completion-report.json")
+    model_verification = read_report("docs/sdlc/model-verification-suite-report.json")
+    pwa = read_report("docs/sdlc/pwa-readiness-report.json")
+
+    launch_summary = launch["summary"]
+    feature_summary = feature["summary"]
+    model_summary = model_verification["summary"]
+    pwa_summary = pwa["summary"]
+
+    return {
+        "feature_backlog": count_pair(feature_summary["backlogDoneCount"], feature_summary["backlogItemCount"]),
+        "feature_tasks": count_pair(feature_summary["taskDoneCount"], feature_summary["taskItemCount"]),
+        "launch_tracks_ready": f"{count_pair(launch_summary['readyTracks'], launch_summary['totalTracks'])} launch tracks ready",
+        "model_verification_checks": count_pair(model_summary["passedChecks"], model_summary["totalChecks"]),
+        "pwa_checks": count_pair(pwa_summary["verifiedCount"], pwa_summary["checkCount"]),
+    }
 
 
 def complete_validation_csv(blank_csv: str) -> str:
@@ -29,6 +63,7 @@ def complete_validation_csv(blank_csv: str) -> str:
 
 def main() -> None:
     base_url = os.environ.get("MOVEBETA_SMOKE_URL", "http://127.0.0.1:8083")
+    release_expectations = build_release_expectations()
     console_errors: list[str] = []
     page_errors: list[str] = []
 
@@ -428,15 +463,15 @@ def main() -> None:
         expect(page.get_by_text("Upgrade path")).to_be_visible()
         expect(page.get_by_text("Capability matrix")).to_be_visible()
         expect(page.get_by_text("Launch readiness", exact=True)).to_be_visible()
-        expect(page.get_by_text("1/3 launch tracks ready")).to_be_visible()
+        expect(page.get_by_text(release_expectations["launch_tracks_ready"])).to_be_visible()
         expect(page.get_by_text("Stakeholder demo", exact=True)).to_be_visible()
         expect(page.get_by_text("Internal native beta", exact=True)).to_be_visible()
         expect(page.get_by_text("Store submission", exact=True)).to_be_visible()
         expect(page.get_by_text("Real cue-validation dataset").first).to_be_visible()
         expect(page.get_by_text("Feature completion", exact=True)).to_be_visible()
         expect(page.get_by_text("Feature completion audit")).to_be_visible()
-        expect(page.get_by_text("183/186", exact=True)).to_be_visible()
-        expect(page.get_by_text("137/139", exact=True)).to_be_visible()
+        expect(page.get_by_text(release_expectations["feature_tasks"], exact=True)).to_be_visible()
+        expect(page.get_by_text(release_expectations["feature_backlog"], exact=True)).to_be_visible()
         expect(page.get_by_text("internal gaps", exact=True)).to_be_visible()
         expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
         expect(page.get_by_text("Model evidence", exact=True)).to_be_visible()
@@ -446,7 +481,7 @@ def main() -> None:
         expect(page.get_by_text("Real climbing validation", exact=True).first).to_be_visible()
         expect(page.get_by_text("20 clips and 40 review rows still required")).to_be_visible()
         expect(page.get_by_text("Model verification suite", exact=True).first).to_be_visible()
-        expect(page.get_by_text("8/9", exact=True)).to_be_visible()
+        expect(page.get_by_text(release_expectations["model_verification_checks"], exact=True)).to_be_visible()
         expect(page.get_by_text("wall angles", exact=True)).to_be_visible()
         expect(page.get_by_text("Runtime, replay, cue, metric, wall-angle, and privacy checks pass locally.")).to_be_visible()
         expect(page.get_by_text("Cue outputs: 7")).to_be_visible()
@@ -590,7 +625,7 @@ def main() -> None:
         expect(page.get_by_text("Model delivery lifecycle report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
         expect(page.get_by_text("Installable PWA").first).to_be_visible()
-        expect(page.get_by_text("11/11", exact=True).first).to_be_visible()
+        expect(page.get_by_text(release_expectations["pwa_checks"], exact=True).first).to_be_visible()
         expect(page.get_by_text("backend", exact=True).first).to_be_visible()
         expect(page.get_by_text("Vercel static deployment config")).to_be_visible()
         expect(page.get_by_text("No backend surface required")).to_be_visible()
