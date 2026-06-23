@@ -1,6 +1,6 @@
 # External Evidence Promotion Report
 
-Generated: 2026-06-23T22:12:57.070Z
+Generated: 2026-06-23T22:21:56.720Z
 
 - Status: needs-evidence
 - Validation status: needs-evidence

@@ -328,8 +328,11 @@
   readiness.
 - PWA runtime readiness tests cover SHA-256-supported model-integrity gating, fallback behavior, and share-safe install
   guidance fields.
+- Vitest PWA update activation tests cover activated, requested, not-needed, unsupported, and unsafe-value rejection
+  states; PWA dist tests verify the service worker exposes the explicit activation message.
 - Vitest PWA model-cache warmup tests cover ready, partial, unsupported, and share-safety states.
 - Browser smoke clicks the Plan tab Warm model action and verifies the prepared warmup packet before offline use.
+  Browser smoke also clicks Activate update and verifies the `movebeta.pwa-update-activation.v1` packet.
 - Vitest Coach PWA analysis preflight tests cover cached-web ready state, demo fallback, online real-video allow state,
   offline real-video block state, and native provider bypass.
 - Vitest Coach PWA analysis preflight tests also cover `shouldWarmBeforeAnalysis`, proving automatic warmup is requested

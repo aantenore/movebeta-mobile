@@ -573,6 +573,8 @@
 - Coach PWA analysis preflight must treat a pending service-worker update as an offline stale-model risk: offline
   real-video analysis is blocked until the PWA is refreshed and the model cache is warmed, while online analysis may
   proceed with explicit refresh guidance.
+- The Plan surface must provide an explicit PWA update activation action that asks a waiting service worker to activate,
+  refreshes runtime update state, and exports a share-safe packet with the post-activation model warmup action.
 - Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
   handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
