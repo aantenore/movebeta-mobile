@@ -1,6 +1,6 @@
 # Acquisition Readiness Packet
 
-Generated: 2026-06-23T21:47:48.797Z
+Generated: 2026-06-23T21:51:37.532Z
 
 ## Summary
 
@@ -25,7 +25,7 @@ Generated: 2026-06-23T21:47:48.797Z
 
 | Signal | Status | Owner | Detail | Next action |
 | --- | --- | --- | --- | --- |
-| Product scope | ready | product | Tracked delivery scope has no internal gaps and 181/181 traceability rows covered. | Keep feature-completion evidence fresh before buyer review. |
+| Product scope | ready | product | Tracked delivery scope has no internal gaps and 182/182 traceability rows covered. | Keep feature-completion evidence fresh before buyer review. |
 | Release gate | ready | engineering | The automated release gate is passing. | Regenerate the gate after any source or evidence change. |
 | Launch clearance | external-required | release | 1/3 launch track(s) ready with 10 external blocker reference(s) still tracked. | Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate. |
 | Model provenance | review | release | Model provenance is review; delivery lifecycle is ready. | Complete commercial review for upstream model terms before final buyer reliance. |
