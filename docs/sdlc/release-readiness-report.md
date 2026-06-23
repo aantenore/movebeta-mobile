@@ -280,14 +280,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 126 test files and 523 tests.
+- `npm test`: passed, 127 test files and 527 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3906ms load time, 336ms average inference, and 337ms max inference in the latest run.
+  CPU backend, 3871ms load time, 338ms average inference, and 343ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -306,6 +306,9 @@ platforms are validated on physical climbing videos and devices.
   until the real dataset doctor is ready.
 - `npm run native:qa:runbook`: passed and wrote `docs/sdlc/native-qa-runbook.json` with Android/iOS runbooks, privacy-safe
   setup instructions, seven workflows per platform, and an intentionally incomplete evidence draft for real-device QA.
+- `npm run native:qa:starter`: passed and wrote `docs/sdlc/native-qa-evidence-starter-report.json` plus
+  `docs/sdlc/native-qa-evidence-input.template.json` with status `needs-device-evidence`, candidate ready `false`, and
+  final evidence written `false`.
 - `npm run native:ios:doctor`: passed as a command and wrote `docs/sdlc/ios-toolchain-report.json` with status `blocked`
   because this machine has Command Line Tools selected instead of full Xcode.
 - `npm run release:credentials:doctor`: passed as a command and wrote `docs/sdlc/store-credentials-report.json` with
@@ -315,10 +318,10 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 171/174 tasks done, 125/127 backlog items done, 158/158 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 172/175 tasks done, 126/128 backlog items done, 159/159 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
-  `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
+  `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 8 commands,
   6 proof artifacts, and credential key names only.
 - `npm run release:blocker-issues:file`: passed and wrote `docs/sdlc/release-blocker-issue-filing-plan.json` plus
   `docs/sdlc/release-blocker-issue-filing-plan.md` with status `dry-run`, 5 planned issue filings, 0 created issues, and
@@ -345,8 +348,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 21/21 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 26/26 release steps passing.
+  status `ready`, 22/22 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 27/27 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

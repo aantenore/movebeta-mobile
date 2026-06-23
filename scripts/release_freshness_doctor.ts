@@ -37,6 +37,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     moveNetStaticAssetsReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-static-assets-report.json'),
     modelVerificationSuiteReport: readJsonIfExists(rootDir, 'docs/sdlc/model-verification-suite-report.json'),
     moveNetReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-readiness-report.json'),
+    nativeQaEvidenceStarterReport: readJsonIfExists(rootDir, 'docs/sdlc/native-qa-evidence-starter-report.json'),
     pwaReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/pwa-readiness-report.json'),
     storeCredentialsReport: readJsonIfExists(rootDir, 'docs/sdlc/store-credentials-report.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),

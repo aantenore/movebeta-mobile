@@ -70,6 +70,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   moveNetStaticAssetsReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
+  nativeQaEvidenceStarterReport?: unknown;
   pwaReadinessReport?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
@@ -194,6 +195,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run native:ios:doctor',
     reportKey: 'iosToolchainReport',
     requiredFor: ['store'],
+  },
+  {
+    key: 'native-qa-evidence-starter-report',
+    label: 'Native QA evidence starter report',
+    maxAgeHours: 24,
+    owner: 'qa',
+    path: 'docs/sdlc/native-qa-evidence-starter-report.json',
+    refreshCommand: 'npm run native:qa:starter',
+    reportKey: 'nativeQaEvidenceStarterReport',
+    requiredFor: ['internal', 'store', 'handoff'],
   },
   {
     key: 'cue-validation-dataset-report',

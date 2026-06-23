@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T09:01:00.164Z",
+  "generatedAt": "2026-06-23T09:43:28.858Z",
   "issueTemplatePath": ".github/ISSUE_TEMPLATE/release_blocker.md",
   "issues": [
     {
@@ -7,9 +7,10 @@
         "Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.",
         "The native QA evidence validator passes with real measured values."
       ],
-      "body": "## Release Blocker\nCapture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.\n\nOwner: `qa`\nTracks: `internal`, `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.\n- [ ] The native QA evidence validator passes with real measured values.\n\n## Required Proof\n- docs/sdlc/native-qa-evidence.json\n\n## Commands\n- `npm run native:qa:runbook`\n- `npm run native:qa:validate`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nCapture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.\n\nOwner: `qa`\nTracks: `internal`, `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.\n- [ ] The native QA evidence validator passes with real measured values.\n\n## Required Proof\n- docs/sdlc/native-qa-evidence.json\n\n## Commands\n- `npm run native:qa:runbook`\n- `npm run native:qa:starter`\n- `npm run native:qa:validate`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
         "npm run native:qa:runbook",
+        "npm run native:qa:starter",
         "npm run native:qa:validate"
       ],
       "envKeys": [],
@@ -171,6 +172,7 @@
         "action": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
         "commands": [
           "npm run native:qa:runbook",
+          "npm run native:qa:starter",
           "npm run native:qa:validate"
         ],
         "envKeys": [],
@@ -286,7 +288,7 @@
     "schemaVersion": "movebeta.release-unblock-checklist.v1",
     "summary": {
       "blockedItems": 5,
-      "commandCount": 7,
+      "commandCount": 8,
       "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
       "ownerCount": 4,
       "proofCount": 6,
@@ -294,7 +296,7 @@
     }
   },
   "summary": {
-    "commandCount": 7,
+    "commandCount": 8,
     "credentialKeyNameCount": 4,
     "issueCount": 5,
     "nextAction": "File one issue per external blocker, attach the required proof, then rerun release readiness checks.",

@@ -131,7 +131,7 @@ const criticalPathConfigs: Record<CriticalPathKey, CriticalPathConfig> = {
       'Physical iOS and Android runs cover camera, import, latency, battery, thermal, and airplane-mode workflows.',
       'Native QA evidence validator passes with measured values and no raw local artifacts.',
     ],
-    commands: ['npm run native:qa:runbook', 'npm run native:qa:validate'],
+    commands: ['npm run native:qa:runbook', 'npm run native:qa:starter', 'npm run native:qa:validate'],
     dependencies: ['iosBuild'],
     lane: 'native-build-qa',
     proof: ['docs/sdlc/native-qa-evidence.json'],

@@ -233,6 +233,7 @@ npm run web:pwa:check
 npm run web:vercel:check
 npm run web:vercel:workflow
 npm run native:qa:runbook
+npm run native:qa:starter
 npm run ci
 npm run release:eas:check
 npm run release:readiness
@@ -324,6 +325,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
   `docs/sdlc/native-qa-evidence.template.json`.
+- Native QA evidence starter: `docs/sdlc/native-qa-evidence-starter-report.json` and
+  `docs/sdlc/native-qa-evidence-input.template.json`.
 - Cue validation starter kit: `docs/sdlc/cue-validation-starter-kit-report.json`,
   `docs/validation/cue-validation-study-seed.json`, and blank worksheet JSON/CSV artifacts for real coach scoring.
 - Native QA evidence kit contract: `src/core/nativeQaEvidenceKit.ts`.
@@ -394,9 +397,10 @@ and Google prerequisites as warnings. `release:eas:strict` must pass before subm
 testing, or production, and expects the project id plus store credentials to be injected from environment or CI secrets.
 
 Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
-`docs/sdlc/native-qa-evidence.template.json` as the run template. Generate the current runbook with
-`npm run native:qa:runbook`, copy the runbook evidence draft or template to `docs/sdlc/native-qa-evidence.json`, fill
-real iOS and Android device runs, then execute `npm run native:qa:validate`.
+`docs/sdlc/native-qa-evidence-input.template.json` as the structured run input. Generate the current runbook and input
+template with `npm run native:qa:runbook` and `npm run native:qa:starter`, fill real iOS and Android device measurements,
+then run `npm run native:qa:starter -- --input <filled-template.json>`. Add `--write-evidence` only when the candidate
+passes and should become `docs/sdlc/native-qa-evidence.json`, then execute `npm run native:qa:validate`.
 Cue-quality validation uses `docs/validation/cue-validation-dataset.template.json` as the study template. Copy it to
 `docs/validation/cue-validation-dataset.json`, fill consented coach review packets and reviews, then execute
 `npm run validation:cue`.

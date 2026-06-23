@@ -1,11 +1,11 @@
 # Release Blocker Issues Report
 
-Generated: 2026-06-23T09:01:00.164Z
+Generated: 2026-06-23T09:43:28.858Z
 
 - Status: ready-to-file
 - Issue drafts: 5
 - Owners: 4
-- Commands: 7
+- Commands: 8
 - Proof artifacts: 6
 - Credential key names: 4
 - Issue template: `.github/ISSUE_TEMPLATE/release_blocker.md`
@@ -17,7 +17,7 @@ Generated: 2026-06-23T09:01:00.164Z
 
 | Issue | Owner | Tracks | Labels | Commands | Proof |
 | --- | --- | --- | --- | --- | --- |
-| [Release Blocker] Native device QA evidence | qa | internal, store | `release-blocker`, `owner:qa`, `track:internal`, `track:store`, `check:nativeDeviceQa` | `npm run native:qa:runbook`<br>`npm run native:qa:validate` | `docs/sdlc/native-qa-evidence.json` |
+| [Release Blocker] Native device QA evidence | qa | internal, store | `release-blocker`, `owner:qa`, `track:internal`, `track:store`, `check:nativeDeviceQa` | `npm run native:qa:runbook`<br>`npm run native:qa:starter`<br>`npm run native:qa:validate` | `docs/sdlc/native-qa-evidence.json` |
 | [Release Blocker] iOS build verification | engineering | store | `release-blocker`, `owner:engineering`, `track:store`, `check:iosBuild` | `npx expo run:ios --device`<br>`xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator` | `iOS simulator or device build log` |
 | [Release Blocker] Real cue-validation dataset | product | store | `release-blocker`, `owner:product`, `track:store`, `check:cueValidationDataset` | `npm run validation:cue` | `docs/validation/cue-validation-dataset.json` |
 | [Release Blocker] EAS project binding | release | store | `release-blocker`, `owner:release`, `track:store`, `check:easProject` | `npx eas-cli@latest init` | `app.json extra.eas.projectId` |
