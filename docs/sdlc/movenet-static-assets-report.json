@@ -50,7 +50,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-23T10:18:57.662Z",
+  "generatedAt": "2026-06-23T10:26:18.443Z",
   "modelName": "MoveNet SinglePose Lightning",
   "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
   "privacy": {
