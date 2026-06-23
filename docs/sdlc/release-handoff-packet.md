@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T16:35:43.522Z
+Generated: 2026-06-23T16:50:09.795Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 10712a8571c53da0a4dae738ccf539a2d67d3dd0
+- Base commit at generation: e41ab4b630098ed3be3eb4e5aebf35b5b93efb92
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4519ms; average inference 335ms
+- MoveNet readiness: ready; load 6333ms; average inference 336ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -59,6 +59,7 @@ Generated: 2026-06-23T16:35:43.522Z
 - PWA static readiness doctor: `npm run export:web && npm run web:pwa:check`
 - Vercel deployment readiness doctor: `npm run web:vercel:check`
 - Vercel workflow readiness doctor: `npm run web:vercel:workflow`
+- Vercel deployment handoff: `npm run web:vercel:handoff`
 - Vercel prebuilt production deploy: `npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN`
 - Strict EAS store gate: `npm run release:eas:strict`
 
@@ -99,6 +100,7 @@ Generated: 2026-06-23T16:35:43.522Z
 - [x] Web smoke report: `docs/sdlc/web-smoke-report.json`
 - [x] Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`
 - [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
+- [x] Vercel deployment handoff: `docs/sdlc/vercel-deployment-handoff.json`
 - [x] Store credentials setup packet: `docs/sdlc/store-credentials-setup-packet.json`
 - [x] Store credentials env template: `docs/sdlc/store-credentials.env.template`
 - [x] EAS project binding template: `docs/sdlc/eas-project-binding.template.json`
