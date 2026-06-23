@@ -213,6 +213,11 @@
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
 - MoveNet readiness report with `npm run model:movenet:readiness`, which writes
   `docs/sdlc/movenet-readiness-report.json` and is included in `npm run release:check`.
+- MoveNet static assets doctor with `npm run model:movenet:assets:check`, which verifies same-origin model graph and
+  weight shards in `public` and exported `dist`, service-worker model cache coverage, app config URL alignment,
+  JSON/Markdown evidence, and release-gate/freshness/handoff integration.
+- Vitest MoveNet static asset tests cover mocked TFHub downloads, absolute URL normalization into local shard paths,
+  manifest hashing, missing-shard blockers, app model URL drift, JSON/Markdown report writes, and unsafe-value rejection.
 - Model-analysis replay with `npm run model:analysis:replay`, which writes
   `docs/sdlc/model-analysis-replay-report.json` and is included in `npm run release:check`.
 - Model verification suite with `npm run model:verification:suite`, which writes
@@ -247,8 +252,8 @@
 - Vitest release blocker issue web-link tests cover repository normalization, missing repository state, URL length
   budget review, share-safe schema output, and JSON/Markdown artifact writes.
 - PWA readiness doctor with `npm run web:pwa:check`, which validates the exported web build includes installable
-  manifest metadata, service worker registration, PWA icons, Vercel static config, SPA fallback, and no backend/API
-  route surface.
+  manifest metadata, service worker registration, PWA icons, same-origin static MoveNet cache assets, Vercel static
+  config, SPA fallback, and no backend/API route surface.
 - Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, and JSON/Markdown report
   writes.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment

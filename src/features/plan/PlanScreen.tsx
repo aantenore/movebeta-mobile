@@ -16,6 +16,7 @@ import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.js
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
 import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.json';
+import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-report.json';
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import vercelDeploymentReport from '../../../docs/sdlc/vercel-deployment-report.json';
@@ -129,6 +130,7 @@ function providerStatusLabel(status: ProviderReadinessStatus) {
 }
 
 type FeatureCompletionReport = typeof featureCompletionReport;
+type MoveNetStaticAssetsReport = typeof moveNetStaticAssetsReport;
 type VercelDeploymentReport = typeof vercelDeploymentReport;
 type VercelWorkflowReport = typeof vercelWorkflowReport;
 
@@ -183,6 +185,16 @@ function pwaRuntimeStatusLabel(status: PwaRuntimeReadiness['summary']['status'])
   if (status === 'runtime-ready') return 'Ready';
   if (status === 'native') return 'Native';
   return 'Blocked';
+}
+
+function staticAssetStatusLabel(status: MoveNetStaticAssetsReport['summary']['status']) {
+  return status === 'ready' ? 'Ready' : 'Blocked';
+}
+
+function formatBytes(value: number) {
+  if (value >= 1_000_000) return `${Math.round(value / 100_000) / 10} MB`;
+  if (value >= 1_000) return `${Math.round(value / 100) / 10} KB`;
+  return `${value} B`;
 }
 
 type BeforeInstallPromptEventLike = Event & {
@@ -1743,6 +1755,68 @@ function ReleaseBlockerIssueWebLinksCard({
   );
 }
 
+function MoveNetStaticAssetsCard({
+  onPreparePacket,
+  report,
+}: {
+  onPreparePacket: () => void;
+  report: MoveNetStaticAssetsReport;
+}) {
+  const isReady = report.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.verifiedCount}/{report.summary.checkCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.summary.shardCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>shards</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{formatBytes(report.summary.totalBytes)}</Text>
+          <Text style={styles.qaKitMetricLabel}>bundle</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Static MoveNet assets</Text>
+          <Text style={styles.qaKitText}>{report.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {staticAssetStatusLabel(report.summary.status)}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare MoveNet static assets packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Model assets</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.qaKitText}>{report.modelUrl}</Text>
+      <View style={styles.releaseUnblockList}>
+        {report.checks.map((check) => (
+          <View key={check.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{check.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{check.detail}</Text>
+              </View>
+              <Text style={[styles.launchStatus, check.status === 'verified' ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+                {check.status}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
   const isReady = report.summary.status === 'ready';
 
@@ -2307,6 +2381,7 @@ function buildPlanSafetySources({
   evidencePlan,
   launchReadiness,
   modelEvidence,
+  moveNetStaticAssets,
   modelVerificationSuite,
   recommendation,
   releaseCriticalPath,
@@ -2328,6 +2403,7 @@ function buildPlanSafetySources({
   iosToolchainSetupPacket: IosToolchainSetupPacket;
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
+  moveNetStaticAssets: MoveNetStaticAssetsReport;
   modelVerificationSuite: ModelVerificationSuite;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
   releaseCriticalPath: ReleaseCriticalPath;
@@ -2373,6 +2449,15 @@ function buildPlanSafetySources({
       text: [
         modelVerificationSuite.summary.nextAction,
         ...modelVerificationSuite.checks.map((check) => `${check.label} ${check.detail} ${check.command}`),
+      ].join(' '),
+    },
+    {
+      key: 'movenet-static-assets',
+      label: 'MoveNet static assets',
+      text: [
+        moveNetStaticAssets.summary.nextAction,
+        moveNetStaticAssets.modelUrl,
+        ...moveNetStaticAssets.checks.map((check) => `${check.label} ${check.detail} ${check.action}`),
       ].join(' '),
     },
     {
@@ -2564,6 +2649,7 @@ export function PlanScreen() {
         featureCompletionReport,
         launchReadinessReport,
         modelAnalysisReplayReport,
+        moveNetStaticAssetsReport,
         modelVerificationSuiteReport,
         moveNetReadinessReport,
         pwaReadinessReport,
@@ -2625,6 +2711,7 @@ export function PlanScreen() {
       iosToolchainSetupPacket,
       launchReadiness,
       modelEvidence,
+      moveNetStaticAssets: moveNetStaticAssetsReport,
       modelVerificationSuite,
       recommendation,
       releaseCriticalPath,
@@ -2806,6 +2893,14 @@ export function PlanScreen() {
     });
   }
 
+  function prepareMoveNetStaticAssetsPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(moveNetStaticAssetsReport, null, 2),
+      title: 'Prepared MoveNet static assets packet',
+    });
+  }
+
   async function preparePwaInstallGuidance() {
     selectionFeedback();
     await pwaRuntime.promptInstall();
@@ -2941,6 +3036,7 @@ export function PlanScreen() {
 
       <Section title="Model verification suite" caption="Aggregated local proof for runtime, replay, privacy, and validation gaps.">
         <ModelVerificationSuiteCard suite={modelVerificationSuite} />
+        <MoveNetStaticAssetsCard onPreparePacket={prepareMoveNetStaticAssetsPacket} report={moveNetStaticAssetsReport} />
       </Section>
 
       <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">

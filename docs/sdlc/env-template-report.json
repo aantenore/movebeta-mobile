@@ -9,6 +9,7 @@
         "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL",
         "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
         "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
         "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
@@ -21,6 +22,7 @@
         "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL",
         "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
         "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
         "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
@@ -82,12 +84,13 @@
   ],
   "checks": [
     {
-      "detail": "10/10 required keys are present.",
+      "detail": "11/11 required keys are present.",
       "id": "runtime-public-keys",
       "keys": [
         "EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER",
         "EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER",
+        "EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL",
         "EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN",
         "EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE",
         "EXPO_PUBLIC_MOVEBETA_API_BASE_URL",
@@ -156,7 +159,7 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-06-22T16:06:59.795Z",
+  "generatedAt": "2026-06-23T07:42:17.150Z",
   "nextAction": "Use .env.example as the share-safe setup contract, then set credential values only in CI secrets or local shells.",
   "privacy": {
     "credentialValuesIncluded": false,
@@ -170,8 +173,8 @@
     "duplicateKeyCount": 0,
     "malformedLineCount": 0,
     "missingKeyCount": 0,
-    "presentKeyCount": 24,
-    "requiredKeyCount": 23,
+    "presentKeyCount": 25,
+    "requiredKeyCount": 24,
     "unsafeValueCount": 0
   },
   "templatePath": ".env.example",

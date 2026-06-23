@@ -25,6 +25,7 @@ const ConfigSchema = z.object({
   analysisProvider: AnalysisProviderSchema,
   videoAnalysisProvider: AnalysisProviderSchema,
   nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
+  tfjsMoveNetModelUrl: z.string().min(1).optional(),
   coachLens: CoachLensKeySchema,
   privacyMode: PrivacyModeSchema,
   officialApiBaseUrl: z.string().url().optional(),
@@ -87,6 +88,9 @@ export const appConfig = ConfigSchema.parse({
     process.env.EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER ??
     expoExtra.nativeVideoAnalysisProvider ??
     'native-platform-pose',
+  tfjsMoveNetModelUrl:
+    process.env.EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL ??
+    (typeof expoExtra.tfjsMoveNetModelUrl === 'string' ? expoExtra.tfjsMoveNetModelUrl : undefined),
   coachLens: resolveConfiguredCoachLens(process.env.EXPO_PUBLIC_MOVEBETA_COACH_LENS ?? expoExtra.coachLens ?? 'balanced'),
   privacyMode:
     process.env.EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE ??

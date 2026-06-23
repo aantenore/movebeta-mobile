@@ -32,6 +32,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     releaseBlockerIssueWebLinks: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issue-web-links.json'),
     releaseBlockerIssuesReport: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issues-report.json'),
     modelAnalysisReplayReport: readJsonIfExists(rootDir, 'docs/sdlc/model-analysis-replay-report.json'),
+    moveNetStaticAssetsReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-static-assets-report.json'),
     modelVerificationSuiteReport: readJsonIfExists(rootDir, 'docs/sdlc/model-verification-suite-report.json'),
     moveNetReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/movenet-readiness-report.json'),
     pwaReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/pwa-readiness-report.json'),

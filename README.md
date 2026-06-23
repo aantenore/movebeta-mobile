@@ -227,6 +227,8 @@ npm run release:credentials:doctor
 npm run release:blocker-issues
 npm run release:blocker-issues:file
 npm run release:blocker-issues:links
+npm run model:movenet:assets:download
+npm run model:movenet:assets:check
 npm run web:pwa:check
 npm run web:vercel:check
 npm run web:vercel:workflow
@@ -242,6 +244,7 @@ npm run release:readiness
 EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER=local-fixture
 EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER=web-tfjs-movenet
 EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
+EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL=/models/movenet/singlepose/lightning/4/model.json
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
@@ -296,6 +299,9 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - Dependency license report: `docs/sdlc/dependency-license-report.json`,
   `docs/sdlc/dependency-license-report.md`.
 - Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
+- MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`,
+  `docs/sdlc/movenet-static-assets-report.md`; model graph and weight shards live under
+  `public/models/movenet/singlepose/lightning/4` and are listed in `public/model-assets.json`.
 - Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
@@ -327,6 +333,7 @@ The local release gate is:
 ```bash
 npm run release:check
 npm run model:analysis:replay
+npm run model:movenet:assets:check
 npm run model:verification:suite
 npm run model:evidence:sync
 npm run release:blocker-issues
