@@ -216,6 +216,17 @@ type BeforeInstallPromptEventLike = Event & {
 
 const pwaModelWarmupCacheName = 'movebeta-pwa-model-cache-warmup-v1';
 type BrowserModelCacheState = NonNullable<PwaRuntimeProbe['modelCache']>;
+type BrowserModelAssetFile = {
+  bytes?: number;
+  path: string;
+  sha256?: string;
+};
+
+type BrowserModelCacheVerification = {
+  assetsVerified: number;
+  bytesCached: number;
+  integritySupported: boolean;
+};
 
 function emptyModelCacheState(): BrowserModelCacheState {
   return {
@@ -230,6 +241,29 @@ function sameOriginModelAssets(manifest: unknown): string[] {
   return Array.isArray(assets)
     ? assets.filter((asset): asset is string => typeof asset === 'string' && asset.startsWith('/models/'))
     : [];
+}
+
+function sameOriginModelAssetFiles(manifest: unknown): BrowserModelAssetFile[] {
+  const files = (manifest as { files?: unknown[] } | undefined)?.files;
+  return Array.isArray(files)
+    ? files.flatMap((file) => {
+        const asset = file as Partial<BrowserModelAssetFile> | undefined;
+        if (!asset || typeof asset.path !== 'string' || !asset.path.startsWith('/models/')) return [];
+        return [
+          {
+            bytes: typeof asset.bytes === 'number' && Number.isFinite(asset.bytes) ? asset.bytes : undefined,
+            path: asset.path,
+            sha256: typeof asset.sha256 === 'string' ? asset.sha256.toLowerCase() : undefined,
+          },
+        ];
+      })
+    : [];
+}
+
+function digestToHex(buffer: ArrayBuffer) {
+  return Array.from(new Uint8Array(buffer))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 async function readBrowserModelAssetManifest() {
@@ -257,6 +291,37 @@ async function resolveBrowserModelCacheState(): Promise<BrowserModelCacheState> 
     expectedCount: modelAssets.length,
     manifestCached: Boolean(cachedManifest),
   };
+}
+
+async function verifyCachedBrowserModelAssets(manifest: unknown): Promise<BrowserModelCacheVerification> {
+  if (Platform.OS !== 'web' || typeof window === 'undefined' || !('caches' in window)) {
+    return { assetsVerified: 0, bytesCached: 0, integritySupported: false };
+  }
+
+  const modelFiles = sameOriginModelAssetFiles(manifest);
+  const integritySupported = typeof window.crypto?.subtle?.digest === 'function';
+  let assetsVerified = 0;
+  let bytesCached = 0;
+
+  await Promise.all(
+    modelFiles.map(async (file) => {
+      const cached = await window.caches.match(file.path);
+      if (!cached?.ok) return;
+
+      const buffer = await cached.arrayBuffer().catch(() => undefined);
+      if (!buffer) return;
+      bytesCached += buffer.byteLength;
+
+      if (!integritySupported || !file.sha256) return;
+      const digest = await window.crypto.subtle.digest('SHA-256', buffer);
+      const byteCountMatches = typeof file.bytes === 'number' ? buffer.byteLength === file.bytes : true;
+      if (byteCountMatches && digestToHex(digest) === file.sha256) {
+        assetsVerified += 1;
+      }
+    }),
+  );
+
+  return { assetsVerified, bytesCached, integritySupported };
 }
 
 async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupResult> {
@@ -294,10 +359,14 @@ async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupResult> {
   );
 
   const modelCache = await resolveBrowserModelCacheState();
+  const verification = await verifyCachedBrowserModelAssets(manifest);
   return buildPwaModelCacheWarmupResult({
     assetsCached: modelCache.cachedCount,
     assetsExpected: modelCache.expectedCount,
+    assetsVerified: verification.assetsVerified,
+    bytesCached: verification.bytesCached,
     cacheApiSupported: true,
+    integritySupported: verification.integritySupported,
     manifestCached: modelCache.manifestCached,
     online: navigator.onLine !== false,
   });

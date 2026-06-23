@@ -181,7 +181,7 @@ platforms are validated on physical climbing videos and devices.
   attribution notice status, explicit license-review state, and a share-safe packet export.
 - Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
   worker/cache readiness, model-cache warmup status, network state, update state, share-safe install guidance, and an
-  explicit Warm model action.
+  explicit Warm model action with SHA-256 integrity verification for cached model assets when Web Crypto is available.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
   surface, project-binding action state, deployment-secret action state, and share-safe packet export.
 - Plan tab shows Vercel workflow readiness from the generated report, including template-ready status, deferred active
@@ -314,7 +314,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 168/171 tasks done, 122/124 backlog items done, 155/155 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 169/172 tasks done, 123/125 backlog items done, 156/156 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -541,6 +541,8 @@ platforms are validated on physical climbing videos and devices.
 - Browser smoke verifies the Plan tab PWA runtime model-cache preflight and confirms the prepared install guidance packet
   includes `modelCacheReady` plus expected model asset counts.
 - Browser smoke clicks the Plan tab Warm model action and verifies the share-safe model-cache warmup packet.
+- Browser smoke verifies the prepared warmup packet includes cached byte totals, verified asset counts, and SHA-256
+  integrity flags.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.

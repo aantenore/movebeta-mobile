@@ -268,6 +268,9 @@
   readiness.
 - Vitest PWA model-cache warmup tests cover ready, partial, unsupported, and share-safety states.
 - Browser smoke clicks the Plan tab Warm model action and verifies the prepared warmup packet before offline use.
+- PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
+- Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
+  packet.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.
