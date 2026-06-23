@@ -42,6 +42,56 @@ describe('PWA analysis preflight', () => {
     expect(preflight.detail).toContain('3/3');
   });
 
+  it('blocks offline real-video analysis when a PWA update is waiting', () => {
+    const preflight = buildPwaAnalysisPreflight({
+      hasLocalVideo: true,
+      online: false,
+      readiness: buildPwaRuntimeReadiness({
+        ...readyWebProbe,
+        online: false,
+        updateAvailable: true,
+      }),
+    });
+
+    expect(preflight).toMatchObject({
+      badge: 'update',
+      canAnalyze: false,
+      shouldWarmBeforeAnalysis: false,
+      status: 'blocked',
+      title: 'Refresh model before offline use',
+    });
+    expect(preflight.action).toContain('refresh the PWA update');
+  });
+
+  it('allows online real-video analysis during a pending update while keeping offline refresh explicit', () => {
+    const preflight = buildPwaAnalysisPreflight({
+      hasLocalVideo: true,
+      online: true,
+      readiness: buildPwaRuntimeReadiness({
+        ...readyWebProbe,
+        modelCache: {
+          bytesCached: 0,
+          cachedCount: 0,
+          expectedCount: 3,
+          integritySupported: true,
+          integrityVerified: false,
+          manifestCached: false,
+          verifiedCount: 0,
+        },
+        updateAvailable: true,
+      }),
+    });
+
+    expect(preflight).toMatchObject({
+      badge: 'update',
+      canAnalyze: true,
+      shouldWarmBeforeAnalysis: true,
+      status: 'action',
+      title: 'PWA update pending',
+    });
+    expect(preflight.action).toContain('refresh the PWA');
+  });
+
   it('allows demo attempts while asking users to warm before real field use', () => {
     const preflight = buildPwaAnalysisPreflight({
       hasLocalVideo: false,

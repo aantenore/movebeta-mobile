@@ -203,3 +203,4 @@
 | T199 | Auto-warm PWA model cache before online real-video analysis | Done |
 | T200 | Lock Coach workflow controls during model warmup and analysis | Done |
 | T201 | Add explicit model download plan for native and PWA runtimes | Done |
+| T202 | Guard Coach PWA analysis when a model update is pending | Done |

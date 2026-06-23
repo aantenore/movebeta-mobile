@@ -570,6 +570,9 @@
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
+- Coach PWA analysis preflight must treat a pending service-worker update as an offline stale-model risk: offline
+  real-video analysis is blocked until the PWA is refreshed and the model cache is warmed, while online analysis may
+  proceed with explicit refresh guidance.
 - Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
   handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
