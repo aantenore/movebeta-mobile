@@ -266,6 +266,8 @@
   share-safety states.
 - Browser smoke verifies the Plan tab model-cache preflight and prepared PWA install guidance include model-cache
   readiness.
+- PWA runtime readiness tests cover SHA-256-supported model-integrity gating, fallback behavior, and share-safe install
+  guidance fields.
 - Vitest PWA model-cache warmup tests cover ready, partial, unsupported, and share-safety states.
 - Browser smoke clicks the Plan tab Warm model action and verifies the prepared warmup packet before offline use.
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.

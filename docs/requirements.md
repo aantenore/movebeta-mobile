@@ -215,6 +215,8 @@
   MoveNet assets before offline video analysis, with a share-safe warmup result packet.
 - Verify the warmed PWA model cache against manifest byte counts and SHA-256 digests when browser Web Crypto is available,
   and include the integrity result in the share-safe warmup packet.
+- Include PWA model-cache integrity in runtime offline-readiness gating and install guidance when browser Web Crypto is
+  available, without blocking browsers that only support cache-presence verification.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.

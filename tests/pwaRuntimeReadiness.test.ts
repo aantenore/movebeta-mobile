@@ -12,9 +12,13 @@ const readyWebProbe: PwaRuntimeProbe = {
   installPromptAvailable: false,
   installedStandalone: false,
   modelCache: {
+    bytesCached: 324508,
     cachedCount: 3,
     expectedCount: 3,
+    integritySupported: true,
+    integrityVerified: true,
     manifestCached: true,
+    verifiedCount: 3,
   },
   online: true,
   runtime: 'web',
@@ -52,6 +56,8 @@ describe('PWA runtime readiness', () => {
       installPromptAvailable: true,
       modelAssetsCached: 3,
       modelAssetsExpected: 3,
+      modelAssetsVerified: 3,
+      modelBytesCached: 324508,
       offlineReady: true,
       status: 'installable',
     });
@@ -64,7 +70,7 @@ describe('PWA runtime readiness', () => {
 
     expect(readiness.summary.status).toBe('runtime-ready');
     expect(readiness.summary.nextAction).toContain('browser install control');
-    expect(packet.actions).toContain('The same-origin model cache is ready for offline analysis.');
+    expect(packet.actions).toContain('The same-origin model cache is ready and SHA-256 verified for offline analysis.');
     expect(packet.schemaVersion).toBe(pwaRuntimeReadinessSchemaVersion);
     expect(packet.privacy).toMatchObject({
       credentialValuesIncluded: false,
@@ -78,9 +84,13 @@ describe('PWA runtime readiness', () => {
       installPromptAvailable: false,
       installedStandalone: false,
       modelCache: {
+        bytesCached: 0,
         cachedCount: 0,
         expectedCount: 0,
+        integritySupported: false,
+        integrityVerified: false,
         manifestCached: false,
+        verifiedCount: 0,
       },
       online: true,
       runtime: 'native',
@@ -100,9 +110,13 @@ describe('PWA runtime readiness', () => {
     const readiness = buildPwaRuntimeReadiness({
       ...readyWebProbe,
       modelCache: {
+        bytesCached: 5691,
         cachedCount: 1,
         expectedCount: 3,
+        integritySupported: true,
+        integrityVerified: false,
         manifestCached: true,
+        verifiedCount: 1,
       },
     });
     const packet = buildPwaInstallGuidancePacket(readiness);
@@ -110,12 +124,43 @@ describe('PWA runtime readiness', () => {
     expect(readiness.summary).toMatchObject({
       modelAssetsCached: 1,
       modelAssetsExpected: 3,
+      modelAssetsVerified: 1,
       modelCacheReady: false,
+      modelIntegritySupported: true,
+      modelIntegrityVerified: false,
       offlineReady: false,
       status: 'runtime-ready',
     });
     expect(readiness.checks.find((check) => check.key === 'model-cache')?.status).toBe('action');
-    expect(packet.actions).toContain('Open once online before a gym session to warm the same-origin model cache.');
+    expect(packet.actions).toContain('Open once online before a gym session to warm and verify the same-origin model cache.');
+  });
+
+  it('keeps offline analysis pending when cached assets fail integrity verification', () => {
+    const readiness = buildPwaRuntimeReadiness({
+      ...readyWebProbe,
+      modelCache: {
+        bytesCached: 324508,
+        cachedCount: 3,
+        expectedCount: 3,
+        integritySupported: true,
+        integrityVerified: false,
+        manifestCached: true,
+        verifiedCount: 2,
+      },
+    });
+
+    expect(readiness.summary).toMatchObject({
+      modelAssetsCached: 3,
+      modelAssetsExpected: 3,
+      modelAssetsVerified: 2,
+      modelCacheReady: false,
+      modelIntegritySupported: true,
+      modelIntegrityVerified: false,
+      offlineReady: false,
+    });
+    expect(readiness.checks.find((check) => check.key === 'model-cache')?.status).toBe('action');
+    expect(readiness.checks.find((check) => check.key === 'model-integrity')?.status).toBe('action');
+    expect(readiness.checks.find((check) => check.key === 'model-integrity')?.detail).toContain('2/3');
   });
 
   it('rejects unsafe guidance packet values before sharing', () => {
