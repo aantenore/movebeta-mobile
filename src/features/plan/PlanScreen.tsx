@@ -10,6 +10,7 @@ import { buildBillingReadinessSummary } from '@/core/billingReadiness';
 import { buildCommercialReadinessPacket } from '@/core/commercialReadinessPacket';
 import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
+import cueValidationStarterKitReport from '../../../docs/sdlc/cue-validation-starter-kit-report.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import iosToolchainReport from '../../../docs/sdlc/ios-toolchain-report.json';
 import modelAssetProvenanceReport from '../../../docs/sdlc/model-asset-provenance-report.json';
@@ -2945,6 +2946,7 @@ export function PlanScreen() {
   const releaseEvidenceFreshness = buildReleaseEvidenceFreshness({
     artifacts: buildReleaseEvidenceFreshnessArtifactInputs(
       {
+        cueValidationStarterKitReport,
         featureCompletionReport,
         launchReadinessReport,
         modelAssetProvenanceReport,

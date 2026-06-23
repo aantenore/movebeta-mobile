@@ -1,0 +1,107 @@
+{
+  "acceptance": {
+    "maxReviewerScoreSpreadPerCriterion": 1,
+    "minAverageCueScore": 4,
+    "minClips": 20,
+    "minDistinctReviewersPerCue": 2,
+    "minDistinctReviewersPerClip": 2,
+    "minReviewsPerCue": 1,
+    "requiredReviewModes": [
+      "packet-only"
+    ],
+    "requiredReviewerRoles": [
+      "coach"
+    ],
+    "requiredWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ]
+  },
+  "commands": [
+    {
+      "key": "prepare-seed",
+      "label": "Prepare consented study seed",
+      "owner": "product",
+      "purpose": "Collect athlete consent and prepare packet-only cue review tasks from Sessions."
+    },
+    {
+      "key": "review-packet-only",
+      "label": "Review packet-only cues",
+      "owner": "coach",
+      "purpose": "Score each generated cue from the packet context without requesting raw video or private notes."
+    },
+    {
+      "key": "complete-worksheet",
+      "label": "Complete worksheet rows",
+      "owner": "coach",
+      "purpose": "Fill reviewer id and 1-5 scores only after a real coach review."
+    },
+    {
+      "key": "run-validation-gate",
+      "label": "Run validation gate",
+      "owner": "qa",
+      "purpose": "Compose the completed worksheet into dataset JSON and run npm run validation:cue."
+    }
+  ],
+  "generatedAt": "2026-06-23T09:00:58.353Z",
+  "instructions": [
+    "Review only the packet context: session metadata, quality, metrics, cues, cue trust, timeline, and privacy evidence.",
+    "Do not ask for raw video, screenshots, landmarks, local file paths, private notes, or account identifiers.",
+    "Use a 1-5 score for relevance, timing accuracy, drill fit, and safety language.",
+    "A passing cue needs an average score of at least 4/5 and no unsafe safety-language score.",
+    "Reviewer spread on each criterion should stay within 1 point.",
+    "Reviewer IDs must identify real coach reviewers in the completed worksheet; this onboarding packet intentionally leaves them out."
+  ],
+  "privacy": {
+    "coachPacketsIncluded": false,
+    "credentialValuesIncluded": false,
+    "keyFramesIncluded": false,
+    "landmarksIncluded": false,
+    "localPathsIncluded": false,
+    "privateNotesIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawUrisIncluded": false,
+    "rawVideoIncluded": false,
+    "reviewerIdentitiesIncluded": false,
+    "reviewerScoresInvented": false,
+    "videoLeavesDevice": false
+  },
+  "reviewCriteria": [
+    {
+      "id": "relevance",
+      "passingScore": 4,
+      "prompt": "Does the cue match an observable movement pattern in the packet?"
+    },
+    {
+      "id": "timingAccuracy",
+      "passingScore": 4,
+      "prompt": "Is the timestamp close enough for a climber to find the movement window?"
+    },
+    {
+      "id": "drillFit",
+      "passingScore": 4,
+      "prompt": "Is the drill specific, repeatable, and appropriate for the grade and wall angle?"
+    },
+    {
+      "id": "safetyLanguage",
+      "passingScore": 4,
+      "prompt": "Does the feedback avoid medical, injury-prevention, or route-safety claims?"
+    }
+  ],
+  "schemaVersion": "movebeta.cue-validation-reviewer-onboarding.v1",
+  "sourceSeedGeneratedAt": "2026-06-23T09:00:58.353Z",
+  "summary": {
+    "estimatedReviewRows": 0,
+    "missingWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ],
+    "reviewerSlotsNeeded": 40,
+    "sourceClipCount": 0,
+    "sourceCueCount": 0,
+    "status": "needs-consent",
+    "targetClipCount": 20
+  }
+}

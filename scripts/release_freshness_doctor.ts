@@ -22,6 +22,7 @@ function readJsonIfExists(rootDir: string, relativePath: string) {
 function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
   return {
     cueValidationDatasetReport: readJsonIfExists(rootDir, 'docs/sdlc/cue-validation-dataset-report.json'),
+    cueValidationStarterKitReport: readJsonIfExists(rootDir, 'docs/sdlc/cue-validation-starter-kit-report.json'),
     dependencyLicenseReport: readJsonIfExists(rootDir, 'docs/sdlc/dependency-license-report.json'),
     envTemplateReport: readJsonIfExists(rootDir, 'docs/sdlc/env-template-report.json'),
     featureCompletionReport: readJsonIfExists(rootDir, 'docs/sdlc/feature-completion-report.json'),
