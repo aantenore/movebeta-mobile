@@ -140,6 +140,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'GitHub workflow report', 'docs/sdlc/github-workflow-report.json'),
       artifact(rootDir, 'Dependency license report', 'docs/sdlc/dependency-license-report.json'),
       artifact(rootDir, 'Release evidence freshness report', 'docs/sdlc/release-freshness-report.json'),
+      artifact(rootDir, 'Acquisition readiness packet', 'docs/sdlc/acquisition-readiness-packet.json'),
       artifact(rootDir, 'PWA readiness report', 'docs/sdlc/pwa-readiness-report.json'),
       artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
       artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
@@ -230,6 +231,11 @@ export function buildReleaseHandoffPacket({
         'store',
       ]),
       command('release-freshness', 'Release evidence freshness doctor', 'npm run release:freshness:doctor', [
+        'demo',
+        'internal',
+        'store',
+      ]),
+      command('acquisition-readiness', 'Acquisition readiness packet', 'npm run release:acquisition', [
         'demo',
         'internal',
         'store',

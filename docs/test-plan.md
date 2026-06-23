@@ -172,6 +172,10 @@
 - Vitest release evidence freshness tests for configurable artifact windows, stale evidence, missing/invalid timestamps,
   release report bundle mapping, and raw artifact/path/token rejection; `npm run release:freshness:doctor` writes durable
   JSON/Markdown freshness evidence and is included in `npm run release:check`.
+- Vitest acquisition readiness packet tests for buyer due-diligence signal aggregation, ready/external-clearance/blocked
+  states, due-diligence artifact inventory, command checklist, and credential/local-path/media/token rejection;
+  `npm run release:acquisition` writes durable JSON/Markdown acquisition evidence and is included in release gates,
+  freshness, and handoff artifacts.
 - Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
   secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
   durable static deployment readiness evidence and is included in `npm run release:check`.
@@ -193,8 +197,8 @@
   cue-validation dataset promotion, privacy-safe report gating, and dry-run mode.
 - Vitest safety language tests for clear copy, risky claim detection, negated policy/disclaimer copy, replaceable rules,
   and visible issue limits.
-- Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, verification
-  commands, Markdown rendering, and durable JSON/Markdown writes.
+- Vitest release handoff packet tests for release status aggregation, blocker tracks, screenshot completeness, acquisition
+  readiness evidence, verification commands, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest release archive manifest tests for SHA-256 checksums, archive byte sizes, repository metadata, worktree-state
   metadata, Markdown rendering, and durable JSON/Markdown writes.
 - Vitest CI workflow template tests for GitHub Actions trigger coverage, deferred active-workflow activation, Node
@@ -324,6 +328,8 @@
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.
 - Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
+- Acquisition readiness packet generation with `npm run release:acquisition` after release evidence, store metadata,
+  commercial readiness, and handoff artifacts are refreshed.
 - Release handoff packet generation with `npm run release:handoff` after release readiness, screenshots, and archives are
   refreshed.
 - Release archive generation with `npm run release:archives` after `npm run export:web`; writes source/web zip files,

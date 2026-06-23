@@ -159,7 +159,7 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-06-23T14:04:54.480Z",
+  "generatedAt": "2026-06-23T14:18:51.335Z",
   "nextAction": "Use .env.example as the share-safe setup contract, then set credential values only in CI secrets or local shells.",
   "privacy": {
     "credentialValuesIncluded": false,
