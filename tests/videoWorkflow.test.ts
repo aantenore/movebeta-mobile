@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { LocalAnalysisReportSchema, PoseFrameSchema } from '../src/movement/contracts';
 import { createPoseEstimator } from '../src/movement/onDevicePipeline';
 import { analyzeVideoAttempt } from '../src/movement/repository';
+import { withVideoAnalysisWindow } from '../src/video/analysisWindow';
 import { assessVideoIntake } from '../src/video/videoIntake';
 import {
   createCameraVideoSource,
@@ -139,6 +140,26 @@ describe('video source workflow', () => {
     expect(PoseFrameSchema.parse(frames[0])).toEqual(frames[0]);
   });
 
+  it('samples only the configured analysis window for long local videos', async () => {
+    const source = createCameraVideoSource({
+      capturedAt: '2026-06-19T10:00:00.000Z',
+      durationMs: 90_000,
+      uri: 'file:///cache/movebeta/long-deterministic.mov',
+    });
+    const windowedVideo = withVideoAnalysisWindow(source.video, 'late');
+    const estimator = createPoseEstimator('local-video-fallback');
+
+    const frames = await estimator.estimate(windowedVideo);
+
+    expect(windowedVideo.analysisWindow).toMatchObject({
+      endMs: 90_000,
+      mode: 'late',
+      startMs: 45_000,
+    });
+    expect(frames[0].timestampMs).toBeGreaterThanOrEqual(45_000);
+    expect(frames[frames.length - 1].timestampMs).toBeLessThanOrEqual(90_000);
+  });
+
   it('keeps the TensorFlow.js MoveNet provider explicit outside browser runtimes', async () => {
     const source = createCameraVideoSource({
       capturedAt: '2026-06-19T10:00:00.000Z',
@@ -169,6 +190,24 @@ describe('video source workflow', () => {
     expect(report.engine.uploadsVideo).toBe(false);
     expect(report.privacy.videoLeavesDevice).toBe(false);
     expect(report.session.id).toBe(source.session.id);
+  });
+
+  it('uses the active analysis window for processing budget without changing session duration', async () => {
+    const source = createImportedVideoSource({
+      duration: 90_000,
+      fileName: 'long-vertical-repeat.mov',
+      height: 1920,
+      type: 'video',
+      uri: 'file:///library/long-vertical-repeat.mov',
+      width: 1080,
+    });
+    const windowedVideo = withVideoAnalysisWindow(source.video, 'middle');
+
+    const report = await analyzeVideoAttempt(windowedVideo, source.session);
+
+    expect(report.session.durationMs).toBe(90_000);
+    expect(report.performance.budgetMs).toBe(25_000);
+    expect(report.engine.provider).toBe('local-video-fallback');
   });
 
   it('persists editable session metadata into local analysis reports', async () => {

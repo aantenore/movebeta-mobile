@@ -94,7 +94,9 @@ private class AndroidMlKitPoseEstimator {
     val frameIntervalMs = positiveDouble(input["frameIntervalMs"], 350.0)
     val minFrames = positiveInt(input["minFrames"], 10)
     val maxFrames = positiveInt(input["maxFrames"], 48)
-    val timestamps = frameTimestamps(durationMs, frameIntervalMs, minFrames, maxFrames)
+    val analysisStartMs = analysisStartMs(input["analysisStartMs"], durationMs)
+    val analysisEndMs = analysisEndMs(input["analysisEndMs"], durationMs, analysisStartMs)
+    val timestamps = frameTimestamps(analysisStartMs, analysisEndMs, frameIntervalMs, minFrames, maxFrames)
     val retriever = MediaMetadataRetriever()
     val detector = PoseDetection.getClient(
       AccuratePoseDetectorOptions.Builder()
@@ -173,12 +175,29 @@ private class AndroidMlKitPoseEstimator {
     }
   }
 
-  private fun frameTimestamps(durationMs: Double, frameIntervalMs: Double, minFrames: Int, maxFrames: Int): List<Double> {
+  private fun analysisStartMs(value: Any?, durationMs: Double): Double {
+    val startMs = when (value) {
+      is Number -> value.toDouble()
+      else -> 0.0
+    }
+    return max(0.0, min(durationMs, startMs))
+  }
+
+  private fun analysisEndMs(value: Any?, durationMs: Double, startMs: Double): Double {
+    val endMs = when (value) {
+      is Number -> value.toDouble()
+      else -> durationMs
+    }
+    return max(startMs + 1.0, min(durationMs, endMs))
+  }
+
+  private fun frameTimestamps(startMs: Double, endMs: Double, frameIntervalMs: Double, minFrames: Int, maxFrames: Int): List<Double> {
+    val durationMs = max(1.0, endMs - startMs)
     val requested = ceil(durationMs / frameIntervalMs).toInt()
     val frameCount = max(minFrames, min(maxFrames, requested))
-    if (frameCount <= 1) return listOf(0.0)
+    if (frameCount <= 1) return listOf(startMs)
     return (0 until frameCount).map { index ->
-      durationMs * index.toDouble() / (frameCount - 1).toDouble()
+      startMs + durationMs * index.toDouble() / (frameCount - 1).toDouble()
     }
   }
 

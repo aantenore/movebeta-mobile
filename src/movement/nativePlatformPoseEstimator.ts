@@ -1,6 +1,7 @@
 import { estimateNativePoseFrames, isNativePoseAvailable } from 'movebeta-pose';
 
 import { videoAnalysisConfig } from '@/video/videoConfig';
+import { resolveVideoAnalysisWindow } from '@/video/analysisWindow';
 
 import { PoseFrameSchema, type PoseFrame, type VideoAsset } from './contracts';
 import type { AnalysisProvider, PoseEstimator } from './onDevicePipeline';
@@ -19,7 +20,10 @@ export class NativePlatformPoseEstimator implements PoseEstimator {
       throw new Error(`${this.provider} requires a custom Expo development build with the MoveBetaPose native module.`);
     }
 
+    const window = resolveVideoAnalysisWindow(video);
     const frames = await estimateNativePoseFrames({
+      analysisEndMs: window.endMs,
+      analysisStartMs: window.startMs,
       durationMs: video.durationMs,
       frameIntervalMs: videoAnalysisConfig.tfjsFrameIntervalMs,
       height: video.height,

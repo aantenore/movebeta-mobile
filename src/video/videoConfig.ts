@@ -40,5 +40,9 @@ export const videoAnalysisConfig = {
   minimumShortSidePx: 360,
   minTfjsFrames: 10,
   recommendedAnalysisDurationMs: 45_000,
+  analysisWindow: {
+    defaultMode: 'middle' as const,
+    modes: ['full', 'early', 'middle', 'late'] as const,
+  },
   tfjsFrameIntervalMs: 350,
 } as const;

@@ -1,6 +1,8 @@
 import { requireOptionalNativeModule } from 'expo';
 
 export type NativePoseEstimatorInput = {
+  analysisEndMs?: number;
+  analysisStartMs?: number;
   durationMs: number;
   frameIntervalMs: number;
   height: number;

@@ -75,7 +75,9 @@ private final class AppleVisionPoseEstimator {
     let frameIntervalMs = positiveDouble(input["frameIntervalMs"], fallback: 350)
     let minFrames = positiveInt(input["minFrames"], fallback: 10)
     let maxFrames = positiveInt(input["maxFrames"], fallback: 48)
-    let timestamps = frameTimestamps(durationMs: durationMs, frameIntervalMs: frameIntervalMs, minFrames: minFrames, maxFrames: maxFrames)
+    let analysisStartMs = analysisStartMs(input["analysisStartMs"], durationMs: durationMs)
+    let analysisEndMs = analysisEndMs(input["analysisEndMs"], durationMs: durationMs, startMs: analysisStartMs)
+    let timestamps = frameTimestamps(startMs: analysisStartMs, endMs: analysisEndMs, frameIntervalMs: frameIntervalMs, minFrames: minFrames, maxFrames: maxFrames)
     let generator = AVAssetImageGenerator(asset: asset)
     generator.appliesPreferredTrackTransform = true
     generator.requestedTimeToleranceBefore = CMTime(seconds: 0.05, preferredTimescale: 600)
@@ -205,14 +207,35 @@ private final class AppleVisionPoseEstimator {
     return fallback
   }
 
-  private func frameTimestamps(durationMs: Double, frameIntervalMs: Double, minFrames: Int, maxFrames: Int) -> [Double] {
+  private func analysisStartMs(_ value: Any?, durationMs: Double) -> Double {
+    if let number = value as? NSNumber {
+      return max(0, min(durationMs, number.doubleValue))
+    }
+    if let value = value as? Double {
+      return max(0, min(durationMs, value))
+    }
+    return 0
+  }
+
+  private func analysisEndMs(_ value: Any?, durationMs: Double, startMs: Double) -> Double {
+    if let number = value as? NSNumber {
+      return max(startMs + 1, min(durationMs, number.doubleValue))
+    }
+    if let value = value as? Double {
+      return max(startMs + 1, min(durationMs, value))
+    }
+    return durationMs
+  }
+
+  private func frameTimestamps(startMs: Double, endMs: Double, frameIntervalMs: Double, minFrames: Int, maxFrames: Int) -> [Double] {
+    let durationMs = max(1, endMs - startMs)
     let requested = Int(ceil(durationMs / frameIntervalMs))
     let frameCount = max(minFrames, min(maxFrames, requested))
     if frameCount <= 1 {
-      return [0]
+      return [startMs]
     }
     return (0..<frameCount).map { index in
-      durationMs * Double(index) / Double(frameCount - 1)
+      startMs + durationMs * Double(index) / Double(frameCount - 1)
     }
   }
 

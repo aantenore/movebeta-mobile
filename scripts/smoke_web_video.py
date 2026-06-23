@@ -254,6 +254,8 @@ def main() -> None:
         expect(page.get_by_text("Ready to analyze")).to_be_visible()
         expect(page.get_by_text("Run local analysis.")).to_be_visible()
         expect(page.get_by_text("No upload is required").first).to_be_visible()
+        expect(page.get_by_text("Analysis window")).to_be_visible()
+        expect(page.get_by_text("Original file is unchanged")).to_be_visible()
         expect(page.get_by_text("Analysis quality")).to_be_visible()
         expect(page.get_by_text("Ready for coaching", exact=True)).to_be_visible()
         expect(page.get_by_text("Analysis trust", exact=True).first).to_be_visible()

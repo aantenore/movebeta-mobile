@@ -35,8 +35,18 @@ type VideoAsset = {
   width: number;
   height: number;
   capturedAt: string;
+  analysisWindow?: {
+    mode: 'full' | 'early' | 'middle' | 'late';
+    startMs: number;
+    endMs: number;
+    durationMs: number;
+    sourceDurationMs: number;
+  };
 };
 ```
+
+`analysisWindow` is optional and source-relative. When present, pose providers sample frames inside the selected window
+while preserving the original source duration and URI.
 
 ## Native Video Metadata
 
