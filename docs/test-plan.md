@@ -342,6 +342,9 @@
 - Vitest model delivery lifecycle tests cover first-launch pending state, verified delivery path without warmed runtime
   cache, model asset versioning, pending service-worker update handling, warmed-cache ready state, native bundled
   delivery, static asset blockers, JSON/Markdown report writes, and unsafe-value rejection.
+- Vitest model download plan tests cover native bundled delivery, cached PWA offline readiness, offline uncached PWA block
+  state, pending update activation, and share-safety rejection.
+- Browser smoke verifies the Plan tab model download plan card and prepared `movebeta.model-download-plan.v1` packet.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.

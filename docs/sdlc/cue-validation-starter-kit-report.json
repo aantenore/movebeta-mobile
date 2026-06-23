@@ -26,7 +26,7 @@
       "purpose": "Spreadsheet-friendly worksheet with reviewer and score cells left blank."
     }
   ],
-  "generatedAt": "2026-06-23T21:58:31.582Z",
+  "generatedAt": "2026-06-23T22:07:16.654Z",
   "nextAction": "Export a real cue-validation study seed from Sessions after athlete consent, then rerun npm run validation:cue:starter -- --seed <seed.json>.",
   "privacy": {
     "coachPacketsIncluded": false,
