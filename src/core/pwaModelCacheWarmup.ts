@@ -20,7 +20,11 @@ export const PwaModelCacheWarmupResultSchema = z.object({
   summary: z.object({
     assetsCached: z.number().int().nonnegative(),
     assetsExpected: z.number().int().nonnegative(),
+    assetsVerified: z.number().int().nonnegative(),
+    bytesCached: z.number().int().nonnegative(),
     cacheApiSupported: z.boolean(),
+    integritySupported: z.boolean(),
+    integrityVerified: z.boolean(),
     manifestCached: z.boolean(),
     nextAction: z.string(),
     online: z.boolean(),
@@ -54,34 +58,48 @@ export function assertPwaModelCacheWarmupResultIsShareSafe(result: PwaModelCache
 export function buildPwaModelCacheWarmupResult({
   assetsCached,
   assetsExpected,
+  assetsVerified = 0,
+  bytesCached = 0,
   cacheApiSupported,
   generatedAt = new Date().toISOString(),
+  integritySupported = false,
   manifestCached,
   online,
 }: {
   assetsCached: number;
   assetsExpected: number;
+  assetsVerified?: number;
+  bytesCached?: number;
   cacheApiSupported: boolean;
   generatedAt?: string;
+  integritySupported?: boolean;
   manifestCached: boolean;
   online: boolean;
 }) {
   const nextAssetsCached = count(assetsCached);
   const nextAssetsExpected = count(assetsExpected);
-  const ready = cacheApiSupported && manifestCached && nextAssetsExpected > 0 && nextAssetsCached >= nextAssetsExpected;
+  const nextAssetsVerified = count(assetsVerified);
+  const nextBytesCached = count(bytesCached);
+  const cacheReady = cacheApiSupported && manifestCached && nextAssetsExpected > 0 && nextAssetsCached >= nextAssetsExpected;
+  const integrityVerified = integritySupported && nextAssetsExpected > 0 && nextAssetsVerified >= nextAssetsExpected;
+  const ready = cacheReady && (!integritySupported || integrityVerified);
   const status: PwaModelCacheWarmupStatus = !cacheApiSupported ? 'unsupported' : ready ? 'ready' : 'partial';
   const nextAction =
     status === 'ready'
       ? 'Use the installed PWA offline only after one successful relaunch smoke.'
       : status === 'unsupported'
         ? 'Use a browser with Cache Storage support before relying on offline model analysis.'
+        : cacheReady && integritySupported
+          ? 'Refresh the PWA model cache online until every cached MoveNet asset passes SHA-256 verification.'
         : online
           ? 'Keep the PWA open online until the service worker and model cache complete.'
           : 'Reconnect once to fetch and cache the same-origin MoveNet assets.';
 
   const actions = [
     nextAction,
-    status === 'ready'
+    status === 'ready' && integrityVerified
+      ? 'Model manifest and same-origin model assets are cached with SHA-256 integrity verified.'
+      : status === 'ready'
       ? 'Model manifest and same-origin model assets are cached.'
       : 'Warm the model cache before recording or importing climbing video offline.',
   ];
@@ -100,7 +118,11 @@ export function buildPwaModelCacheWarmupResult({
     summary: {
       assetsCached: nextAssetsCached,
       assetsExpected: nextAssetsExpected,
+      assetsVerified: nextAssetsVerified,
+      bytesCached: nextBytesCached,
       cacheApiSupported,
+      integritySupported,
+      integrityVerified,
       manifestCached,
       nextAction,
       online,

@@ -12,8 +12,11 @@ describe('PWA model cache warmup', () => {
     const result = buildPwaModelCacheWarmupResult({
       assetsCached: 3,
       assetsExpected: 3,
+      assetsVerified: 3,
+      bytesCached: 324508,
       cacheApiSupported: true,
       generatedAt: '2026-06-23T08:00:00.000Z',
+      integritySupported: true,
       manifestCached: true,
       online: true,
     });
@@ -22,10 +25,38 @@ describe('PWA model cache warmup', () => {
     expect(result.summary).toMatchObject({
       assetsCached: 3,
       assetsExpected: 3,
+      assetsVerified: 3,
+      bytesCached: 324508,
+      integritySupported: true,
+      integrityVerified: true,
       manifestCached: true,
       status: 'ready',
     });
     expect(result.privacy.rawVideoIncluded).toBe(false);
+  });
+
+  it('keeps warmup partial when cached assets fail integrity verification', () => {
+    const result = buildPwaModelCacheWarmupResult({
+      assetsCached: 3,
+      assetsExpected: 3,
+      assetsVerified: 2,
+      bytesCached: 324508,
+      cacheApiSupported: true,
+      generatedAt: '2026-06-23T08:00:00.000Z',
+      integritySupported: true,
+      manifestCached: true,
+      online: true,
+    });
+
+    expect(result.summary).toMatchObject({
+      assetsCached: 3,
+      assetsExpected: 3,
+      assetsVerified: 2,
+      integritySupported: true,
+      integrityVerified: false,
+      status: 'partial',
+    });
+    expect(result.summary.nextAction).toContain('SHA-256');
   });
 
   it('keeps warmup partial while same-origin model assets are missing', () => {
@@ -61,8 +92,11 @@ describe('PWA model cache warmup', () => {
     const result = buildPwaModelCacheWarmupResult({
       assetsCached: 3,
       assetsExpected: 3,
+      assetsVerified: 3,
+      bytesCached: 324508,
       cacheApiSupported: true,
       generatedAt: '2026-06-23T08:00:00.000Z',
+      integritySupported: true,
       manifestCached: true,
       online: true,
     });

@@ -213,6 +213,8 @@
   assets are present in browser Cache Storage before claiming offline video-analysis readiness.
 - Provide an in-app PWA model-cache warmup action that fetches and caches `/model-assets.json` plus listed same-origin
   MoveNet assets before offline video analysis, with a share-safe warmup result packet.
+- Verify the warmed PWA model cache against manifest byte counts and SHA-256 digests when browser Web Crypto is available,
+  and include the integrity result in the share-safe warmup packet.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.
