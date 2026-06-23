@@ -38,6 +38,10 @@ These screenshots are generated from the exported web build with `npm run store:
 
 ![Plan tab release evidence freshness guard showing generated report age, stale counts, and refresh commands](store/screenshots/11-release-freshness.png)
 
+## Model Delivery Lifecycle
+
+![Plan tab model delivery lifecycle showing build-time vendoring, browser warmup, native bundle delivery, and offline reuse](store/screenshots/12-model-delivery.png)
+
 ## Privacy
 
 ![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)

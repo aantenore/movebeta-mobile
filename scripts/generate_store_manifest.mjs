@@ -40,6 +40,7 @@ const manifest = {
     { fileName: '09-release-critical-path.png', label: 'Release critical path', route: 'plan', viewport: { height: 844, width: 390 } },
     { fileName: '10-release-evidence-scenarios.png', label: 'Release evidence scenarios', route: 'plan', viewport: { height: 844, width: 390 } },
     { fileName: '11-release-freshness.png', label: 'Release evidence freshness', route: 'plan', viewport: { height: 844, width: 390 } },
+    { fileName: '12-model-delivery.png', label: 'Model delivery lifecycle', route: 'plan', viewport: { height: 844, width: 390 } },
     { fileName: '08-data-portability.png', label: 'Local backup restore preview', route: 'privacy', viewport: { height: 844, width: 390 } },
   ],
   version: appJson.version ?? '',

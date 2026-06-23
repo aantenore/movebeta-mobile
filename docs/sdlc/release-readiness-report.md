@@ -128,7 +128,8 @@ platforms are validated on physical climbing videos and devices.
 - EAS release readiness validates remote app versioning, internal development/preview profiles, production app bundle
   output, production auto-increment, binary identifiers, submit profile presence, and absence of committed submit secrets.
 - Store screenshots are captured from the exported app for Analyze, Drills, Progress, Sessions, Plan, Release Unblock,
-  Release Critical Path, Release Evidence Scenarios, Release Freshness, Privacy, and Data Portability.
+  Release Critical Path, Release Evidence Scenarios, Release Freshness, Model Delivery Lifecycle, Privacy, and Data
+  Portability.
 - Cue validation scoring harness and rubric are ready for consented coach review datasets.
 - Cue validation dataset contract, template, and CLI gate are versioned and ready for real consented coach review studies.
 - Free, Pro, and Coach capabilities are modeled through active-plan entitlements without hard-coded pricing.
@@ -554,7 +555,7 @@ platforms are validated on physical climbing videos and devices.
 - `tests/cueFeedbackInsights.test.ts`: passed and covers useful rate, top useful cue, review cue, orphan skipping, and
   empty feedback state.
 - `npm run store:manifest`: passed and generated `docs/store/store-manifest.json`.
-- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated eleven 780x1688 PNG screenshots.
+- `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`: passed and generated twelve 780x1688 PNG screenshots.
 - Playwright exported-bundle smoke: passed with `scripts/smoke_web_video.py`, including the Analysis quality panel on
   mobile and desktop viewports, session metadata inputs, capture setup calibration, video intake readiness,
   capture-readiness guidance, analysis trust summary, beta replay plan, movement phase breakdown, cue trust scoring, the Drills weekly plan, feedback-adapted drills, private drill practice logging, the Progress analysis trust trend, the Progress analysis trust trend packet, the Progress next-session plan, session agenda, session agenda packet, attempt pacing, attempt pacing packet, rest timer, session closeout checklist, local training load, the Progress training load packet, practice-reset planning, the Progress technique readiness, the Progress technique readiness packet
@@ -601,7 +602,7 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 43 current artifacts including the
+  `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 44 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
   provenance report, model delivery lifecycle report, PWA readiness report, Vercel deployment report, Vercel workflow
   report, release archive artifacts, and 28 verification commands.
