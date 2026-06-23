@@ -1,16 +1,17 @@
 # Model Delivery Lifecycle Report
 
-Generated: 2026-06-23T15:16:05.897Z
+Generated: 2026-06-23T15:24:39.554Z
 
 - Status: action
 - Model: MoveNet SinglePose Lightning
 - Delivery mode: same-origin-static
+- Download strategy: precache-on-install
 - Model URL: /models/movenet/singlepose/lightning/4/model.json
 - Assets: 3
 - Total bytes: 4963342
 - Cache ready: no
 - First use requires network: yes
-- Download trigger: The model is vendored during build, then the browser downloads same-origin model assets on first online launch, service-worker install, or explicit warmup.
+- Download trigger: The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.
 - Next action: Open the PWA online once or use Warm model before going offline.
 - Credential values included: no
 - Local paths included: no
@@ -21,5 +22,5 @@ Generated: 2026-06-23T15:16:05.897Z
 | --- | --- | --- | --- |
 | Build-time vendoring | ready | MoveNet SinglePose Lightning is vendored as same-origin static assets before release. | Refresh assets only when the model version changes. |
 | App delivery | ready | The exported app serves /models/movenet/singlepose/lightning/4/model.json and weight shards from the app origin. | Deploy the exported PWA after static asset checks pass. |
-| First online launch | action | The browser fetches model-assets.json and listed /models assets on first online launch or explicit warmup. | Open the PWA online once or use Warm model before going offline. |
+| First online launch | action | The service worker fetches model-assets.json and listed /models assets during first online install; Warm model can refresh the cache explicitly. | Open the PWA online once or use Warm model before going offline. |
 | Offline reuse | action | Offline analysis should wait until every model asset is cached and integrity checks pass when supported. | Warm and verify the model cache online before offline analysis. |

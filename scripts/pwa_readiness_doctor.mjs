@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { buildCacheVersion } from './prepare_pwa_dist.mjs';
 
 export const PWA_READINESS_SCHEMA_VERSION = 'movebeta.pwa-readiness.v1';
+const MODEL_DELIVERY_POLICY_SCHEMA_VERSION = 'movebeta.model-delivery-policy.v1';
+const MODEL_DOWNLOAD_STRATEGIES = new Set(['precache-on-install', 'warmup-only', 'lazy-on-analysis']);
 
 export function resolveProjectRoot() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -50,6 +52,16 @@ function manifestHasIcon(manifest, size) {
   return Array.isArray(manifest?.icons) && manifest.icons.some((icon) => String(icon?.sizes ?? '').includes(size));
 }
 
+function validModelDeliveryPolicy(policy) {
+  return (
+    policy?.schemaVersion === MODEL_DELIVERY_POLICY_SCHEMA_VERSION &&
+    MODEL_DOWNLOAD_STRATEGIES.has(policy?.web?.downloadStrategy) &&
+    ['requires-cached-assets', 'online-first'].includes(policy?.web?.offlineUse) &&
+    ['sha256-manifest', 'cache-presence'].includes(policy?.web?.integrity) &&
+    policy?.native?.deliveryMode === 'platform-provider-bundled'
+  );
+}
+
 function walkFiles(dir) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -82,10 +94,13 @@ export function buildPwaReadinessReport({
   const vercelConfigPath = path.join(rootDir, 'vercel.json');
   const distManifestPath = path.join(rootDir, 'dist/manifest.json');
   const distServiceWorkerPath = path.join(rootDir, 'dist/sw.js');
+  const distModelDeliveryPolicyPath = path.join(rootDir, 'dist/model-delivery-policy.json');
   const distModelAssetManifestPath = path.join(rootDir, 'dist/model-assets.json');
   const distIndexPath = path.join(rootDir, 'dist/index.html');
   const manifest = readJsonIfExists(manifestPath);
+  const modelDeliveryPolicy = readJsonIfExists(path.join(rootDir, 'public/model-delivery-policy.json'));
   const modelAssetManifest = readJsonIfExists(path.join(rootDir, 'public/model-assets.json'));
+  const distModelDeliveryPolicy = readJsonIfExists(distModelDeliveryPolicyPath);
   const distModelAssetManifest = readJsonIfExists(distModelAssetManifestPath);
   const vercelConfig = readJsonIfExists(vercelConfigPath);
   const serviceWorker = readTextIfExists(serviceWorkerPath) ?? '';
@@ -158,6 +173,16 @@ export function buildPwaReadinessReport({
         serviceWorker.includes("url.pathname.startsWith('/models/')") &&
         exportedModelAssetsPresent,
       'Exported dist includes the static MoveNet manifest and every listed model file, and the service worker cache path covers them.',
+    ),
+    check(
+      'model-delivery-policy',
+      'Model delivery policy',
+      validModelDeliveryPolicy(modelDeliveryPolicy) &&
+        validModelDeliveryPolicy(distModelDeliveryPolicy) &&
+        serviceWorker.includes('/model-delivery-policy.json') &&
+        serviceWorker.includes('shouldPrecacheModelAssets') &&
+        distServiceWorker.includes('/model-delivery-policy.json'),
+      'Source and exported PWA include a versioned model-delivery policy, and the service worker uses it before model precache.',
     ),
     check(
       'exported-offline-cache-assets',

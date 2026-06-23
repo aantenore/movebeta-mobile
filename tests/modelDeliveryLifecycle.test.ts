@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   assertModelDeliveryLifecycleIsShareSafe,
   buildModelDeliveryLifecycle,
+  modelDeliveryPolicySchemaVersion,
   modelDeliveryLifecycleSchemaVersion,
   type ModelDeliveryLifecycle,
 } from '../src/core/modelDeliveryLifecycle';
@@ -31,6 +32,21 @@ function staticAssetsReport(status: 'blocked' | 'ready' = 'ready') {
       status,
       totalBytes: status === 'ready' ? 4_963_342 : 0,
       verifiedCount: status === 'ready' ? 7 : 4,
+    },
+  };
+}
+
+function modelDeliveryPolicy(downloadStrategy: 'precache-on-install' | 'warmup-only' | 'lazy-on-analysis' = 'precache-on-install') {
+  return {
+    native: {
+      deliveryMode: 'platform-provider-bundled',
+    },
+    schemaVersion: modelDeliveryPolicySchemaVersion,
+    web: {
+      downloadStrategy,
+      integrity: 'sha256-manifest',
+      offlineUse: 'requires-cached-assets',
+      userAction: 'warm-model-control',
     },
   };
 }
@@ -66,6 +82,11 @@ function makeProjectRoot() {
     path.join(root, 'docs/sdlc/movenet-static-assets-report.json'),
     `${JSON.stringify(staticAssetsReport(), null, 2)}\n`,
   );
+  fs.mkdirSync(path.join(root, 'public'), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, 'public/model-delivery-policy.json'),
+    `${JSON.stringify(modelDeliveryPolicy(), null, 2)}\n`,
+  );
   return root;
 }
 
@@ -86,6 +107,7 @@ describe('model delivery lifecycle', () => {
     expect(lifecycle.summary).toMatchObject({
       cacheReady: false,
       deliveryMode: 'same-origin-static',
+      downloadStrategy: 'precache-on-install',
       firstUseRequiresNetwork: true,
       status: 'action',
     });
@@ -93,13 +115,25 @@ describe('model delivery lifecycle', () => {
       assetCount: 3,
       totalBytes: 4_963_342,
     });
-    expect(lifecycle.summary.downloadTrigger).toContain('browser downloads same-origin model assets');
+    expect(lifecycle.summary.downloadTrigger).toContain('service worker downloads same-origin model assets');
     expect(lifecycle.stages.map((stage) => [stage.key, stage.status])).toEqual([
       ['build-vendoring', 'ready'],
       ['app-delivery', 'ready'],
       ['first-online-launch', 'action'],
       ['offline-reuse', 'action'],
     ]);
+  });
+
+  it('explains explicit warmup-only delivery when the static policy disables install precache', () => {
+    const lifecycle = buildModelDeliveryLifecycle({
+      generatedAt: '2026-06-20T10:00:00.000Z',
+      modelDeliveryPolicy: modelDeliveryPolicy('warmup-only'),
+      staticAssetsReport: staticAssetsReport(),
+    });
+
+    expect(lifecycle.summary.downloadStrategy).toBe('warmup-only');
+    expect(lifecycle.summary.downloadTrigger).toContain('only when the Warm model action');
+    expect(lifecycle.stages.find((stage) => stage.key === 'first-online-launch')?.detail).toContain('explicit Warm model action');
   });
 
   it('marks offline reuse ready after the PWA cache and model integrity are verified', () => {
@@ -154,6 +188,7 @@ describe('model delivery lifecycle', () => {
     expect(fs.existsSync(markdownTarget)).toBe(true);
     expect(lifecycle.schemaVersion).toBe(modelDeliveryLifecycleSchemaVersion);
     expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('First online launch');
+    expect(renderModelDeliveryLifecycleMarkdown(lifecycle)).toContain('Download strategy: precache-on-install');
     expect(fs.readFileSync(markdownTarget, 'utf8')).toContain('Model Delivery Lifecycle Report');
   });
 

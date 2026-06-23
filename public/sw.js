@@ -1,15 +1,32 @@
 const CACHE_PREFIX = 'movebeta-pwa';
 const CACHE_VERSION = 'v-dev';
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
-const APP_SHELL = ['/', '/index.html', '/manifest.json', '/favicon.ico', '/pwa/icon-192.png', '/pwa/icon-512.png'];
+const APP_SHELL = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/favicon.ico',
+  '/pwa/icon-192.png',
+  '/pwa/icon-512.png',
+  '/model-delivery-policy.json',
+];
 const EXPORT_ASSETS = [];
 const MODEL_ASSET_MANIFEST = '/model-assets.json';
+const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json';
+const DEFAULT_MODEL_DELIVERY_POLICY = {
+  web: {
+    downloadStrategy: 'precache-on-install',
+  },
+};
 
 function uniqueAssets(...groups) {
   return [...new Set(groups.flat().filter((asset) => typeof asset === 'string' && asset.length > 0))];
 }
 
 async function cacheModelAssets(cache) {
+  const policy = await readJsonAsset(cache, MODEL_DELIVERY_POLICY, DEFAULT_MODEL_DELIVERY_POLICY);
+  if (!shouldPrecacheModelAssets(policy)) return;
+
   const response = await fetch(MODEL_ASSET_MANIFEST, { cache: 'no-store' });
   if (!response.ok) return;
 
@@ -19,6 +36,29 @@ async function cacheModelAssets(cache) {
     : [];
 
   await cache.addAll([MODEL_ASSET_MANIFEST, ...modelAssets]);
+}
+
+async function readJsonAsset(cache, assetPath, fallback) {
+  try {
+    const response = await fetch(assetPath, { cache: 'no-store' });
+    if (response.ok) {
+      await cache.put(assetPath, response.clone());
+      return response.json();
+    }
+  } catch {}
+
+  const cached = await cache.match(assetPath);
+  if (!cached) return fallback;
+
+  try {
+    return cached.json();
+  } catch {
+    return fallback;
+  }
+}
+
+function shouldPrecacheModelAssets(policy) {
+  return policy?.web?.downloadStrategy === 'precache-on-install';
 }
 
 self.addEventListener('install', (event) => {
@@ -86,6 +126,7 @@ self.addEventListener('fetch', (event) => {
 
   if (
     url.pathname === MODEL_ASSET_MANIFEST ||
+    url.pathname === MODEL_DELIVERY_POLICY ||
     url.pathname.startsWith('/models/') ||
     url.pathname.startsWith('/_expo/static/') ||
     url.pathname.startsWith('/assets/') ||

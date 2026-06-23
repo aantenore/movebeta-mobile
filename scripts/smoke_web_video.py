@@ -50,6 +50,7 @@ def main() -> None:
         assert "self.addEventListener('fetch'" in service_worker_text
         assert "caches.open" in service_worker_text
         assert "/model-assets.json" in service_worker_text
+        assert "/model-delivery-policy.json" in service_worker_text
         assert "cacheModelAssets" in service_worker_text
         assert "EXPORT_ASSETS" in service_worker_text
         assert re.search(r"const CACHE_VERSION = ['\"]v-[a-f0-9]{16}['\"];", service_worker_text)
@@ -60,6 +61,9 @@ def main() -> None:
         assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
         assert "/models/movenet/singlepose/lightning/4/model.json" in model_assets["assets"]
         model_asset_bytes = model_assets["summary"]["totalBytes"]
+        model_delivery_policy = page.evaluate("async () => await fetch('/model-delivery-policy.json').then((response) => response.json())")
+        assert model_delivery_policy["schemaVersion"] == "movebeta.model-delivery-policy.v1"
+        assert model_delivery_policy["web"]["downloadStrategy"] == "precache-on-install"
         model_json = page.evaluate(
             "async () => await fetch('/models/movenet/singlepose/lightning/4/model.json').then((response) => response.json())"
         )
@@ -116,7 +120,14 @@ def main() -> None:
               };
             }"""
         )
-        required_cached_paths = ["/index.html", "/model-assets.json", model_assets["modelUrl"], *model_assets["assets"], *export_assets]
+        required_cached_paths = [
+            "/index.html",
+            "/model-delivery-policy.json",
+            "/model-assets.json",
+            model_assets["modelUrl"],
+            *model_assets["assets"],
+            *export_assets,
+        ]
         for cached_path in required_cached_paths:
             assert cached_path in cache_state["paths"], cached_path
         assert any(re.match(r"movebeta-pwa-v-[a-f0-9]{16}$", key) for key in cache_state["keys"]), cache_state["keys"]

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T15:16:05.897Z",
+  "generatedAt": "2026-06-23T15:24:39.554Z",
   "model": {
     "assetCount": 3,
     "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
@@ -30,7 +30,7 @@
       "status": "ready"
     },
     {
-      "detail": "The browser fetches model-assets.json and listed /models assets on first online launch or explicit warmup.",
+      "detail": "The service worker fetches model-assets.json and listed /models assets during first online install; Warm model can refresh the cache explicitly.",
       "key": "first-online-launch",
       "label": "First online launch",
       "nextAction": "Open the PWA online once or use Warm model before going offline.",
@@ -47,7 +47,8 @@
   "summary": {
     "cacheReady": false,
     "deliveryMode": "same-origin-static",
-    "downloadTrigger": "The model is vendored during build, then the browser downloads same-origin model assets on first online launch, service-worker install, or explicit warmup.",
+    "downloadStrategy": "precache-on-install",
+    "downloadTrigger": "The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.",
     "firstUseRequiresNetwork": true,
     "nextAction": "Open the PWA online once or use Warm model before going offline.",
     "status": "action"
