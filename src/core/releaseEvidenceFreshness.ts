@@ -68,6 +68,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   githubWorkflowReport?: unknown;
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
+  licenseReviewPacket?: unknown;
   releaseBlockerIssueFilingPlan?: unknown;
   releaseBlockerIssueWebLinks?: unknown;
   releaseBlockerIssuesReport?: unknown;
@@ -323,6 +324,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/dependency-license-report.json',
     refreshCommand: 'npm run security:licenses',
     reportKey: 'dependencyLicenseReport',
+    requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'license-review-packet',
+    label: 'License review packet',
+    maxAgeHours: 168,
+    owner: 'release',
+    path: 'docs/sdlc/license-review-packet.json',
+    refreshCommand: 'npm run release:license-review',
+    reportKey: 'licenseReviewPacket',
     requiredFor: ['store', 'handoff'],
   },
   {

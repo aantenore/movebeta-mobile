@@ -35,6 +35,7 @@ function bundle(generatedAt = '2026-06-20T10:00:00.000Z'): ReleaseEvidenceFreshn
     githubWorkflowReport: report(generatedAt),
     iosToolchainReport: report(generatedAt),
     launchReadinessReport: report(generatedAt),
+    licenseReviewPacket: report(generatedAt),
     releaseBlockerIssueFilingPlan: report(generatedAt),
     releaseBlockerIssueWebLinks: report(generatedAt),
     releaseBlockerIssuesReport: report(generatedAt),
@@ -67,8 +68,8 @@ describe('release evidence freshness', () => {
     expect(ReleaseEvidenceFreshnessSchema.parse(freshness)).toEqual(freshness);
     expect(freshness.schemaVersion).toBe(releaseEvidenceFreshnessSchemaVersion);
     expect(freshness.summary).toMatchObject({
-      artifactCount: 31,
-      freshCount: 31,
+      artifactCount: 32,
+      freshCount: 32,
       invalidDateCount: 0,
       maxObservedAgeHours: 2,
       missingDateCount: 0,

@@ -1,6 +1,6 @@
 # Model Verification Suite Report
 
-Generated: 2026-06-23T16:15:27.247Z
+Generated: 2026-06-23T16:31:02.237Z
 
 - Status: technical-ready
 - Technical ready: yes
@@ -20,9 +20,9 @@ Generated: 2026-06-23T16:15:27.247Z
 
 | Check | Status | Owner | Command | Detail |
 | --- | --- | --- | --- | --- |
-| MoveNet runtime budget | pass | engineering | `npm run model:movenet:readiness` | 6274ms load, 320ms avg inference, 325ms max inference |
-| Model load budget | pass | engineering | `npm run model:movenet:readiness` | 6274ms <= 25000ms load budget |
-| Inference budget | pass | engineering | `npm run model:movenet:readiness` | 320ms avg and 325ms max inference are inside budget |
+| MoveNet runtime budget | pass | engineering | `npm run model:movenet:readiness` | 4519ms load, 335ms avg inference, 347ms max inference |
+| Model load budget | pass | engineering | `npm run model:movenet:readiness` | 4519ms <= 25000ms load budget |
+| Inference budget | pass | engineering | `npm run model:movenet:readiness` | 335ms avg and 347ms max inference are inside budget |
 | Model-shaped analysis replay | pass | engineering | `npm run model:analysis:replay` | 3/3 model-shaped attempts passed |
 | Wall-angle coverage | pass | engineering | `npm run model:analysis:replay` | overhang, slab, vertical |
 | Movement metric coverage | pass | engineering | `npm run model:analysis:replay` | flow, foot-cuts, hip-drift, lock-off, pause-time |

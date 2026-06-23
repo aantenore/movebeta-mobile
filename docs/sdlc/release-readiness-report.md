@@ -267,7 +267,7 @@ platforms are validated on physical climbing videos and devices.
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, static
   MoveNet asset readiness, model asset provenance, model delivery lifecycle, PWA readiness, web smoke report, Vercel
   deployment readiness, Vercel workflow readiness, EAS standard check, moderate-or-higher dependency audit, dependency
-  license inventory, and acquisition readiness plus release evidence freshness.
+  license inventory, license review packet, acquisition readiness, data-room index, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -282,6 +282,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:freshness:doctor` writes `docs/sdlc/release-freshness-report.json` and
   `docs/sdlc/release-freshness-report.md`, so generated release reports must stay inside configurable freshness windows
   before handoff or store work.
+- `npm run release:license-review` writes `docs/sdlc/license-review-packet.json`,
+  `docs/sdlc/license-review-packet.md`, and `docs/legal/THIRD_PARTY_NOTICES.md`, aggregating dependency, model, notice,
+  and legal-clearance review evidence without claiming external legal approval.
 - `npm run release:acquisition` writes `docs/sdlc/acquisition-readiness-packet.json` and
   `docs/sdlc/acquisition-readiness-packet.md`, aggregating product, technical, distribution, commercial, model,
   supply-review, and handoff signals for buyer due diligence without exposing private artifacts.
@@ -348,7 +351,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 184/187 tasks done, 138/140 backlog items done, 171/171 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 187/190 tasks done, 141/143 backlog items done, 173/173 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -393,15 +396,18 @@ platforms are validated on physical climbing videos and devices.
   for the Expo `xcode` tooling chain.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
+- `npm run release:license-review`: passed and wrote `docs/sdlc/license-review-packet.json`,
+  `docs/sdlc/license-review-packet.md`, and `docs/legal/THIRD_PARTY_NOTICES.md` with status `review`, 15 obligations,
+  14 review obligations, 0 blocked obligations, and explicit no-legal-clearance claim.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 31/31 fresh artifacts, and 0 stale artifacts.
+  status `ready`, 32/32 fresh artifacts, and 0 stale artifacts.
 - `npm run release:acquisition`: passed and wrote `docs/sdlc/acquisition-readiness-packet.json` plus
   `docs/sdlc/acquisition-readiness-packet.md` with status `needs-external-clearance`, 5/9 ready signals, 0 blocked
-  signals, 10 external blockers, and 15/15 due-diligence artifacts ready.
+  signals, 3 review signals, 10 external blockers, and 17/17 due-diligence artifacts ready.
 - `npm run release:data-room`: passed and wrote `docs/sdlc/data-room-index.json` plus
-  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 15/31 ready items, 14 external-required items,
-  2 review items, 0 missing items, and 0 blocked items.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 36/36 release steps passing.
+  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 16/33 ready items, 14 external-required items,
+  3 review items, 0 missing items, and 0 blocked items.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 37/37 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

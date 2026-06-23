@@ -55,6 +55,11 @@ function readyReports() {
         totalTracks: 3,
       },
     },
+    licenseReviewPacket: {
+      generatedAt,
+      schemaVersion: 'movebeta.license-review-packet.v1',
+      summary: { status: 'ready' },
+    },
     modelAssetProvenanceReport: {
       generatedAt,
       schemaVersion: 'movebeta.model-asset-provenance-report.v1',
@@ -111,6 +116,7 @@ function allArtifactsAvailable() {
     'docs/sdlc/dependency-license-report.json': true,
     'docs/sdlc/feature-completion-report.json': true,
     'docs/sdlc/launch-readiness-report.json': true,
+    'docs/sdlc/license-review-packet.json': true,
     'docs/sdlc/model-asset-provenance-report.json': true,
     'docs/sdlc/model-delivery-lifecycle-report.json': true,
     'docs/sdlc/pwa-readiness-report.json': true,
@@ -119,6 +125,7 @@ function allArtifactsAvailable() {
     'docs/sdlc/vercel-deployment-report.json': true,
     'docs/sdlc/web-smoke-report.json': true,
     'docs/store/store-submission-packet.json': true,
+    'docs/legal/THIRD_PARTY_NOTICES.md': true,
   };
 }
 
@@ -134,7 +141,7 @@ describe('acquisition readiness packet', () => {
     expect(packet.schemaVersion).toBe(acquisitionReadinessPacketSchemaVersion);
     expect(packet.summary).toMatchObject({
       blockedSignalCount: 0,
-      dueDiligenceArtifactCount: 15,
+      dueDiligenceArtifactCount: 17,
       externalBlockerCount: 0,
       readySignalCount: 9,
       reviewSignalCount: 0,
@@ -143,6 +150,8 @@ describe('acquisition readiness packet', () => {
     });
     expect(packet.commands.map((command) => command.key)).toContain('acquisition-readiness');
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Acquisition readiness packet');
+    expect(packet.artifacts.map((artifact) => artifact.label)).toContain('License review packet');
+    expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Third-party notices');
     expect(packet.artifacts.map((artifact) => artifact.label)).toContain('Web smoke report');
     expect(JSON.stringify(packet)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
   });
