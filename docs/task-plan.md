@@ -175,3 +175,4 @@
 | T171 | Add explicit PWA model-cache warmup action and packet | Done |
 | T172 | Add SHA-256 integrity verification to PWA model-cache warmup | Done |
 | T173 | Add PWA runtime model integrity readiness gating | Done |
+| T174 | Add share-safe cue-validation starter kit generator | Done |

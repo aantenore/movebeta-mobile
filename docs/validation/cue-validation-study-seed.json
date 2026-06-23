@@ -1,0 +1,44 @@
+{
+  "acceptance": {
+    "maxReviewerScoreSpreadPerCriterion": 1,
+    "minAverageCueScore": 4,
+    "minClips": 20,
+    "minDistinctReviewersPerCue": 2,
+    "minDistinctReviewersPerClip": 2,
+    "minReviewsPerCue": 1,
+    "requiredReviewModes": [
+      "packet-only"
+    ],
+    "requiredReviewerRoles": [
+      "coach"
+    ],
+    "requiredWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ]
+  },
+  "appVersion": "1.0.0",
+  "clipCount": 0,
+  "clips": [],
+  "cueCount": 0,
+  "generatedAt": "2026-06-23T09:00:58.353Z",
+  "privacy": {
+    "keyFramesIncluded": false,
+    "landmarksIncluded": false,
+    "privateNotesIncluded": false,
+    "rawUrisIncluded": false,
+    "rawVideoIncluded": false,
+    "reviewerScoresInvented": false,
+    "videoLeavesDevice": false
+  },
+  "readyForValidation": false,
+  "reviewerInstructions": [
+    "Review each generated cue from the packet only; do not request or attach raw video.",
+    "Two distinct coach reviewers should score every cue before running the validation gate.",
+    "Adjudicate cue rows when reviewer score spread exceeds the configured consensus threshold.",
+    "Scores must be real coach judgments, not generated defaults.",
+    "Use the final filled dataset with npm run validation:cue before making production movement-quality claims."
+  ],
+  "schemaVersion": "movebeta.cue-validation-study-seed.v1"
+}

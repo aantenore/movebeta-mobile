@@ -1,0 +1,59 @@
+{
+  "acceptance": {
+    "maxReviewerScoreSpreadPerCriterion": 1,
+    "minAverageCueScore": 4,
+    "minClips": 20,
+    "minDistinctReviewersPerCue": 2,
+    "minDistinctReviewersPerClip": 2,
+    "minReviewsPerCue": 1,
+    "requiredReviewModes": [
+      "packet-only"
+    ],
+    "requiredReviewerRoles": [
+      "coach"
+    ],
+    "requiredWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ]
+  },
+  "clips": [],
+  "generatedAt": "2026-06-23T09:00:58.353Z",
+  "instructions": [
+    "Use this manifest to verify consented local reports before coach worksheet collection.",
+    "Keep raw video, local file paths, frame data, landmarks, screenshots, and private notes outside this manifest.",
+    "Share packet-only review materials separately from the local device after consent is granted.",
+    "Collect real coach worksheet scores before composing the final validation dataset."
+  ],
+  "privacy": {
+    "coachPacketsIncluded": false,
+    "keyFramesIncluded": false,
+    "landmarksIncluded": false,
+    "privateNotesIncluded": false,
+    "rawUrisIncluded": false,
+    "rawVideoIncluded": false,
+    "reviewerScoresInvented": false,
+    "videoLeavesDevice": false
+  },
+  "schemaVersion": "movebeta.cue-validation-clip-intake-manifest.v1",
+  "sourceSeedGeneratedAt": "2026-06-23T09:00:58.353Z",
+  "summary": {
+    "clipCount": 0,
+    "cueCount": 0,
+    "missingWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ],
+    "requiredCoachReviewRows": 0,
+    "status": "needs-consent",
+    "targetClipCount": 20,
+    "targetWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ],
+    "wallAngles": []
+  }
+}

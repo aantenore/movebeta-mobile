@@ -152,6 +152,27 @@ unknown rows are rejected, and the resulting JSON is compatible with the `npm ru
 The app can also run a local gate preview over the completed dataset and return ready status, aggregate counts, average
 score, wall-angle coverage, and failed checks without calling a remote API.
 
+## Cue Validation Starter Kit
+
+`npm run validation:cue:starter` prepares the packet-only artifacts needed before real coach scoring starts:
+
+```ts
+type CueValidationStarterKitReport = {
+  schemaVersion: 'movebeta.cue-validation-starter-kit.v1';
+  status: 'needs-seed' | 'needs-coverage' | 'ready-for-review';
+  sourceSeedProvided: boolean;
+  artifacts: Array<{
+    label: string;
+    path: string;
+    purpose: string;
+  }>;
+};
+```
+
+The command may run with no seed to create blank, share-safe starter artifacts, or with `-- --seed <seed.json>` after
+Sessions exports a real `movebeta.cue-validation-study-seed.v1`. It never writes the final production dataset JSON, and
+it rejects local paths, raw media references, credentials, reviewer identities, or invented scores.
+
 ## Optional Future Sync API
 
 Any server-side API should accept reports and user-approved exports only. Raw video upload should be a separate explicit

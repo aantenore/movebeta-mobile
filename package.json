@@ -69,6 +69,7 @@
     "native:qa:validate": "node scripts/validate_native_qa_evidence.mjs",
     "native:qa:runbook": "node scripts/native_qa_packet.mjs --stable-date",
     "native:ios:doctor": "node scripts/ios_toolchain_doctor.mjs",
+    "validation:cue:starter": "tsx scripts/cue_validation_starter_kit.ts",
     "validation:cue:doctor": "node scripts/cue_validation_dataset_doctor.mjs",
     "release:env:doctor": "node scripts/env_template_doctor.mjs",
     "release:credentials:doctor": "node scripts/store_credentials_doctor.mjs",

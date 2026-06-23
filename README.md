@@ -324,6 +324,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
 - Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
   `docs/sdlc/native-qa-evidence.template.json`.
+- Cue validation starter kit: `docs/sdlc/cue-validation-starter-kit-report.json`,
+  `docs/validation/cue-validation-study-seed.json`, and blank worksheet JSON/CSV artifacts for real coach scoring.
 - Native QA evidence kit contract: `src/core/nativeQaEvidenceKit.ts`.
 - Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
 - Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
@@ -341,6 +343,7 @@ npm run model:movenet:assets:check
 npm run model:assets:provenance
 npm run model:verification:suite
 npm run model:evidence:sync
+npm run validation:cue:starter
 npm run release:blocker-issues
 npm run release:blocker-issues:file
 npm run native:ios:doctor

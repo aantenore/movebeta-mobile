@@ -280,14 +280,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 123 test files and 503 tests.
+- `npm test`: passed, 126 test files and 523 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 10648ms load time, 317ms average inference, and 321ms max inference in the latest run.
+  CPU backend, 3906ms load time, 336ms average inference, and 337ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -315,7 +315,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 170/173 tasks done, 124/126 backlog items done, 157/157 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 171/174 tasks done, 125/127 backlog items done, 158/158 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -335,6 +335,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run web:vercel:workflow`: passed and wrote `docs/sdlc/vercel-workflow-report.json` plus
   `docs/sdlc/vercel-workflow-report.md` with status `template-ready`, 3/5 verified checks, 0 blocked checks, and 2
   workflow activation actions remaining outside the repository.
+- `npm run validation:cue:starter`: passed and wrote `docs/sdlc/cue-validation-starter-kit-report.json` plus blank
+  seed, intake manifest, reviewer onboarding, and worksheet JSON/CSV artifacts with status `needs-seed`.
 - `npm run validation:cue:doctor`: passed as a command and wrote
   `docs/sdlc/cue-validation-dataset-report.json` with status `blocked` because real consented coach-review dataset JSON
   is not present.
@@ -343,8 +345,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 20/20 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 25/25 release steps passing.
+  status `ready`, 21/21 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 26/26 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.

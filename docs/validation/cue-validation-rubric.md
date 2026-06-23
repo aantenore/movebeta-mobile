@@ -32,6 +32,17 @@ Minimum useful set before production claims:
 
 ## Dataset Gate
 
+Before real coach scoring starts, run:
+
+```bash
+npm run validation:cue:starter
+```
+
+This creates the share-safe study seed, clip intake manifest, reviewer onboarding packet, blank worksheet JSON/CSV, and
+starter-kit SDLC report. With a Sessions-exported seed, rerun it as `npm run validation:cue:starter -- --seed <seed.json>`.
+The starter kit does not create `cue-validation-dataset.json`; that file is reserved for completed, consented coach
+reviews.
+
 Copy `docs/validation/cue-validation-dataset.template.json` to `docs/validation/cue-validation-dataset.json`, replace
 placeholders with consented coach review packets and reviews, then run:
 
