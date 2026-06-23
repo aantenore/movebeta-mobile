@@ -1,5 +1,5 @@
 import { appConfig } from '@/core/config';
-import { activeVideoAnalysisDurationMs } from '@/video/analysisWindow';
+import { activeVideoAnalysisDurationMs, resolveVideoAnalysisWindow } from '@/video/analysisWindow';
 import { buildVideoAnalysisPerformance } from '@/video/performanceBudget';
 
 import {
@@ -83,6 +83,7 @@ export class OnDeviceMovementPipeline {
       ...report,
       engine: {
         ...report.engine,
+        analysisWindow: resolveVideoAnalysisWindow(video),
         provider: this.poseEstimator.provider,
         runsOnDevice: true,
         uploadsVideo: false,

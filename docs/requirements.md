@@ -19,6 +19,8 @@
   score, reasons, processing budget, and privacy-safe metadata.
 - Let users choose a configurable local analysis window for long clips so the model can sample full, early, middle, or
   late sections without editing, uploading, or copying the original video file.
+- Persist the effective analysis window inside local reports, evidence timelines, and evidence-only exports without raw
+  video URI, local path, landmark, or key-frame payloads.
 - Analyze a short climbing attempt locally from camera, import, or fixture input in this runnable MVP.
 - Keep camera capture, video import, fixture input, and native pose providers behind replaceable contracts.
 - Let users choose between multiple bundled local attempts as a fallback/demo path.

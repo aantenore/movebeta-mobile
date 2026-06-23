@@ -348,6 +348,7 @@ def main() -> None:
         expect(page.get_by_text("Timeline", exact=True).first).to_be_visible()
         expect(page.get_by_text("Local evidence", exact=True)).to_be_visible()
         expect(page.get_by_text("Analysis evidence", exact=True)).to_be_visible()
+        expect(page.get_by_text("Analysis window").first).to_be_visible()
         expect(page.get_by_text("Privacy boundary").first).to_be_visible()
         page.get_by_text("Evidence", exact=True).nth(0).click()
         expect(page.get_by_text("Prepared analysis evidence")).to_be_visible()

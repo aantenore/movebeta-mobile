@@ -57,6 +57,8 @@
 - Vitest clip triage tests for local analyze, trim, retake, blocked, too-short, configurable score, and raw URI exclusion.
 - Vitest analysis window tests for full, early, middle, late, active-duration, source preservation, sampled timestamp
   bounds, and report budget behavior.
+- Vitest analysis evidence tests for report-level analysis-window metadata, timeline step generation, evidence-only export
+  serialization, and raw URI/path exclusion.
 - Vitest capture prep protocol tests for baseline degradation, report-driven cue focus, setup blockers, retake guidance,
   and local privacy copy.
 - Vitest analysis trust tests for coaching-ready local reports, retake decisions from weak pose signal, local-only privacy
