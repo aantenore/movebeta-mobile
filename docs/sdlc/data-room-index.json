@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-23T16:16:00.518Z",
+  "generatedAt": "2026-06-23T16:31:49.047Z",
   "items": [
     {
       "category": "release",
@@ -180,6 +180,28 @@
       "refreshCommand": "npm run security:licenses",
       "sensitivity": "share-safe",
       "status": "review"
+    },
+    {
+      "category": "legal",
+      "key": "license-review-packet",
+      "label": "License review packet",
+      "location": "docs/sdlc/license-review-packet.json",
+      "owner": "release",
+      "purpose": "Aggregated dependency, model, notice, and legal-clearance review packet.",
+      "refreshCommand": "npm run release:license-review",
+      "sensitivity": "share-safe",
+      "status": "review"
+    },
+    {
+      "category": "legal",
+      "key": "third-party-notices",
+      "label": "Third-party notices",
+      "location": "docs/legal/THIRD_PARTY_NOTICES.md",
+      "owner": "release",
+      "purpose": "Share-safe generated third-party notice index for buyer due diligence and distribution review.",
+      "refreshCommand": "npm run release:license-review",
+      "sensitivity": "share-safe",
+      "status": "ready"
     },
     {
       "category": "distribution",
@@ -393,11 +415,11 @@
   "summary": {
     "blockedCount": 0,
     "externalRequiredCount": 14,
-    "itemCount": 31,
+    "itemCount": 33,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readyCount": 15,
-    "reviewCount": 2,
+    "readyCount": 16,
+    "reviewCount": 3,
     "status": "needs-external-evidence"
   }
 }

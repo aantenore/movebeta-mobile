@@ -269,6 +269,9 @@
   GitHub CLI availability, and OAuth `workflow` scope without exposing token values.
 - Generate an offline dependency license report from the lockfile-installed package graph, including package counts,
   license summary, notice/attribution review packages, blocked packages, and local linked package handling.
+- Generate a share-safe license review packet and third-party notice index from dependency and model provenance evidence,
+  including legal-clearance status, review obligations, blocked obligations, notice artifacts, refresh commands, and no
+  credential values, local paths, raw artifacts, raw video, or token-like values.
 
 ## Non-Functional
 
@@ -477,6 +480,9 @@
 - Dependency license evidence must handle dual permissive/copyleft license expressions, treat local linked packages as
   internal, flag notice/attribution obligations for review, block missing or restricted third-party licenses, and avoid
   absolute local paths or secret-like values.
+- License review packets must aggregate dependency, model, and notice obligations without claiming external legal
+  clearance, must keep commercial legal approval as an explicit external reference, and must be tracked by release gate,
+  freshness, handoff, acquisition, and data-room evidence.
 - Repeat-outcome storage must support explicit clearing, deduplicate resolved cue ids, ignore orphan logs in summaries,
   and degrade to an empty state before data exists.
 - Smart repeat matching must stay local, ignore private note text, expose match confidence and reasons, and fall back to

@@ -90,6 +90,7 @@ export type DataRoomReportBundle = {
   githubWorkflowReport?: unknown;
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
+  licenseReviewPacket?: unknown;
   modelAssetProvenanceReport?: unknown;
   modelDeliveryLifecycleReport?: unknown;
   modelVerificationSuiteReport?: unknown;
@@ -304,6 +305,30 @@ const dataRoomSeeds: DataRoomSeed[] = [
     refreshCommand: 'npm run security:licenses',
     reportKey: 'dependencyLicenseReport',
     reviewStatuses: ['review'],
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'legal',
+    blockedStatuses: ['blocked'],
+    key: 'license-review-packet',
+    label: 'License review packet',
+    location: 'docs/sdlc/license-review-packet.json',
+    owner: 'release',
+    purpose: 'Aggregated dependency, model, notice, and legal-clearance review packet.',
+    readyStatuses: ['ready'],
+    refreshCommand: 'npm run release:license-review',
+    reportKey: 'licenseReviewPacket',
+    reviewStatuses: ['review'],
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'legal',
+    key: 'third-party-notices',
+    label: 'Third-party notices',
+    location: 'docs/legal/THIRD_PARTY_NOTICES.md',
+    owner: 'release',
+    purpose: 'Share-safe generated third-party notice index for buyer due diligence and distribution review.',
+    refreshCommand: 'npm run release:license-review',
     sensitivity: 'share-safe',
   },
   {

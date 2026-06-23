@@ -98,6 +98,11 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.dependency-license-report.v1',
     status: 'review',
   });
+  writeJson(path.join(root, 'docs/sdlc/license-review-packet.json'), {
+    schemaVersion: 'movebeta.license-review-packet.v1',
+    summary: { status: 'review' },
+  });
+  writeText(path.join(root, 'docs/legal/THIRD_PARTY_NOTICES.md'), '# Third-Party Notices');
   writeJson(path.join(root, 'docs/sdlc/release-freshness-report.json'), {
     schemaVersion: 'movebeta.release-evidence-freshness.v1',
     status: 'ready',
@@ -208,6 +213,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('eas-strict');
     expect(packet.commands.map((item) => item.key)).toContain('github-workflow');
     expect(packet.commands.map((item) => item.key)).toContain('dependency-licenses');
+    expect(packet.commands.map((item) => item.key)).toContain('license-review');
     expect(packet.commands.map((item) => item.key)).toContain('feature-completion');
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issues');
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issue-filing');
@@ -227,6 +233,8 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Vercel workflow report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('License review packet');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Third-party notices');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model verification suite report');
     expect(packet.artifacts.map((item) => item.label)).toContain('MoveNet static assets report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model asset provenance report');
@@ -261,6 +269,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Native device QA evidence');
     expect(markdown).toContain('GitHub workflow doctor');
     expect(markdown).toContain('Dependency license report');
+    expect(markdown).toContain('License review packet');
     expect(markdown).toContain('Feature completion doctor');
     expect(markdown).toContain('Release blocker issue report');
     expect(markdown).toContain('Release blocker issue filing plan');
