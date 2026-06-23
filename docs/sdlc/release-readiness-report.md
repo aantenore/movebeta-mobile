@@ -601,10 +601,10 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 30 current artifacts including the
+  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 43 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
-  provenance report, PWA readiness report, Vercel deployment report, Vercel workflow report, release archive artifacts,
-  and 20 verification commands.
+  provenance report, model delivery lifecycle report, PWA readiness report, Vercel deployment report, Vercel workflow
+  report, release archive artifacts, and 28 verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.
