@@ -203,6 +203,8 @@
   config, and no backend/API route requirement.
 - Generate a content-addressed exported PWA service-worker cache version from app shell, Expo bundle, static model, and
   metadata asset contents so installed clients refresh cache names when shipped assets change.
+- Expose model update and cache-invalidation lifecycle evidence so founders and testers can distinguish vendored model
+  assets, content-addressed service-worker updates, pending PWA updates, and per-device cache warmup state.
 - Provide a share-safe Vercel static deployment readiness path that verifies the prebuilt static PWA contract, no-backend
   surface, empty Vercel secret template keys, project binding status, and deployment-secret availability without
   committing token values, project identifiers, local paths, or backend code.
@@ -356,8 +358,9 @@
   inference without a camera or cloud runtime.
 - MoveNet keypoint mapping must stay isolated behind a reusable contract that converts model output into normalized
   `PoseFrame` data before the local movement analyzer consumes it.
-- MoveNet readiness must produce a durable local JSON report with model load time, average and worst inference time,
-  backend, memory evidence, budget checks, and explicit limitations for synthetic-frame testing.
+- MoveNet readiness must prefer vendored same-origin static model assets when present and produce a durable local JSON
+  report with model source, model URL, model load time, average and worst inference time, backend, memory evidence,
+  budget checks, and explicit limitations for synthetic-frame testing.
 - Static MoveNet assets must be generated before release by downloading the TFJS graph and weight shards into
   `public/models`, normalizing model weight references to same-origin paths, exposing the configured model URL through
   app configuration, precaching model files in the service worker, verifying exported `dist` parity, and writing
@@ -547,6 +550,8 @@
 - PWA model delivery must be governed by a versioned static policy that declares whether web builds download model assets
   during service-worker install, explicit warmup, or first analysis, and release checks must verify that the exported PWA
   includes and follows that policy.
+- Model delivery lifecycle evidence must include content-addressed cache versioning and pending service-worker update
+  handling so offline analysis does not rely on stale cached model files after a deploy.
 - Exported web smoke tests must derive release-count expectations from generated SDLC reports instead of hard-coded
   task, backlog, launch-track, model-verification, or PWA check counts.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and

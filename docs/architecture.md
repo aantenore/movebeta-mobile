@@ -55,6 +55,9 @@ changing the pose-estimator contract.
 controlled reload to discover hashed files.
 The exported service worker cache version is content-addressed from app shell, Expo export, metadata, and static model
 assets, which makes cache invalidation explicit when a shipped bundle or model file changes.
+The model delivery lifecycle report surfaces that versioning as an Asset versioning stage and marks pending service-worker
+updates as an action before offline analysis, so a returning installed PWA does not silently rely on stale cached model
+files after a deploy.
 The in-app PWA runtime readiness probe also checks Cache Storage for the model manifest and listed `/models/...` files,
 separating generic offline app startup from offline model-analysis readiness.
 When Web Crypto SHA-256 is available, runtime readiness also verifies cached model bytes against manifest digests before
@@ -66,6 +69,9 @@ SHA-256 digests through browser Web Crypto when available, so offline model read
 integrity without a backend.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
+The MoveNet readiness and smoke commands also resolve `public/model-assets.json` and load the vendored graph/shards
+through a local TensorFlow.js IOHandler when the assets are present, so release checks prove the shipped model path
+without depending on TensorFlow Hub availability.
 `npm run model:delivery:lifecycle` and the Plan tab Model delivery lifecycle card turn that architecture into a
 share-safe operational view: build-time vendoring, app-origin browser fetch on first online launch or warmup, and
 offline reuse from Cache Storage are tracked as separate stages. Native builds use the same lifecycle contract but report

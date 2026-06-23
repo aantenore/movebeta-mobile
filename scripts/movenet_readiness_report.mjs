@@ -16,6 +16,10 @@ export const DEFAULT_MOVENET_READINESS_BUDGET = {
 
 const defaultInputShape = [192, 192, 3];
 
+function resolveProjectRoot() {
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+}
+
 function roundMs(value) {
   return Math.max(0, Math.round(value));
 }
@@ -34,6 +38,71 @@ function check(key, passed, label, detail) {
   };
 }
 
+function readJsonIfExists(filePath) {
+  if (!fs.existsSync(filePath)) return undefined;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function combineArrayBuffers(buffers) {
+  const totalBytes = buffers.reduce((sum, buffer) => sum + buffer.byteLength, 0);
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+
+  for (const buffer of buffers) {
+    combined.set(new Uint8Array(buffer), offset);
+    offset += buffer.byteLength;
+  }
+
+  return combined.buffer;
+}
+
+function bufferToArrayBuffer(buffer) {
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+}
+
+export function createLocalGraphModelIoHandler(modelJsonPath) {
+  return {
+    async load() {
+      const modelJson = JSON.parse(fs.readFileSync(modelJsonPath, 'utf8'));
+      const modelDir = path.dirname(modelJsonPath);
+      const weightSpecs = [];
+      const shardBuffers = [];
+
+      for (const group of modelJson.weightsManifest ?? []) {
+        weightSpecs.push(...(group.weights ?? []));
+        for (const shardPath of group.paths ?? []) {
+          shardBuffers.push(bufferToArrayBuffer(fs.readFileSync(path.join(modelDir, shardPath))));
+        }
+      }
+
+      return {
+        convertedBy: modelJson.convertedBy,
+        format: modelJson.format,
+        generatedBy: modelJson.generatedBy,
+        modelTopology: modelJson.modelTopology,
+        userDefinedMetadata: modelJson.userDefinedMetadata,
+        weightData: combineArrayBuffers(shardBuffers),
+        weightSpecs,
+      };
+    },
+  };
+}
+
+export function resolveLocalMoveNetModel(rootDir = resolveProjectRoot()) {
+  const manifest = readJsonIfExists(path.join(rootDir, 'public/model-assets.json'));
+  const publicModelUrl = typeof manifest?.modelUrl === 'string' ? manifest.modelUrl : undefined;
+  if (!publicModelUrl?.startsWith('/models/')) return undefined;
+
+  const modelJsonPath = path.join(rootDir, 'public', publicModelUrl.replace(/^\//, ''));
+  if (!fs.existsSync(modelJsonPath)) return undefined;
+
+  return {
+    ioHandler: createLocalGraphModelIoHandler(modelJsonPath),
+    modelSource: 'same-origin-static-assets',
+    modelUrl: publicModelUrl,
+  };
+}
+
 export function buildMoveNetReadinessReport({
   backend,
   budget = DEFAULT_MOVENET_READINESS_BUDGET,
@@ -42,6 +111,8 @@ export function buildMoveNetReadinessReport({
   inferenceRunsMs,
   loadMs,
   memory,
+  modelSource = 'tfhub-default',
+  modelUrl = 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4',
   output,
   warmupMs,
 }) {
@@ -90,6 +161,8 @@ export function buildMoveNetReadinessReport({
     maxInferenceMs,
     memory,
     model: 'MoveNet SinglePose Lightning',
+    modelSource,
+    modelUrl,
     output,
     schemaVersion: MOVENET_READINESS_SCHEMA_VERSION,
     status: failedChecks.length === 0 ? 'ready' : 'degraded',
@@ -101,14 +174,17 @@ export async function runMoveNetReadinessProbe({
   budget = DEFAULT_MOVENET_READINESS_BUDGET,
   generatedAt = new Date().toISOString(),
   inputShape = defaultInputShape,
+  rootDir = resolveProjectRoot(),
   runs = 3,
 } = {}) {
   await tf.setBackend('cpu');
   await tf.ready();
+  const localModel = resolveLocalMoveNetModel(rootDir);
 
   const loadStartedAt = performance.now();
   const detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, {
     modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+    ...(localModel ? { modelUrl: localModel.ioHandler } : {}),
   });
   const loadMs = performance.now() - loadStartedAt;
   const input = tf.zeros(inputShape, 'int32');
@@ -139,6 +215,8 @@ export async function runMoveNetReadinessProbe({
       inferenceRunsMs,
       loadMs,
       memory: tf.memory(),
+      modelSource: localModel?.modelSource,
+      modelUrl: localModel?.modelUrl,
       output: {
         maxKeypoints,
         maxPoses,

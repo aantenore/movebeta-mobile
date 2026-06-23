@@ -34,9 +34,12 @@ Generated: ${lifecycle.generatedAt}
 - Assets: ${lifecycle.model.assetCount}
 - Total bytes: ${lifecycle.model.totalBytes}
 - Cache ready: ${lifecycle.summary.cacheReady ? 'yes' : 'no'}
+- Content-addressed cache: ${lifecycle.summary.contentAddressedCache ? 'yes' : 'no'}
 - Delivery path verified: ${lifecycle.summary.deliveryPathVerified ? 'yes' : 'no'}
 - First use requires network: ${lifecycle.summary.firstUseRequiresNetwork ? 'yes' : 'no'}
+- Update available: ${lifecycle.summary.updateAvailable ? 'yes' : 'no'}
 - Download trigger: ${lifecycle.summary.downloadTrigger}
+- Update trigger: ${lifecycle.summary.updateTrigger}
 - Next action: ${lifecycle.summary.nextAction}
 - Credential values included: no
 - Local paths included: no
