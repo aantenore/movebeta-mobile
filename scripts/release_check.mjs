@@ -27,6 +27,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'release:evidence:intake'], key: 'externalEvidenceIntake', label: 'External evidence intake' },
   { command: ['npm', 'run', 'release:evidence:validate'], key: 'externalEvidenceValidation', label: 'External evidence validation' },
   { command: ['npm', 'run', 'release:evidence:promote'], key: 'externalEvidencePromotion', label: 'External evidence promotion candidate' },
+  { command: ['npm', 'run', 'release:evidence:apply'], key: 'externalEvidenceApply', label: 'External evidence apply guard' },
   { command: ['npm', 'run', 'store:submission'], key: 'storeSubmissionPacket', label: 'Store submission packet' },
   { command: ['npm', 'run', 'export:web'], key: 'webExport', label: 'Expo web export' },
   { command: ['npm', 'run', 'model:movenet:assets:check'], key: 'moveNetStaticAssets', label: 'MoveNet static model assets doctor' },

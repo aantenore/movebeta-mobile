@@ -182,3 +182,4 @@
 | T178 | Add external evidence intake report and template | Done |
 | T179 | Add external evidence validation report | Done |
 | T180 | Add external evidence promotion candidate report | Done |
+| T181 | Add external evidence apply guard | Done |

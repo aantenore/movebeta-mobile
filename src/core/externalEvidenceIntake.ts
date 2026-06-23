@@ -19,6 +19,7 @@ export const externalEvidenceIntakeSchemaVersion = 'movebeta.external-evidence-i
 export const externalEvidenceIntakeTemplateSchemaVersion = 'movebeta.external-evidence-intake-template.v1';
 export const externalEvidenceValidationReportSchemaVersion = 'movebeta.external-evidence-validation-report.v1';
 export const externalEvidencePromotionReportSchemaVersion = 'movebeta.external-evidence-promotion-report.v1';
+export const externalEvidenceApplyReportSchemaVersion = 'movebeta.external-evidence-apply-report.v1';
 
 const IntakeOwnerSchema = z.enum(['engineering', 'qa', 'product', 'release']);
 const IntakeStatusSchema = z.enum(['ready', 'needs-evidence']);
@@ -108,6 +109,7 @@ export const ExternalEvidenceFilledIntakeSchema = ExternalEvidenceIntakeTemplate
 
 const ExternalEvidenceValidationStatusSchema = z.enum(['ready', 'needs-evidence', 'invalid']);
 const ExternalEvidencePromotionStatusSchema = z.enum(['ready-to-apply', 'needs-evidence', 'invalid']);
+const ExternalEvidenceApplyStatusSchema = z.enum(['applied', 'ready-to-apply', 'needs-evidence', 'invalid']);
 
 export const ExternalEvidenceValidationReportSchema = z.object({
   checks: z.array(
@@ -172,11 +174,38 @@ export const ExternalEvidencePromotionReportSchema = z.object({
   }),
 });
 
+export const ExternalEvidenceApplyReportSchema = z.object({
+  appConfigPath: z.string(),
+  candidateEvidence: LaunchReadinessEvidenceSchema,
+  generatedAt: z.string(),
+  nextAction: z.string(),
+  privacy: z.object({
+    credentialValuesIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    tokenLikeValuesIncluded: z.literal(false),
+  }),
+  schemaVersion: z.literal(externalEvidenceApplyReportSchemaVersion),
+  sourcePromotion: ExternalEvidencePromotionReportSchema,
+  status: ExternalEvidenceApplyStatusSchema,
+  summary: z.object({
+    applied: z.boolean(),
+    appliedCheckCount: z.number().int().nonnegative(),
+    blockedCheckCount: z.number().int().nonnegative(),
+    candidateReady: z.boolean(),
+    promotedCheckCount: z.number().int().nonnegative(),
+    validationStatus: ExternalEvidenceValidationStatusSchema,
+    writeRequested: z.boolean(),
+  }),
+});
+
 export type ExternalEvidenceIntakeReport = z.infer<typeof ExternalEvidenceIntakeReportSchema>;
 export type ExternalEvidenceIntakeTemplate = z.infer<typeof ExternalEvidenceIntakeTemplateSchema>;
 export type ExternalEvidenceFilledIntake = z.infer<typeof ExternalEvidenceFilledIntakeSchema>;
 export type ExternalEvidenceValidationReport = z.infer<typeof ExternalEvidenceValidationReportSchema>;
 export type ExternalEvidencePromotionReport = z.infer<typeof ExternalEvidencePromotionReportSchema>;
+export type ExternalEvidenceApplyReport = z.infer<typeof ExternalEvidenceApplyReportSchema>;
 
 const forbiddenExternalEvidenceValuePattern =
   /(file:\/\/|content:\/\/|asset:\/\/|ph:\/\/|\/Users\/|\/private\/|\/var\/mobile\/|[A-Za-z]:\\|\.mov\b|\.mp4\b|rawVideoUri|videoUri|BEGIN PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|pat_[A-Za-z0-9_]+|sk_live_[A-Za-z0-9_]+|sk_test_[A-Za-z0-9_]+|bearer\s+[A-Za-z0-9._-]+|eyJ[A-Za-z0-9_-]{20,}|"private_key"\s*:|"client_email"\s*:)/i;
@@ -617,6 +646,67 @@ export function buildExternalEvidencePromotionReport({
       candidateReady: status === 'ready-to-apply',
       promotedCheckCount,
       validationStatus: parsedValidation.status,
+    },
+  });
+
+  return assertExternalEvidenceIntakeIsShareSafe(report);
+}
+
+export function buildExternalEvidenceApplyReport({
+  appConfigPath = 'app.json',
+  applied = false,
+  generatedAt = new Date().toISOString(),
+  promotionReport,
+  writeRequested = false,
+}: {
+  appConfigPath?: string;
+  applied?: boolean;
+  generatedAt?: string;
+  promotionReport: ExternalEvidencePromotionReport;
+  writeRequested?: boolean;
+}): ExternalEvidenceApplyReport {
+  const sourcePromotion = ExternalEvidencePromotionReportSchema.parse(promotionReport);
+  const candidateReady = sourcePromotion.status === 'ready-to-apply' && sourcePromotion.summary.candidateReady;
+  const appliedNow = Boolean(applied && writeRequested && candidateReady);
+  const status: z.infer<typeof ExternalEvidenceApplyStatusSchema> =
+    sourcePromotion.status === 'invalid'
+      ? 'invalid'
+      : appliedNow
+        ? 'applied'
+        : candidateReady
+          ? 'ready-to-apply'
+          : 'needs-evidence';
+
+  const report = ExternalEvidenceApplyReportSchema.parse({
+    appConfigPath,
+    candidateEvidence: sourcePromotion.candidateEvidence,
+    generatedAt,
+    nextAction:
+      status === 'applied'
+        ? 'Rerun release readiness, freshness, blocker issue, and handoff reports from the updated app configuration.'
+        : status === 'ready-to-apply'
+          ? 'Review the candidate evidence and rerun with --write-app-config only after stakeholder approval.'
+          : status === 'invalid'
+            ? 'Fix the external evidence promotion report before applying launch readiness evidence.'
+            : 'Collect, validate, and promote every external proof reference before applying launch readiness evidence.',
+    privacy: {
+      credentialValuesIncluded: false,
+      localPathsIncluded: false,
+      rawArtifactsIncluded: false,
+      rawVideoIncluded: false,
+      tokenLikeValuesIncluded: false,
+    },
+    schemaVersion: externalEvidenceApplyReportSchemaVersion,
+    sourcePromotion,
+    status,
+    summary: {
+      applied: appliedNow,
+      appliedCheckCount: appliedNow ? sourcePromotion.summary.promotedCheckCount : 0,
+      blockedCheckCount: sourcePromotion.summary.blockedCheckCount,
+      candidateReady,
+      promotedCheckCount: sourcePromotion.summary.promotedCheckCount,
+      validationStatus: sourcePromotion.summary.validationStatus,
+      writeRequested,
     },
   });
 
