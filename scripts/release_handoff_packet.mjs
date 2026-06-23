@@ -122,6 +122,8 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Release blocker issue web links', 'docs/sdlc/release-blocker-issue-web-links.json'),
       artifact(rootDir, 'MoveNet readiness report', 'docs/sdlc/movenet-readiness-report.json'),
       artifact(rootDir, 'MoveNet static assets report', 'docs/sdlc/movenet-static-assets-report.json'),
+      artifact(rootDir, 'Model asset provenance report', 'docs/sdlc/model-asset-provenance-report.json'),
+      artifact(rootDir, 'Model asset attribution notice', 'docs/sdlc/model-asset-attribution.md'),
       artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
       artifact(rootDir, 'Model verification suite report', 'docs/sdlc/model-verification-suite-report.json'),
       artifact(rootDir, 'Native QA runbook', 'docs/sdlc/native-qa-runbook.json'),
@@ -160,6 +162,11 @@ export function buildReleaseHandoffPacket({
         'store',
       ]),
       command('movenet-static-assets', 'MoveNet static assets doctor', 'npm run model:movenet:assets:check', [
+        'demo',
+        'internal',
+        'store',
+      ]),
+      command('model-asset-provenance', 'Model asset provenance doctor', 'npm run model:assets:provenance', [
         'demo',
         'internal',
         'store',

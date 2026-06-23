@@ -45,6 +45,7 @@ jobs:
       - run: npm run release:check
       - run: npm run export:web
       - run: npm run model:movenet:assets:check
+      - run: npm run model:assets:provenance
       - run: npm run web:pwa:check
       - run: npm run web:vercel:check
       - run: npx vercel pull --yes --environment=production --token=\${{ secrets.VERCEL_TOKEN }}
@@ -63,6 +64,8 @@ jobs:
           path: |
             docs/sdlc/vercel-deployment-report.json
             docs/sdlc/movenet-static-assets-report.json
+            docs/sdlc/model-asset-provenance-report.json
+            docs/sdlc/model-asset-attribution.md
             dist/model-assets.json
             dist/sw.js
 `;

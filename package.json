@@ -80,6 +80,7 @@
     "feature:doctor": "node scripts/feature_completion_doctor.mjs",
     "model:movenet:assets:download": "node scripts/download_movenet_static_assets.mjs",
     "model:movenet:assets:check": "node scripts/movenet_static_assets_doctor.mjs",
+    "model:assets:provenance": "node scripts/model_asset_provenance_doctor.mjs",
     "model:movenet:smoke": "node scripts/smoke_movenet_model.mjs",
     "model:movenet:readiness": "node scripts/movenet_readiness_report.mjs",
     "model:analysis:replay": "tsx scripts/model_analysis_replay.ts",

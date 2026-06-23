@@ -80,6 +80,11 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.movenet-static-assets-report.v1',
     summary: { status: 'ready' },
   });
+  writeJson(path.join(root, 'docs/sdlc/model-asset-provenance-report.json'), {
+    schemaVersion: 'movebeta.model-asset-provenance-report.v1',
+    summary: { status: 'review' },
+  });
+  writeText(path.join(root, 'docs/sdlc/model-asset-attribution.md'), '# Model Asset Attribution');
   writeJson(path.join(root, 'docs/sdlc/github-workflow-report.json'), {
     schemaVersion: 'movebeta.github-workflow-report.v1',
     status: 'blocked',
@@ -170,6 +175,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('release-blocker-issue-filing');
     expect(packet.commands.map((item) => item.key)).toContain('model-verification-suite');
     expect(packet.commands.map((item) => item.key)).toContain('movenet-static-assets');
+    expect(packet.commands.map((item) => item.key)).toContain('model-asset-provenance');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.commands.map((item) => item.key)).toContain('vercel-workflow');
     expect(packet.artifacts.map((item) => item.label)).toContain('GitHub workflow report');
@@ -177,6 +183,8 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Dependency license report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model verification suite report');
     expect(packet.artifacts.map((item) => item.label)).toContain('MoveNet static assets report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Model asset provenance report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Model asset attribution notice');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issue filing plan');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release evidence freshness report');
@@ -203,6 +211,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Release blocker issue filing plan');
     expect(markdown).toContain('Model verification suite');
     expect(markdown).toContain('MoveNet static assets doctor');
+    expect(markdown).toContain('Model asset provenance doctor');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('Vercel workflow readiness doctor');
     expect(markdown).toContain('npm run release:eas:strict');
