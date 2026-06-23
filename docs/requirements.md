@@ -209,6 +209,8 @@
 - Provide in-app PWA runtime guidance that detects standalone install mode, browser install prompt availability, service
   worker registration/control state, Cache API offline readiness, network state, and pending service-worker updates
   without requiring a backend.
+- Provide in-app PWA model-cache preflight that checks whether `/model-assets.json` and listed same-origin MoveNet model
+  assets are present in browser Cache Storage before claiming offline video-analysis readiness.
 - Prepare a share-safe release evidence packet from the Plan tab that aggregates launch readiness, model evidence,
   provider readiness, native QA runbook, blocker checklist, artifact paths, and release commands without secrets or raw
   local artifacts.

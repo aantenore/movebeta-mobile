@@ -262,6 +262,10 @@
   cache-version blockers, and JSON/Markdown report writes.
 - Browser smoke verifies service worker installation, content-addressed cache keys, cache inventory, offline reload, and
   cached same-origin model manifest access from the exported PWA.
+- Vitest PWA runtime readiness tests cover model-cache ready, partial-cache pending, native bypass, install-prompt, and
+  share-safety states.
+- Browser smoke verifies the Plan tab model-cache preflight and prepared PWA install guidance include model-cache
+  readiness.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
   configuration, no backend/API surface, empty Vercel secret template keys, project binding state, deployment-secret
   availability, and share-safe deploy commands.
