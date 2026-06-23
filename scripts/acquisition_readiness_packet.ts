@@ -124,6 +124,7 @@ export function writeAcquisitionReadinessPacket({
     'docs/sdlc/model-asset-provenance-report.json',
     'docs/sdlc/model-delivery-lifecycle-report.json',
     'docs/sdlc/pwa-readiness-report.json',
+    'docs/sdlc/web-smoke-report.json',
     'docs/sdlc/vercel-deployment-report.json',
     'docs/screenshots.md',
     '../movebeta-mobile-source.zip',
@@ -150,6 +151,7 @@ export function writeAcquisitionReadinessPacket({
     releaseHandoffPacket: readJsonIfExists(rootDir, 'docs/sdlc/release-handoff-packet.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),
     vercelDeploymentReport: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-report.json'),
+    webSmokeReport: readJsonIfExists(rootDir, 'docs/sdlc/web-smoke-report.json'),
   });
 
   fs.mkdirSync(path.dirname(jsonTarget), { recursive: true });

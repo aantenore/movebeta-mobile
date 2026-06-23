@@ -180,6 +180,10 @@
   external proof placeholders, missing internal artifact blocking, and credential/local-path/media/token rejection;
   `npm run release:data-room` writes durable JSON/Markdown data-room evidence and is included in release gates,
   freshness, and handoff artifacts.
+- Vitest web-smoke report tests for schema-versioned pass/fail output, sanitized diagnostics, JSON/Markdown writes,
+  and release-gate/readiness/freshness/handoff/acquisition/data-room integration; `npm run web:smoke:report`
+  serves the exported web bundle, runs the Playwright smoke runner, writes durable JSON/Markdown evidence, and is
+  included in `npm run release:check`.
 - Vitest Vercel deployment doctor tests for static-ready unlinked deployments, linked deployments without exposing
   secrets or project ids, blocked static/PWA drift, and JSON/Markdown report writes; `npm run web:vercel:check` writes
   durable static deployment readiness evidence and is included in `npm run release:check`.

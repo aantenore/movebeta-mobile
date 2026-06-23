@@ -1,6 +1,6 @@
 # Acquisition Readiness Packet
 
-Generated: 2026-06-23T15:52:01.821Z
+Generated: 2026-06-23T16:05:17.511Z
 
 ## Summary
 
@@ -9,7 +9,7 @@ Generated: 2026-06-23T15:52:01.821Z
 - Review signals: 3
 - Blocked signals: 0
 - External blockers: 10
-- Due diligence artifacts ready: 14/14
+- Due diligence artifacts ready: 15/15
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
 ## Privacy
@@ -25,12 +25,12 @@ Generated: 2026-06-23T15:52:01.821Z
 
 | Signal | Status | Owner | Detail | Next action |
 | --- | --- | --- | --- | --- |
-| Product scope | ready | product | Tracked delivery scope has no internal gaps and 171/171 traceability rows covered. | Keep feature-completion evidence fresh before buyer review. |
+| Product scope | ready | product | Tracked delivery scope has no internal gaps and 172/172 traceability rows covered. | Keep feature-completion evidence fresh before buyer review. |
 | Release gate | ready | engineering | The automated release gate is passing. | Regenerate the gate after any source or evidence change. |
 | Launch clearance | external-required | release | 1/3 launch track(s) ready with 10 external blocker reference(s) still tracked. | Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate. |
 | Model provenance | review | release | Model provenance is review; delivery lifecycle is action. | Complete commercial review for upstream model terms before final buyer reliance. |
 | Commercial path | review | founder | Commercial path is review; billing provider Not connected; paid plan mapping 0/2. | Choose a billing adapter and map paid plan keys when subscriptions enter scope. |
-| Distribution | ready | release | Store metadata is metadata-ready; PWA readiness is ready; Vercel static readiness is static-ready. | Use the static PWA path for buyer demo and keep native store blockers tracked separately. |
+| Distribution | ready | release | Store metadata is metadata-ready; PWA readiness is ready; web smoke is pass; Vercel static readiness is static-ready. | Use the static PWA path for buyer demo and keep native store blockers tracked separately. |
 | Handoff evidence | ready | release | Handoff packet includes 12/12 expected screenshot(s). | Regenerate handoff after the final commit is pushed. |
 | Supply review | review | release | Dependency license report is review; model license/provenance review is review. | Review notice obligations and upstream model terms before commercial transfer. |
 | Privacy boundary | ready | engineering | The packet contains negative privacy flags and rejects credential values, local paths, media references, and token-like values before sharing. | Keep buyer-facing artifacts packet-only and do not attach private media or account values. |
@@ -49,6 +49,7 @@ Generated: 2026-06-23T15:52:01.821Z
 | Model asset provenance report | ready | `docs/sdlc/model-asset-provenance-report.json` |
 | Model delivery lifecycle report | ready | `docs/sdlc/model-delivery-lifecycle-report.json` |
 | PWA readiness report | ready | `docs/sdlc/pwa-readiness-report.json` |
+| Web smoke report | ready | `docs/sdlc/web-smoke-report.json` |
 | Vercel deployment report | ready | `docs/sdlc/vercel-deployment-report.json` |
 | Screenshot gallery | ready | `docs/screenshots.md` |
 | Source archive | ready | `../movebeta-mobile-source.zip` |

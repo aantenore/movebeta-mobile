@@ -60,6 +60,7 @@ function makeProjectRoot() {
       'iosToolchainDoctor',
       'cueValidationDatasetDoctor',
       'storeCredentialsDoctor',
+      'webSmokeReport',
       'webExport',
       'easStandard',
       'securityAudit',
@@ -87,6 +88,14 @@ function makeProjectRoot() {
     },
   });
   writeText(path.join(root, 'dist/index.html'), '<!doctype html>');
+  writeJson(path.join(root, 'docs/sdlc/web-smoke-report.json'), {
+    generatedAt: '2026-06-20T08:00:00.000Z',
+    schemaVersion: 'movebeta.web-smoke-report.v1',
+    status: 'pass',
+    summary: {
+      status: 'pass',
+    },
+  });
   writeText(path.join(root, 'docs/store/privacy-declarations.md'), '# Privacy');
   writeJson(path.join(root, 'docs/store/store-manifest.json'), { ok: true });
   writeText(path.join(root, 'docs/store/store-listing.md'), '# Store');
