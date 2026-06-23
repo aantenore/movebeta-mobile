@@ -500,6 +500,9 @@
 - External release blocker guidance must include the preparatory starter, doctor, install, validation, and strict-gate
   commands needed to clear cue-validation, iOS build, native QA, EAS project, and store-credential blockers without
   exposing secret values or raw local artifacts.
+- External evidence intake must provide a share-safe report and fill-in template for every remaining external blocker,
+  accepting only relative repository paths, report identifiers, issue URLs, CI run URLs, or provider-console state
+  references while rejecting credential values, raw video paths, local machine paths, and token-like values.
 - Android builds must keep camera/import permissions aligned with the video workflow, exclude audio permission, and
   disable backup for sensitive local reports.
 - The app must avoid medical or safety guarantees.

@@ -191,6 +191,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate a dry-run GitHub issue filing plan, or explicitly file missing blocker issues after opt-in.',
     },
     {
+      command: 'npm run release:evidence:intake',
+      key: 'external-evidence-intake',
+      label: 'External evidence intake',
+      owner: 'release',
+      purpose: 'Generate a share-safe proof intake template for every external blocker before real evidence is collected.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -337,6 +344,13 @@ export function buildReleaseEvidencePacket({
       key: 'release-blocker-issue-filing-plan',
       label: 'Release blocker issue filing plan',
       path: 'docs/sdlc/release-blocker-issue-filing-plan.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
+    },
+    {
+      command: 'npm run release:evidence:intake',
+      key: 'external-evidence-intake-report',
+      label: 'External evidence intake report',
+      path: 'docs/sdlc/external-evidence-intake-report.json',
       status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {
