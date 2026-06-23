@@ -23,7 +23,7 @@
     },
     {
       "action": "Keep every weight shard referenced by model.json present under public/models.",
-      "detail": "Source model graph and 2 weight shard(s) are present and non-empty.",
+      "detail": "Source model graph and 2 weight shard(s) are present, non-empty, and not HTML responses.",
       "key": "source-weight-shards",
       "label": "Source weight shards",
       "status": "verified"
@@ -37,7 +37,7 @@
     },
     {
       "action": "Run npm run export:web after refreshing model assets so dist contains the same static model files.",
-      "detail": "Exported dist contains model-assets.json, model.json, and 2 weight shard(s).",
+      "detail": "Exported dist contains model-assets.json, model.json, and 2 valid weight shard(s).",
       "key": "exported-model-assets",
       "label": "Exported model assets",
       "status": "verified"
@@ -50,7 +50,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-23T12:25:21.219Z",
+  "generatedAt": "2026-06-23T12:34:03.336Z",
   "modelName": "MoveNet SinglePose Lightning",
   "modelUrl": "/models/movenet/singlepose/lightning/4/model.json",
   "privacy": {
@@ -68,7 +68,7 @@
     "shardCount": 2,
     "sourceAssetCount": 3,
     "status": "ready",
-    "totalBytes": 324508,
+    "totalBytes": 4963342,
     "verifiedCount": 7
   }
 }
