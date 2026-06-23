@@ -58,6 +58,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   cueValidationStarterKitReport?: unknown;
   dependencyLicenseReport?: unknown;
   envTemplateReport?: unknown;
+  externalEvidenceIntakeReport?: unknown;
   featureCompletionReport?: unknown;
   githubWorkflowReport?: unknown;
   iosToolchainReport?: unknown;
@@ -136,6 +137,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run release:blocker-issues:links',
     reportKey: 'releaseBlockerIssueWebLinks',
     requiredFor: ['handoff'],
+  },
+  {
+    key: 'external-evidence-intake-report',
+    label: 'External evidence intake report',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/external-evidence-intake-report.json',
+    refreshCommand: 'npm run release:evidence:intake',
+    reportKey: 'externalEvidenceIntakeReport',
+    requiredFor: ['internal', 'store', 'handoff'],
   },
   {
     key: 'movenet-readiness-report',

@@ -25,6 +25,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     cueValidationStarterKitReport: readJsonIfExists(rootDir, 'docs/sdlc/cue-validation-starter-kit-report.json'),
     dependencyLicenseReport: readJsonIfExists(rootDir, 'docs/sdlc/dependency-license-report.json'),
     envTemplateReport: readJsonIfExists(rootDir, 'docs/sdlc/env-template-report.json'),
+    externalEvidenceIntakeReport: readJsonIfExists(rootDir, 'docs/sdlc/external-evidence-intake-report.json'),
     featureCompletionReport: readJsonIfExists(rootDir, 'docs/sdlc/feature-completion-report.json'),
     githubWorkflowReport: readJsonIfExists(rootDir, 'docs/sdlc/github-workflow-report.json'),
     iosToolchainReport: readJsonIfExists(rootDir, 'docs/sdlc/ios-toolchain-report.json'),

@@ -189,6 +189,8 @@ web build with `npm run store:screenshots`.
   keeping Node and GitHub CLI mutation code out of the app runtime.
 - Release blocker issue web-link export in the Plan tab and CLI that generates prefilled GitHub issue URLs from a
   configurable repository without exposing secrets or local artifacts.
+- External evidence intake CLI that turns every open blocker into share-safe proof-reference rows and a fill-in template
+  before real device, coach, account, or CI evidence is collected.
 - Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
 - Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
   deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
@@ -230,6 +232,7 @@ npm run release:credentials:doctor
 npm run release:blocker-issues
 npm run release:blocker-issues:file
 npm run release:blocker-issues:links
+npm run release:evidence:intake
 npm run model:movenet:assets:download
 npm run model:movenet:assets:check
 npm run web:pwa:check
@@ -320,6 +323,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/release-blocker-issue-filing-plan.md`.
 - Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`,
   `docs/sdlc/release-blocker-issue-web-links.md`.
+- External evidence intake report and template: `docs/sdlc/external-evidence-intake-report.json`,
+  `docs/sdlc/external-evidence-intake-report.md`, `docs/sdlc/external-evidence-intake.template.json`.
 - PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
 - Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`,
   `docs/sdlc/vercel-deployment-report.md`.
@@ -355,6 +360,7 @@ npm run model:evidence:sync
 npm run validation:cue:starter
 npm run release:blocker-issues
 npm run release:blocker-issues:file
+npm run release:evidence:intake
 npm run native:ios:doctor
 npm run release:env:doctor
 npm run release:credentials:starter
