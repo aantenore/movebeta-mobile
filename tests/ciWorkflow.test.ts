@@ -60,6 +60,7 @@ describe('GitHub Actions CI template', () => {
     expect(vercelWorkflow).toContain('run: npm run release:check');
     expect(vercelWorkflow).toContain('run: npm run export:web');
     expect(vercelWorkflow).toContain('run: npm run model:movenet:assets:check');
+    expect(vercelWorkflow).toContain('run: npm run model:assets:provenance');
     expect(vercelWorkflow).toContain('run: npm run web:pwa:check');
     expect(vercelWorkflow).toContain('run: npm run web:vercel:check');
     expect(vercelWorkflow).toContain('secrets.VERCEL_TOKEN');
@@ -73,6 +74,8 @@ describe('GitHub Actions CI template', () => {
     expect(vercelWorkflow).toContain('uses: actions/upload-artifact@v4');
     expect(vercelWorkflow).toContain('docs/sdlc/release-gate-report.json');
     expect(vercelWorkflow).toContain('docs/sdlc/movenet-static-assets-report.json');
+    expect(vercelWorkflow).toContain('docs/sdlc/model-asset-provenance-report.json');
+    expect(vercelWorkflow).toContain('docs/sdlc/model-asset-attribution.md');
     expect(vercelWorkflow).toContain('docs/sdlc/vercel-deployment-report.json');
     expect(vercelWorkflow).toContain('dist/model-assets.json');
     expect(vercelWorkflow).toContain('dist/sw.js');

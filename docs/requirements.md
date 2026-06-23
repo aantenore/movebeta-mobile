@@ -344,6 +344,9 @@
   `public/models`, normalizing model weight references to same-origin paths, exposing the configured model URL through
   app configuration, precaching model files in the service worker, verifying exported `dist` parity, and writing
   share-safe JSON/Markdown evidence without raw video, local paths, credentials, or token-like values.
+- Vendored model assets must have release-time provenance evidence that verifies official source URLs, same-origin asset
+  inventory, SHA-256 digest parity, attribution notice presence, and explicit license-review status without inferring
+  final commercial legal clearance from downloaded files.
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.

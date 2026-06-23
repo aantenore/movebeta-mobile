@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "action": "Run npm run model:movenet:assets:download before provenance review.",
+      "detail": "Static model asset manifest uses the expected schema.",
+      "key": "manifest-schema",
+      "label": "Manifest schema",
+      "status": "verified"
+    },
+    {
+      "action": "Keep MoveNet source URLs pinned to the official TensorFlow Hub model path.",
+      "detail": "Manifest source URLs point to the TensorFlow Hub MoveNet SinglePose Lightning model path.",
+      "key": "official-source-url",
+      "label": "Official source URL",
+      "status": "verified"
+    },
+    {
+      "action": "Keep model asset paths same-origin under /models and aligned with the file inventory.",
+      "detail": "Manifest lists 3 same-origin model asset file(s).",
+      "key": "asset-inventory",
+      "label": "Asset inventory",
+      "status": "verified"
+    },
+    {
+      "action": "Regenerate public/model-assets.json whenever a model graph or shard changes.",
+      "detail": "Every model file exists locally and matches its recorded SHA-256 digest.",
+      "key": "hash-integrity",
+      "label": "Hash integrity",
+      "status": "verified"
+    },
+    {
+      "action": "Keep docs/sdlc/model-asset-attribution.md with release evidence and shipped documentation.",
+      "detail": "Attribution notice names the model, source, manifest, and provenance refresh command.",
+      "key": "attribution-notice",
+      "label": "Attribution notice",
+      "status": "verified"
+    },
+    {
+      "action": "Review upstream model terms from the source catalog before commercial distribution.",
+      "detail": "The doctor tracks provenance and attribution evidence, but it does not infer final commercial legal clearance from the downloaded files.",
+      "key": "license-review",
+      "label": "License review",
+      "status": "review"
+    }
+  ],
+  "generatedAt": "2026-06-23T07:56:27.347Z",
+  "modelName": "MoveNet SinglePose Lightning",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.model-asset-provenance-report.v1",
+  "source": {
+    "baseUrl": "https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/",
+    "modelUrl": "https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/model.json?tfjs-format=file",
+    "provider": "TensorFlow Hub"
+  },
+  "summary": {
+    "blockedCount": 0,
+    "checkCount": 6,
+    "fileCount": 3,
+    "nextAction": "Review upstream model terms before commercial distribution and keep the attribution notice in release evidence.",
+    "reviewCount": 1,
+    "status": "review",
+    "totalBytes": 324508,
+    "verifiedCount": 5
+  }
+}

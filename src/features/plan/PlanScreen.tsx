@@ -12,6 +12,7 @@ import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import iosToolchainReport from '../../../docs/sdlc/ios-toolchain-report.json';
+import modelAssetProvenanceReport from '../../../docs/sdlc/model-asset-provenance-report.json';
 import launchReadinessReport from '../../../docs/sdlc/launch-readiness-report.json';
 import modelAnalysisReplayReport from '../../../docs/sdlc/model-analysis-replay-report.json';
 import modelVerificationSuiteReport from '../../../docs/sdlc/model-verification-suite-report.json';
@@ -130,6 +131,7 @@ function providerStatusLabel(status: ProviderReadinessStatus) {
 }
 
 type FeatureCompletionReport = typeof featureCompletionReport;
+type ModelAssetProvenanceReport = typeof modelAssetProvenanceReport;
 type MoveNetStaticAssetsReport = typeof moveNetStaticAssetsReport;
 type VercelDeploymentReport = typeof vercelDeploymentReport;
 type VercelWorkflowReport = typeof vercelWorkflowReport;
@@ -189,6 +191,12 @@ function pwaRuntimeStatusLabel(status: PwaRuntimeReadiness['summary']['status'])
 
 function staticAssetStatusLabel(status: MoveNetStaticAssetsReport['summary']['status']) {
   return status === 'ready' ? 'Ready' : 'Blocked';
+}
+
+function modelAssetProvenanceStatusLabel(status: ModelAssetProvenanceReport['summary']['status']) {
+  if (status === 'ready') return 'Ready';
+  if (status === 'review') return 'Review';
+  return 'Blocked';
 }
 
 function formatBytes(value: number) {
@@ -1817,6 +1825,68 @@ function MoveNetStaticAssetsCard({
   );
 }
 
+function ModelAssetProvenanceCard({
+  onPreparePacket,
+  report,
+}: {
+  onPreparePacket: () => void;
+  report: ModelAssetProvenanceReport;
+}) {
+  const isBlocked = report.summary.status === 'blocked';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>
+            {report.summary.verifiedCount}/{report.summary.checkCount}
+          </Text>
+          <Text style={styles.qaKitMetricLabel}>checks</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{report.summary.reviewCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>review</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.providerMetricValue}>{formatBytes(report.summary.totalBytes)}</Text>
+          <Text style={styles.qaKitMetricLabel}>bundle</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Model asset provenance</Text>
+          <Text style={styles.qaKitText}>{report.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isBlocked ? styles.launchStatusBlocked : styles.launchStatusReady]}>
+          {modelAssetProvenanceStatusLabel(report.summary.status)}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare model asset provenance packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Provenance</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.qaKitText}>{report.source.modelUrl}</Text>
+      <View style={styles.releaseUnblockList}>
+        {report.checks.map((check) => (
+          <View key={check.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{check.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>{check.detail}</Text>
+              </View>
+              <Text style={[styles.launchStatus, check.status === 'blocked' ? styles.launchStatusBlocked : styles.launchStatusReady]}>
+                {check.status}
+              </Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function PwaReadinessCard({ report }: { report: typeof pwaReadinessReport }) {
   const isReady = report.summary.status === 'ready';
 
@@ -2381,6 +2451,7 @@ function buildPlanSafetySources({
   evidencePlan,
   launchReadiness,
   modelEvidence,
+  modelAssetProvenance,
   moveNetStaticAssets,
   modelVerificationSuite,
   recommendation,
@@ -2403,6 +2474,7 @@ function buildPlanSafetySources({
   iosToolchainSetupPacket: IosToolchainSetupPacket;
   launchReadiness: ReturnType<typeof buildLaunchReadinessSummary>;
   modelEvidence: ReturnType<typeof buildModelEvidenceSummary>;
+  modelAssetProvenance: ModelAssetProvenanceReport;
   moveNetStaticAssets: MoveNetStaticAssetsReport;
   modelVerificationSuite: ModelVerificationSuite;
   recommendation: ReturnType<typeof buildPlanRecommendation>;
@@ -2458,6 +2530,15 @@ function buildPlanSafetySources({
         moveNetStaticAssets.summary.nextAction,
         moveNetStaticAssets.modelUrl,
         ...moveNetStaticAssets.checks.map((check) => `${check.label} ${check.detail} ${check.action}`),
+      ].join(' '),
+    },
+    {
+      key: 'model-asset-provenance',
+      label: 'Model asset provenance',
+      text: [
+        modelAssetProvenance.summary.nextAction,
+        modelAssetProvenance.source.modelUrl,
+        ...modelAssetProvenance.checks.map((check) => `${check.label} ${check.detail} ${check.action}`),
       ].join(' '),
     },
     {
@@ -2648,6 +2729,7 @@ export function PlanScreen() {
       {
         featureCompletionReport,
         launchReadinessReport,
+        modelAssetProvenanceReport,
         modelAnalysisReplayReport,
         moveNetStaticAssetsReport,
         modelVerificationSuiteReport,
@@ -2711,6 +2793,7 @@ export function PlanScreen() {
       iosToolchainSetupPacket,
       launchReadiness,
       modelEvidence,
+      modelAssetProvenance: modelAssetProvenanceReport,
       moveNetStaticAssets: moveNetStaticAssetsReport,
       modelVerificationSuite,
       recommendation,
@@ -2901,6 +2984,14 @@ export function PlanScreen() {
     });
   }
 
+  function prepareModelAssetProvenancePacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(modelAssetProvenanceReport, null, 2),
+      title: 'Prepared model asset provenance packet',
+    });
+  }
+
   async function preparePwaInstallGuidance() {
     selectionFeedback();
     await pwaRuntime.promptInstall();
@@ -3037,6 +3128,7 @@ export function PlanScreen() {
       <Section title="Model verification suite" caption="Aggregated local proof for runtime, replay, privacy, and validation gaps.">
         <ModelVerificationSuiteCard suite={modelVerificationSuite} />
         <MoveNetStaticAssetsCard onPreparePacket={prepareMoveNetStaticAssetsPacket} report={moveNetStaticAssetsReport} />
+        <ModelAssetProvenanceCard onPreparePacket={prepareModelAssetProvenancePacket} report={modelAssetProvenanceReport} />
       </Section>
 
       <Section title="Provider readiness" caption="Configured model providers, runtime fallback, and native-build proof status.">

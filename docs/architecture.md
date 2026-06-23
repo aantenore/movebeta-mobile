@@ -47,6 +47,8 @@ local `model.json` to same-origin shard paths. `app.json` and `.env.example` exp
 `tfjsMoveNetModelUrl`, while `public/sw.js` precaches `/model-assets.json` plus every listed `/models/...` file. The
 download point is build/setup time; the runtime detector loads from the app origin and can reuse the service-worker cache
 when the PWA has been installed or opened online once.
+`npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
+same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 
 `src/video/videoMetadata.ts` resolves duration and dimensions before source normalization. Custom native builds read
 metadata through `movebeta-pose`; web preview can use browser video metadata; unsupported runtimes fall back to

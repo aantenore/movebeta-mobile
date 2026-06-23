@@ -216,6 +216,9 @@
 - MoveNet static assets doctor with `npm run model:movenet:assets:check`, which verifies same-origin model graph and
   weight shards in `public` and exported `dist`, service-worker model cache coverage, app config URL alignment,
   JSON/Markdown evidence, and release-gate/freshness/handoff integration.
+- Model asset provenance doctor with `npm run model:assets:provenance`, which verifies TensorFlow Hub source URLs,
+  same-origin asset inventory, SHA-256 parity, attribution notice presence, explicit license-review state,
+  release-gate/freshness/handoff/Vercel integration, and share-safety.
 - Vitest MoveNet static asset tests cover mocked TFHub downloads, absolute URL normalization into local shard paths,
   manifest hashing, missing-shard blockers, app model URL drift, JSON/Markdown report writes, and unsafe-value rejection.
 - Model-analysis replay with `npm run model:analysis:replay`, which writes

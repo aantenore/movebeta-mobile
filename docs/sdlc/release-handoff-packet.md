@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T07:45:25.390Z
+Generated: 2026-06-23T07:56:44.251Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: a0923cf6bcad666e8145f1ee9169e2529bc68d21
-- Worktree dirty at generation: no
+- Base commit at generation: 0f0a17cae0c91539d9ebfd70b1856176e6b09834
+- Worktree dirty at generation: yes
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 3939ms; average inference 327ms
+- MoveNet readiness: ready; load 6133ms; average inference 335ms
 - Model verification suite: technical-ready
 - Screenshots: 11/11
 - Blockers: 5
@@ -35,6 +35,7 @@ Generated: 2026-06-23T07:45:25.390Z
 - Store screenshot capture: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`
 - Model verification suite: `npm run model:verification:suite`
 - MoveNet static assets doctor: `npm run model:movenet:assets:check`
+- Model asset provenance doctor: `npm run model:assets:provenance`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Coach cue-validation gate: `npm run validation:cue`
 - GitHub workflow doctor: `npm run release:github:doctor`
@@ -61,6 +62,8 @@ Generated: 2026-06-23T07:45:25.390Z
 - [x] Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`
 - [x] MoveNet readiness report: `docs/sdlc/movenet-readiness-report.json`
 - [x] MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`
+- [x] Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`
+- [x] Model asset attribution notice: `docs/sdlc/model-asset-attribution.md`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
