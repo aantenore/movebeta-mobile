@@ -57,6 +57,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   acquisitionReadinessPacket?: unknown;
   cueValidationDatasetReport?: unknown;
   cueValidationStarterKitReport?: unknown;
+  dataRoomIndex?: unknown;
   dependencyLicenseReport?: unknown;
   envTemplateReport?: unknown;
   externalEvidenceApplyReport?: unknown;
@@ -351,6 +352,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/acquisition-readiness-packet.json',
     refreshCommand: 'npm run release:acquisition',
     reportKey: 'acquisitionReadinessPacket',
+    requiredFor: ['handoff'],
+  },
+  {
+    key: 'data-room-index',
+    label: 'Data-room index',
+    maxAgeHours: 72,
+    owner: 'release',
+    path: 'docs/sdlc/data-room-index.json',
+    refreshCommand: 'npm run release:data-room',
+    reportKey: 'dataRoomIndex',
     requiredFor: ['handoff'],
   },
   {

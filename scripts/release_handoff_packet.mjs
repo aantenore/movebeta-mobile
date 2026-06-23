@@ -141,6 +141,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Dependency license report', 'docs/sdlc/dependency-license-report.json'),
       artifact(rootDir, 'Release evidence freshness report', 'docs/sdlc/release-freshness-report.json'),
       artifact(rootDir, 'Acquisition readiness packet', 'docs/sdlc/acquisition-readiness-packet.json'),
+      artifact(rootDir, 'Data-room index', 'docs/sdlc/data-room-index.json'),
       artifact(rootDir, 'PWA readiness report', 'docs/sdlc/pwa-readiness-report.json'),
       artifact(rootDir, 'Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json'),
       artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
@@ -236,6 +237,11 @@ export function buildReleaseHandoffPacket({
         'store',
       ]),
       command('acquisition-readiness', 'Acquisition readiness packet', 'npm run release:acquisition', [
+        'demo',
+        'internal',
+        'store',
+      ]),
+      command('data-room-index', 'Data-room index', 'npm run release:data-room', [
         'demo',
         'internal',
         'store',

@@ -279,6 +279,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run release:acquisition` writes `docs/sdlc/acquisition-readiness-packet.json` and
   `docs/sdlc/acquisition-readiness-packet.md`, aggregating product, technical, distribution, commercial, model,
   supply-review, and handoff signals for buyer due diligence without exposing private artifacts.
+- `npm run release:data-room` writes `docs/sdlc/data-room-index.json` and `docs/sdlc/data-room-index.md`, categorizing
+  buyer due-diligence artifacts by product, release, model, legal, distribution, commercial, native, validation,
+  security, and archive scope with owner, status, sensitivity, location, and refresh command.
 - `npm run validation:cue:doctor` writes `docs/sdlc/cue-validation-dataset-report.json` and
   `docs/sdlc/cue-validation-dataset-report.md`, so real-review dataset blockers are captured without embedding dataset
   rows or reviewer identities.
@@ -293,14 +296,14 @@ platforms are validated on physical climbing videos and devices.
 ## Automated Gates
 
 - `npm run typecheck`: passed.
-- `npm test`: passed, 131 test files and 562 tests.
+- `npm test`: passed, 132 test files and 566 tests.
 - `npm ci`: passed from `package-lock.json`.
 - `npm run ci`: passed and executes the shared local release gate used by the GitHub Actions quality workflow template.
 - `npm run export:web`: passed, generated `dist`.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 3928ms load time, 330ms average inference, and 333ms max inference in the latest run.
+  CPU backend, 7707ms load time, 332ms average inference, and 348ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -338,7 +341,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 181/184 tasks done, 135/137 backlog items done, 168/168 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 182/185 tasks done, 136/138 backlog items done, 169/169 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
@@ -380,11 +383,14 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 29/29 fresh artifacts, and 0 stale artifacts.
+  status `ready`, 30/30 fresh artifacts, and 0 stale artifacts.
 - `npm run release:acquisition`: passed and wrote `docs/sdlc/acquisition-readiness-packet.json` plus
   `docs/sdlc/acquisition-readiness-packet.md` with status `needs-external-clearance`, 5/9 ready signals, 0 blocked
   signals, 10 external blockers, and 14/14 due-diligence artifacts ready.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 34/34 release steps passing.
+- `npm run release:data-room`: passed and wrote `docs/sdlc/data-room-index.json` plus
+  `docs/sdlc/data-room-index.md` with status `needs-external-evidence`, 14/30 ready items, 14 external-required items,
+  2 review items, 0 missing items, and 0 blocked items.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 35/35 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -608,10 +614,10 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 45 current artifacts including the
+  `docs/sdlc/release-handoff-packet.md` with 12/12 screenshots, 5 external blockers, 46 current artifacts including the
   release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
   provenance report, model delivery lifecycle report, PWA readiness report, Vercel deployment report, Vercel workflow
-  report, acquisition readiness packet, release archive artifacts, and 29 verification commands.
+  report, acquisition readiness packet, data-room index, release archive artifacts, and 30 verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.
