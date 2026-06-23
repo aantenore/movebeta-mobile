@@ -1,4 +1,5 @@
 import { appConfig } from '@/core/config';
+import { activeVideoAnalysisDurationMs } from '@/video/analysisWindow';
 import { buildVideoAnalysisPerformance } from '@/video/performanceBudget';
 
 import {
@@ -88,7 +89,7 @@ export class OnDeviceMovementPipeline {
       },
       performance: buildVideoAnalysisPerformance({
         analysisMs: completedAt - startedAt,
-        durationMs: video.durationMs,
+        durationMs: activeVideoAnalysisDurationMs(video),
         frameCount: frames.length,
         measuredAt: new Date(completedAt).toISOString(),
       }),

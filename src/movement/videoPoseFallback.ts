@@ -1,5 +1,6 @@
 import type { LandmarkName, PoseFrame, PoseLandmark, VideoAsset } from './contracts';
 import type { AnalysisProvider, PoseEstimator } from './onDevicePipeline';
+import { resolveVideoAnalysisWindow } from '@/video/analysisWindow';
 
 const landmarkNames: LandmarkName[] = [
   'nose',
@@ -50,6 +51,7 @@ function routeProgress(phase: number) {
 }
 
 function generateFrame(video: VideoAsset, frameIndex: number, frameCount: number, seed: number): PoseFrame {
+  const window = resolveVideoAnalysisWindow(video);
   const phase = frameIndex / Math.max(frameCount - 1, 1);
   const progress = routeProgress(phase);
   const lateral = 0.05 * Math.sin(seed * 0.01 + phase * Math.PI * 2.4);
@@ -86,7 +88,7 @@ function generateFrame(video: VideoAsset, frameIndex: number, frameCount: number
       if (!landmark) throw new Error(`Missing generated landmark: ${name}`);
       return landmark;
     }),
-    timestampMs: Math.round((video.durationMs * frameIndex) / Math.max(frameCount - 1, 1)),
+    timestampMs: Math.round(window.startMs + (window.durationMs * frameIndex) / Math.max(frameCount - 1, 1)),
   };
 }
 
@@ -94,8 +96,9 @@ export class LocalVideoFallbackPoseEstimator implements PoseEstimator {
   provider: AnalysisProvider = 'local-video-fallback';
 
   async estimate(video: VideoAsset): Promise<PoseFrame[]> {
-    const seed = hashText(`${video.id}:${video.uri}:${video.durationMs}:${video.width}x${video.height}`);
-    const frameCount = Math.max(36, Math.min(96, Math.round(video.durationMs / 180)));
+    const window = resolveVideoAnalysisWindow(video);
+    const seed = hashText(`${video.id}:${video.uri}:${video.durationMs}:${video.width}x${video.height}:${window.startMs}-${window.endMs}`);
+    const frameCount = Math.max(36, Math.min(96, Math.round(window.durationMs / 180)));
     return Array.from({ length: frameCount }, (_, index) => generateFrame(video, index, frameCount, seed));
   }
 

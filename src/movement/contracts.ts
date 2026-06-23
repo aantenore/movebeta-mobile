@@ -49,6 +49,16 @@ export const PoseFrameSchema = z.object({
   landmarks: z.array(PoseLandmarkSchema),
 });
 
+export const AnalysisWindowModeSchema = z.enum(['full', 'early', 'middle', 'late']);
+
+export const VideoAnalysisWindowSchema = z.object({
+  durationMs: z.number().positive(),
+  endMs: z.number().positive(),
+  mode: AnalysisWindowModeSchema,
+  sourceDurationMs: z.number().positive(),
+  startMs: z.number().nonnegative(),
+});
+
 export const VideoAssetSchema = z.object({
   id: z.string(),
   uri: z.string(),
@@ -57,6 +67,7 @@ export const VideoAssetSchema = z.object({
   width: z.number().positive(),
   height: z.number().positive(),
   capturedAt: z.string(),
+  analysisWindow: VideoAnalysisWindowSchema.optional(),
 });
 
 export const ClimbSessionSchema = z.object({
@@ -174,6 +185,8 @@ export type CoachLensMetadata = z.infer<typeof CoachLensMetadataSchema>;
 export type PrivacyMode = z.infer<typeof PrivacyModeSchema>;
 export type PoseLandmark = z.infer<typeof PoseLandmarkSchema>;
 export type PoseFrame = z.infer<typeof PoseFrameSchema>;
+export type AnalysisWindowMode = z.infer<typeof AnalysisWindowModeSchema>;
+export type VideoAnalysisWindow = z.infer<typeof VideoAnalysisWindowSchema>;
 export type VideoAsset = z.infer<typeof VideoAssetSchema>;
 export type ClimbSession = z.infer<typeof ClimbSessionSchema>;
 export type MovementMetric = z.infer<typeof MovementMetricSchema>;

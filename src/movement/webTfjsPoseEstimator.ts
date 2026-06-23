@@ -1,5 +1,6 @@
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { appConfig } from '@/core/config';
+import { resolveVideoAnalysisWindow } from '@/video/analysisWindow';
 
 import type { PoseFrame, VideoAsset } from './contracts';
 import { tryMapMoveNetPoseToFrame } from './movenetPoseMapper';
@@ -118,13 +119,14 @@ function getVideoDimensions(element: HTMLVideoElement) {
 }
 
 function getFrameTimestamps(video: VideoAsset) {
+  const window = resolveVideoAnalysisWindow(video);
   const frameCount = Math.max(
     videoAnalysisConfig.minTfjsFrames,
-    Math.min(videoAnalysisConfig.maxTfjsFrames, Math.ceil(video.durationMs / videoAnalysisConfig.tfjsFrameIntervalMs)),
+    Math.min(videoAnalysisConfig.maxTfjsFrames, Math.ceil(window.durationMs / videoAnalysisConfig.tfjsFrameIntervalMs)),
   );
 
   return Array.from({ length: frameCount }, (_, index) =>
-    Math.round((video.durationMs * index) / Math.max(frameCount - 1, 1)),
+    Math.round(window.startMs + (window.durationMs * index) / Math.max(frameCount - 1, 1)),
   );
 }
 

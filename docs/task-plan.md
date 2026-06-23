@@ -197,3 +197,4 @@
 | T193 | Make MoveNet readiness prefer vendored static model assets | Done |
 | T194 | Add on-device live recording guide to Coach recorder | Done |
 | T195 | Add local clip triage before video analysis | Done |
+| T196 | Add configurable local analysis windows for long clips | Done |
