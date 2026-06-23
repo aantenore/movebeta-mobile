@@ -135,11 +135,25 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh full-Xcode, workspace, Pods, and build-settings readiness before iOS beta or store work.',
     },
     {
+      command: 'npm run native:ios:pods',
+      key: 'ios-pods-install',
+      label: 'iOS Pods install',
+      owner: 'engineering',
+      purpose: 'Install native iOS dependencies for the local pose module after full Xcode and CocoaPods are available.',
+    },
+    {
       command: 'npm run release:env:doctor',
       key: 'env-template-doctor',
       label: 'Environment template doctor',
       owner: 'engineering',
       purpose: 'Verify .env.example covers runtime, smoke, and release key names without credential values or local paths.',
+    },
+    {
+      command: 'npm run validation:cue:starter',
+      key: 'cue-validation-starter',
+      label: 'Cue validation starter',
+      owner: 'product',
+      purpose: 'Generate the share-safe cue-validation study seed, intake manifest, onboarding packet, and blank worksheets before real coach scoring.',
     },
     {
       command: 'npm run release:credentials:starter',

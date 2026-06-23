@@ -36,6 +36,12 @@ describe('release critical path', () => {
     ]);
     expect(path.steps.find((step) => step.key === 'nativeDeviceQa')?.dependencyKeys).toEqual(['iosBuild']);
     expect(path.steps.find((step) => step.key === 'easCredentials')?.dependencyKeys).toEqual(['easProject']);
+    expect(path.steps.find((step) => step.key === 'cueValidationDataset')?.commands).toEqual([
+      'npm run validation:cue:starter',
+      'npm run validation:cue',
+      'npm run validation:cue:doctor',
+    ]);
+    expect(path.steps.find((step) => step.key === 'iosBuild')?.commands).toContain('npm run native:ios:pods');
     expect(JSON.stringify(path)).not.toMatch(/file:\/\/|\/Users\/|ghp_|BEGIN PRIVATE KEY/i);
   });
 

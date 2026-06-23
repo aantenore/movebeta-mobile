@@ -60,8 +60,8 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'The cue-validation dataset uses consented climbing clips and real coach review rows.',
       'The dataset validator passes without template placeholders or local raw-video references.',
     ],
-    commands: ['npm run validation:cue'],
-    proof: ['docs/validation/cue-validation-dataset.json'],
+    commands: ['npm run validation:cue:starter', 'npm run validation:cue', 'npm run validation:cue:doctor'],
+    proof: ['docs/validation/cue-validation-dataset.json', 'docs/sdlc/cue-validation-dataset-report.json'],
   },
   easCredentials: {
     acceptance: [
@@ -92,10 +92,13 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'An iOS simulator or physical-device build reaches the app shell with local analysis available.',
     ],
     commands: [
+      'npm run toolchain:ios',
+      'npm run native:ios:pods',
+      'npm run native:ios:doctor',
       'npx expo run:ios --device',
       'xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator',
     ],
-    proof: ['iOS simulator or device build log'],
+    proof: ['docs/sdlc/ios-toolchain-report.json', 'iOS simulator or device build log'],
   },
   nativeDeviceQa: {
     acceptance: [

@@ -287,7 +287,7 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:smoke`: passed and loaded TensorFlow.js MoveNet SinglePose Lightning, then executed local
   inference on a synthetic 192x192 frame with the CPU backend.
 - `npm run model:movenet:readiness`: passed and wrote `docs/sdlc/movenet-readiness-report.json` with status `ready`,
-  CPU backend, 4561ms load time, 347ms average inference, and 352ms max inference in the latest run.
+  CPU backend, 4940ms load time, 330ms average inference, and 333ms max inference in the latest run.
 - `npm run model:analysis:replay`: passed and wrote `docs/sdlc/model-analysis-replay-report.json` with 3/3 bundled
   attempts passing, minimum quality 100, provider `web-tfjs-movenet`, and privacy-safe output checks.
 - `npm run model:verification:suite`: passed and wrote `docs/sdlc/model-verification-suite-report.json` plus
@@ -322,11 +322,11 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 173/176 tasks done, 127/129 backlog items done, 160/160 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 174/177 tasks done, 128/130 backlog items done, 161/161 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
-  `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 10 commands,
-  6 proof artifacts, and credential key names only.
+  `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 15 commands,
+  8 proof artifacts, and credential key names only.
 - `npm run release:blocker-issues:file`: passed and wrote `docs/sdlc/release-blocker-issue-filing-plan.json` plus
   `docs/sdlc/release-blocker-issue-filing-plan.md` with status `dry-run`, 5 planned issue filings, 0 created issues, and
   0 existing exact-title issues in the latest local run.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T10:18:53.981Z",
+  "generatedAt": "2026-06-23T10:26:15.190Z",
   "issueTemplatePath": ".github/ISSUE_TEMPLATE/release_blocker.md",
   "issues": [
     {
@@ -39,8 +39,11 @@
         "Full Xcode is installed on the release machine.",
         "An iOS simulator or physical-device build reaches the app shell with local analysis available."
       ],
-      "body": "## Release Blocker\nInstall full Xcode and verify an iOS simulator or device build.\n\nOwner: `engineering`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Full Xcode is installed on the release machine.\n- [ ] An iOS simulator or physical-device build reaches the app shell with local analysis available.\n\n## Required Proof\n- iOS simulator or device build log\n\n## Commands\n- `npx expo run:ios --device`\n- `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nInstall full Xcode and verify an iOS simulator or device build.\n\nOwner: `engineering`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] Full Xcode is installed on the release machine.\n- [ ] An iOS simulator or physical-device build reaches the app shell with local analysis available.\n\n## Required Proof\n- docs/sdlc/ios-toolchain-report.json\n- iOS simulator or device build log\n\n## Commands\n- `npm run toolchain:ios`\n- `npm run native:ios:pods`\n- `npm run native:ios:doctor`\n- `npx expo run:ios --device`\n- `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
+        "npm run toolchain:ios",
+        "npm run native:ios:pods",
+        "npm run native:ios:doctor",
         "npx expo run:ios --device",
         "xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator"
       ],
@@ -54,6 +57,7 @@
       ],
       "owner": "engineering",
       "proof": [
+        "docs/sdlc/ios-toolchain-report.json",
         "iOS simulator or device build log"
       ],
       "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
@@ -68,9 +72,11 @@
         "The cue-validation dataset uses consented climbing clips and real coach review rows.",
         "The dataset validator passes without template placeholders or local raw-video references."
       ],
-      "body": "## Release Blocker\nRun the versioned cue-validation dataset gate on real consented coach review data.\n\nOwner: `product`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The cue-validation dataset uses consented climbing clips and real coach review rows.\n- [ ] The dataset validator passes without template placeholders or local raw-video references.\n\n## Required Proof\n- docs/validation/cue-validation-dataset.json\n\n## Commands\n- `npm run validation:cue`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nRun the versioned cue-validation dataset gate on real consented coach review data.\n\nOwner: `product`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The cue-validation dataset uses consented climbing clips and real coach review rows.\n- [ ] The dataset validator passes without template placeholders or local raw-video references.\n\n## Required Proof\n- docs/validation/cue-validation-dataset.json\n- docs/sdlc/cue-validation-dataset-report.json\n\n## Commands\n- `npm run validation:cue:starter`\n- `npm run validation:cue`\n- `npm run validation:cue:doctor`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
-        "npm run validation:cue"
+        "npm run validation:cue:starter",
+        "npm run validation:cue",
+        "npm run validation:cue:doctor"
       ],
       "envKeys": [],
       "key": "cueValidationDataset",
@@ -82,7 +88,8 @@
       ],
       "owner": "product",
       "proof": [
-        "docs/validation/cue-validation-dataset.json"
+        "docs/validation/cue-validation-dataset.json",
+        "docs/sdlc/cue-validation-dataset-report.json"
       ],
       "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
       "status": "blocked",
@@ -198,6 +205,9 @@
         ],
         "action": "Install full Xcode and verify an iOS simulator or device build.",
         "commands": [
+          "npm run toolchain:ios",
+          "npm run native:ios:pods",
+          "npm run native:ios:doctor",
           "npx expo run:ios --device",
           "xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator"
         ],
@@ -206,6 +216,7 @@
         "label": "iOS build verification",
         "owner": "engineering",
         "proof": [
+          "docs/sdlc/ios-toolchain-report.json",
           "iOS simulator or device build log"
         ],
         "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
@@ -221,14 +232,17 @@
         ],
         "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
         "commands": [
-          "npm run validation:cue"
+          "npm run validation:cue:starter",
+          "npm run validation:cue",
+          "npm run validation:cue:doctor"
         ],
         "envKeys": [],
         "key": "cueValidationDataset",
         "label": "Real cue-validation dataset",
         "owner": "product",
         "proof": [
-          "docs/validation/cue-validation-dataset.json"
+          "docs/validation/cue-validation-dataset.json",
+          "docs/sdlc/cue-validation-dataset-report.json"
         ],
         "secretPolicy": "No secret values or raw local artifacts should be committed as proof.",
         "status": "blocked",
@@ -292,20 +306,20 @@
     "schemaVersion": "movebeta.release-unblock-checklist.v1",
     "summary": {
       "blockedItems": 5,
-      "commandCount": 10,
+      "commandCount": 15,
       "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
       "ownerCount": 4,
-      "proofCount": 6,
+      "proofCount": 8,
       "status": "needs-external-access"
     }
   },
   "summary": {
-    "commandCount": 10,
+    "commandCount": 15,
     "credentialKeyNameCount": 4,
     "issueCount": 5,
     "nextAction": "File one issue per external blocker, attach the required proof, then rerun release readiness checks.",
     "ownerCount": 4,
-    "proofCount": 6,
+    "proofCount": 8,
     "status": "ready-to-file"
   }
 }

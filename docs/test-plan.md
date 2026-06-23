@@ -161,6 +161,8 @@
   required metadata, negative privacy flags, and raw path/identity/token rejection.
 - Vitest release unblock checklist tests for default external blockers, launch-readiness label/action parity, secret key
   name disclosure without secret values, and all-ready evidence state.
+- Vitest release unblock checklist and critical path tests verify that each external blocker exposes complete
+  starter-to-validation command sequences without secret values.
 - Vitest release unblock packet tests for versioned share-safe packet generation, ready-state packet generation, and
   token/local-path rejection before sharing.
 - Vitest release critical path tests for blocker dependency sequencing, parallel owner lanes, ready-to-start state,
