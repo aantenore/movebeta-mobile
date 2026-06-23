@@ -195,3 +195,4 @@
 | T191 | Add no-backend Vercel deployment handoff packet | Done |
 | T192 | Add model update and cache-invalidation lifecycle evidence | Done |
 | T193 | Make MoveNet readiness prefer vendored static model assets | Done |
+| T194 | Add on-device live recording guide to Coach recorder | Done |

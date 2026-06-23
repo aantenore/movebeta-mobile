@@ -39,6 +39,9 @@ TensorFlow.js MoveNet in the browser and extracts normalized landmarks from loca
 Unsupported runtimes or decode failures fall back to `local-video-fallback`, which keeps the workflow runnable without
 uploading video. Production native builds keep the same `PoseEstimator` interface and replace only the provider
 implementation.
+During recording, `src/video/liveRecordingGuide.ts` provides deterministic local filming prompts from capture
+calibration, coach lens, elapsed time, minimum duration, and recording limit. This improves capture quality without
+claiming real-time pose analysis or sending frames to a backend before the local analysis pipeline runs.
 
 MoveNet loading remains lazy inside the active browser session, but the graph and weight shards are no longer fetched
 from TensorFlow Hub during first user analysis. `npm run model:movenet:assets:download` vendors MoveNet SinglePose

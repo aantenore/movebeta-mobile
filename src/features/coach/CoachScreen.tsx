@@ -33,6 +33,7 @@ import {
 } from '@/video/captureCalibration';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
+import { buildLiveRecordingGuide, type LiveRecordingGuide } from '@/video/liveRecordingGuide';
 import { readLocalVideoMetadata } from '@/video/videoMetadata';
 import { formatAnalysisDuration } from '@/video/performanceBudget';
 import {
@@ -291,6 +292,26 @@ function CueTrustPanel({ cueTrust }: { cueTrust: CueTrustReport }) {
         ))}
       </View>
     </Section>
+  );
+}
+
+function LiveRecordingGuidePanel({ guide }: { guide: LiveRecordingGuide }) {
+  const isWarning = guide.prompt.tone === 'warning';
+  const isReady = guide.canStopForAnalysis;
+
+  return (
+    <View style={[styles.recordingGuide, isWarning ? styles.recordingGuideWarning : isReady ? styles.recordingGuideReady : null]}>
+      <View style={styles.recordingGuideTop}>
+        <Text style={styles.recordingGuideTitle}>{guide.prompt.title}</Text>
+        <Text style={[styles.recordingGuideBadge, isReady ? styles.recordingGuideBadgeReady : null]}>
+          {isReady ? 'analysis-ready' : 'minimum pending'}
+        </Text>
+      </View>
+      <Text style={styles.recordingGuideBody}>{guide.prompt.body}</Text>
+      <View style={styles.recordingGuideProgress}>
+        <View style={[styles.recordingGuideProgressFill, { width: `${Math.min(100, Math.round(guide.progress * 100))}%` }]} />
+      </View>
+    </View>
   );
 }
 
@@ -634,6 +655,12 @@ export function CoachScreen() {
     report,
     session: intakeSource.session,
   });
+  const liveRecordingGuide = buildLiveRecordingGuide({
+    calibration: captureSetupAssessment,
+    coachLens: selectedCoachLens,
+    elapsedMs: recordingElapsedMs,
+    recording,
+  });
   const cueTrust = report ? buildCueTrustReport(report) : null;
   const cueTrustById = new Map(cueTrust?.signals.map((signal) => [signal.cueId, signal]) ?? []);
 
@@ -891,6 +918,7 @@ export function CoachScreen() {
               </View>
               <Text style={styles.recorderHint}>Minimum {(videoAnalysisConfig.minimumDurationMs / 1000).toFixed(1)}s</Text>
             </View>
+            <LiveRecordingGuidePanel guide={liveRecordingGuide} />
             <View style={styles.recorderOverlay}>
               <Pressable disabled={recording} onPress={() => setCameraOpen(false)} style={styles.recorderGhost}>
                 <RotateCcw color="#FFFFFF" size={18} />
@@ -1931,6 +1959,62 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '900',
+  },
+  recordingGuide: {
+    backgroundColor: 'rgba(10,24,32,0.78)',
+    borderColor: 'rgba(255,255,255,0.22)',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: 7,
+    left: theme.spacing.md,
+    padding: theme.spacing.md,
+    position: 'absolute',
+    right: theme.spacing.md,
+    top: 72,
+  },
+  recordingGuideBadge: {
+    color: '#BFD4DC',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  recordingGuideBadgeReady: {
+    color: '#B8D8C8',
+  },
+  recordingGuideBody: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
+  },
+  recordingGuideProgress: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 999,
+    height: 5,
+    overflow: 'hidden',
+  },
+  recordingGuideProgressFill: {
+    backgroundColor: '#B8D8C8',
+    borderRadius: 999,
+    height: 5,
+  },
+  recordingGuideReady: {
+    borderColor: '#B8D8C8',
+  },
+  recordingGuideTitle: {
+    color: '#FFFFFF',
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  recordingGuideTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  recordingGuideWarning: {
+    borderColor: '#F0C7BD',
   },
   recorderHint: {
     color: '#FFFFFF',
