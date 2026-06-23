@@ -1,0 +1,295 @@
+{
+  "commands": [
+    {
+      "command": "npm run security:licenses",
+      "key": "dependency-licenses",
+      "label": "Dependency license inventory",
+      "owner": "release",
+      "purpose": "Refresh package license status, review obligations, and blocked package evidence from the installed lockfile graph."
+    },
+    {
+      "command": "npm run model:assets:provenance",
+      "key": "model-asset-provenance",
+      "label": "Model asset provenance",
+      "owner": "release",
+      "purpose": "Refresh model source, hash, attribution, and upstream terms review status."
+    },
+    {
+      "command": "npm run release:license-review",
+      "key": "license-review-packet",
+      "label": "License review packet",
+      "owner": "release",
+      "purpose": "Regenerate the share-safe legal due-diligence packet and third-party notice index."
+    }
+  ],
+  "generatedAt": "2026-06-23T16:31:22.182Z",
+  "legalReview": {
+    "clearanceClaimed": false,
+    "externalApprovalRequired": true,
+    "requiredApprovalReference": "external:commercial-legal-approval"
+  },
+  "notices": [
+    {
+      "included": true,
+      "key": "third-party-notices",
+      "label": "Third-party notices",
+      "path": "docs/legal/THIRD_PARTY_NOTICES.md",
+      "source": "notice"
+    },
+    {
+      "included": true,
+      "key": "model-asset-attribution",
+      "label": "Model asset attribution",
+      "path": "docs/sdlc/model-asset-attribution.md",
+      "source": "model"
+    },
+    {
+      "included": true,
+      "key": "dependency-license-report",
+      "label": "Dependency license report",
+      "path": "docs/sdlc/dependency-license-report.md",
+      "source": "dependency"
+    }
+  ],
+  "obligations": [
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-caniuse-lite",
+      "label": "caniuse-lite 1.0.30001799",
+      "license": "CC-BY-4.0",
+      "owner": "legal",
+      "packageName": "caniuse-lite",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.0.30001799"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss",
+      "label": "lightningcss 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-android-arm64",
+      "label": "lightningcss-android-arm64 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-android-arm64",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-darwin-arm64",
+      "label": "lightningcss-darwin-arm64 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-darwin-arm64",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-darwin-x64",
+      "label": "lightningcss-darwin-x64 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-darwin-x64",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-freebsd-x64",
+      "label": "lightningcss-freebsd-x64 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-freebsd-x64",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-linux-arm-gnueabihf",
+      "label": "lightningcss-linux-arm-gnueabihf 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-linux-arm-gnueabihf",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-linux-arm64-gnu",
+      "label": "lightningcss-linux-arm64-gnu 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-linux-arm64-gnu",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-linux-arm64-musl",
+      "label": "lightningcss-linux-arm64-musl 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-linux-arm64-musl",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-linux-x64-gnu",
+      "label": "lightningcss-linux-x64-gnu 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-linux-x64-gnu",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-linux-x64-musl",
+      "label": "lightningcss-linux-x64-musl 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-linux-x64-musl",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-win32-arm64-msvc",
+      "label": "lightningcss-win32-arm64-msvc 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-win32-arm64-msvc",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review notice, attribution, or file-level obligations before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/dependency-license-report.json",
+        "docs/sdlc/dependency-license-report.md"
+      ],
+      "key": "dependency-lightningcss-win32-x64-msvc",
+      "label": "lightningcss-win32-x64-msvc 1.32.0",
+      "license": "MPL-2.0",
+      "owner": "legal",
+      "packageName": "lightningcss-win32-x64-msvc",
+      "source": "dependency",
+      "status": "review",
+      "version": "1.32.0"
+    },
+    {
+      "action": "Review upstream model terms from the source catalog before commercial distribution.",
+      "evidence": [
+        "docs/sdlc/model-asset-provenance-report.json",
+        "docs/sdlc/model-asset-attribution.md",
+        "public/model-assets.json"
+      ],
+      "key": "model-license-review",
+      "label": "License review",
+      "owner": "legal",
+      "source": "model",
+      "status": "review"
+    },
+    {
+      "action": "Keep generated third-party notices bundled with buyer and distribution artifacts.",
+      "evidence": [
+        "docs/legal/THIRD_PARTY_NOTICES.md",
+        "docs/sdlc/model-asset-attribution.md"
+      ],
+      "key": "notice-third-party-notices",
+      "label": "Third-party notices",
+      "owner": "release",
+      "source": "notice",
+      "status": "ready"
+    }
+  ],
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretsIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.license-review-packet.v1",
+  "summary": {
+    "blockedObligationCount": 0,
+    "dependencyStatus": "review",
+    "modelStatus": "review",
+    "nextAction": "Review notice, attribution, or file-level obligations before commercial distribution.",
+    "noticeArtifactCount": 3,
+    "obligationCount": 15,
+    "reviewObligationCount": 14,
+    "status": "review"
+  }
+}

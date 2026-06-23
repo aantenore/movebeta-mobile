@@ -68,6 +68,7 @@ export type AcquisitionReadinessPacketInput = {
   featureCompletionReport?: unknown;
   generatedAt?: string;
   launchReadinessReport?: unknown;
+  licenseReviewPacket?: unknown;
   modelAssetProvenanceReport?: unknown;
   modelDeliveryLifecycleReport?: unknown;
   pwaReadinessReport?: unknown;
@@ -309,22 +310,28 @@ function handoffSignal(releaseHandoffPacket: unknown) {
   });
 }
 
-function legalSupplySignal(dependencyLicenseReport: unknown, modelAssetProvenanceReport: unknown) {
+function legalSupplySignal(dependencyLicenseReport: unknown, modelAssetProvenanceReport: unknown, licenseReviewPacket: unknown) {
   const dependencyStatus = reportStatus(dependencyLicenseReport);
   const modelStatus = reportStatus(modelAssetProvenanceReport);
-  const blocked = dependencyStatus === 'blocked' || modelStatus === 'blocked';
-  const ready = dependencyStatus === 'ready' && modelStatus === 'ready';
+  const reviewStatus = reportStatus(licenseReviewPacket);
+  const blocked = dependencyStatus === 'blocked' || modelStatus === 'blocked' || reviewStatus === 'blocked';
+  const ready = dependencyStatus === 'ready' && modelStatus === 'ready' && reviewStatus === 'ready';
   const status: AcquisitionSignalStatus = blocked ? 'blocked' : ready ? 'ready' : 'review';
 
   return signal({
-    detail: `Dependency license report is ${dependencyStatus}; model license/provenance review is ${modelStatus}.`,
-    evidence: ['docs/sdlc/dependency-license-report.json', 'docs/sdlc/model-asset-provenance-report.json'],
+    detail: `Dependency license report is ${dependencyStatus}; model license/provenance review is ${modelStatus}; license review packet is ${reviewStatus}.`,
+    evidence: [
+      'docs/sdlc/dependency-license-report.json',
+      'docs/sdlc/model-asset-provenance-report.json',
+      'docs/sdlc/license-review-packet.json',
+      'docs/legal/THIRD_PARTY_NOTICES.md',
+    ],
     key: 'supply-review',
     label: 'Supply review',
     nextAction:
       status === 'ready'
         ? 'Keep notices and attribution with release evidence.'
-        : 'Review notice obligations and upstream model terms before commercial transfer.',
+        : text(nestedRecord(licenseReviewPacket, 'summary').nextAction, 'Review notice obligations and upstream model terms before commercial transfer.'),
     owner: 'release',
     status,
   });
@@ -415,6 +422,7 @@ export function buildAcquisitionReadinessPacket({
   featureCompletionReport,
   generatedAt = new Date().toISOString(),
   launchReadinessReport,
+  licenseReviewPacket,
   modelAssetProvenanceReport,
   modelDeliveryLifecycleReport,
   pwaReadinessReport,
@@ -432,7 +440,7 @@ export function buildAcquisitionReadinessPacket({
     commercialPathSignal(commercialReadinessPacket),
     distributionSignal(storeSubmissionPacket, pwaReadinessReport, vercelDeploymentReport, webSmokeReport),
     handoffSignal(releaseHandoffPacket),
-    legalSupplySignal(dependencyLicenseReport, modelAssetProvenanceReport),
+    legalSupplySignal(dependencyLicenseReport, modelAssetProvenanceReport, licenseReviewPacket),
     privacySignal(),
   ];
   const artifacts = [
@@ -443,6 +451,8 @@ export function buildAcquisitionReadinessPacket({
     artifact('Store submission packet', 'docs/store/store-submission-packet.json', storeSubmissionPacket, artifactAvailability),
     artifact('Acquisition readiness packet', 'docs/sdlc/acquisition-readiness-packet.json', undefined, artifactAvailability),
     artifact('Dependency license report', 'docs/sdlc/dependency-license-report.json', dependencyLicenseReport, artifactAvailability),
+    artifact('License review packet', 'docs/sdlc/license-review-packet.json', licenseReviewPacket, artifactAvailability),
+    artifact('Third-party notices', 'docs/legal/THIRD_PARTY_NOTICES.md', undefined, artifactAvailability),
     artifact('Model asset provenance report', 'docs/sdlc/model-asset-provenance-report.json', modelAssetProvenanceReport, artifactAvailability),
     artifact('Model delivery lifecycle report', 'docs/sdlc/model-delivery-lifecycle-report.json', modelDeliveryLifecycleReport, artifactAvailability),
     artifact('PWA readiness report', 'docs/sdlc/pwa-readiness-report.json', pwaReadinessReport, artifactAvailability),

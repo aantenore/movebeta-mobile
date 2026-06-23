@@ -102,6 +102,7 @@
     "handoff:git": "bash scripts/git-handoff-check.sh",
     "security:audit": "npm audit --audit-level=moderate",
     "security:licenses": "node scripts/dependency_license_doctor.mjs",
+    "release:license-review": "tsx scripts/license_review_packet.ts",
     "release:eas:check": "node scripts/validate_eas_release.mjs",
     "release:eas:strict": "node scripts/validate_eas_release.mjs --strict",
     "release:readiness": "node scripts/launch_readiness_doctor.mjs",

@@ -139,6 +139,8 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Native QA evidence input template', 'docs/sdlc/native-qa-evidence-input.template.json'),
       artifact(rootDir, 'GitHub workflow report', 'docs/sdlc/github-workflow-report.json'),
       artifact(rootDir, 'Dependency license report', 'docs/sdlc/dependency-license-report.json'),
+      artifact(rootDir, 'License review packet', 'docs/sdlc/license-review-packet.json'),
+      artifact(rootDir, 'Third-party notices', 'docs/legal/THIRD_PARTY_NOTICES.md'),
       artifact(rootDir, 'Release evidence freshness report', 'docs/sdlc/release-freshness-report.json'),
       artifact(rootDir, 'Acquisition readiness packet', 'docs/sdlc/acquisition-readiness-packet.json'),
       artifact(rootDir, 'Data-room index', 'docs/sdlc/data-room-index.json'),
@@ -200,6 +202,11 @@ export function buildReleaseHandoffPacket({
       command('store-credentials-starter', 'Store credentials starter', 'npm run release:credentials:starter', ['store']),
       command('github-workflow', 'GitHub workflow doctor', 'npm run release:github:doctor', ['demo', 'internal', 'store']),
       command('dependency-licenses', 'Dependency license report', 'npm run security:licenses', ['demo', 'internal', 'store']),
+      command('license-review', 'License review packet', 'npm run release:license-review', [
+        'demo',
+        'internal',
+        'store',
+      ]),
       command('feature-completion', 'Feature completion doctor', 'npm run feature:doctor', ['demo', 'internal', 'store']),
       command('release-blocker-issues', 'Release blocker issue report', 'npm run release:blocker-issues', [
         'demo',

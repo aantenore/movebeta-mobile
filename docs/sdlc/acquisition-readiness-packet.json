@@ -43,6 +43,18 @@
       "status": "ready"
     },
     {
+      "key": "docs-sdlc-license-review-packet-json",
+      "label": "License review packet",
+      "path": "docs/sdlc/license-review-packet.json",
+      "status": "ready"
+    },
+    {
+      "key": "docs-legal-third-party-notices-md",
+      "label": "Third-party notices",
+      "path": "docs/legal/THIRD_PARTY_NOTICES.md",
+      "status": "ready"
+    },
+    {
       "key": "docs-sdlc-model-asset-provenance-report-json",
       "label": "Model asset provenance report",
       "path": "docs/sdlc/model-asset-provenance-report.json",
@@ -128,7 +140,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-23T16:16:00.246Z",
+  "generatedAt": "2026-06-23T16:31:48.978Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -141,7 +153,7 @@
   "schemaVersion": "movebeta.acquisition-readiness-packet.v1",
   "signals": [
     {
-      "detail": "Tracked delivery scope has no internal gaps and 172/172 traceability rows covered.",
+      "detail": "Tracked delivery scope has no internal gaps and 173/173 traceability rows covered.",
       "evidence": [
         "docs/sdlc/feature-completion-report.json",
         "docs/task-plan.md",
@@ -231,14 +243,16 @@
       "status": "ready"
     },
     {
-      "detail": "Dependency license report is review; model license/provenance review is review.",
+      "detail": "Dependency license report is review; model license/provenance review is review; license review packet is review.",
       "evidence": [
         "docs/sdlc/dependency-license-report.json",
-        "docs/sdlc/model-asset-provenance-report.json"
+        "docs/sdlc/model-asset-provenance-report.json",
+        "docs/sdlc/license-review-packet.json",
+        "docs/legal/THIRD_PARTY_NOTICES.md"
       ],
       "key": "supply-review",
       "label": "Supply review",
-      "nextAction": "Review notice obligations and upstream model terms before commercial transfer.",
+      "nextAction": "Review notice, attribution, or file-level obligations before commercial distribution.",
       "owner": "release",
       "status": "review"
     },
@@ -256,7 +270,7 @@
   ],
   "summary": {
     "blockedSignalCount": 0,
-    "dueDiligenceArtifactCount": 15,
+    "dueDiligenceArtifactCount": 17,
     "externalBlockerCount": 10,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readySignalCount": 5,

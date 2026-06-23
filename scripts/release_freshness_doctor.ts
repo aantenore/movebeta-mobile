@@ -35,6 +35,7 @@ function readReports(rootDir: string): ReleaseEvidenceFreshnessReportBundle {
     githubWorkflowReport: readJsonIfExists(rootDir, 'docs/sdlc/github-workflow-report.json'),
     iosToolchainReport: readJsonIfExists(rootDir, 'docs/sdlc/ios-toolchain-report.json'),
     launchReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/launch-readiness-report.json'),
+    licenseReviewPacket: readJsonIfExists(rootDir, 'docs/sdlc/license-review-packet.json'),
     releaseBlockerIssueFilingPlan: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issue-filing-plan.json'),
     releaseBlockerIssueWebLinks: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issue-web-links.json'),
     releaseBlockerIssuesReport: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issues-report.json'),

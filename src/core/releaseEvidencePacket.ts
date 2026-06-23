@@ -254,6 +254,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Verify vendored model source URLs, file hashes, attribution notice, and commercial license-review status before distribution.',
     },
     {
+      command: 'npm run release:license-review',
+      key: 'license-review-packet',
+      label: 'License review packet',
+      owner: 'release',
+      purpose: 'Aggregate dependency, model, and notice obligations into a share-safe legal due-diligence packet without claiming external legal approval.',
+    },
+    {
       command: 'npm run model:delivery:lifecycle',
       key: 'model-delivery-lifecycle',
       label: 'Model delivery lifecycle report',
@@ -442,6 +449,13 @@ export function buildReleaseEvidencePacket({
       key: 'model-asset-provenance-report',
       label: 'Model asset provenance report',
       path: 'docs/sdlc/model-asset-provenance-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
+    },
+    {
+      command: 'npm run release:license-review',
+      key: 'license-review-packet',
+      label: 'License review packet',
+      path: 'docs/sdlc/license-review-packet.json',
       status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
     },
     {

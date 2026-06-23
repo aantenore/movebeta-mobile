@@ -1,12 +1,12 @@
 # Data Room Index
 
-Generated: 2026-06-23T16:16:00.518Z
+Generated: 2026-06-23T16:31:49.047Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 15/31
-- Review items: 2
+- Items ready: 16/33
+- Review items: 3
 - External-required items: 14
 - Missing items: 0
 - Blocked items: 0
@@ -38,6 +38,8 @@ Generated: 2026-06-23T16:16:00.518Z
 | Model delivery lifecycle | model | ready | engineering | share-safe | `docs/sdlc/model-delivery-lifecycle-report.json` | `npm run model:delivery:lifecycle` |
 | Model asset provenance | legal | review | release | share-safe | `docs/sdlc/model-asset-provenance-report.json` | `npm run model:assets:provenance` |
 | Dependency license report | legal | review | release | share-safe | `docs/sdlc/dependency-license-report.json` | `npm run security:licenses` |
+| License review packet | legal | review | release | share-safe | `docs/sdlc/license-review-packet.json` | `npm run release:license-review` |
+| Third-party notices | legal | ready | release | share-safe | `docs/legal/THIRD_PARTY_NOTICES.md` | `npm run release:license-review` |
 | Store submission packet | distribution | ready | release | public-store-copy | `docs/store/store-submission-packet.json` | `npm run store:submission` |
 | PWA readiness report | distribution | ready | release | share-safe | `docs/sdlc/pwa-readiness-report.json` | `npm run export:web && npm run web:pwa:check` |
 | Web smoke report | distribution | ready | qa | share-safe | `docs/sdlc/web-smoke-report.json` | `npm run web:smoke:report` |

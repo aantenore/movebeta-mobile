@@ -180,6 +180,10 @@
   external proof placeholders, missing internal artifact blocking, and credential/local-path/media/token rejection;
   `npm run release:data-room` writes durable JSON/Markdown data-room evidence and is included in release gates,
   freshness, and handoff artifacts.
+- Vitest license review packet tests for dependency/model/notice obligation aggregation, blocked obligation handling,
+  explicit no-clearance claim, external legal approval reference, and credential/local-path/media/token rejection;
+  `npm run release:license-review` writes durable JSON/Markdown license evidence plus generated third-party notices and
+  is included in release gates, freshness, handoff, acquisition, and data-room artifacts.
 - Vitest web-smoke report tests for schema-versioned pass/fail output, sanitized diagnostics, JSON/Markdown writes,
   and release-gate/readiness/freshness/handoff/acquisition/data-room integration; `npm run web:smoke:report`
   serves the exported web bundle, runs the Playwright smoke runner, writes durable JSON/Markdown evidence, and is
@@ -228,6 +232,9 @@
   `docs/sdlc/github-workflow-report.json` and is included in `npm run release:check`.
 - Dependency license inventory with `npm run security:licenses`, which writes
   `docs/sdlc/dependency-license-report.json` and is included in `npm run release:check`.
+- License review packet generation with `npm run release:license-review`, which writes
+  `docs/sdlc/license-review-packet.json`, `docs/sdlc/license-review-packet.md`, and
+  `docs/legal/THIRD_PARTY_NOTICES.md` without claiming external legal clearance.
 - Web export with `npm run export:web`.
 - MoveNet model execution smoke with `npm run model:movenet:smoke`. This loads TensorFlow.js MoveNet SinglePose
   Lightning and runs inference on a synthetic local frame; it verifies model execution, not climbing-coach accuracy.
@@ -342,6 +349,8 @@
 - Cue validation dataset validation with `npm run validation:cue` after consented coach review packets and reviews are
   captured.
 - Launch readiness evidence report with `npm run release:readiness` after release gates and native artifacts are refreshed.
+- License review packet generation with `npm run release:license-review` after dependency license and model provenance
+  reports are refreshed.
 - Acquisition readiness packet generation with `npm run release:acquisition` after release evidence, store metadata,
   commercial readiness, and handoff artifacts are refreshed.
 - Data-room index generation with `npm run release:data-room` after acquisition, handoff, archive, and release evidence
