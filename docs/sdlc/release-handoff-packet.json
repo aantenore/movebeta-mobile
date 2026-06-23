@@ -177,6 +177,11 @@
     },
     {
       "exists": true,
+      "label": "Vercel deployment handoff",
+      "path": "docs/sdlc/vercel-deployment-handoff.json"
+    },
+    {
+      "exists": true,
       "label": "Store credentials setup packet",
       "path": "docs/sdlc/store-credentials-setup-packet.json"
     },
@@ -575,6 +580,15 @@
       ]
     },
     {
+      "command": "npm run web:vercel:handoff",
+      "key": "vercel-handoff",
+      "label": "Vercel deployment handoff",
+      "requiredFor": [
+        "demo",
+        "internal"
+      ]
+    },
+    {
       "command": "npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN",
       "key": "vercel-deploy",
       "label": "Vercel prebuilt production deploy",
@@ -591,7 +605,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T16:35:43.522Z",
+  "generatedAt": "2026-06-23T16:50:09.795Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -601,9 +615,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "10712a8571c53da0a4dae738ccf539a2d67d3dd0",
+    "baseCommitSha": "e41ab4b630098ed3be3eb4e5aebf35b5b93efb92",
     "changedPaths": [],
-    "commitSha": "10712a8571c53da0a4dae738ccf539a2d67d3dd0",
+    "commitSha": "e41ab4b630098ed3be3eb4e5aebf35b5b93efb92",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -688,8 +702,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 335,
-    "moveNetLoadMs": 4519,
+    "moveNetAverageInferenceMs": 336,
+    "moveNetLoadMs": 6333,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
