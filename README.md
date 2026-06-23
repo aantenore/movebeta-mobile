@@ -373,7 +373,9 @@ contents so installed clients receive a fresh cache name when shipped assets cha
 The Plan tab PWA runtime check reads Cache Storage for `/model-assets.json` and the listed same-origin model assets, so
 offline video-analysis readiness is not claimed until the model cache is warm.
 The Plan tab also includes a Warm model action that fetches and caches those same-origin model files explicitly and
-prepares a share-safe warmup result before offline gym use.
+prepares a share-safe warmup result before offline gym use. When Web Crypto is available, the warmup also compares cached
+byte counts and SHA-256 digests against `model-assets.json` so the packet can distinguish cached assets from verified
+assets.
 
 The EAS release gates are:
 
