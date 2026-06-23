@@ -347,6 +347,9 @@
 - Vendored model assets must have release-time provenance evidence that verifies official source URLs, same-origin asset
   inventory, SHA-256 digest parity, attribution notice presence, and explicit license-review status without inferring
   final commercial legal clearance from downloaded files.
+- Static PWA exports must pre-cache hashed Expo JavaScript bundles, router assets, metadata, app shell files, and
+  same-origin MoveNet assets so a post-install/offline reload can boot the app and fetch the model manifest without a
+  backend or upstream model request.
 - Model-analysis replay must run through the same normalized pose-frame and local analyzer contracts used by the app,
   cover the bundled slab, vertical, and overhang attempts, write durable JSON evidence, and state that it does not replace
   real-video physical-device validation.

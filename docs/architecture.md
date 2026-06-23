@@ -47,6 +47,9 @@ local `model.json` to same-origin shard paths. `app.json` and `.env.example` exp
 `tfjsMoveNetModelUrl`, while `public/sw.js` precaches `/model-assets.json` plus every listed `/models/...` file. The
 download point is build/setup time; the runtime detector loads from the app origin and can reuse the service-worker cache
 when the PWA has been installed or opened online once.
+`scripts/prepare_pwa_dist.mjs` also injects the exported Expo JS bundles, router image assets, and metadata into
+`dist/sw.js`, so the generated service worker has a deterministic offline app-boot cache instead of relying on a second
+controlled reload to discover hashed files.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 

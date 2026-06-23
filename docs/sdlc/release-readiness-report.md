@@ -173,7 +173,8 @@ platforms are validated on physical climbing videos and devices.
 - Plan tab shows release evidence freshness for generated launch, model, feature-completion, blocker-issue, and
   store-submission reports, surfacing stale, missing, or invalid timestamps before handoff.
 - Plan tab shows installable PWA readiness from the generated static report, including manifest, service worker,
-  exported static assets, same-origin MoveNet cache assets, Vercel static config, SPA fallback, and no-backend status.
+  exported static assets, offline app boot cache assets, same-origin MoveNet cache assets, Vercel static config, SPA
+  fallback, and no-backend status.
 - Plan tab shows Static MoveNet assets from the generated report, including configured model URL, graph/shard counts,
   service-worker cache coverage, exported dist parity, and a share-safe packet export.
 - Plan tab shows Model asset provenance from the generated report, including TensorFlow Hub source URL, SHA-256 parity,
@@ -229,7 +230,8 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/release-blocker-issue-web-links.md` with 5/5 prefilled GitHub issue links ready for the configured
   `aantenore/movebeta-mobile` repository.
 - `npm run web:pwa:check` writes `docs/sdlc/pwa-readiness-report.json` and
-  `docs/sdlc/pwa-readiness-report.md`, verifying the installable static PWA path without API routes or a backend.
+  `docs/sdlc/pwa-readiness-report.md`, verifying the installable static PWA path, offline app boot cache coverage,
+  same-origin model cache assets, and no API routes or backend.
 - `npm run web:vercel:check` writes `docs/sdlc/vercel-deployment-report.json` and
   `docs/sdlc/vercel-deployment-report.md`, verifying static prebuilt deployment readiness without committing Vercel
   account values or adding backend routes.
@@ -311,7 +313,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 164/167 tasks done, 118/120 backlog items done, 151/151 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 165/168 tasks done, 119/121 backlog items done, 152/152 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -323,7 +325,8 @@ platforms are validated on physical climbing videos and devices.
   `docs/sdlc/release-blocker-issue-web-links.md` with status `ready`, 5/5 ready links, and repository
   `aantenore/movebeta-mobile`.
 - `npm run web:pwa:check`: passed and wrote `docs/sdlc/pwa-readiness-report.json` plus
-  `docs/sdlc/pwa-readiness-report.md` with status `ready`, 8/8 checks, and backend required `false`.
+  `docs/sdlc/pwa-readiness-report.md` with status `ready`, 9/9 checks, offline app boot cache coverage, and backend
+  required `false`.
 - `npm run web:vercel:check`: passed and wrote `docs/sdlc/vercel-deployment-report.json` plus
   `docs/sdlc/vercel-deployment-report.md` with status `static-ready`, 4/6 verified checks, 0 blocked checks, and 2
   account-binding/secret actions remaining outside the repository.
@@ -532,6 +535,8 @@ platforms are validated on physical climbing videos and devices.
   native QA evidence import preview, feature completion audit, iOS toolchain setup packet export, evidence collection plan, validation consent packet export, validation pilot kit export, release unblock checklist, release unblock packet export, release critical path, release evidence scenarios, release evidence freshness, static MoveNet assets, installable PWA readiness, Vercel deployment readiness, Vercel workflow readiness, release evidence reconciliation, release blocker issue filing plan export, release evidence packet export with store credentials report evidence, safety-language guard, provider-agnostic commercial readiness, commercial readiness packet export, the Sessions deletion receipt, the Privacy diagnostics
   packet, Privacy data portability backup/restore checksum and conflict preview, and the Privacy airplane-mode readiness
   self-check.
+- Browser smoke now verifies service worker installation, cache inventory, offline reload, and cached same-origin model
+  manifest access from the exported PWA.
 - `npx expo prebuild --no-install`: passed.
 - `npm run toolchain:ios`: passed and confirms local CocoaPods 1.16.2.
 - Local CocoaPods 1.16.2 is installed under `.tools/ruby-3.3.11/bin/pod`.
