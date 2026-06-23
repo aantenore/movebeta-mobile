@@ -59,6 +59,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   dependencyLicenseReport?: unknown;
   envTemplateReport?: unknown;
   externalEvidenceIntakeReport?: unknown;
+  externalEvidencePromotionReport?: unknown;
   externalEvidenceValidationReport?: unknown;
   featureCompletionReport?: unknown;
   githubWorkflowReport?: unknown;
@@ -157,6 +158,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/external-evidence-validation-report.json',
     refreshCommand: 'npm run release:evidence:validate',
     reportKey: 'externalEvidenceValidationReport',
+    requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'external-evidence-promotion-report',
+    label: 'External evidence promotion report',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/external-evidence-promotion-report.json',
+    refreshCommand: 'npm run release:evidence:promote',
+    reportKey: 'externalEvidencePromotionReport',
     requiredFor: ['store', 'handoff'],
   },
   {

@@ -7,12 +7,15 @@ import { describe, expect, it } from 'vitest';
 import {
   assertExternalEvidenceIntakeIsShareSafe,
   buildExternalEvidenceIntakeReport,
+  buildExternalEvidencePromotionReport,
   buildExternalEvidenceValidationReport,
   buildMissingExternalEvidenceValidationReport,
   ExternalEvidenceFilledIntakeSchema,
+  ExternalEvidencePromotionReportSchema,
   ExternalEvidenceValidationReportSchema,
   ExternalEvidenceIntakeReportSchema,
   externalEvidenceIntakeSchemaVersion,
+  externalEvidencePromotionReportSchemaVersion,
   externalEvidenceValidationReportSchemaVersion,
 } from '../src/core/externalEvidenceIntake';
 import { defaultLaunchReadinessEvidence, type LaunchReadinessEvidence } from '../src/core/launchReadiness';
@@ -26,6 +29,11 @@ import {
   resolveExternalEvidenceValidationPaths,
   writeExternalEvidenceValidationReport,
 } from '../scripts/external_evidence_validate';
+import {
+  renderExternalEvidencePromotionMarkdown,
+  resolveExternalEvidencePromotionPaths,
+  writeExternalEvidencePromotionReport,
+} from '../scripts/external_evidence_promote';
 
 function tempRoot() {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'movebeta-external-evidence-intake-'));
@@ -55,6 +63,30 @@ function tempRoot() {
 
 function allReadyEvidence(): LaunchReadinessEvidence {
   return Object.fromEntries(Object.keys(defaultLaunchReadinessEvidence).map((key) => [key, true])) as LaunchReadinessEvidence;
+}
+
+function filledDefaultIntake() {
+  const intake = buildExternalEvidenceIntakeReport({
+    generatedAt: '2026-06-23T12:20:00.000Z',
+  }).intakeTemplate;
+
+  return ExternalEvidenceFilledIntakeSchema.parse({
+    ...intake,
+    schemaVersion: 'movebeta.external-evidence-filled-intake.v1',
+    items: intake.items.map((item) => ({
+      ...item,
+      proof: item.proof.map((proof, index) => ({
+        ...proof,
+        evidenceReference:
+          proof.acceptedReferenceTypes.includes('relative-path') && index === 0
+            ? proof.expectedProof.split(' ')[0]
+            : `https://github.com/aantenore/movebeta-mobile/issues/${100 + index}`,
+        evidenceReferenceType: proof.acceptedReferenceTypes.includes('relative-path') && index === 0 ? 'relative-path' : 'issue-url',
+        notes: 'Reference reviewed without raw artifacts.',
+        status: 'provided',
+      })),
+    })),
+  });
 }
 
 describe('external evidence intake', () => {
@@ -120,26 +152,7 @@ describe('external evidence intake', () => {
   });
 
   it('validates a filled intake only when every proof has an accepted share-safe reference', () => {
-    const intake = buildExternalEvidenceIntakeReport({
-      generatedAt: '2026-06-23T12:20:00.000Z',
-    }).intakeTemplate;
-    const filled = ExternalEvidenceFilledIntakeSchema.parse({
-      ...intake,
-      schemaVersion: 'movebeta.external-evidence-filled-intake.v1',
-      items: intake.items.map((item) => ({
-        ...item,
-        proof: item.proof.map((proof, index) => ({
-          ...proof,
-          evidenceReference:
-            proof.acceptedReferenceTypes.includes('relative-path') && index === 0
-              ? proof.expectedProof.split(' ')[0]
-              : `https://github.com/aantenore/movebeta-mobile/issues/${100 + index}`,
-          evidenceReferenceType: proof.acceptedReferenceTypes.includes('relative-path') && index === 0 ? 'relative-path' : 'issue-url',
-          notes: 'Reference reviewed without raw artifacts.',
-          status: 'provided',
-        })),
-      })),
-    });
+    const filled = filledDefaultIntake();
 
     const report = buildExternalEvidenceValidationReport({
       generatedAt: '2026-06-23T12:25:00.000Z',
@@ -159,6 +172,31 @@ describe('external evidence intake', () => {
     expect(renderExternalEvidenceValidationMarkdown(report)).toContain('Accepted proofs: 8');
   });
 
+  it('builds a launch-readiness promotion candidate only after validation is ready', () => {
+    const report = buildExternalEvidencePromotionReport({
+      generatedAt: '2026-06-23T12:28:00.000Z',
+      input: filledDefaultIntake(),
+    });
+
+    expect(ExternalEvidencePromotionReportSchema.parse(report)).toEqual(report);
+    expect(report.schemaVersion).toBe(externalEvidencePromotionReportSchemaVersion);
+    expect(report.status).toBe('ready-to-apply');
+    expect(report.summary).toMatchObject({
+      blockedCheckCount: 0,
+      candidateReady: true,
+      promotedCheckCount: 5,
+      validationStatus: 'ready',
+    });
+    expect(report.candidateEvidence).toMatchObject({
+      cueValidationDataset: true,
+      easCredentials: true,
+      easProject: true,
+      iosBuild: true,
+      nativeDeviceQa: true,
+    });
+    expect(renderExternalEvidencePromotionMarkdown(report)).toContain('Candidate ready: yes');
+  });
+
   it('reports missing filled intake as needs-evidence without failing the command contract', () => {
     const report = buildMissingExternalEvidenceValidationReport({
       generatedAt: '2026-06-23T12:30:00.000Z',
@@ -172,6 +210,27 @@ describe('external evidence intake', () => {
         failedChecks: 1,
         missingProofs: 1,
       },
+    });
+  });
+
+  it('does not promote launch-readiness evidence while filled intake is missing', () => {
+    const report = buildExternalEvidencePromotionReport({
+      generatedAt: '2026-06-23T12:31:00.000Z',
+      validationReport: buildMissingExternalEvidenceValidationReport({
+        generatedAt: '2026-06-23T12:31:00.000Z',
+        inputPath: 'docs/sdlc/external-evidence-intake.filled.json',
+      }),
+    });
+
+    expect(report.status).toBe('needs-evidence');
+    expect(report.summary.candidateReady).toBe(false);
+    expect(report.summary.promotedCheckCount).toBe(0);
+    expect(report.candidateEvidence).toMatchObject({
+      cueValidationDataset: false,
+      easCredentials: false,
+      easProject: false,
+      iosBuild: false,
+      nativeDeviceQa: false,
     });
   });
 
@@ -216,14 +275,41 @@ describe('external evidence intake', () => {
     }
   });
 
+  it('writes durable promotion report and Markdown files', () => {
+    const rootDir = tempRoot();
+
+    try {
+      const paths = resolveExternalEvidencePromotionPaths(rootDir);
+      const { report, reportOutputPath, markdownOutputPath } = writeExternalEvidencePromotionReport({
+        generatedAt: '2026-06-23T12:40:00.000Z',
+        inputPath: paths.inputPath,
+        markdownOutputPath: paths.markdownOutputPath,
+        reportOutputPath: paths.reportOutputPath,
+        rootDir,
+      });
+
+      expect(report.status).toBe('needs-evidence');
+      expect(report.summary.candidateReady).toBe(false);
+      expect(reportOutputPath).toBe(paths.reportOutputPath);
+      expect(markdownOutputPath).toBe(paths.markdownOutputPath);
+      expect(JSON.parse(fs.readFileSync(paths.reportOutputPath, 'utf8'))).toEqual(report);
+      expect(fs.readFileSync(paths.markdownOutputPath, 'utf8')).toContain('External Evidence Promotion Report');
+    } finally {
+      fs.rmSync(rootDir, { force: true, recursive: true });
+    }
+  });
+
   it('resolves stable output paths', () => {
     const paths = resolveExternalEvidenceIntakePaths('/tmp/project');
     const validationPaths = resolveExternalEvidenceValidationPaths('/tmp/project');
+    const promotionPaths = resolveExternalEvidencePromotionPaths('/tmp/project');
 
     expect(paths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake-report.json');
     expect(paths.templateOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.template.json');
     expect(validationPaths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-validation-report.json');
     expect(validationPaths.inputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.filled.json');
+    expect(promotionPaths.reportOutputPath).toBe('/tmp/project/docs/sdlc/external-evidence-promotion-report.json');
+    expect(promotionPaths.inputPath).toBe('/tmp/project/docs/sdlc/external-evidence-intake.filled.json');
   });
 
   it('rejects local paths and token-like values before sharing', () => {

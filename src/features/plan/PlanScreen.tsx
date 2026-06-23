@@ -12,6 +12,7 @@ import { appConfig } from '@/core/config';
 import appJson from '../../../app.json';
 import cueValidationStarterKitReport from '../../../docs/sdlc/cue-validation-starter-kit-report.json';
 import externalEvidenceIntakeReport from '../../../docs/sdlc/external-evidence-intake-report.json';
+import externalEvidencePromotionReport from '../../../docs/sdlc/external-evidence-promotion-report.json';
 import externalEvidenceValidationReport from '../../../docs/sdlc/external-evidence-validation-report.json';
 import featureCompletionReport from '../../../docs/sdlc/feature-completion-report.json';
 import iosToolchainReport from '../../../docs/sdlc/ios-toolchain-report.json';
@@ -2952,6 +2953,7 @@ export function PlanScreen() {
       {
         cueValidationStarterKitReport,
         externalEvidenceIntakeReport,
+        externalEvidencePromotionReport,
         externalEvidenceValidationReport,
         featureCompletionReport,
         launchReadinessReport,
