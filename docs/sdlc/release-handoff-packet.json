@@ -152,6 +152,11 @@
     },
     {
       "exists": true,
+      "label": "Web smoke report",
+      "path": "docs/sdlc/web-smoke-report.json"
+    },
+    {
+      "exists": true,
       "label": "Vercel deployment report",
       "path": "docs/sdlc/vercel-deployment-report.json"
     },
@@ -296,9 +301,9 @@
       ]
     },
     {
-      "command": "MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py",
+      "command": "npm run web:smoke:report",
       "key": "web-smoke",
-      "label": "Exported web smoke",
+      "label": "Exported web smoke report",
       "requiredFor": [
         "demo",
         "internal",
@@ -566,7 +571,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-23T15:53:02.185Z",
+  "generatedAt": "2026-06-23T16:07:46.827Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -576,9 +581,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "078b8a8f40ed6b53535375b26d753247ee17107d",
+    "baseCommitSha": "df8b39a",
     "changedPaths": [],
-    "commitSha": "078b8a8f40ed6b53535375b26d753247ee17107d",
+    "commitSha": "df8b39a",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -663,8 +668,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 340,
-    "moveNetLoadMs": 4613,
+    "moveNetAverageInferenceMs": 339,
+    "moveNetLoadMs": 5052,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,

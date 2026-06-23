@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-23T15:53:02.185Z
+Generated: 2026-06-23T16:07:46.827Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 078b8a8f40ed6b53535375b26d753247ee17107d
+- Base commit at generation: df8b39a
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 4613ms; average inference 340ms
+- MoveNet readiness: ready; load 5052ms; average inference 339ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -31,7 +31,7 @@ Generated: 2026-06-23T15:53:02.185Z
 ## Verification Commands
 
 - Full local release gate: `npm run release:full`
-- Exported web smoke: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py`
+- Exported web smoke report: `npm run web:smoke:report`
 - Store screenshot capture: `MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 npm run store:screenshots`
 - Model verification suite: `npm run model:verification:suite`
 - MoveNet static assets doctor: `npm run model:movenet:assets:check`
@@ -93,6 +93,7 @@ Generated: 2026-06-23T15:53:02.185Z
 - [x] Acquisition readiness packet: `docs/sdlc/acquisition-readiness-packet.json`
 - [x] Data-room index: `docs/sdlc/data-room-index.json`
 - [x] PWA readiness report: `docs/sdlc/pwa-readiness-report.json`
+- [x] Web smoke report: `docs/sdlc/web-smoke-report.json`
 - [x] Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`
 - [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
 - [x] Store credentials setup packet: `docs/sdlc/store-credentials-setup-packet.json`
