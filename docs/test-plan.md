@@ -258,8 +258,8 @@
   manifest metadata, service worker registration, PWA icons, same-origin static MoveNet cache assets, offline app boot
   pre-cache coverage, content-addressed service-worker cache versioning, Vercel static config, SPA fallback, and no
   backend/API route surface.
-- Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, static cache-version
-  blockers, and JSON/Markdown report writes.
+- Vitest PWA readiness tests cover ready static export fixtures, missing dist asset blockers, static or mismatched
+  cache-version blockers, and JSON/Markdown report writes.
 - Browser smoke verifies service worker installation, content-addressed cache keys, cache inventory, offline reload, and
   cached same-origin model manifest access from the exported PWA.
 - Vercel deployment readiness doctor with `npm run web:vercel:check`, which validates static prebuilt deployment
