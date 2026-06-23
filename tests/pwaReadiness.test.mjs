@@ -40,7 +40,7 @@ function makeReadyFixture() {
   });
   writeText(
     path.join(root, 'public/sw.js'),
-    "const EXPORT_ASSETS = []; const MODEL_ASSET_MANIFEST = '/model-assets.json'; async function cacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v1')); self.addEventListener('fetch', () => { if (url.pathname.startsWith('/models/')) {} });",
+    "const CACHE_VERSION = 'v-dev'; const EXPORT_ASSETS = []; const MODEL_ASSET_MANIFEST = '/model-assets.json'; async function cacheModelAssets() {} self.addEventListener('install', () => caches.open('movebeta-pwa-v-dev')); self.addEventListener('fetch', () => { if (url.pathname.startsWith('/models/')) {} });",
   );
   writeJson(path.join(root, 'public/model-assets.json'), {
     assets: [
@@ -68,7 +68,7 @@ function makeReadyFixture() {
   });
   writeText(
     path.join(root, 'dist/sw.js'),
-    'const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"];',
+    'const CACHE_VERSION = "v-1234567890abcdef"; const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"];',
   );
   writeText(path.join(root, 'dist/index.html'), '<link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script>');
   writeText(path.join(root, 'dist/metadata.json'), '{}');
@@ -97,9 +97,9 @@ describe('pwa readiness doctor', () => {
 
     expect(report.schemaVersion).toBe(PWA_READINESS_SCHEMA_VERSION);
     expect(report.summary).toMatchObject({
-      checkCount: 9,
+      checkCount: 10,
       status: 'ready',
-      verifiedCount: 9,
+      verifiedCount: 10,
     });
     expect(report.privacy).toMatchObject({
       backendRequired: false,
@@ -119,11 +119,23 @@ describe('pwa readiness doctor', () => {
 
   it('blocks when exported offline boot assets are not pre-cached by the service worker', () => {
     const root = makeReadyFixture();
-    writeText(path.join(root, 'dist/sw.js'), 'const EXPORT_ASSETS = ["/metadata.json"];');
+    writeText(path.join(root, 'dist/sw.js'), 'const CACHE_VERSION = "v-1234567890abcdef"; const EXPORT_ASSETS = ["/metadata.json"];');
     const report = buildPwaReadinessReport({ rootDir: root });
 
     expect(report.summary.status).toBe('blocked');
     expect(report.checks.find((item) => item.key === 'exported-offline-cache-assets')?.status).toBe('blocked');
+  });
+
+  it('blocks when the exported service worker keeps a static cache version', () => {
+    const root = makeReadyFixture();
+    writeText(
+      path.join(root, 'dist/sw.js'),
+      'const CACHE_VERSION = "v1"; const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"];',
+    );
+    const report = buildPwaReadinessReport({ rootDir: root });
+
+    expect(report.summary.status).toBe('blocked');
+    expect(report.checks.find((item) => item.key === 'content-addressed-cache-version')?.status).toBe('blocked');
   });
 
   it('writes JSON and Markdown reports', () => {

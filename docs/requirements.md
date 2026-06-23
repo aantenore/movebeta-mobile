@@ -201,6 +201,8 @@
   repository value and rejecting credential values, local paths, raw artifacts, and raw video references.
 - Provide an installable static PWA build for Vercel-style hosting, with web manifest, service worker, static deployment
   config, and no backend/API route requirement.
+- Generate a content-addressed exported PWA service-worker cache version from app shell, Expo bundle, static model, and
+  metadata asset contents so installed clients refresh cache names when shipped assets change.
 - Provide a share-safe Vercel static deployment readiness path that verifies the prebuilt static PWA contract, no-backend
   surface, empty Vercel secret template keys, project binding status, and deployment-secret availability without
   committing token values, project identifiers, local paths, or backend code.

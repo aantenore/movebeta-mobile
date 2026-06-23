@@ -52,6 +52,9 @@ def main() -> None:
         assert "/model-assets.json" in service_worker_text
         assert "cacheModelAssets" in service_worker_text
         assert "EXPORT_ASSETS" in service_worker_text
+        assert re.search(r"const CACHE_VERSION = ['\"]v-[a-f0-9]{16}['\"];", service_worker_text)
+        assert "const CACHE_VERSION = 'v1'" not in service_worker_text
+        assert 'const CACHE_VERSION = "v1"' not in service_worker_text
         model_assets = page.evaluate("async () => await fetch('/model-assets.json').then((response) => response.json())")
         assert model_assets["schemaVersion"] == "movebeta.static-model-assets.v1"
         assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
@@ -115,6 +118,7 @@ def main() -> None:
         required_cached_paths = ["/index.html", "/model-assets.json", model_assets["modelUrl"], *model_assets["assets"], *export_assets]
         for cached_path in required_cached_paths:
             assert cached_path in cache_state["paths"], cached_path
+        assert any(re.match(r"movebeta-pwa-v-[a-f0-9]{16}$", key) for key in cache_state["keys"]), cache_state["keys"]
 
         page.context.set_offline(True)
         try:
@@ -419,8 +423,8 @@ def main() -> None:
         expect(page.get_by_text("Real cue-validation dataset").first).to_be_visible()
         expect(page.get_by_text("Feature completion", exact=True)).to_be_visible()
         expect(page.get_by_text("Feature completion audit")).to_be_visible()
-        expect(page.get_by_text("165/168", exact=True)).to_be_visible()
-        expect(page.get_by_text("119/121", exact=True)).to_be_visible()
+        expect(page.get_by_text("166/169", exact=True)).to_be_visible()
+        expect(page.get_by_text("120/122", exact=True)).to_be_visible()
         expect(page.get_by_text("internal gaps", exact=True)).to_be_visible()
         expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
         expect(page.get_by_text("Model evidence", exact=True)).to_be_visible()
@@ -567,7 +571,7 @@ def main() -> None:
         expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
         expect(page.get_by_text("Installable PWA").first).to_be_visible()
-        expect(page.get_by_text("9/9", exact=True).first).to_be_visible()
+        expect(page.get_by_text("10/10", exact=True).first).to_be_visible()
         expect(page.get_by_text("backend", exact=True).first).to_be_visible()
         expect(page.get_by_text("Vercel static deployment config")).to_be_visible()
         expect(page.get_by_text("No backend surface required")).to_be_visible()

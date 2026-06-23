@@ -50,6 +50,8 @@ when the PWA has been installed or opened online once.
 `scripts/prepare_pwa_dist.mjs` also injects the exported Expo JS bundles, router image assets, and metadata into
 `dist/sw.js`, so the generated service worker has a deterministic offline app-boot cache instead of relying on a second
 controlled reload to discover hashed files.
+The exported service worker cache version is content-addressed from app shell, Expo export, metadata, and static model
+assets, which makes cache invalidation explicit when a shipped bundle or model file changes.
 `npm run model:assets:provenance` adds the release evidence layer for those vendored assets: source URL checks,
 same-origin inventory checks, SHA-256 parity, attribution notice validation, and an explicit license-review state.
 
