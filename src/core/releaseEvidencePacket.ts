@@ -205,6 +205,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Validate filled external proof references before release readiness or handoff claims rely on them.',
     },
     {
+      command: 'npm run release:evidence:promote',
+      key: 'external-evidence-promotion',
+      label: 'External evidence promotion candidate',
+      owner: 'release',
+      purpose: 'Create a launch-readiness evidence candidate only after external proof references validate.',
+    },
+    {
       command: 'npm run release:freshness:doctor',
       key: 'release-freshness-doctor',
       label: 'Release evidence freshness doctor',
@@ -365,6 +372,13 @@ export function buildReleaseEvidencePacket({
       key: 'external-evidence-validation-report',
       label: 'External evidence validation report',
       path: 'docs/sdlc/external-evidence-validation-report.json',
+      status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
+    },
+    {
+      command: 'npm run release:evidence:promote',
+      key: 'external-evidence-promotion-report',
+      label: 'External evidence promotion report',
+      path: 'docs/sdlc/external-evidence-promotion-report.json',
       status: releaseUnblockPacket.summary.blockedItems > 0 ? 'blocked' : 'ready',
     },
     {

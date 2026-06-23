@@ -81,6 +81,7 @@
     "release:blocker-issues:links": "tsx scripts/release_blocker_issue_links.ts",
     "release:evidence:intake": "tsx scripts/external_evidence_intake.ts",
     "release:evidence:validate": "tsx scripts/external_evidence_validate.ts",
+    "release:evidence:promote": "tsx scripts/external_evidence_promote.ts",
     "release:freshness:doctor": "tsx scripts/release_freshness_doctor.ts",
     "feature:doctor": "node scripts/feature_completion_doctor.mjs",
     "model:movenet:assets:download": "node scripts/download_movenet_static_assets.mjs",
