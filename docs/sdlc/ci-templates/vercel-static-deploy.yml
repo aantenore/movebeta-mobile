@@ -45,6 +45,9 @@ jobs:
       - name: Validate static MoveNet assets
         run: npm run model:movenet:assets:check
 
+      - name: Validate model asset provenance
+        run: npm run model:assets:provenance
+
       - name: Validate static PWA
         run: npm run web:pwa:check
 
@@ -78,6 +81,8 @@ jobs:
             docs/sdlc/release-gate-report.json
             docs/sdlc/pwa-readiness-report.json
             docs/sdlc/movenet-static-assets-report.json
+            docs/sdlc/model-asset-provenance-report.json
+            docs/sdlc/model-asset-attribution.md
             docs/sdlc/vercel-deployment-report.json
             docs/sdlc/release-freshness-report.json
             dist/model-assets.json

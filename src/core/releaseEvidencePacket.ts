@@ -191,6 +191,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Verify vendored same-origin MoveNet graph and weight shards are present in public and exported PWA assets.',
     },
     {
+      command: 'npm run model:assets:provenance',
+      key: 'model-asset-provenance',
+      label: 'Model asset provenance doctor',
+      owner: 'release',
+      purpose: 'Verify vendored model source URLs, file hashes, attribution notice, and commercial license-review status before distribution.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -323,6 +330,13 @@ export function buildReleaseEvidencePacket({
       key: 'movenet-static-assets-report',
       label: 'MoveNet static assets report',
       path: 'docs/sdlc/movenet-static-assets-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
+    },
+    {
+      command: 'npm run model:assets:provenance',
+      key: 'model-asset-provenance-report',
+      label: 'Model asset provenance report',
+      path: 'docs/sdlc/model-asset-provenance-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
     },
   ];

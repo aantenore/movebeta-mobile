@@ -302,6 +302,9 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
 - MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`,
   `docs/sdlc/movenet-static-assets-report.md`; model graph and weight shards live under
   `public/models/movenet/singlepose/lightning/4` and are listed in `public/model-assets.json`.
+- Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`,
+  `docs/sdlc/model-asset-provenance-report.md`, and the attribution notice at
+  `docs/sdlc/model-asset-attribution.md`.
 - Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
@@ -332,8 +335,10 @@ The local release gate is:
 
 ```bash
 npm run release:check
+npm run model:movenet:assets:download
 npm run model:analysis:replay
 npm run model:movenet:assets:check
+npm run model:assets:provenance
 npm run model:verification:suite
 npm run model:evidence:sync
 npm run release:blocker-issues
@@ -358,11 +363,11 @@ activation, and deployment token values outside source control while documenting
 GitHub Actions deployment template. Use Vercel plan selection according to the intended personal or commercial
 deployment context.
 
-The web MoveNet model is lazy-loaded: the PWA does not fetch model weights at install time. The first real Analyze run
-loads the TensorFlow.js pose-detection chunk and MoveNet SinglePose Lightning weights, then keeps the detector in memory
-for the active session. Browser HTTP cache can reuse those assets later, but offline analysis before the first model load
-requires vendoring the MoveNet graph/weights under `public/models/...` and pointing the provider at that same-origin
-`modelUrl`.
+The web MoveNet graph and weight shards are downloaded during setup or release with
+`npm run model:movenet:assets:download`, then committed under `public/models/...` with SHA-256 digests in
+`public/model-assets.json`. Runtime analysis loads the configured same-origin model URL instead of fetching model weights
+from the upstream catalog during the first user analysis. The service worker caches `/model-assets.json` and every listed
+`/models/...` asset, so the installed PWA can reuse the model cache after the first online load.
 
 The EAS release gates are:
 

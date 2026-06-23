@@ -41,9 +41,9 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 14,
+      artifactCount: 15,
       blockerCount: 5,
-      commandCount: 15,
+      commandCount: 16,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
@@ -59,6 +59,7 @@ describe('release evidence packet', () => {
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:freshness:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:verification:suite');
     expect(packet.commands.map((command) => command.command)).toContain('npm run model:movenet:assets:check');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run model:assets:provenance');
     expect(packet.artifacts.map((artifact) => [artifact.key, artifact.status])).toEqual([
       ['release-gate-report', 'ready'],
       ['env-template-report', 'ready'],
@@ -74,6 +75,7 @@ describe('release evidence packet', () => {
       ['release-freshness-report', 'ready'],
       ['model-verification-suite-report', 'ready'],
       ['movenet-static-assets-report', 'ready'],
+      ['model-asset-provenance-report', 'ready'],
     ]);
     expect(JSON.stringify(packet)).not.toMatch(/rawVideoIncluded":true|\/Users\/|ghp_/i);
   });

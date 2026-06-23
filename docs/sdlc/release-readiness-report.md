@@ -176,6 +176,8 @@ platforms are validated on physical climbing videos and devices.
   exported static assets, same-origin MoveNet cache assets, Vercel static config, SPA fallback, and no-backend status.
 - Plan tab shows Static MoveNet assets from the generated report, including configured model URL, graph/shard counts,
   service-worker cache coverage, exported dist parity, and a share-safe packet export.
+- Plan tab shows Model asset provenance from the generated report, including TensorFlow Hub source URL, SHA-256 parity,
+  attribution notice status, explicit license-review state, and a share-safe packet export.
 - Plan tab shows PWA runtime readiness from browser signals, including install prompt state, standalone mode, service
   worker/cache readiness, network state, update state, and share-safe install guidance.
 - Plan tab shows Vercel static deployment readiness from the generated report, including prebuilt deploy mode, no-backend
@@ -237,12 +239,15 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:assets:check` writes `docs/sdlc/movenet-static-assets-report.json` and
   `docs/sdlc/movenet-static-assets-report.md`, verifying same-origin MoveNet graph/weight assets in `public` and
   exported `dist`, app config URL alignment, and service-worker model cache coverage.
+- `npm run model:assets:provenance` writes `docs/sdlc/model-asset-provenance-report.json` and
+  `docs/sdlc/model-asset-provenance-report.md`, verifying TensorFlow Hub source URLs, same-origin asset inventory,
+  SHA-256 parity, attribution notice presence, and explicit license-review state.
 - `npm run release:check` writes `docs/sdlc/release-gate-report.json` with ordered pass/fail step evidence for quality,
   MoveNet readiness, model-analysis replay, model verification suite, native QA runbook, iOS toolchain doctor,
   cue-validation dataset doctor, store credential readiness, GitHub workflow activation, feature completion, store
   submission packet generation, release blocker issue report, filing-plan and web-link generation, web export, static
-  MoveNet asset readiness, PWA readiness, Vercel deployment readiness, Vercel workflow readiness, EAS standard check,
-  moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
+  MoveNet asset readiness, model asset provenance, PWA readiness, Vercel deployment readiness, Vercel workflow readiness,
+  EAS standard check, moderate-or-higher dependency audit, dependency license inventory, and release evidence freshness.
 - `docs/sdlc/ci-templates/github-actions-quality.yml` defines the shared `npm run ci` release gate for pushes to `main`
   and pull requests, then uploads machine-readable release evidence artifacts, including blocker issue drafts, without
   committing generated CI outputs.
@@ -289,6 +294,9 @@ platforms are validated on physical climbing videos and devices.
 - `npm run model:movenet:assets:check`: passed and wrote `docs/sdlc/movenet-static-assets-report.json` plus
   `docs/sdlc/movenet-static-assets-report.md` with status `ready`, 7/7 checks, 3 source assets, 4 exported assets
   including the manifest, and service-worker model cache coverage.
+- `npm run model:assets:provenance`: passed and wrote `docs/sdlc/model-asset-provenance-report.json` plus
+  `docs/sdlc/model-asset-provenance-report.md` with status `review`, 5/6 verified checks, 1 license-review check,
+  0 blocked checks, and SHA-256 parity across 3 vendored model files.
 - `npm run model:evidence:sync`: passed and updated Expo `extra.modelEvidence` from the latest MoveNet readiness,
   model-analysis replay, and ready/share-safe cue-validation dataset reports while preserving real-world validation targets
   until the real dataset doctor is ready.
@@ -303,7 +311,7 @@ platforms are validated on physical climbing videos and devices.
   `blocked` because the current GitHub OAuth token lacks `workflow` scope and `.github/workflows/quality.yml` is not
   committed.
 - `npm run feature:doctor`: passed as a command and wrote `docs/sdlc/feature-completion-report.json` with status
-  `external-blocked`, 163/166 tasks done, 117/119 backlog items done, 150/150 traceability rows covered, 0 internal gaps,
+  `external-blocked`, 164/167 tasks done, 118/120 backlog items done, 151/151 traceability rows covered, 0 internal gaps,
   and 10 external blockers across task, backlog, traceability, and launch evidence.
 - `npm run release:blocker-issues`: passed and wrote `docs/sdlc/release-blocker-issues-report.json` plus
   `docs/sdlc/release-blocker-issues-report.md` with status `ready-to-file`, 5 issue drafts, 4 owners, 7 commands,
@@ -330,8 +338,8 @@ platforms are validated on physical climbing videos and devices.
 - `npm run security:licenses`: passed as a command and wrote `docs/sdlc/dependency-license-report.json` with status
   `review`, 768 packages, 13 notice/attribution review packages, and 0 blocked packages.
 - `npm run release:freshness:doctor`: passed as a command and wrote `docs/sdlc/release-freshness-report.json` with
-  status `ready`, 19/19 fresh artifacts, and 0 stale artifacts.
-- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 24/24 release steps passing.
+  status `ready`, 20/20 fresh artifacts, and 0 stale artifacts.
+- `npm run release:check`: passed and wrote `docs/sdlc/release-gate-report.json` with 25/25 release steps passing.
 - `npm run store:submission`: passed and wrote `docs/store/store-submission-packet.json` plus
   `docs/store/store-submission-packet.md` with metadata checks, safety-language review, screenshot count, submission
   commands, and privacy flags.
@@ -404,7 +412,10 @@ platforms are validated on physical climbing videos and devices.
 - `tests/launchReadiness.test.ts` and `tests/config.test.ts`: passed and cover default blocker status, all-ready
   evidence, partial evidence overrides, MoveNet readiness evidence, native QA runbook evidence, launch evidence parsing
   from Expo/env configuration, and stale legacy Expo manifest fallback to bundled app extra.
-- `tests/releaseGateReport.test.ts`: passed and covers release gate pass/fail aggregation plus ordered gate step evidence.
+- `tests/releaseGateReport.test.ts`: passed and covers release gate pass/fail aggregation plus ordered gate step evidence,
+  including model asset provenance.
+- `tests/modelAssetProvenanceDoctor.test.mjs`: passed and covers source URL validation, same-origin asset inventory,
+  SHA-256 parity, attribution notice checks, durable JSON/Markdown writes, review state, and unsafe-value rejection.
 - `tests/cueValidationDatasetDoctor.test.ts`: passed and covers missing dataset evidence, parse-error evidence, ready
   summaries, durable JSON/Markdown writes, and reviewer identity exclusion.
 - `tests/iosToolchainDoctor.test.ts`: passed and covers Command Line Tools-only blocker detection, full-Xcode ready
@@ -545,9 +556,10 @@ platforms are validated on physical climbing videos and devices.
   physical-device QA evidence, and store submission blocked by missing full Xcode, physical-device QA, real cue-validation
   data, EAS project binding, and store credentials.
 - `npm run release:handoff`: passed and generated `docs/sdlc/release-handoff-packet.json` plus
-  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 28 current artifacts including the
-  release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, PWA readiness report,
-  Vercel deployment report, Vercel workflow report, release archive artifacts, and 19 verification commands.
+  `docs/sdlc/release-handoff-packet.md` with 11/11 screenshots, 5 external blockers, 30 current artifacts including the
+  release blocker issue filing plan, release blocker issue web links, MoveNet static assets report, model asset
+  provenance report, PWA readiness report, Vercel deployment report, Vercel workflow report, release archive artifacts,
+  and 20 verification commands.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.

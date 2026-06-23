@@ -168,3 +168,4 @@
 | T164 | Add in-app PWA runtime install and offline readiness guidance | Done |
 | T165 | Add Vercel static deployment workflow readiness | Done |
 | T166 | Vendor MoveNet static model assets for offline-first PWA analysis | Done |
+| T167 | Add model asset provenance and attribution evidence | Done |
