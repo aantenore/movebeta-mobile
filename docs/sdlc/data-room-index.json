@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-23T15:52:06.179Z",
+  "generatedAt": "2026-06-23T16:05:17.562Z",
   "items": [
     {
       "category": "release",
@@ -200,6 +200,17 @@
       "owner": "release",
       "purpose": "Static installable PWA and offline app boot evidence.",
       "refreshCommand": "npm run export:web && npm run web:pwa:check",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "distribution",
+      "key": "web-smoke-report",
+      "label": "Web smoke report",
+      "location": "docs/sdlc/web-smoke-report.json",
+      "owner": "qa",
+      "purpose": "Exported web bundle smoke evidence across release UI, PWA cache, and model delivery paths.",
+      "refreshCommand": "npm run web:smoke:report",
       "sensitivity": "share-safe",
       "status": "ready"
     },
@@ -382,10 +393,10 @@
   "summary": {
     "blockedCount": 0,
     "externalRequiredCount": 14,
-    "itemCount": 30,
+    "itemCount": 31,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readyCount": 14,
+    "readyCount": 15,
     "reviewCount": 2,
     "status": "needs-external-evidence"
   }

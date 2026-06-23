@@ -75,6 +75,7 @@ export type AcquisitionReadinessPacketInput = {
   releaseHandoffPacket?: unknown;
   storeSubmissionPacket?: unknown;
   vercelDeploymentReport?: unknown;
+  webSmokeReport?: unknown;
 };
 
 const forbiddenAcquisitionPacketValuePattern =
@@ -252,22 +253,36 @@ function commercialPathSignal(commercialReadinessPacket: unknown) {
   });
 }
 
-function distributionSignal(storeSubmissionPacket: unknown, pwaReadinessReport: unknown, vercelDeploymentReport: unknown) {
+function distributionSignal(
+  storeSubmissionPacket: unknown,
+  pwaReadinessReport: unknown,
+  vercelDeploymentReport: unknown,
+  webSmokeReport: unknown,
+) {
   const storeStatus = reportStatus(storeSubmissionPacket);
   const pwaStatus = reportStatus(pwaReadinessReport);
   const vercelStatus = reportStatus(vercelDeploymentReport);
-  const staticWebReady = pwaStatus === 'ready' && (vercelStatus === 'ready' || vercelStatus === 'template-ready' || vercelStatus === 'static-ready');
+  const webSmokeStatus = reportStatus(webSmokeReport);
+  const staticWebReady =
+    pwaStatus === 'ready' &&
+    webSmokeStatus === 'pass' &&
+    (vercelStatus === 'ready' || vercelStatus === 'template-ready' || vercelStatus === 'static-ready');
   const status: AcquisitionSignalStatus = storeStatus === 'metadata-ready' && staticWebReady ? 'ready' : 'review';
 
   return signal({
-    detail: `Store metadata is ${storeStatus}; PWA readiness is ${pwaStatus}; Vercel static readiness is ${vercelStatus}.`,
-    evidence: ['docs/store/store-submission-packet.json', 'docs/sdlc/pwa-readiness-report.json', 'docs/sdlc/vercel-deployment-report.json'],
+    detail: `Store metadata is ${storeStatus}; PWA readiness is ${pwaStatus}; web smoke is ${webSmokeStatus}; Vercel static readiness is ${vercelStatus}.`,
+    evidence: [
+      'docs/store/store-submission-packet.json',
+      'docs/sdlc/pwa-readiness-report.json',
+      'docs/sdlc/web-smoke-report.json',
+      'docs/sdlc/vercel-deployment-report.json',
+    ],
     key: 'distribution',
     label: 'Distribution',
     nextAction:
       status === 'ready'
         ? 'Use the static PWA path for buyer demo and keep native store blockers tracked separately.'
-        : 'Refresh store, PWA, and Vercel readiness evidence before buyer demo.',
+        : 'Refresh store, PWA, web smoke, and Vercel readiness evidence before buyer demo.',
     owner: 'release',
     status,
   });
@@ -407,6 +422,7 @@ export function buildAcquisitionReadinessPacket({
   releaseHandoffPacket,
   storeSubmissionPacket,
   vercelDeploymentReport,
+  webSmokeReport,
 }: AcquisitionReadinessPacketInput = {}): AcquisitionReadinessPacket {
   const signals = [
     productScopeSignal(featureCompletionReport),
@@ -414,7 +430,7 @@ export function buildAcquisitionReadinessPacket({
     launchClearanceSignal(launchReadinessReport, featureCompletionReport),
     modelProvenanceSignal(modelAssetProvenanceReport, modelDeliveryLifecycleReport),
     commercialPathSignal(commercialReadinessPacket),
-    distributionSignal(storeSubmissionPacket, pwaReadinessReport, vercelDeploymentReport),
+    distributionSignal(storeSubmissionPacket, pwaReadinessReport, vercelDeploymentReport, webSmokeReport),
     handoffSignal(releaseHandoffPacket),
     legalSupplySignal(dependencyLicenseReport, modelAssetProvenanceReport),
     privacySignal(),
@@ -430,6 +446,7 @@ export function buildAcquisitionReadinessPacket({
     artifact('Model asset provenance report', 'docs/sdlc/model-asset-provenance-report.json', modelAssetProvenanceReport, artifactAvailability),
     artifact('Model delivery lifecycle report', 'docs/sdlc/model-delivery-lifecycle-report.json', modelDeliveryLifecycleReport, artifactAvailability),
     artifact('PWA readiness report', 'docs/sdlc/pwa-readiness-report.json', pwaReadinessReport, artifactAvailability),
+    artifact('Web smoke report', 'docs/sdlc/web-smoke-report.json', webSmokeReport, artifactAvailability),
     artifact('Vercel deployment report', 'docs/sdlc/vercel-deployment-report.json', vercelDeploymentReport, artifactAvailability),
     artifact('Screenshot gallery', 'docs/screenshots.md', undefined, artifactAvailability),
     artifact('Source archive', '../movebeta-mobile-source.zip', undefined, artifactAvailability),

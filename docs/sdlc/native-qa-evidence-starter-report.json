@@ -31,7 +31,7 @@
       "status": "written"
     }
   ],
-  "generatedAt": "2026-06-23T15:51:04.420Z",
+  "generatedAt": "2026-06-23T16:04:39.058Z",
   "nextAction": "Fill docs/sdlc/native-qa-evidence-input.template.json with real Android and iOS device measurements, then rerun npm run native:qa:starter -- --input <filled-template.json>.",
   "privacy": {
     "credentialValuesIncluded": false,

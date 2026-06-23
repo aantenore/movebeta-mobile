@@ -84,6 +84,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   storeSubmissionPacket?: unknown;
   vercelDeploymentReport?: unknown;
   vercelWorkflowReport?: unknown;
+  webSmokeReport?: unknown;
 };
 
 type FreshnessConfig = Omit<ReleaseEvidenceFreshnessArtifactInput, 'generatedAt'> & {
@@ -373,6 +374,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run export:web && npm run web:pwa:check',
     reportKey: 'pwaReadinessReport',
     requiredFor: ['demo', 'handoff'],
+  },
+  {
+    key: 'web-smoke-report',
+    label: 'Web smoke report',
+    maxAgeHours: 24,
+    owner: 'qa',
+    path: 'docs/sdlc/web-smoke-report.json',
+    refreshCommand: 'npm run web:smoke:report',
+    reportKey: 'webSmokeReport',
+    requiredFor: ['demo', 'internal', 'handoff'],
   },
   {
     key: 'vercel-deployment-report',

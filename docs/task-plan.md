@@ -189,3 +189,4 @@
 | T185 | Add share-safe data-room index for buyer due diligence | Done |
 | T186 | Add configurable PWA model delivery policy | Done |
 | T187 | Add report-derived web smoke expectations | Done |
+| T188 | Add durable web smoke evidence report | Done |
