@@ -211,6 +211,9 @@ platforms are validated on physical climbing videos and devices.
 - Coach intake shows an analysis resource plan before execution, including sampled frames, runtime budget, decode-surface
   estimate, selected analysis window, and a `movebeta.analysis-resource-plan.v1` packet that excludes video URI and raw
   media.
+- Coach intake shows an execution checklist before the model starts, combining clip intake, clip triage, model readiness,
+  resource budget, and privacy boundary into ready, review, warmup-required, or blocked states plus a
+  `movebeta.analysis-execution-plan.v1` packet.
 - Plan tab shows a model download plan derived from lifecycle and runtime readiness, distinguishing native packaged
   delivery from PWA download timing, extra bytes, cache warmup, integrity, update activation, and offline-use steps.
 - Coach PWA preflight blocks offline real-video analysis when a service-worker update is pending, preventing stale cached

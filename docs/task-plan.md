@@ -207,3 +207,4 @@
 | T203 | Add explicit PWA update activation action and packet | Done |
 | T204 | Add PWA field readiness checklist and packet | Done |
 | T205 | Add local analysis resource planning and packet | Done |
+| T206 | Add local analysis execution checklist and packet | Done |

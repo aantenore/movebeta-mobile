@@ -14,6 +14,7 @@ import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
+import { buildAnalysisExecutionPlan, type AnalysisExecutionPlan } from '@/core/analysisExecutionPlan';
 import { selectionFeedback } from '@/core/haptics';
 import { buildPwaAnalysisPreflight, type PwaAnalysisPreflight } from '@/core/pwaAnalysisPreflight';
 import {
@@ -419,14 +420,76 @@ function AnalysisResourcePlanPanel({
   );
 }
 
+function AnalysisExecutionPlanPanel({
+  onPreparePacket,
+  plan,
+}: {
+  onPreparePacket: () => void;
+  plan: AnalysisExecutionPlan;
+}) {
+  const isBlocked = plan.summary.status === 'blocked';
+  const isReady = plan.summary.status === 'ready';
+
+  return (
+    <View style={[styles.resourcePlan, isBlocked ? styles.resourcePlanBlocked : isReady ? styles.resourcePlanReady : null]}>
+      <View style={styles.resourcePlanTop}>
+        <View style={styles.resourcePlanTitleRow}>
+          <Gauge color={isBlocked ? theme.colors.coral : isReady ? theme.colors.success : theme.colors.amber} size={17} />
+          <Text style={styles.resourcePlanTitle}>Execution checklist</Text>
+        </View>
+        <Text style={[styles.resourcePlanBadge, isBlocked ? styles.resourcePlanBadgeBlocked : isReady ? styles.resourcePlanBadgeReady : null]}>
+          {plan.summary.status}
+        </Text>
+      </View>
+      <Text style={styles.resourcePlanSummary}>{plan.summary.nextAction}</Text>
+      <View style={styles.resourcePlanMetrics}>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.readyCount} ready</Text>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.reviewCount} review</Text>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.actionCount} action</Text>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.blockedCount} blocked</Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {plan.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'blocked'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <Pressable accessibilityLabel="Prepare analysis execution packet" onPress={onPreparePacket} style={styles.resourcePlanAction}>
+        <Download color={theme.colors.brand} size={16} />
+        <Text style={styles.resourcePlanActionText}>Execution packet</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function VideoIntakePanel({
   analysisWindowMode,
+  modelPreflight,
   onAnalysisWindowModeChange,
+  onPrepareExecutionPacket,
   onPrepareResourcePacket,
   source,
 }: {
   analysisWindowMode: AnalysisWindowMode;
+  modelPreflight: PwaAnalysisPreflight;
   onAnalysisWindowModeChange: (mode: AnalysisWindowMode) => void;
+  onPrepareExecutionPacket: (plan: AnalysisExecutionPlan) => void;
   onPrepareResourcePacket: (plan: AnalysisResourcePlan) => void;
   source: VideoSourceResult;
 }) {
@@ -434,6 +497,12 @@ function VideoIntakePanel({
   const triage = buildClipTriagePlan(source.video, assessment);
   const analysisWindow = buildVideoAnalysisWindow(source.video, analysisWindowMode);
   const resourcePlan = buildAnalysisResourcePlan({ mode: analysisWindowMode, video: source.video });
+  const executionPlan = buildAnalysisExecutionPlan({
+    intake: assessment,
+    modelPreflight,
+    resourcePlan,
+    triage,
+  });
   const windowControlsVisible = source.video.durationMs > videoAnalysisConfig.recommendedAnalysisDurationMs;
   const isBlocked = assessment.status === 'blocked';
   const isReady = assessment.status === 'ready';
@@ -544,6 +613,7 @@ function VideoIntakePanel({
       </View>
 
       <AnalysisResourcePlanPanel onPreparePacket={() => onPrepareResourcePacket(resourcePlan)} plan={resourcePlan} />
+      <AnalysisExecutionPlanPanel onPreparePacket={() => onPrepareExecutionPacket(executionPlan)} plan={executionPlan} />
 
       {assessment.issues.length > 0 ? (
         <View style={styles.intakeIssues}>
@@ -981,6 +1051,7 @@ export function CoachScreen() {
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
   const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
+  const [preparedExecutionPacket, setPreparedExecutionPacket] = useState('');
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const pwaPreflight = usePwaModelPreflight();
@@ -1018,6 +1089,11 @@ export function CoachScreen() {
   function prepareAnalysisResourcePacket(plan: AnalysisResourcePlan) {
     selectionFeedback();
     setPreparedResourcePacket(JSON.stringify(plan, null, 2));
+  }
+
+  function prepareAnalysisExecutionPacket(plan: AnalysisExecutionPlan) {
+    selectionFeedback();
+    setPreparedExecutionPacket(JSON.stringify(plan, null, 2));
   }
 
   async function runAnalysis(
@@ -1174,6 +1250,7 @@ export function CoachScreen() {
       });
 
       setPreparedResourcePacket('');
+      setPreparedExecutionPacket('');
       setActiveSource(source);
       setCameraOpen(false);
       await runAnalysis(source, selectedAttemptId, false);
@@ -1228,6 +1305,7 @@ export function CoachScreen() {
       sessionMetadata,
     );
     setPreparedResourcePacket('');
+    setPreparedExecutionPacket('');
     setActiveSource(source);
     setCameraOpen(false);
     await runAnalysis(source, selectedAttemptId, false);
@@ -1236,6 +1314,7 @@ export function CoachScreen() {
   function selectDemoAttempt(sessionId: string) {
     selectionFeedback();
     setPreparedResourcePacket('');
+    setPreparedExecutionPacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
     void runAnalysis(null, sessionId, false);
@@ -1385,8 +1464,11 @@ export function CoachScreen() {
         onAnalysisWindowModeChange={(mode) => {
           selectionFeedback();
           setPreparedResourcePacket('');
+          setPreparedExecutionPacket('');
           setAnalysisWindowMode(mode);
         }}
+        modelPreflight={modelPreflight}
+        onPrepareExecutionPacket={prepareAnalysisExecutionPacket}
         onPrepareResourcePacket={prepareAnalysisResourcePacket}
         source={intakeSource}
       />
@@ -1399,6 +1481,18 @@ export function CoachScreen() {
             accessibilityLabel="Analysis resource packet JSON"
             style={styles.resourcePacketText}
             value={preparedResourcePacket}
+          />
+        </View>
+      ) : null}
+      {preparedExecutionPacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared analysis execution packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Analysis execution packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedExecutionPacket}
           />
         </View>
       ) : null}
