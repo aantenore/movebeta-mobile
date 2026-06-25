@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T15:12:42.185Z
+Generated: 2026-06-25T15:21:06.530Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 44537441efe3dcc48c4bb4f23d59cea4cebd3a35
+- Base commit at generation: 8f2b1a6030a19b0581a2f0b0536da1334a8a9f73
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 13ms; average inference 312ms
+- MoveNet readiness: ready; load 13ms; average inference 327ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -38,6 +38,7 @@ Generated: 2026-06-25T15:12:42.185Z
 - Model asset provenance doctor: `npm run model:assets:provenance`
 - Model delivery lifecycle report: `npm run model:delivery:lifecycle`
 - Model download plan report: `npm run model:download:plan`
+- iOS toolchain setup packet: `npm run native:ios:setup`
 - Native QA evidence starter: `npm run native:qa:starter`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Cue-validation starter kit: `npm run validation:cue:starter`
@@ -92,6 +93,7 @@ Generated: 2026-06-25T15:12:42.185Z
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
 - [x] Native QA runbook: `docs/sdlc/native-qa-runbook.json`
+- [x] iOS toolchain setup packet: `docs/sdlc/ios-toolchain-setup-packet.json`
 - [x] Native QA evidence starter report: `docs/sdlc/native-qa-evidence-starter-report.json`
 - [x] Native QA evidence input template: `docs/sdlc/native-qa-evidence-input.template.json`
 - [x] GitHub workflow report: `docs/sdlc/github-workflow-report.json`

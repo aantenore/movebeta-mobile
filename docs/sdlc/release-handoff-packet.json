@@ -122,6 +122,11 @@
     },
     {
       "exists": true,
+      "label": "iOS toolchain setup packet",
+      "path": "docs/sdlc/ios-toolchain-setup-packet.json"
+    },
+    {
+      "exists": true,
       "label": "Native QA evidence starter report",
       "path": "docs/sdlc/native-qa-evidence-starter-report.json"
     },
@@ -400,6 +405,14 @@
       ]
     },
     {
+      "command": "npm run native:ios:setup",
+      "key": "ios-toolchain-setup",
+      "label": "iOS toolchain setup packet",
+      "requiredFor": [
+        "store"
+      ]
+    },
+    {
       "command": "npm run native:qa:starter",
       "key": "native-qa-starter",
       "label": "Native QA evidence starter",
@@ -647,7 +660,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-25T15:12:42.185Z",
+  "generatedAt": "2026-06-25T15:21:06.530Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -657,9 +670,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "44537441efe3dcc48c4bb4f23d59cea4cebd3a35",
+    "baseCommitSha": "8f2b1a6030a19b0581a2f0b0536da1334a8a9f73",
     "changedPaths": [],
-    "commitSha": "44537441efe3dcc48c4bb4f23d59cea4cebd3a35",
+    "commitSha": "8f2b1a6030a19b0581a2f0b0536da1334a8a9f73",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -744,7 +757,7 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 312,
+    "moveNetAverageInferenceMs": 327,
     "moveNetLoadMs": 13,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
