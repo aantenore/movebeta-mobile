@@ -261,6 +261,9 @@
   key presence, and Google Play credential key presence without exposing any secret values.
 - Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store
   Connect, and Google Play key names, commands, readiness summary, and no credential values.
+- Generate a share-safe store release account runbook that orders store metadata, EAS project binding, Expo token, App
+  Store Connect, Google Play, native QA evidence, strict EAS gate, and final EAS submit phases without exposing secret
+  values, project id values, local paths, raw artifacts, raw video, or token-like values.
 - Generate a share-safe environment template report that verifies `.env.example` covers runtime, smoke-test, and release
   credential key names while rejecting credential values, token-like strings, and local paths.
 - Generate a machine-readable feature completion report that audits task plan, backlog, traceability, and launch-readiness
@@ -418,6 +421,9 @@
   local artifact references, local filesystem paths, and token-like strings, and remain schema-versioned.
 - Store credentials setup packets must include only required key names and commands, reject credential values, local paths,
   raw artifacts, and token-like strings, and avoid printing the EAS project id value.
+- Store release account runbooks must be schema-versioned, generated from store metadata and credential readiness,
+  expose only ordered phases, commands, key names, and evidence names, and reject credential values, project id values,
+  local paths, raw artifacts, raw video, and token-like strings.
 - Environment template validation must keep release credential example values empty, include all public runtime and local
   operation keys used by release commands, and fail when token-like strings or local paths appear in `.env.example`.
 - Native QA runbooks must be generated from the same workflow and budget contract used by the native QA validator, and

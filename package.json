@@ -77,6 +77,7 @@
     "release:env:doctor": "node scripts/env_template_doctor.mjs",
     "release:credentials:starter": "tsx scripts/store_credentials_starter.ts",
     "release:credentials:doctor": "node scripts/store_credentials_doctor.mjs",
+    "release:store-account:runbook": "tsx scripts/store_release_account_runbook.ts",
     "release:github:doctor": "node scripts/github_workflow_doctor.mjs",
     "release:blocker-issues": "tsx scripts/release_blocker_issue_report.ts",
     "release:blocker-issues:file": "tsx scripts/release_blocker_issue_filing.ts",

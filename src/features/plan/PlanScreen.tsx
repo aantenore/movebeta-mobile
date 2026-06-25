@@ -27,6 +27,7 @@ import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-
 import nativeQaEvidenceStarterReport from '../../../docs/sdlc/native-qa-evidence-starter-report.json';
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
 import storeCredentialsSetupPacketReport from '../../../docs/sdlc/store-credentials-setup-packet.json';
+import storeReleaseAccountRunbookReport from '../../../docs/sdlc/store-release-account-runbook.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
 import vercelDeploymentReport from '../../../docs/sdlc/vercel-deployment-report.json';
 import vercelWorkflowReport from '../../../docs/sdlc/vercel-workflow-report.json';
@@ -93,6 +94,7 @@ import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
 import { buildStoreCredentialsSetupPacket, type StoreCredentialsSetupPacket } from '@/core/storeCredentialsSetupPacket';
+import { buildStoreReleaseAccountRunbook, type StoreReleaseAccountRunbook } from '@/core/storeReleaseAccountRunbook';
 import { buildStoreReadinessManifest, type ExpoStoreConfig } from '@/core/storeReadiness';
 import { buildStoreSubmissionPacket, type StoreSubmissionPacket } from '@/core/storeSubmissionPacket';
 import { buildValidationCollectionPacket } from '@/core/validationCollectionPacket';
@@ -2590,12 +2592,16 @@ function ReleaseEvidencePacketCard({
 }
 
 function StoreSubmissionPacketCard({
+  accountRunbook,
   credentialsPacket,
+  onPrepareAccountRunbook,
   onPrepareCredentialsPacket,
   onPreparePacket,
   packet,
 }: {
+  accountRunbook: StoreReleaseAccountRunbook;
   credentialsPacket: StoreCredentialsSetupPacket;
+  onPrepareAccountRunbook: () => void;
   onPrepareCredentialsPacket: () => void;
   onPreparePacket: () => void;
   packet: StoreSubmissionPacket;
@@ -2642,6 +2648,14 @@ function StoreSubmissionPacketCard({
           <ShieldCheck color={theme.colors.brand} size={16} />
           <Text style={styles.planActionText}>Credentials packet</Text>
         </Pressable>
+        <Pressable
+          accessibilityLabel="Prepare store release account runbook"
+          onPress={onPrepareAccountRunbook}
+          style={styles.planAction}
+        >
+          <ArrowUpRight color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Account runbook</Text>
+        </Pressable>
       </View>
       <View style={styles.qaPlatformList}>
         <View style={styles.qaWorkflowRow}>
@@ -2655,6 +2669,19 @@ function StoreSubmissionPacketCard({
               {credentialsPacket.summary.presentGroupCount}/{credentialsPacket.summary.totalGroupCount} credential groups ready
             </Text>
             <Text style={styles.qaPlatformMore}>{credentialsPacket.summary.nextAction}</Text>
+          </View>
+        </View>
+        <View style={styles.qaWorkflowRow}>
+          {accountRunbook.summary.status === 'ready-for-submission' ? (
+            <CheckCircle2 color={theme.colors.success} size={14} />
+          ) : (
+            <TriangleAlert color={theme.colors.amber} size={14} />
+          )}
+          <View style={styles.launchTrackTitleGroup}>
+            <Text style={styles.qaWorkflowText}>
+              {accountRunbook.summary.readyPhaseCount + accountRunbook.summary.verifiedPhaseCount}/{accountRunbook.summary.phaseCount} release phases ready
+            </Text>
+            <Text style={styles.qaPlatformMore}>{accountRunbook.summary.nextAction}</Text>
           </View>
         </View>
         <View style={styles.qaWorkflowRow}>
@@ -3076,6 +3103,7 @@ export function PlanScreen() {
         nativeQaEvidenceStarterReport,
         pwaReadinessReport,
         storeCredentialsSetupPacket: storeCredentialsSetupPacketReport,
+        storeReleaseAccountRunbook: storeReleaseAccountRunbookReport,
         storeSubmissionPacket: storeSubmissionReport,
         vercelDeploymentReport,
         vercelWorkflowReport,
@@ -3126,6 +3154,10 @@ export function PlanScreen() {
     iosBundleIdentifier: storeSubmissionPacket.summary.iosBundleIdentifier,
     name: appJson.expo.name,
     slug: appJson.expo.slug,
+  });
+  const storeReleaseAccountRunbook = buildStoreReleaseAccountRunbook({
+    credentialsPacket: storeCredentialsSetupPacket,
+    storeMetadataReady: storeSubmissionPacket.summary.status === 'metadata-ready',
   });
   const safetyLanguageGuard = buildSafetyLanguageGuard(
     buildPlanSafetySources({
@@ -3290,6 +3322,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(storeCredentialsSetupPacket, null, 2),
       title: 'Prepared store credentials setup packet',
+    });
+  }
+
+  function prepareStoreReleaseAccountRunbook() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(storeReleaseAccountRunbook, null, 2),
+      title: 'Prepared store release account runbook',
     });
   }
 
@@ -3628,7 +3668,9 @@ export function PlanScreen() {
 
       <Section title="Store submission packet" caption="Metadata, privacy declarations, screenshots, and copy checks before App Store or Play handoff.">
         <StoreSubmissionPacketCard
+          accountRunbook={storeReleaseAccountRunbook}
           credentialsPacket={storeCredentialsSetupPacket}
+          onPrepareAccountRunbook={prepareStoreReleaseAccountRunbook}
           onPrepareCredentialsPacket={prepareStoreCredentialsSetupPacket}
           onPreparePacket={prepareStoreSubmissionPacket}
           packet={storeSubmissionPacket}

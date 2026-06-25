@@ -40,6 +40,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('envTemplateDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsStarter');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsDoctor');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeReleaseAccountRunbook');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('githubWorkflowDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('featureCompletionDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('releaseBlockerIssues');

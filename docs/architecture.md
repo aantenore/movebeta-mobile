@@ -152,6 +152,11 @@ budget status, and frame rate into every pipeline report using the active analys
 - `native-coreml`: reserved adapter slot for custom Core ML models; rejected clearly until implemented.
 - `native-tflite`: reserved adapter slot for portable TensorFlow Lite models; rejected clearly until implemented.
 
+Store release operations expose account-bound work through share-safe release contracts. `src/core/storeReleaseAccountRunbook.ts`
+derives an ordered `movebeta.store-release-account-runbook.v1` packet from store metadata and credential readiness, then
+separates EAS binding, Expo token, iOS, Android, native QA, strict-gate, and submit phases without serializing secret
+values or account identifiers. The Plan tab and `npm run release:store-account:runbook` use the same contract.
+
 ## Native Adapter Contract
 
 ```mermaid
