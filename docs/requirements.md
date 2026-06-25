@@ -259,6 +259,8 @@
 - Prepare a share-safe iOS toolchain setup packet from the Plan tab with sanitized full-Xcode, Developer directory,
   workspace, Pods, build-settings, and iOS build-log checks, commands, proof expectations, and no local paths, credential
   values, raw artifacts, raw video, or token-like values.
+- Generate the same iOS toolchain setup packet as durable JSON and Markdown from the current doctor report so release
+  gate, freshness, handoff, data-room, and evidence packets can track the full-Xcode unblock path outside the UI.
 - Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
   key presence, and Google Play credential key presence without exposing any secret values.
 - Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store

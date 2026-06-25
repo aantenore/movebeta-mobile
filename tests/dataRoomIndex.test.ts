@@ -24,6 +24,7 @@ function readyReports(): DataRoomReportBundle {
     externalEvidenceIntakeReport: report('ready'),
     featureCompletionReport: report('ready'),
     githubWorkflowReport: report('ready'),
+    iosToolchainSetupPacket: report('ready-for-ios-build'),
     iosToolchainReport: report('ready'),
     licenseReviewPacket: report('ready'),
     launchReadinessReport: {
@@ -82,14 +83,15 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 32,
+      itemCount: 33,
       missingCount: 0,
-      readyCount: 32,
+      readyCount: 33,
       reviewCount: 0,
       status: 'ready',
     });
     expect(index.commands.map((command) => command.key)).toContain('data-room-index');
     expect(index.items.map((item) => item.key)).toContain('source-archive');
+    expect(index.items.map((item) => item.key)).toContain('ios-toolchain-setup-packet');
     expect(index.items.map((item) => item.key)).toContain('vercel-deployment-handoff');
     expect(index.items.map((item) => item.key)).toContain('license-review-packet');
     expect(index.items.map((item) => item.key)).toContain('model-download-plan');

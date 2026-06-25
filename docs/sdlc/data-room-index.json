@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T15:12:50.519Z",
+  "generatedAt": "2026-06-25T15:20:28.087Z",
   "items": [
     {
       "category": "release",
@@ -337,6 +337,17 @@
     },
     {
       "category": "native",
+      "key": "ios-toolchain-setup-packet",
+      "label": "iOS toolchain setup packet",
+      "location": "docs/sdlc/ios-toolchain-setup-packet.json",
+      "owner": "engineering",
+      "purpose": "Share-safe full-Xcode, Developer directory, Pods, build-settings, and iOS build-log unblock plan.",
+      "refreshCommand": "npm run native:ios:setup",
+      "sensitivity": "share-safe",
+      "status": "external-required"
+    },
+    {
+      "category": "native",
       "key": "native-qa-starter",
       "label": "Native QA evidence starter",
       "location": "docs/sdlc/native-qa-evidence-starter-report.json",
@@ -458,8 +469,8 @@
   "schemaVersion": "movebeta.data-room-index.v1",
   "summary": {
     "blockedCount": 0,
-    "externalRequiredCount": 16,
-    "itemCount": 37,
+    "externalRequiredCount": 17,
+    "itemCount": 38,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readyCount": 18,
