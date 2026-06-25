@@ -163,6 +163,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Generate the share-safe cue-validation study seed, intake manifest, onboarding packet, and blank worksheets before real coach scoring.',
     },
     {
+      command: 'npm run validation:cue:composition',
+      key: 'cue-validation-composition',
+      label: 'Cue validation composition packet',
+      owner: 'product',
+      purpose: 'Refresh share-safe seed, worksheet preflight, dataset composition, and validation handoff state without embedding coach worksheet values.',
+    },
+    {
       command: 'npm run release:credentials:starter',
       key: 'store-credentials-starter',
       label: 'Store credentials starter',
@@ -296,6 +303,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh missing, malformed, or incomplete cue-validation dataset evidence without inventing coach review data.',
     },
     {
+      command: 'npm run validation:cue:composition -- --write-dataset',
+      key: 'cue-validation-compose-dataset',
+      label: 'Cue validation dataset composer',
+      owner: 'qa',
+      purpose: 'Write the cue-validation dataset JSON only when the completed worksheet preflight is ready.',
+    },
+    {
       command: 'npm run native:qa:runbook',
       key: 'native-qa-runbook',
       label: 'Native QA runbook',
@@ -379,6 +393,13 @@ export function buildReleaseEvidencePacket({
       key: 'cue-validation-dataset-report',
       label: 'Cue validation dataset report',
       path: 'docs/sdlc/cue-validation-dataset-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'cueValidationDataset')),
+    },
+    {
+      command: 'npm run validation:cue:composition',
+      key: 'cue-validation-dataset-composition-packet',
+      label: 'Cue validation dataset composition packet',
+      path: 'docs/sdlc/cue-validation-dataset-composition-packet.json',
       status: artifactStatus(findCheck(launchReadiness, 'cueValidationDataset')),
     },
     {

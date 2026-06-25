@@ -74,6 +74,7 @@
     "native:ios:doctor": "node scripts/ios_toolchain_doctor.mjs",
     "native:ios:setup": "tsx scripts/ios_toolchain_setup_packet.ts",
     "validation:cue:starter": "tsx scripts/cue_validation_starter_kit.ts",
+    "validation:cue:composition": "tsx scripts/cue_validation_dataset_composition_packet.ts",
     "validation:cue:doctor": "node scripts/cue_validation_dataset_doctor.mjs",
     "release:env:doctor": "node scripts/env_template_doctor.mjs",
     "release:credentials:starter": "tsx scripts/store_credentials_starter.ts",

@@ -261,6 +261,9 @@
   values, raw artifacts, raw video, or token-like values.
 - Generate the same iOS toolchain setup packet as durable JSON and Markdown from the current doctor report so release
   gate, freshness, handoff, data-room, and evidence packets can track the full-Xcode unblock path outside the UI.
+- Generate a share-safe cue-validation dataset composition packet as durable JSON and Markdown from the current seed,
+  worksheet CSV, and dataset doctor report, and provide a CLI `--write-dataset` path that writes the dataset JSON only
+  when the completed worksheet preflight is ready.
 - Generate a store credentials report that checks EAS project binding, Expo token presence, App Store Connect credential
   key presence, and Google Play credential key presence without exposing any secret values.
 - Prepare a share-safe store credentials setup packet from the Plan tab with EAS project binding, Expo token, App Store
@@ -552,6 +555,9 @@
 - External release blocker guidance must include the preparatory starter, doctor, install, validation, and strict-gate
   commands needed to clear cue-validation, iOS build, native QA, EAS project, and store-credential blockers without
   exposing secret values or raw local artifacts.
+- Cue-validation blocker guidance must include the dataset composition command, the optional `--write-dataset` command,
+  validation gate, and dataset doctor sequence without exposing raw worksheet rows, reviewer identities, reviewer scores,
+  raw video, local paths, credentials, or token-like values.
 - External evidence intake must provide a share-safe report and fill-in template for every remaining external blocker,
   accepting only relative repository paths, report identifiers, issue URLs, CI run URLs, or provider-console state
   references while rejecting credential values, raw video paths, local machine paths, and token-like values.

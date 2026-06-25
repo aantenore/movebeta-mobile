@@ -22,6 +22,7 @@ function report(generatedAt: string, extra: Record<string, unknown> = {}) {
 function bundle(generatedAt = '2026-06-20T10:00:00.000Z'): ReleaseEvidenceFreshnessReportBundle {
   return {
     acquisitionReadinessPacket: report(generatedAt),
+    cueValidationDatasetCompositionPacket: report(generatedAt),
     cueValidationDatasetReport: report(generatedAt),
     cueValidationStarterKitReport: report(generatedAt),
     dataRoomIndex: report(generatedAt),
@@ -73,8 +74,8 @@ describe('release evidence freshness', () => {
     expect(ReleaseEvidenceFreshnessSchema.parse(freshness)).toEqual(freshness);
     expect(freshness.schemaVersion).toBe(releaseEvidenceFreshnessSchemaVersion);
     expect(freshness.summary).toMatchObject({
-      artifactCount: 37,
-      freshCount: 37,
+      artifactCount: 38,
+      freshCount: 38,
       invalidDateCount: 0,
       maxObservedAgeHours: 2,
       missingDateCount: 0,

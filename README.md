@@ -246,6 +246,9 @@ npm run release:evidence:intake
 npm run release:evidence:validate
 npm run release:evidence:promote
 npm run release:evidence:apply
+npm run validation:cue:starter
+npm run validation:cue:composition
+npm run validation:cue:doctor
 npm run model:movenet:assets:download
 npm run model:movenet:assets:check
 npm run model:delivery:lifecycle
@@ -337,6 +340,9 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/model-verification-suite-report.md`.
 - iOS toolchain setup packet: `docs/sdlc/ios-toolchain-setup-packet.json`,
   `docs/sdlc/ios-toolchain-setup-packet.md`.
+- Cue-validation dataset composition packet: `docs/sdlc/cue-validation-dataset-composition-packet.json`,
+  `docs/sdlc/cue-validation-dataset-composition-packet.md`; use
+  `npm run validation:cue:composition -- --write-dataset` only after the completed worksheet preflight is ready.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
   `docs/sdlc/release-blocker-issues-report.md`.
 - Release blocker progress: `docs/sdlc/release-blocker-progress.json`,

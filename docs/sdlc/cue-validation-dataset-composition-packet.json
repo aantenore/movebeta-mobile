@@ -1,0 +1,173 @@
+{
+  "artifacts": [
+    {
+      "key": "cue-validation-study-seed",
+      "label": "Cue-validation study seed",
+      "path": "docs/validation/cue-validation-study-seed.json",
+      "purpose": "Source Sessions seed from real consented local reports.",
+      "status": "external-required"
+    },
+    {
+      "key": "cue-validation-review-worksheet",
+      "label": "Cue-validation completed worksheet CSV",
+      "path": "docs/validation/cue-validation-review-worksheet.csv",
+      "purpose": "Completed real coach reviewer IDs and 1-5 score cells; never embedded in this packet.",
+      "status": "external-required"
+    },
+    {
+      "key": "cue-validation-composition-packet",
+      "label": "Cue-validation composition packet",
+      "path": "docs/sdlc/cue-validation-dataset-composition-packet.json",
+      "purpose": "Share-safe composition readiness report without raw worksheet or reviewer values.",
+      "status": "ready"
+    },
+    {
+      "key": "cue-validation-dataset",
+      "label": "Cue-validation dataset JSON",
+      "path": "docs/validation/cue-validation-dataset.json",
+      "purpose": "Gate-compatible dataset written only from a ready completed worksheet.",
+      "status": "external-required"
+    },
+    {
+      "key": "cue-validation-dataset-report",
+      "label": "Cue-validation dataset report",
+      "path": "docs/sdlc/cue-validation-dataset-report.json",
+      "purpose": "Doctor report proving the composed dataset passed validation checks.",
+      "status": "external-required"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run validation:cue:starter",
+      "key": "cue-validation-starter",
+      "label": "Cue-validation starter kit",
+      "owner": "product",
+      "purpose": "Generate share-safe seed, intake, onboarding, and blank worksheet artifacts from a real Sessions seed."
+    },
+    {
+      "command": "npm run validation:cue:composition",
+      "key": "cue-validation-composition",
+      "label": "Cue-validation composition packet",
+      "owner": "product",
+      "purpose": "Refresh composition readiness without writing a dataset or exposing worksheet contents."
+    },
+    {
+      "command": "npm run validation:cue:composition -- --write-dataset",
+      "key": "cue-validation-compose-dataset",
+      "label": "Compose cue-validation dataset",
+      "owner": "qa",
+      "purpose": "Write the dataset JSON only when the completed worksheet preflight is ready."
+    },
+    {
+      "command": "npm run validation:cue",
+      "key": "cue-validation-gate",
+      "label": "Cue-validation gate",
+      "owner": "qa",
+      "purpose": "Validate the composed dataset before production movement-quality claims."
+    },
+    {
+      "command": "npm run validation:cue:doctor",
+      "key": "cue-validation-dataset-doctor",
+      "label": "Cue-validation dataset doctor",
+      "owner": "qa",
+      "purpose": "Write the share-safe dataset report used by release readiness."
+    },
+    {
+      "command": "npm run model:evidence:sync",
+      "key": "model-evidence-sync",
+      "label": "Model evidence sync",
+      "owner": "release",
+      "purpose": "Promote real-world model evidence only after the cue-validation dataset report is ready."
+    }
+  ],
+  "generatedAt": "2026-06-25T15:42:33.903Z",
+  "nextAction": "Export a real cue-validation study seed from Sessions after athlete consent, then rerun npm run validation:cue:starter -- --seed <seed.json>.",
+  "phases": [
+    {
+      "action": "Grant cue-validation consent on real local reports.",
+      "detail": "0/20 consented clip(s) available.",
+      "key": "collect-consent",
+      "label": "Collect consent",
+      "owner": "product",
+      "status": "waiting"
+    },
+    {
+      "action": "Required wall-angle coverage is represented in the current seed.",
+      "detail": "0/3 wall angle(s) covered; 3 missing.",
+      "key": "cover-wall-angles",
+      "label": "Cover wall angles",
+      "owner": "product",
+      "status": "waiting"
+    },
+    {
+      "action": "Finish consent and coverage before reviewer-slot assignments are actionable.",
+      "detail": "2 assignment(s), 0 worksheet row(s), 0 score cell(s).",
+      "key": "assign-reviewers",
+      "label": "Assign reviewers",
+      "owner": "product",
+      "status": "waiting"
+    },
+    {
+      "action": "Collect real coach reviewer IDs and 1-5 scores in the worksheet CSV.",
+      "detail": "0/0 worksheet row(s) complete; 0 score cell(s) missing.",
+      "key": "complete-worksheet",
+      "label": "Complete worksheet",
+      "owner": "coach",
+      "status": "waiting"
+    },
+    {
+      "action": "Grant cue-validation consent on local reports, then export a fresh worksheet CSV.",
+      "detail": "Worksheet preflight status is empty.",
+      "key": "preflight-worksheet",
+      "label": "Preflight worksheet",
+      "owner": "qa",
+      "status": "waiting"
+    },
+    {
+      "action": "Wait until worksheet preflight is ready before composing dataset JSON.",
+      "detail": "Dataset composition requires 0 complete seed-matching worksheet row(s).",
+      "key": "compose-dataset",
+      "label": "Compose dataset",
+      "owner": "qa",
+      "status": "waiting"
+    }
+  ],
+  "privacy": {
+    "coachPacketsIncluded": false,
+    "credentialValuesIncluded": false,
+    "datasetIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "rawWorksheetIncluded": false,
+    "reviewerIdentitiesIncluded": false,
+    "reviewerScoresIncluded": false,
+    "reviewerScoresInvented": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.cue-validation-dataset-composition-packet.v1",
+  "status": "needs-seed",
+  "summary": {
+    "completeWorksheetRows": 0,
+    "datasetFileExists": false,
+    "datasetStatus": "missing",
+    "datasetWriteAttempted": false,
+    "distinctReviewerCount": 0,
+    "expectedWorksheetRows": 0,
+    "invalidScoreCount": 0,
+    "missingReviewerIdCount": 0,
+    "missingScoreCount": 0,
+    "missingWallAngles": [
+      "slab",
+      "vertical",
+      "overhang"
+    ],
+    "sourceCueCount": 0,
+    "sourceSeedStatus": "empty",
+    "sourceSeedProvided": true,
+    "sourceClipCount": 0,
+    "status": "needs-seed",
+    "targetClipCount": 20,
+    "worksheetStatus": "empty"
+  }
+}

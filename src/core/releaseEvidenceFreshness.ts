@@ -55,6 +55,7 @@ export type ReleaseEvidenceFreshness = z.infer<typeof ReleaseEvidenceFreshnessSc
 
 export type ReleaseEvidenceFreshnessReportBundle = {
   acquisitionReadinessPacket?: unknown;
+  cueValidationDatasetCompositionPacket?: unknown;
   cueValidationDatasetReport?: unknown;
   cueValidationStarterKitReport?: unknown;
   dataRoomIndex?: unknown;
@@ -310,6 +311,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run validation:cue:doctor',
     reportKey: 'cueValidationDatasetReport',
     requiredFor: ['store'],
+  },
+  {
+    key: 'cue-validation-dataset-composition-packet',
+    label: 'Cue-validation dataset composition packet',
+    maxAgeHours: 24,
+    owner: 'product',
+    path: 'docs/sdlc/cue-validation-dataset-composition-packet.json',
+    refreshCommand: 'npm run validation:cue:composition',
+    reportKey: 'cueValidationDatasetCompositionPacket',
+    requiredFor: ['store', 'handoff'],
   },
   {
     key: 'cue-validation-starter-kit-report',

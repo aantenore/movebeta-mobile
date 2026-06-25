@@ -36,6 +36,7 @@ function buildArtifactAvailability(rootDir: string) {
 function readReports(rootDir: string): DataRoomReportBundle {
   return {
     acquisitionReadinessPacket: readJsonIfExists(rootDir, 'docs/sdlc/acquisition-readiness-packet.json'),
+    cueValidationDatasetCompositionPacket: readJsonIfExists(rootDir, 'docs/sdlc/cue-validation-dataset-composition-packet.json'),
     cueValidationDatasetReport: readJsonIfExists(rootDir, 'docs/sdlc/cue-validation-dataset-report.json'),
     dependencyLicenseReport: readJsonIfExists(rootDir, 'docs/sdlc/dependency-license-report.json'),
     externalEvidenceIntakeReport: readJsonIfExists(rootDir, 'docs/sdlc/external-evidence-intake-report.json'),
