@@ -1,6 +1,6 @@
 # Acquisition Readiness Packet
 
-Generated: 2026-06-25T12:55:07.136Z
+Generated: 2026-06-25T12:56:12.183Z
 
 ## Summary
 
