@@ -439,6 +439,8 @@ testing, or production, and expects the project id plus store credentials to be 
 Run `npm run release:credentials:starter` before strict submission setup to refresh the share-safe packet, empty env-key
 template, and EAS project binding template. Fill credential values only in the local shell, CI secrets, EAS credentials,
 or store-provider consoles; do not commit a filled copy.
+Run `npm run release:store-account:runbook` to generate the ordered account runbook from metadata, EAS binding,
+credential, native QA, strict-gate, and submit readiness without including secret values or project id values.
 
 Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
 `docs/sdlc/native-qa-evidence-input.template.json` as the structured run input. Generate the current runbook and input

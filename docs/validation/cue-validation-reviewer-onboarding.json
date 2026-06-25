@@ -44,7 +44,7 @@
       "purpose": "Compose the completed worksheet into dataset JSON and run npm run validation:cue."
     }
   ],
-  "generatedAt": "2026-06-25T09:35:19.268Z",
+  "generatedAt": "2026-06-25T12:54:45.022Z",
   "instructions": [
     "Review only the packet context: session metadata, quality, metrics, cues, cue trust, timeline, and privacy evidence.",
     "Do not ask for raw video, screenshots, landmarks, local file paths, private notes, or account identifiers.",
@@ -90,7 +90,7 @@
     }
   ],
   "schemaVersion": "movebeta.cue-validation-reviewer-onboarding.v1",
-  "sourceSeedGeneratedAt": "2026-06-25T09:35:19.268Z",
+  "sourceSeedGeneratedAt": "2026-06-25T12:54:45.022Z",
   "summary": {
     "estimatedReviewRows": 0,
     "missingWallAngles": [

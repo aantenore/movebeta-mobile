@@ -49,6 +49,7 @@ function readyReports(): DataRoomReportBundle {
     releaseFreshnessReport: report('ready'),
     releaseGateReport: { completedAt: generatedAt, schemaVersion: 'movebeta.release-gate-report.v1', status: 'pass' },
     releaseHandoffPacket: report('ready'),
+    storeReleaseAccountRunbook: report('ready-for-submission'),
     storeCredentialsSetupPacket: report('ready'),
     storeSubmissionPacket: report('metadata-ready'),
     vercelDeploymentHandoff: report('handoff-ready'),
@@ -79,9 +80,9 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 29,
+      itemCount: 30,
       missingCount: 0,
-      readyCount: 29,
+      readyCount: 30,
       reviewCount: 0,
       status: 'ready',
     });

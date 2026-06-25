@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T09:36:40.931Z",
+  "generatedAt": "2026-06-25T12:55:07.443Z",
   "items": [
     {
       "category": "release",
@@ -281,6 +281,17 @@
       "status": "external-required"
     },
     {
+      "category": "distribution",
+      "key": "store-release-account-runbook",
+      "label": "Store release account runbook",
+      "location": "docs/sdlc/store-release-account-runbook.json",
+      "owner": "release",
+      "purpose": "Ordered account, credential, strict-gate, QA, and store-submit runbook without secret values.",
+      "refreshCommand": "npm run release:store-account:runbook",
+      "sensitivity": "credential-names-only",
+      "status": "external-required"
+    },
+    {
       "category": "security",
       "key": "github-workflow-report",
       "label": "GitHub workflow report",
@@ -425,8 +436,8 @@
   "schemaVersion": "movebeta.data-room-index.v1",
   "summary": {
     "blockedCount": 0,
-    "externalRequiredCount": 14,
-    "itemCount": 34,
+    "externalRequiredCount": 15,
+    "itemCount": 35,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readyCount": 17,

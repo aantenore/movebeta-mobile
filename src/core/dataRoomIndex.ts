@@ -101,6 +101,7 @@ export type DataRoomReportBundle = {
   releaseFreshnessReport?: unknown;
   releaseGateReport?: unknown;
   releaseHandoffPacket?: unknown;
+  storeReleaseAccountRunbook?: unknown;
   storeCredentialsSetupPacket?: unknown;
   storeSubmissionPacket?: unknown;
   vercelDeploymentHandoff?: unknown;
@@ -414,6 +415,19 @@ const dataRoomSeeds: DataRoomSeed[] = [
     externalStatuses: ['blocked'],
     refreshCommand: 'npm run release:credentials:starter',
     reportKey: 'storeCredentialsSetupPacket',
+    sensitivity: 'credential-names-only',
+  },
+  {
+    category: 'distribution',
+    key: 'store-release-account-runbook',
+    label: 'Store release account runbook',
+    location: 'docs/sdlc/store-release-account-runbook.json',
+    owner: 'release',
+    purpose: 'Ordered account, credential, strict-gate, QA, and store-submit runbook without secret values.',
+    externalStatuses: ['blocked', 'ready-for-strict-gate'],
+    readyStatuses: ['ready-for-submission'],
+    refreshCommand: 'npm run release:store-account:runbook',
+    reportKey: 'storeReleaseAccountRunbook',
     sensitivity: 'credential-names-only',
   },
   {

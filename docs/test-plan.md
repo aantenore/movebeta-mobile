@@ -568,6 +568,11 @@
   submission commands while excluding credentials and raw artifacts.
 - Plan tab prepares a store credentials setup packet with EAS/App Store/Play key names and release commands while
   excluding credential values, local paths, and raw artifacts.
+- Plan tab prepares a store release account runbook with ordered metadata, account, credential, native QA, strict-gate,
+  and submit phases while excluding credential values, project id values, local paths, raw artifacts, raw video, and
+  token-like values.
+- Vitest store release account runbook tests cover default blocked state, ready-for-strict-gate state, ready-for-submit
+  state, and unsafe value rejection.
 - Plan tab shows safety-language guard status for medical, injury-prevention, route-safety, and guaranteed-outcome copy
   risks.
 - Privacy tab confirms no-upload default behavior.

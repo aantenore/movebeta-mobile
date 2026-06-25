@@ -216,3 +216,4 @@
 | T212 | Add cue-validation worksheet CSV preflight | Done |
 | T213 | Add cue-validation reviewer assignment packet | Done |
 | T214 | Add cue-validation collection runbook packet | Done |
+| T215 | Add store release account runbook | Done |
