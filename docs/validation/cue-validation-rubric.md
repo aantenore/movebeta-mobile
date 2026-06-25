@@ -79,3 +79,7 @@ the dataset.
 Before composition, Sessions also shows a `movebeta.cue-validation-worksheet-preflight.v1` packet from the pasted CSV.
 It reports only aggregate row, reviewer, score, source-match, and privacy checks, never raw worksheet contents, reviewer
 identities, reviewer scores, report IDs, local paths, credentials, or raw video references.
+
+Before real coach outreach, Sessions can prepare a `movebeta.cue-validation-reviewer-assignment.v1` packet. It maps
+reviewer slots to worksheet filters and aggregate row/score-cell coverage so product can assign packet-only review work
+without exporting coach identities, raw worksheet contents, report IDs, local paths, credentials, or raw video.

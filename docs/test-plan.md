@@ -611,6 +611,10 @@ Cue-validation worksheet preflight coverage:
 - `tests/coachValidationWorkflow.test.ts` verifies the preflight stays aligned with the Sessions validation workflow.
 - Browser smoke verifies the Sessions Worksheet preflight panel, share-safe preflight packet, and ready transition after
   completing reviewer and score cells.
+- `tests/cueValidationStudy.test.ts` covers the reviewer assignment packet, including reviewer-slot row counts,
+  score-cell counts, worksheet filters, status, negative privacy flags, and raw-artifact/token rejection.
+- Browser smoke verifies the Sessions Assignments action and share-safe `movebeta.cue-validation-reviewer-assignment.v1`
+  packet before worksheet completion.
 
 ## Native QA Before Store Submission
 

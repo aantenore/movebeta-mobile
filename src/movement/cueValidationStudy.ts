@@ -206,6 +206,8 @@ export const CueValidationWorksheetPreflightSchema = z.object({
 
 export const cueValidationReviewerOnboardingPacketSchemaVersion = 'movebeta.cue-validation-reviewer-onboarding.v1';
 
+export const cueValidationReviewerAssignmentPacketSchemaVersion = 'movebeta.cue-validation-reviewer-assignment.v1';
+
 export const CueValidationReviewerOnboardingPacketSchema = z.object({
   acceptance: CueValidationStudyAcceptanceSchema,
   commands: z.array(
@@ -252,6 +254,59 @@ export const CueValidationReviewerOnboardingPacketSchema = z.object({
   }),
 });
 
+export const CueValidationReviewerAssignmentSchema = z.object({
+  assignmentKey: z.string(),
+  clipCount: z.number().int().nonnegative(),
+  cueCount: z.number().int().nonnegative(),
+  expectedScoreCells: z.number().int().nonnegative(),
+  packetOnly: z.literal(true),
+  reviewMode: z.literal('packet-only'),
+  reviewerRole: z.literal('coach'),
+  reviewerSlot: z.number().int().positive(),
+  rowCount: z.number().int().nonnegative(),
+  wallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+  worksheetFilter: z.string(),
+});
+
+export const CueValidationReviewerAssignmentPacketSchema = z.object({
+  acceptance: CueValidationStudyAcceptanceSchema,
+  assignments: z.array(CueValidationReviewerAssignmentSchema),
+  generatedAt: z.string(),
+  instructions: z.array(z.string()),
+  privacy: z.object({
+    coachPacketsIncluded: z.literal(false),
+    credentialValuesIncluded: z.literal(false),
+    keyFramesIncluded: z.literal(false),
+    landmarksIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawUrisIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    rawWorksheetIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    reviewerIdentitiesIncluded: z.literal(false),
+    reviewerScoresIncluded: z.literal(false),
+    reviewerScoresInvented: z.literal(false),
+    videoLeavesDevice: z.literal(false),
+  }),
+  schemaVersion: z.literal(cueValidationReviewerAssignmentPacketSchemaVersion),
+  sourceSeedGeneratedAt: z.string(),
+  summary: z.object({
+    assignmentCount: z.number().int().nonnegative(),
+    estimatedScoreCells: z.number().int().nonnegative(),
+    estimatedWorksheetRows: z.number().int().nonnegative(),
+    maxRowsPerReviewerSlot: z.number().int().nonnegative(),
+    missingWallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+    rowsPerReviewerSlot: z.number().int().nonnegative(),
+    reviewerSlots: z.number().int().nonnegative(),
+    sourceClipCount: z.number().int().nonnegative(),
+    sourceCueCount: z.number().int().nonnegative(),
+    status: z.enum(['needs-consent', 'needs-coverage', 'ready-for-assignment']),
+    targetClipCount: z.number().int().positive(),
+  }),
+});
+
 const CueValidationCompletedReviewSchema = z.object({
   cueId: z.string(),
   drillFit: z.number().int().min(1).max(5),
@@ -282,6 +337,7 @@ export type CueValidationStudyAcceptance = z.infer<typeof CueValidationStudyAcce
 export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema>;
 export type CueValidationClipIntakeManifest = z.infer<typeof CueValidationClipIntakeManifestSchema>;
 export type CueValidationReviewerOnboardingPacket = z.infer<typeof CueValidationReviewerOnboardingPacketSchema>;
+export type CueValidationReviewerAssignmentPacket = z.infer<typeof CueValidationReviewerAssignmentPacketSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
 export type CueValidationWorksheetPreflight = z.infer<typeof CueValidationWorksheetPreflightSchema>;
 export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
@@ -300,6 +356,11 @@ export type CueValidationReviewWorksheetOptions = {
 };
 
 export type CueValidationReviewerOnboardingPacketOptions = {
+  generatedAt?: string;
+  reviewerCount?: number;
+};
+
+export type CueValidationReviewerAssignmentPacketOptions = {
   generatedAt?: string;
   reviewerCount?: number;
 };
@@ -1052,6 +1113,121 @@ export function assertCueValidationReviewerOnboardingPacketIsPrivacySafe(packet:
   }
 }
 
+export function buildCueValidationReviewerAssignmentPacket(
+  seed: CueValidationStudySeed,
+  options: CueValidationReviewerAssignmentPacketOptions = {},
+): CueValidationReviewerAssignmentPacket {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const manifest = buildCueValidationClipIntakeManifest(seed, options);
+  const reviewerCount = options.reviewerCount ?? parsedSeed.acceptance.minDistinctReviewersPerClip;
+  const worksheet = buildCueValidationReviewWorksheet(seed, {
+    generatedAt: options.generatedAt,
+    reviewerCount,
+  });
+  const rowsBySlot = new Map<number, typeof worksheet.rows>();
+
+  for (const row of worksheet.rows) {
+    rowsBySlot.set(row.reviewerSlot, [...(rowsBySlot.get(row.reviewerSlot) ?? []), row]);
+  }
+
+  const assignments = Array.from({ length: reviewerCount }, (_, index) => {
+    const reviewerSlot = index + 1;
+    const rows = rowsBySlot.get(reviewerSlot) ?? [];
+    const clipsForSlot = new Set(rows.map((row) => row.clipId));
+    const cuesForSlot = new Set(rows.map((row) => row.cueId));
+    const wallAngles = sortWallAngles([
+      ...new Set(
+        parsedSeed.clips
+          .filter((clip) => clipsForSlot.has(clip.clipId))
+          .map((clip) => clip.packet.session.wallAngle),
+      ),
+    ] as Array<'slab' | 'vertical' | 'overhang'>);
+
+    return CueValidationReviewerAssignmentSchema.parse({
+      assignmentKey: `reviewer-slot-${reviewerSlot}`,
+      clipCount: clipsForSlot.size,
+      cueCount: cuesForSlot.size,
+      expectedScoreCells: rows.reduce((sum, row) => sum + row.requiredScores.length, 0),
+      packetOnly: true,
+      reviewMode: 'packet-only',
+      reviewerRole: 'coach',
+      reviewerSlot,
+      rowCount: rows.length,
+      wallAngles,
+      worksheetFilter: `reviewerSlot=${reviewerSlot}`,
+    });
+  });
+  const estimatedScoreCells = assignments.reduce((sum, assignment) => sum + assignment.expectedScoreCells, 0);
+  const maxRowsPerReviewerSlot = assignments.reduce((max, assignment) => Math.max(max, assignment.rowCount), 0);
+  const status =
+    manifest.summary.status === 'needs-consent'
+      ? 'needs-consent'
+      : manifest.summary.status === 'needs-coverage'
+        ? 'needs-coverage'
+        : 'ready-for-assignment';
+
+  return CueValidationReviewerAssignmentPacketSchema.parse({
+    acceptance: parsedSeed.acceptance,
+    assignments,
+    generatedAt: options.generatedAt ?? new Date().toISOString(),
+    instructions: [
+      'Use one reviewer slot per real coach reviewer; do not put coach names or contact details in this packet.',
+      'Filter the worksheet by reviewerSlot and send only packet-only review materials for that slot.',
+      'Do not attach raw video, screenshots, landmarks, local file paths, private notes, or account identifiers.',
+      'Coaches fill reviewerId and 1-5 scores only in the completed worksheet after real review.',
+      'Run the worksheet preflight before composing the final validation dataset.',
+    ],
+    privacy: {
+      coachPacketsIncluded: false,
+      credentialValuesIncluded: false,
+      keyFramesIncluded: false,
+      landmarksIncluded: false,
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawArtifactsIncluded: false,
+      rawUrisIncluded: false,
+      rawVideoIncluded: false,
+      rawWorksheetIncluded: false,
+      reportIdsIncluded: false,
+      reviewerIdentitiesIncluded: false,
+      reviewerScoresIncluded: false,
+      reviewerScoresInvented: false,
+      videoLeavesDevice: false,
+    },
+    schemaVersion: cueValidationReviewerAssignmentPacketSchemaVersion,
+    sourceSeedGeneratedAt: parsedSeed.generatedAt,
+    summary: {
+      assignmentCount: assignments.length,
+      estimatedScoreCells,
+      estimatedWorksheetRows: worksheet.rowCount,
+      maxRowsPerReviewerSlot,
+      missingWallAngles: manifest.summary.missingWallAngles,
+      rowsPerReviewerSlot: parsedSeed.cueCount,
+      reviewerSlots: reviewerCount,
+      sourceClipCount: parsedSeed.clipCount,
+      sourceCueCount: parsedSeed.cueCount,
+      status,
+      targetClipCount: parsedSeed.acceptance.minClips,
+    },
+  });
+}
+
+export function assertCueValidationReviewerAssignmentPacketIsPrivacySafe(packet: CueValidationReviewerAssignmentPacket) {
+  const serialized = JSON.stringify(packet);
+
+  if (forbiddenStudyKeyPattern.test(serialized) || forbiddenOnboardingPacketValuePattern.test(serialized)) {
+    throw new Error('Cue validation reviewer assignment packet failed privacy validation: raw artifact or credential text is present.');
+  }
+
+  const parsed = CueValidationReviewerAssignmentPacketSchema.parse(packet);
+  const privacyFlags = Object.values(parsed.privacy);
+
+  if (privacyFlags.some(Boolean)) {
+    throw new Error('Cue validation reviewer assignment packet failed privacy validation: a forbidden artifact flag is enabled.');
+  }
+}
+
 export function buildCueValidationReviewWorksheet(
   seed: CueValidationStudySeed,
   options: CueValidationReviewWorksheetOptions = {},
@@ -1299,6 +1475,17 @@ export function formatCueValidationReviewerOnboardingPacketSummary(packet: CueVa
     `${parsed.summary.reviewerSlotsNeeded} coach slots target`,
     `status ${parsed.summary.status}`,
     'raw video: no',
+  ].join(' · ');
+}
+
+export function formatCueValidationReviewerAssignmentPacketSummary(packet: CueValidationReviewerAssignmentPacket) {
+  const parsed = CueValidationReviewerAssignmentPacketSchema.parse(packet);
+  return [
+    `${parsed.summary.assignmentCount} reviewer slot assignments`,
+    `${parsed.summary.estimatedWorksheetRows} worksheet rows`,
+    `${parsed.summary.estimatedScoreCells} score cells`,
+    `status ${parsed.summary.status}`,
+    'reviewer identities: no',
   ].join(' · ');
 }
 
