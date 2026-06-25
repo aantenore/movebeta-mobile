@@ -11,6 +11,11 @@ export const videoAnalysisConfig = {
   maxRecordingFileSizeBytes: 350_000_000,
   maxRecordingDurationSeconds: 45,
   maxTfjsFrames: 48,
+  resourcePlan: {
+    bytesPerDecodedPixel: 4,
+    highDecodeSurfaceBytes: 12_500_000,
+    highSampledFrameCount: 40,
+  },
   clipTriage: {
     issuePenalties: {
       longDuration: 22,
