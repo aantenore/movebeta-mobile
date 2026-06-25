@@ -1,6 +1,6 @@
 # Data Room Index
 
-Generated: 2026-06-25T15:43:21.790Z
+Generated: 2026-06-25T15:50:31.748Z
 
 ## Summary
 
@@ -59,7 +59,7 @@ Generated: 2026-06-25T15:43:21.790Z
 | Source archive | archive | ready | release | source-archive | `../movebeta-mobile-source.zip` | `npm run release:archives` |
 | Web dist archive | archive | ready | release | share-safe | `../movebeta-mobile-web-dist.zip` | `npm run release:archives` |
 | Release archive manifest | archive | ready | release | share-safe | `../movebeta-mobile-release-archives.json` | `npm run release:archives` |
-| Real cue-validation dataset proof | validation | external-required | product | external-proof-reference | `docs/validation/cue-validation-dataset.json` | `npm run validation:cue:starter && npm run validation:cue:doctor` |
+| Real cue-validation dataset proof | validation | external-required | product | external-proof-reference | `docs/validation/cue-validation-dataset.json` | `npm run validation:cue:starter && npm run validation:cue:composition && npm run validation:cue:doctor` |
 | Store submission credentials proof | commercial | external-required | release | credential-names-only | `external:eas-and-store-credential-values` | `npm run release:credentials:starter && npm run release:credentials:doctor` |
 | EAS project binding proof | commercial | external-required | release | external-proof-reference | `app.json expo.extra.eas.projectId` | `npm run release:eas:check` |
 | iOS build verification proof | native | external-required | engineering | external-proof-reference | `external:ios-build-log-or-ci-run` | `npm run native:ios:doctor` |

@@ -221,3 +221,4 @@
 | T217 | Add durable model download plan report | Done |
 | T218 | Add durable iOS toolchain setup packet report | Done |
 | T219 | Add durable cue-validation dataset composition packet and CLI composer | Done |
+| T220 | Add cue-validation composition command coverage to release blocker guidance | Done |

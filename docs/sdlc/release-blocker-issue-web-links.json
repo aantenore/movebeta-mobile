@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:42:36.884Z",
+  "generatedAt": "2026-06-25T15:50:11.843Z",
   "issues": [
     {
       "bodyPreviewLineCount": 26,
@@ -40,7 +40,7 @@
       "webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?body=%23%23%20Release%20Blocker%0AInstall%20full%20Xcode%20and%20verify%20an%20iOS%20simulator%20or%20device%20build.%0A%0AOwner%3A%20%60engineering%60%0ATracks%3A%20%60store%60%0AStatus%3A%20%60blocked%60%0A%0A%23%23%20Acceptance%0A-%20%5B%20%5D%20Full%20Xcode%20is%20installed%20on%20the%20release%20machine.%0A-%20%5B%20%5D%20An%20iOS%20simulator%20or%20physical-device%20build%20reaches%20the%20app%20shell%20with%20local%20analysis%20available.%0A%0A%23%23%20Required%20Proof%0A-%20docs%2Fsdlc%2Fios-toolchain-report.json%0A-%20iOS%20simulator%20or%20device%20build%20log%0A%0A%23%23%20Commands%0A-%20%60npm%20run%20toolchain%3Aios%60%0A-%20%60npm%20run%20native%3Aios%3Apods%60%0A-%20%60npm%20run%20native%3Aios%3Adoctor%60%0A-%20%60npx%20expo%20run%3Aios%20--device%60%0A-%20%60xcodebuild%20-workspace%20ios%2FMoveBeta.xcworkspace%20-scheme%20MoveBeta%20-configuration%20Debug%20-sdk%20iphonesimulator%60%0A%0A%23%23%20Environment%20Key%20Names%0A-%20None%0A%0A%23%23%20Secret%20Policy%0ANo%20secret%20values%20or%20raw%20local%20artifacts%20should%20be%20committed%20as%20proof.%0A%0ADo%20not%20attach%20credential%20values%2C%20private%20keys%2C%20raw%20video%2C%20absolute%20local%20paths%2C%20or%20raw%20local%20artifacts%20to%20this%20issue.&labels=release-blocker%2Cowner%3Aengineering%2Ctrack%3Astore%2Ccheck%3AiosBuild&title=%5BRelease%20Blocker%5D%20iOS%20build%20verification"
     },
     {
-      "bodyPreviewLineCount": 27,
+      "bodyPreviewLineCount": 29,
       "key": "cueValidationDataset",
       "labels": [
         "release-blocker",
@@ -54,8 +54,8 @@
       "tracks": [
         "store"
       ],
-      "urlLength": 1355,
-      "webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?body=%23%23%20Release%20Blocker%0ARun%20the%20versioned%20cue-validation%20dataset%20gate%20on%20real%20consented%20coach%20review%20data.%0A%0AOwner%3A%20%60product%60%0ATracks%3A%20%60store%60%0AStatus%3A%20%60blocked%60%0A%0A%23%23%20Acceptance%0A-%20%5B%20%5D%20The%20cue-validation%20dataset%20uses%20consented%20climbing%20clips%20and%20real%20coach%20review%20rows.%0A-%20%5B%20%5D%20The%20dataset%20validator%20passes%20without%20template%20placeholders%20or%20local%20raw-video%20references.%0A%0A%23%23%20Required%20Proof%0A-%20docs%2Fvalidation%2Fcue-validation-dataset.json%0A-%20docs%2Fsdlc%2Fcue-validation-dataset-report.json%0A%0A%23%23%20Commands%0A-%20%60npm%20run%20validation%3Acue%3Astarter%60%0A-%20%60npm%20run%20validation%3Acue%60%0A-%20%60npm%20run%20validation%3Acue%3Adoctor%60%0A%0A%23%23%20Environment%20Key%20Names%0A-%20None%0A%0A%23%23%20Secret%20Policy%0ANo%20secret%20values%20or%20raw%20local%20artifacts%20should%20be%20committed%20as%20proof.%0A%0ADo%20not%20attach%20credential%20values%2C%20private%20keys%2C%20raw%20video%2C%20absolute%20local%20paths%2C%20or%20raw%20local%20artifacts%20to%20this%20issue.&labels=release-blocker%2Cowner%3Aproduct%2Ctrack%3Astore%2Ccheck%3AcueValidationDataset&title=%5BRelease%20Blocker%5D%20Real%20cue-validation%20dataset"
+      "urlLength": 1488,
+      "webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?body=%23%23%20Release%20Blocker%0ARun%20the%20versioned%20cue-validation%20dataset%20gate%20on%20real%20consented%20coach%20review%20data.%0A%0AOwner%3A%20%60product%60%0ATracks%3A%20%60store%60%0AStatus%3A%20%60blocked%60%0A%0A%23%23%20Acceptance%0A-%20%5B%20%5D%20The%20cue-validation%20dataset%20uses%20consented%20climbing%20clips%20and%20real%20coach%20review%20rows.%0A-%20%5B%20%5D%20The%20dataset%20validator%20passes%20without%20template%20placeholders%20or%20local%20raw-video%20references.%0A%0A%23%23%20Required%20Proof%0A-%20docs%2Fvalidation%2Fcue-validation-dataset.json%0A-%20docs%2Fsdlc%2Fcue-validation-dataset-report.json%0A%0A%23%23%20Commands%0A-%20%60npm%20run%20validation%3Acue%3Astarter%60%0A-%20%60npm%20run%20validation%3Acue%3Acomposition%60%0A-%20%60npm%20run%20validation%3Acue%3Acomposition%20--%20--write-dataset%60%0A-%20%60npm%20run%20validation%3Acue%60%0A-%20%60npm%20run%20validation%3Acue%3Adoctor%60%0A%0A%23%23%20Environment%20Key%20Names%0A-%20None%0A%0A%23%23%20Secret%20Policy%0ANo%20secret%20values%20or%20raw%20local%20artifacts%20should%20be%20committed%20as%20proof.%0A%0ADo%20not%20attach%20credential%20values%2C%20private%20keys%2C%20raw%20video%2C%20absolute%20local%20paths%2C%20or%20raw%20local%20artifacts%20to%20this%20issue.&labels=release-blocker%2Cowner%3Aproduct%2Ctrack%3Astore%2Ccheck%3AcueValidationDataset&title=%5BRelease%20Blocker%5D%20Real%20cue-validation%20dataset"
     },
     {
       "bodyPreviewLineCount": 25,

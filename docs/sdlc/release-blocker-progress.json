@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:43:16.338Z",
+  "generatedAt": "2026-06-25T15:50:11.288Z",
   "items": [
     {
       "acceptedProofCount": 0,
@@ -73,7 +73,7 @@
       "acceptedProofCount": 0,
       "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
       "blockedBy": [],
-      "commandCount": 3,
+      "commandCount": 5,
       "currentCommand": "npm run validation:cue:starter",
       "key": "cueValidationDataset",
       "label": "Real cue-validation dataset",
@@ -188,7 +188,7 @@
   "summary": {
     "acceptedProofCount": 0,
     "blockerCount": 5,
-    "commandCount": 15,
+    "commandCount": 17,
     "dependencyBlockedCount": 2,
     "missingProofCount": 8,
     "needsProofCount": 3,

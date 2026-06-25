@@ -72,6 +72,9 @@ describe('release blocker issue report', () => {
       'easProject',
       'easCredentials',
     ]);
+    expect(packet.issues.find((issue) => issue.key === 'cueValidationDataset')?.commands).toContain(
+      'npm run validation:cue:composition -- --write-dataset',
+    );
     expect(JSON.stringify(packet)).not.toMatch(/\/Users\/|file:\/\/|ghp_|BEGIN PRIVATE KEY|rawVideoUri/i);
   });
 
@@ -88,6 +91,7 @@ describe('release blocker issue report', () => {
 
     expect(JSON.parse(fs.readFileSync(jsonOutputPath, 'utf8'))).toEqual(packet);
     expect(fs.readFileSync(markdownOutputPath, 'utf8')).toContain('Release Blocker Issues Report');
+    expect(fs.readFileSync(markdownOutputPath, 'utf8')).toContain('npm run validation:cue:composition -- --write-dataset');
     expect(renderReleaseBlockerIssueMarkdown(packet)).toContain('[Release Blocker] Native device QA evidence');
   });
 });

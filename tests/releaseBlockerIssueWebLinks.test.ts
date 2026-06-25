@@ -70,6 +70,9 @@ describe('release blocker issue web links', () => {
     });
     expect(packet.issues[0]?.webUrl).toContain('https://github.com/aantenore/movebeta-mobile/issues/new?');
     expect(packet.issues[0]?.webUrl).toContain('title=%5BRelease%20Blocker%5D');
+    expect(packet.issues.find((issue) => issue.key === 'cueValidationDataset')?.webUrl).toContain(
+      'validation%3Acue%3Acomposition',
+    );
     expect(packet.issues.every((issue) => issue.status === 'ready')).toBe(true);
     expect(JSON.stringify(packet)).not.toMatch(/\/Users\/|file:\/\/|ghp_|BEGIN PRIVATE KEY|rawVideoUri|\.mp4/i);
   });

@@ -1,6 +1,6 @@
 # Release Blocker Progress
 
-Generated: 2026-06-25T15:43:16.338Z
+Generated: 2026-06-25T15:50:11.288Z
 
 - Status: needs-external-evidence
 - Blockers: 5
@@ -9,7 +9,7 @@ Generated: 2026-06-25T15:43:16.338Z
 - Proof ready: 0
 - Accepted proofs: 0
 - Missing proofs: 8
-- Commands: 15
+- Commands: 17
 - Next action: engineering: Install full Xcode and verify an iOS simulator or device build.
 - Credential values included: no
 - Local paths included: no

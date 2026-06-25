@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T15:43:21.790Z",
+  "generatedAt": "2026-06-25T15:50:31.748Z",
   "items": [
     {
       "category": "release",
@@ -419,7 +419,7 @@
       "location": "docs/validation/cue-validation-dataset.json",
       "owner": "product",
       "purpose": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-      "refreshCommand": "npm run validation:cue:starter && npm run validation:cue:doctor",
+      "refreshCommand": "npm run validation:cue:starter && npm run validation:cue:composition && npm run validation:cue:doctor",
       "sensitivity": "external-proof-reference",
       "status": "external-required"
     },

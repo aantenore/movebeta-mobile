@@ -106,7 +106,7 @@ describe('external evidence intake', () => {
     expect(ExternalEvidenceIntakeReportSchema.parse(report)).toEqual(report);
     expect(report.schemaVersion).toBe(externalEvidenceIntakeSchemaVersion);
     expect(report.summary).toMatchObject({
-      commandCount: 15,
+      commandCount: 17,
       intakeItemCount: 5,
       ownerCount: 4,
       proofReferenceCount: 8,
@@ -116,6 +116,9 @@ describe('external evidence intake', () => {
     expect(report.intakeTemplate.items.find((item) => item.key === 'iosBuild')?.proof[0]?.acceptedReferenceTypes).toContain('issue-url');
     expect(report.intakeTemplate.items.find((item) => item.key === 'cueValidationDataset')?.commands).toContain(
       'npm run validation:cue:starter',
+    );
+    expect(report.intakeTemplate.items.find((item) => item.key === 'cueValidationDataset')?.commands).toContain(
+      'npm run validation:cue:composition -- --write-dataset',
     );
     expect(JSON.stringify(report)).not.toMatch(/\/Users\/|file:\/\/|ghp_|BEGIN PRIVATE KEY|rawVideoUri/i);
     expect(report.intakeTemplate.items.flatMap((item) => item.proof).every((proof) => proof.evidenceReference === '')).toBe(true);
