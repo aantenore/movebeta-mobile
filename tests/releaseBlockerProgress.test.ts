@@ -74,7 +74,7 @@ describe('release blocker progress', () => {
     expect(progress.summary).toMatchObject({
       acceptedProofCount: 0,
       blockerCount: 5,
-      commandCount: 15,
+      commandCount: 17,
       dependencyBlockedCount: 2,
       missingProofCount: 8,
       needsProofCount: 3,

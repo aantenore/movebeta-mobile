@@ -32,6 +32,16 @@ describe('release blocker issue packet', () => {
       secretsIncluded: false,
     });
     expect(packet.issues.map((issue) => issue.key)).toContain('easCredentials');
+    expect(packet.issues.find((issue) => issue.key === 'cueValidationDataset')?.commands).toEqual([
+      'npm run validation:cue:starter',
+      'npm run validation:cue:composition',
+      'npm run validation:cue:composition -- --write-dataset',
+      'npm run validation:cue',
+      'npm run validation:cue:doctor',
+    ]);
+    expect(packet.issues.find((issue) => issue.key === 'cueValidationDataset')?.body).toContain(
+      '`npm run validation:cue:composition -- --write-dataset`',
+    );
     expect(packet.issues.find((issue) => issue.key === 'easCredentials')?.body).toContain('## Environment Key Names');
     expect(packet.issues.find((issue) => issue.key === 'easCredentials')?.body).toContain('`EXPO_TOKEN`');
     expect(packet.issues.flatMap((issue) => issue.labels)).toContain('release-blocker');

@@ -80,7 +80,7 @@
       "purpose": "Promote real-world model evidence only after the cue-validation dataset report is ready."
     }
   ],
-  "generatedAt": "2026-06-25T15:42:33.903Z",
+  "generatedAt": "2026-06-25T15:50:08.966Z",
   "nextAction": "Export a real cue-validation study seed from Sessions after athlete consent, then rerun npm run validation:cue:starter -- --seed <seed.json>.",
   "phases": [
     {

@@ -38,6 +38,8 @@ describe('release critical path', () => {
     expect(path.steps.find((step) => step.key === 'easCredentials')?.dependencyKeys).toEqual(['easProject']);
     expect(path.steps.find((step) => step.key === 'cueValidationDataset')?.commands).toEqual([
       'npm run validation:cue:starter',
+      'npm run validation:cue:composition',
+      'npm run validation:cue:composition -- --write-dataset',
       'npm run validation:cue',
       'npm run validation:cue:doctor',
     ]);

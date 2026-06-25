@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:42:36.004Z",
+  "generatedAt": "2026-06-25T15:50:10.986Z",
   "issueTemplatePath": ".github/ISSUE_TEMPLATE/release_blocker.md",
   "issues": [
     {
@@ -72,9 +72,11 @@
         "The cue-validation dataset uses consented climbing clips and real coach review rows.",
         "The dataset validator passes without template placeholders or local raw-video references."
       ],
-      "body": "## Release Blocker\nRun the versioned cue-validation dataset gate on real consented coach review data.\n\nOwner: `product`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The cue-validation dataset uses consented climbing clips and real coach review rows.\n- [ ] The dataset validator passes without template placeholders or local raw-video references.\n\n## Required Proof\n- docs/validation/cue-validation-dataset.json\n- docs/sdlc/cue-validation-dataset-report.json\n\n## Commands\n- `npm run validation:cue:starter`\n- `npm run validation:cue`\n- `npm run validation:cue:doctor`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
+      "body": "## Release Blocker\nRun the versioned cue-validation dataset gate on real consented coach review data.\n\nOwner: `product`\nTracks: `store`\nStatus: `blocked`\n\n## Acceptance\n- [ ] The cue-validation dataset uses consented climbing clips and real coach review rows.\n- [ ] The dataset validator passes without template placeholders or local raw-video references.\n\n## Required Proof\n- docs/validation/cue-validation-dataset.json\n- docs/sdlc/cue-validation-dataset-report.json\n\n## Commands\n- `npm run validation:cue:starter`\n- `npm run validation:cue:composition`\n- `npm run validation:cue:composition -- --write-dataset`\n- `npm run validation:cue`\n- `npm run validation:cue:doctor`\n\n## Environment Key Names\n- None\n\n## Secret Policy\nNo secret values or raw local artifacts should be committed as proof.\n\nDo not attach credential values, private keys, raw video, absolute local paths, or raw local artifacts to this issue.",
       "commands": [
         "npm run validation:cue:starter",
+        "npm run validation:cue:composition",
+        "npm run validation:cue:composition -- --write-dataset",
         "npm run validation:cue",
         "npm run validation:cue:doctor"
       ],
@@ -233,6 +235,8 @@
         "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
         "commands": [
           "npm run validation:cue:starter",
+          "npm run validation:cue:composition",
+          "npm run validation:cue:composition -- --write-dataset",
           "npm run validation:cue",
           "npm run validation:cue:doctor"
         ],
@@ -306,7 +310,7 @@
     "schemaVersion": "movebeta.release-unblock-checklist.v1",
     "summary": {
       "blockedItems": 5,
-      "commandCount": 15,
+      "commandCount": 17,
       "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
       "ownerCount": 4,
       "proofCount": 8,
@@ -314,7 +318,7 @@
     }
   },
   "summary": {
-    "commandCount": 15,
+    "commandCount": 17,
     "credentialKeyNameCount": 4,
     "issueCount": 5,
     "nextAction": "File one issue per external blocker, attach the required proof, then rerun release readiness checks.",

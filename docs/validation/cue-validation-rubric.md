@@ -43,8 +43,19 @@ starter-kit SDLC report. With a Sessions-exported seed, rerun it as `npm run val
 The starter kit does not create `cue-validation-dataset.json`; that file is reserved for completed, consented coach
 reviews.
 
-Copy `docs/validation/cue-validation-dataset.template.json` to `docs/validation/cue-validation-dataset.json`, replace
-placeholders with consented coach review packets and reviews, then run:
+After the completed worksheet preflight is ready, compose the dataset packet from the study seed and worksheet:
+
+```bash
+npm run validation:cue:composition
+```
+
+When the packet reports that the worksheet is complete and ready, write the final dataset file:
+
+```bash
+npm run validation:cue:composition -- --write-dataset
+```
+
+Then run the production validation gate:
 
 ```bash
 npm run validation:cue

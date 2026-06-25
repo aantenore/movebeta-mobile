@@ -598,7 +598,7 @@ const externalProofLocationByCheck: Record<string, string> = {
 };
 
 const externalProofRefreshByCheck: Record<string, string> = {
-  cueValidationDataset: 'npm run validation:cue:starter && npm run validation:cue:doctor',
+  cueValidationDataset: 'npm run validation:cue:starter && npm run validation:cue:composition && npm run validation:cue:doctor',
   easCredentials: 'npm run release:credentials:starter && npm run release:credentials:doctor',
   easProject: 'npm run release:eas:check',
   iosBuild: 'npm run native:ios:doctor',
