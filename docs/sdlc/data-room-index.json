@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T15:21:13.604Z",
+  "generatedAt": "2026-06-25T15:43:21.790Z",
   "items": [
     {
       "category": "release",
@@ -359,6 +359,17 @@
     },
     {
       "category": "validation",
+      "key": "cue-validation-dataset-composition-packet",
+      "label": "Cue-validation dataset composition packet",
+      "location": "docs/sdlc/cue-validation-dataset-composition-packet.json",
+      "owner": "product",
+      "purpose": "Share-safe cue-validation seed, worksheet, dataset composition, and validation handoff state.",
+      "refreshCommand": "npm run validation:cue:composition",
+      "sensitivity": "external-proof-reference",
+      "status": "external-required"
+    },
+    {
+      "category": "validation",
       "key": "cue-validation-dataset-report",
       "label": "Cue-validation dataset report",
       "location": "docs/sdlc/cue-validation-dataset-report.json",
@@ -469,8 +480,8 @@
   "schemaVersion": "movebeta.data-room-index.v1",
   "summary": {
     "blockedCount": 0,
-    "externalRequiredCount": 17,
-    "itemCount": 38,
+    "externalRequiredCount": 18,
+    "itemCount": 39,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readyCount": 18,

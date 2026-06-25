@@ -59,6 +59,7 @@ function makeProjectRoot() {
       'nativeQaRunbook',
       'iosToolchainDoctor',
       'cueValidationDatasetDoctor',
+      'cueValidationDatasetComposition',
       'storeCredentialsDoctor',
       'webSmokeReport',
       'webExport',
