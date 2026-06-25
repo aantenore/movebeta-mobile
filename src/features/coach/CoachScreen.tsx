@@ -26,6 +26,7 @@ import { buildAnalysisExecutionPlan, type AnalysisExecutionPlan } from '@/core/a
 import { buildModelDeliveryLifecycle } from '@/core/modelDeliveryLifecycle';
 import { buildModelDownloadPlan, type ModelDownloadPlan } from '@/core/modelDownloadPlan';
 import { selectionFeedback } from '@/core/haptics';
+import { buildPwaFieldReadiness, type PwaFieldReadiness } from '@/core/pwaFieldReadiness';
 import { buildPwaAnalysisPreflight, type PwaAnalysisPreflight } from '@/core/pwaAnalysisPreflight';
 import {
   browserPwaProbe,
@@ -1163,6 +1164,78 @@ function ModelDownloadTimingPanel({
   );
 }
 
+function PwaFieldReadinessPanel({
+  disabled,
+  onPreparePacket,
+  readiness,
+}: {
+  disabled: boolean;
+  onPreparePacket: () => void;
+  readiness: PwaFieldReadiness;
+}) {
+  const isBlocked = readiness.summary.status === 'blocked';
+  const isReady = readiness.summary.status === 'ready';
+
+  return (
+    <View style={[styles.modelPreflight, isBlocked ? styles.modelPreflightBlocked : isReady ? styles.modelPreflightReady : null]}>
+      <View style={styles.modelPreflightTop}>
+        <View style={styles.modelPreflightTitleRow}>
+          {isBlocked ? (
+            <TriangleAlert color={theme.colors.coral} size={18} />
+          ) : (
+            <ShieldCheck color={isReady ? theme.colors.success : theme.colors.amber} size={18} />
+          )}
+          <View style={styles.modelPreflightTitleGroup}>
+            <Text style={styles.modelPreflightTitle}>Field readiness</Text>
+            <Text style={styles.modelPreflightDetail}>{readiness.summary.nextAction}</Text>
+          </View>
+        </View>
+        <Text style={[styles.modelPreflightBadge, isBlocked ? styles.modelPreflightBadgeBlocked : isReady ? styles.modelPreflightBadgeReady : null]}>
+          {readiness.summary.status}
+        </Text>
+      </View>
+      <View style={styles.modelPreflightMetrics}>
+        <Text style={styles.modelPreflightMetric}>field {readiness.summary.readyForOfflineVideo ? 'ready' : 'not yet'}</Text>
+        <Text style={styles.modelPreflightMetric}>{readiness.summary.blockerCount} blockers</Text>
+        <Text style={styles.modelPreflightMetric}>{readiness.summary.actionCount} actions</Text>
+        <Text style={styles.modelPreflightMetric}>{formatCacheBytes(readiness.summary.modelBytesMissing)} missing</Text>
+        <Text style={styles.modelPreflightMetric}>update {readiness.summary.updateAvailable ? 'yes' : 'no'}</Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {readiness.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'blocked'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <Pressable
+        accessibilityLabel="Prepare PWA field readiness packet from Coach"
+        disabled={disabled}
+        onPress={onPreparePacket}
+        style={[styles.modelPreflightButton, disabled ? styles.disabled : null]}
+      >
+        <Download color={theme.colors.brand} size={16} />
+        <Text style={styles.modelPreflightButtonText}>Field packet</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function AnalysisDeviceReadinessPanel({
   disabled,
   onPreparePacket,
@@ -1348,6 +1421,7 @@ export function CoachScreen() {
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
   const [preparedDevicePacket, setPreparedDevicePacket] = useState('');
   const [preparedModelDownloadPacket, setPreparedModelDownloadPacket] = useState('');
+  const [preparedFieldReadinessPacket, setPreparedFieldReadinessPacket] = useState('');
   const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
   const [preparedExecutionPacket, setPreparedExecutionPacket] = useState('');
   const [preparedRunLoadPacket, setPreparedRunLoadPacket] = useState('');
@@ -1375,6 +1449,10 @@ export function CoachScreen() {
     network: pwaPreflight.online ? 'online' : 'offline',
     preference: 'wifi-only',
     runtimeReadiness: pwaPreflight.readiness,
+  });
+  const pwaFieldReadiness = buildPwaFieldReadiness({
+    modelDownloadPlan,
+    readiness: pwaPreflight.readiness,
   });
   const workflow = buildCoachWorkflowState({
     analyzing: loading,
@@ -1414,6 +1492,11 @@ export function CoachScreen() {
   function prepareModelDownloadTimingPacket(plan: ModelDownloadPlan) {
     selectionFeedback();
     setPreparedModelDownloadPacket(JSON.stringify(plan, null, 2));
+  }
+
+  function preparePwaFieldReadinessPacket(readiness: PwaFieldReadiness) {
+    selectionFeedback();
+    setPreparedFieldReadinessPacket(JSON.stringify(readiness, null, 2));
   }
 
   function prepareAnalysisExecutionPacket(plan: AnalysisExecutionPlan) {
@@ -1473,6 +1556,7 @@ export function CoachScreen() {
         try {
           const warmup = await pwaPreflight.warmModelCache();
           setPreparedModelDownloadPacket('');
+          setPreparedFieldReadinessPacket('');
           if (warmup.summary.status !== 'ready' && !warmup.summary.online) {
             setLoading(false);
             setReport(null);
@@ -1531,6 +1615,7 @@ export function CoachScreen() {
     try {
       const result = await pwaPreflight.warmModelCache();
       setPreparedModelDownloadPacket('');
+      setPreparedFieldReadinessPacket('');
       if (result.summary.status !== 'ready') {
         setErrorMessage(result.summary.nextAction);
       }
@@ -1604,6 +1689,7 @@ export function CoachScreen() {
       setPreparedExecutionPacket('');
       setPreparedDevicePacket('');
       setPreparedModelDownloadPacket('');
+      setPreparedFieldReadinessPacket('');
       setPreparedRunLoadPacket('');
       setActiveSource(source);
       setCameraOpen(false);
@@ -1662,6 +1748,7 @@ export function CoachScreen() {
     setPreparedExecutionPacket('');
     setPreparedDevicePacket('');
     setPreparedModelDownloadPacket('');
+    setPreparedFieldReadinessPacket('');
     setPreparedRunLoadPacket('');
     setActiveSource(source);
     setCameraOpen(false);
@@ -1674,6 +1761,7 @@ export function CoachScreen() {
     setPreparedExecutionPacket('');
     setPreparedDevicePacket('');
     setPreparedModelDownloadPacket('');
+    setPreparedFieldReadinessPacket('');
     setPreparedRunLoadPacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
@@ -1765,6 +1853,11 @@ export function CoachScreen() {
         onPreparePacket={() => prepareModelDownloadTimingPacket(modelDownloadPlan)}
         plan={modelDownloadPlan}
       />
+      <PwaFieldReadinessPanel
+        disabled={workflow.captureDisabled}
+        onPreparePacket={() => preparePwaFieldReadinessPacket(pwaFieldReadiness)}
+        readiness={pwaFieldReadiness}
+      />
       <AnalysisDeviceReadinessPanel
         disabled={workflow.captureDisabled}
         onPreparePacket={() => prepareDeviceReadinessPacket(devicePreflight.readiness)}
@@ -1844,6 +1937,7 @@ export function CoachScreen() {
           setPreparedExecutionPacket('');
           setPreparedDevicePacket('');
           setPreparedModelDownloadPacket('');
+          setPreparedFieldReadinessPacket('');
           setPreparedRunLoadPacket('');
           setAnalysisWindowMode(mode);
         }}
@@ -1873,6 +1967,18 @@ export function CoachScreen() {
             accessibilityLabel="Model download timing packet JSON"
             style={styles.resourcePacketText}
             value={preparedModelDownloadPacket}
+          />
+        </View>
+      ) : null}
+      {preparedFieldReadinessPacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared Coach field readiness packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Coach field readiness packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedFieldReadinessPacket}
           />
         </View>
       ) : null}

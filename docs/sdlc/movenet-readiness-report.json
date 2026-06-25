@@ -1,5 +1,5 @@
 {
-  "averageInferenceMs": 309,
+  "averageInferenceMs": 310,
   "backend": "cpu",
   "budget": {
     "averageInferenceMs": 1500,
@@ -20,7 +20,7 @@
       "status": "pass"
     },
     {
-      "detail": "309ms / 1500ms",
+      "detail": "310ms / 1500ms",
       "key": "average-inference-budget",
       "label": "Average inference stays inside budget",
       "status": "pass"
@@ -32,7 +32,7 @@
       "status": "pass"
     }
   ],
-  "generatedAt": "2026-06-25T08:32:39.341Z",
+  "generatedAt": "2026-06-25T08:39:06.795Z",
   "input": {
     "kind": "synthetic-blank-frame",
     "shape": [
@@ -43,8 +43,8 @@
   },
   "inferenceRunsMs": [
     311,
-    308,
-    308
+    309,
+    309
   ],
   "limitations": [
     "Synthetic blank-frame inference proves local model execution only.",
@@ -71,5 +71,5 @@
   },
   "schemaVersion": "movebeta.movenet-readiness-report.v1",
   "status": "ready",
-  "warmupMs": 348
+  "warmupMs": 352
 }

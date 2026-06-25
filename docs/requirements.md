@@ -582,6 +582,9 @@
 - The Coach capture flow must expose model download timing before analysis, using the same download-plan contract as Plan
   to show native bundled delivery, PWA same-origin download triggers, remaining download bytes, cache/offline readiness,
   and a share-safe packet without raw video, local paths, credentials, or token-like values.
+- The Coach capture flow must expose PWA field readiness before recording or importing real video, combining runtime,
+  service-worker, model-cache, update-state, model-download, and offline-video checks into a share-safe packet without raw
+  video, local paths, credentials, or token-like values.
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
