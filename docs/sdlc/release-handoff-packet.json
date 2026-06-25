@@ -605,7 +605,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-25T08:33:56.512Z",
+  "generatedAt": "2026-06-25T08:40:12.398Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -615,9 +615,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "94f90806af99340a25a4ca1503d31c9e447e0d9f",
+    "baseCommitSha": "88c62af410983bdb4c522ae0c55d9387e0daa81b",
     "changedPaths": [],
-    "commitSha": "94f90806af99340a25a4ca1503d31c9e447e0d9f",
+    "commitSha": "88c62af410983bdb4c522ae0c55d9387e0daa81b",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -702,7 +702,7 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 309,
+    "moveNetAverageInferenceMs": 310,
     "moveNetLoadMs": 13,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
