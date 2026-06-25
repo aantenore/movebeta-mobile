@@ -44,7 +44,7 @@
     }
   ],
   "developerPath": "/Library/Developer/CommandLineTools",
-  "generatedAt": "2026-06-25T12:54:44.725Z",
+  "generatedAt": "2026-06-25T14:02:24.022Z",
   "nextAction": "Install full Xcode from Apple, open it once, accept licenses, then select its Developer directory.",
   "schemaVersion": "movebeta.ios-toolchain-report.v1",
   "status": "blocked",

@@ -1,0 +1,199 @@
+{
+  "generatedAt": "2026-06-25T14:02:26.690Z",
+  "items": [
+    {
+      "acceptedProofCount": 0,
+      "action": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
+      "blockedBy": [
+        "iosBuild"
+      ],
+      "commandCount": 3,
+      "currentCommand": "npm run native:qa:runbook",
+      "key": "nativeDeviceQa",
+      "label": "Native device QA evidence",
+      "lane": "native-build-qa",
+      "missingProofCount": 1,
+      "owner": "qa",
+      "proof": [
+        {
+          "acceptedReferenceTypes": [
+            "relative-path",
+            "report-id",
+            "issue-url"
+          ],
+          "expectedProof": "docs/sdlc/native-qa-evidence.json",
+          "status": "missing"
+        }
+      ],
+      "sourceStatus": "blocked",
+      "status": "blocked-by-dependency",
+      "tracks": [
+        "internal",
+        "store"
+      ]
+    },
+    {
+      "acceptedProofCount": 0,
+      "action": "Install full Xcode and verify an iOS simulator or device build.",
+      "blockedBy": [],
+      "commandCount": 5,
+      "currentCommand": "npm run toolchain:ios",
+      "key": "iosBuild",
+      "label": "iOS build verification",
+      "lane": "native-build-qa",
+      "missingProofCount": 2,
+      "owner": "engineering",
+      "proof": [
+        {
+          "acceptedReferenceTypes": [
+            "relative-path",
+            "issue-url",
+            "ci-run-url"
+          ],
+          "expectedProof": "docs/sdlc/ios-toolchain-report.json",
+          "status": "missing"
+        },
+        {
+          "acceptedReferenceTypes": [
+            "relative-path",
+            "issue-url",
+            "ci-run-url"
+          ],
+          "expectedProof": "iOS simulator or device build log",
+          "status": "missing"
+        }
+      ],
+      "sourceStatus": "blocked",
+      "status": "needs-proof",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "acceptedProofCount": 0,
+      "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
+      "blockedBy": [],
+      "commandCount": 3,
+      "currentCommand": "npm run validation:cue:starter",
+      "key": "cueValidationDataset",
+      "label": "Real cue-validation dataset",
+      "lane": "real-world-validation",
+      "missingProofCount": 2,
+      "owner": "product",
+      "proof": [
+        {
+          "acceptedReferenceTypes": [
+            "relative-path",
+            "report-id",
+            "issue-url"
+          ],
+          "expectedProof": "docs/validation/cue-validation-dataset.json",
+          "status": "missing"
+        },
+        {
+          "acceptedReferenceTypes": [
+            "relative-path",
+            "report-id",
+            "issue-url"
+          ],
+          "expectedProof": "docs/sdlc/cue-validation-dataset-report.json",
+          "status": "missing"
+        }
+      ],
+      "sourceStatus": "blocked",
+      "status": "needs-proof",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "acceptedProofCount": 0,
+      "action": "Initialize the app on the target Expo account and store the generated project id in config.",
+      "blockedBy": [],
+      "commandCount": 2,
+      "currentCommand": "npx eas-cli@latest init",
+      "key": "easProject",
+      "label": "EAS project binding",
+      "lane": "store-accounts",
+      "missingProofCount": 1,
+      "owner": "release",
+      "proof": [
+        {
+          "acceptedReferenceTypes": [
+            "report-id",
+            "issue-url",
+            "ci-run-url",
+            "store-console-state"
+          ],
+          "expectedProof": "app.json extra.eas.projectId",
+          "status": "missing"
+        }
+      ],
+      "sourceStatus": "blocked",
+      "status": "needs-proof",
+      "tracks": [
+        "store"
+      ]
+    },
+    {
+      "acceptedProofCount": 0,
+      "action": "Provide Expo, App Store Connect, and Google Play credentials outside the repository.",
+      "blockedBy": [
+        "easProject"
+      ],
+      "commandCount": 2,
+      "currentCommand": "npm run release:credentials:starter",
+      "key": "easCredentials",
+      "label": "Store submission credentials",
+      "lane": "store-accounts",
+      "missingProofCount": 2,
+      "owner": "release",
+      "proof": [
+        {
+          "acceptedReferenceTypes": [
+            "report-id",
+            "issue-url",
+            "ci-run-url",
+            "store-console-state"
+          ],
+          "expectedProof": "CI/EAS secret configuration",
+          "status": "missing"
+        },
+        {
+          "acceptedReferenceTypes": [
+            "report-id",
+            "issue-url",
+            "ci-run-url",
+            "store-console-state"
+          ],
+          "expectedProof": "Strict EAS validation output",
+          "status": "missing"
+        }
+      ],
+      "sourceStatus": "blocked",
+      "status": "blocked-by-dependency",
+      "tracks": [
+        "store"
+      ]
+    }
+  ],
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.release-blocker-progress.v1",
+  "summary": {
+    "acceptedProofCount": 0,
+    "blockerCount": 5,
+    "commandCount": 15,
+    "dependencyBlockedCount": 2,
+    "missingProofCount": 8,
+    "needsProofCount": 3,
+    "nextAction": "engineering: Install full Xcode and verify an iOS simulator or device build.",
+    "proofReadyCount": 0,
+    "status": "needs-external-evidence"
+  }
+}

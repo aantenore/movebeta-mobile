@@ -26,6 +26,7 @@ import moveNetReadinessReport from '../../../docs/sdlc/movenet-readiness-report.
 import moveNetStaticAssetsReport from '../../../docs/sdlc/movenet-static-assets-report.json';
 import nativeQaEvidenceStarterReport from '../../../docs/sdlc/native-qa-evidence-starter-report.json';
 import pwaReadinessReport from '../../../docs/sdlc/pwa-readiness-report.json';
+import releaseBlockerProgressReport from '../../../docs/sdlc/release-blocker-progress.json';
 import storeCredentialsSetupPacketReport from '../../../docs/sdlc/store-credentials-setup-packet.json';
 import storeReleaseAccountRunbookReport from '../../../docs/sdlc/store-release-account-runbook.json';
 import storeSubmissionReport from '../../../docs/store/store-submission-packet.json';
@@ -90,6 +91,7 @@ import {
 } from '@/core/pwaRuntimeBrowser';
 import { buildReleaseEvidenceScenarioPlanner, type ReleaseEvidenceScenarioPlanner } from '@/core/releaseEvidenceScenarios';
 import { buildReleaseEvidencePacket, type ReleaseEvidencePacket } from '@/core/releaseEvidencePacket';
+import { buildReleaseBlockerProgress, type ReleaseBlockerProgress } from '@/core/releaseBlockerProgress';
 import { buildReleaseUnblockChecklist } from '@/core/releaseUnblockChecklist';
 import { buildReleaseUnblockPacket } from '@/core/releaseUnblockPacket';
 import { buildSafetyLanguageGuard, type SafetyLanguageSource } from '@/core/safetyLanguage';
@@ -1342,6 +1344,87 @@ function ReleaseCriticalPathCard({
               {step.commands[0]} · {step.proof[0]}
             </Text>
             {step.blockedBy.length > 0 ? <Text style={styles.qaPlatformMore}>Blocked by: {step.blockedBy.join(', ')}</Text> : null}
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function releaseBlockerProgressStatusLabel(status: ReleaseBlockerProgress['items'][number]['status']) {
+  if (status === 'proof-ready') return 'Proof ready';
+  if (status === 'blocked-by-dependency') return 'Blocked';
+  return 'Needs proof';
+}
+
+function ReleaseBlockerProgressCard({
+  onPreparePacket,
+  progress,
+}: {
+  onPreparePacket: () => void;
+  progress: ReleaseBlockerProgress;
+}) {
+  const isReady = progress.summary.status === 'ready';
+
+  return (
+    <View style={styles.releaseEvidencePacket}>
+      <View style={styles.releaseUnblockHero}>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{progress.summary.blockerCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blockers</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{progress.summary.missingProofCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>proofs missing</Text>
+        </View>
+        <View style={styles.qaKitMetric}>
+          <Text style={styles.qaKitMetricValue}>{progress.summary.dependencyBlockedCount}</Text>
+          <Text style={styles.qaKitMetricLabel}>blocked deps</Text>
+        </View>
+      </View>
+      <View style={styles.qaValidationTop}>
+        <View style={styles.launchTrackTitleGroup}>
+          <Text style={styles.qaValidationTitle}>Release blocker progress</Text>
+          <Text style={styles.qaKitText}>{progress.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.launchStatus, isReady ? styles.launchStatusReady : styles.launchStatusBlocked]}>
+          {isReady ? 'Ready' : 'Needs proof'}
+        </Text>
+      </View>
+      <View style={styles.planActionRow}>
+        <Pressable accessibilityLabel="Prepare release blocker progress packet" onPress={onPreparePacket} style={styles.planAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.planActionText}>Progress packet</Text>
+        </Pressable>
+      </View>
+      <View style={styles.releaseUnblockList}>
+        {progress.items.map((item) => (
+          <View key={item.key} style={styles.releaseUnblockItem}>
+            <View style={styles.releaseUnblockTop}>
+              <View style={styles.launchTrackTitleGroup}>
+                <Text style={styles.releaseUnblockTitle}>{item.label}</Text>
+                <Text style={styles.releaseUnblockMeta}>
+                  {item.lane} · {item.owner} · {item.missingProofCount} missing proof(s)
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.launchStatus,
+                  item.status === 'proof-ready'
+                    ? styles.launchStatusReady
+                    : item.status === 'blocked-by-dependency'
+                      ? styles.launchStatusBlocked
+                      : null,
+                ]}
+              >
+                {releaseBlockerProgressStatusLabel(item.status)}
+              </Text>
+            </View>
+            <Text style={styles.qaKitText}>{item.action}</Text>
+            <Text style={styles.qaPlatformMore}>
+              {item.currentCommand} · {item.proof[0]?.expectedProof ?? 'Proof reference required'}
+            </Text>
+            {item.blockedBy.length > 0 ? <Text style={styles.qaPlatformMore}>Blocked by: {item.blockedBy.join(', ')}</Text> : null}
           </View>
         ))}
       </View>
@@ -3102,6 +3185,7 @@ export function PlanScreen() {
         moveNetReadinessReport,
         nativeQaEvidenceStarterReport,
         pwaReadinessReport,
+        releaseBlockerProgressReport,
         storeCredentialsSetupPacket: storeCredentialsSetupPacketReport,
         storeReleaseAccountRunbook: storeReleaseAccountRunbookReport,
         storeSubmissionPacket: storeSubmissionReport,
@@ -3130,6 +3214,12 @@ export function PlanScreen() {
   const releaseBlockerIssueWebLinksPacket = buildReleaseBlockerIssueWebLinksPacket({
     packet: releaseBlockerIssuePacket,
     repository: appConfig.releaseRepository,
+  });
+  const releaseBlockerProgress = buildReleaseBlockerProgress({
+    checklist: releaseUnblockChecklist,
+    criticalPath: releaseCriticalPath,
+    intakeReport: externalEvidenceIntakeReport,
+    validationReport: externalEvidenceValidationReport,
   });
   const fieldValidationOpsPacket = buildFieldValidationOpsPacket({
     evidencePlan,
@@ -3231,6 +3321,14 @@ export function PlanScreen() {
     setPreparedPlanExport({
       body: JSON.stringify(releaseCriticalPath, null, 2),
       title: 'Prepared release critical path',
+    });
+  }
+
+  function prepareReleaseBlockerProgressPacket() {
+    selectionFeedback();
+    setPreparedPlanExport({
+      body: JSON.stringify(releaseBlockerProgress, null, 2),
+      title: 'Prepared release blocker progress',
     });
   }
 
@@ -3605,6 +3703,10 @@ export function PlanScreen() {
 
       <Section title="Release critical path" caption="Parallel owner lanes and dependencies for clearing external launch blockers.">
         <ReleaseCriticalPathCard onPreparePacket={prepareReleaseCriticalPathPacket} path={releaseCriticalPath} />
+      </Section>
+
+      <Section title="Release blocker progress" caption="Owner, dependency, proof, and command tracker for remaining external blockers.">
+        <ReleaseBlockerProgressCard onPreparePacket={prepareReleaseBlockerProgressPacket} progress={releaseBlockerProgress} />
       </Section>
 
       <Section title="Release evidence scenarios" caption="Compare proof bundles before collecting account, device, or coach-review evidence.">

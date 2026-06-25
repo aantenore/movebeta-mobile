@@ -1,13 +1,13 @@
 # Data Room Index
 
-Generated: 2026-06-25T12:56:12.175Z
+Generated: 2026-06-25T14:02:46.419Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 17/35
+- Items ready: 17/36
 - Review items: 3
-- External-required items: 15
+- External-required items: 16
 - Missing items: 0
 - Blocked items: 0
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
@@ -32,6 +32,7 @@ Generated: 2026-06-25T12:56:12.175Z
 | Release handoff packet | release | ready | release | share-safe | `docs/sdlc/release-handoff-packet.json` | `npm run release:handoff` |
 | Release freshness report | release | ready | release | share-safe | `docs/sdlc/release-freshness-report.json` | `npm run release:freshness:doctor` |
 | Release blocker web links | release | ready | release | share-safe | `docs/sdlc/release-blocker-issue-web-links.json` | `npm run release:blocker-issues:links` |
+| Release blocker progress | release | external-required | release | share-safe | `docs/sdlc/release-blocker-progress.json` | `npm run release:blocker-progress` |
 | External evidence intake | release | external-required | release | external-proof-reference | `docs/sdlc/external-evidence-intake-report.json` | `npm run release:evidence:intake` |
 | MoveNet readiness report | model | ready | engineering | share-safe | `docs/sdlc/movenet-readiness-report.json` | `npm run model:movenet:readiness` |
 | Model verification suite | model | ready | engineering | share-safe | `docs/sdlc/model-verification-suite-report.json` | `npm run model:verification:suite` |

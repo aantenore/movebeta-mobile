@@ -46,6 +46,7 @@ function readyReports(): DataRoomReportBundle {
     nativeQaEvidenceStarterReport: report('ready'),
     pwaReadinessReport: report('ready'),
     releaseBlockerIssueWebLinks: report('ready'),
+    releaseBlockerProgressReport: report('ready'),
     releaseFreshnessReport: report('ready'),
     releaseGateReport: { completedAt: generatedAt, schemaVersion: 'movebeta.release-gate-report.v1', status: 'pass' },
     releaseHandoffPacket: report('ready'),
@@ -80,9 +81,9 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 30,
+      itemCount: 31,
       missingCount: 0,
-      readyCount: 30,
+      readyCount: 31,
       reviewCount: 0,
       status: 'ready',
     });

@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T12:56:12.175Z",
+  "generatedAt": "2026-06-25T14:02:46.419Z",
   "items": [
     {
       "category": "release",
@@ -114,6 +114,17 @@
       "refreshCommand": "npm run release:blocker-issues:links",
       "sensitivity": "share-safe",
       "status": "ready"
+    },
+    {
+      "category": "release",
+      "key": "release-blocker-progress",
+      "label": "Release blocker progress",
+      "location": "docs/sdlc/release-blocker-progress.json",
+      "owner": "release",
+      "purpose": "Aggregated external blocker progress with dependencies, proof counts, owners, and current commands.",
+      "refreshCommand": "npm run release:blocker-progress",
+      "sensitivity": "share-safe",
+      "status": "external-required"
     },
     {
       "category": "release",
@@ -436,8 +447,8 @@
   "schemaVersion": "movebeta.data-room-index.v1",
   "summary": {
     "blockedCount": 0,
-    "externalRequiredCount": 15,
-    "itemCount": 35,
+    "externalRequiredCount": 16,
+    "itemCount": 36,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "readyCount": 17,

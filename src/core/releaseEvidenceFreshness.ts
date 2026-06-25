@@ -72,6 +72,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   releaseBlockerIssueFilingPlan?: unknown;
   releaseBlockerIssueWebLinks?: unknown;
   releaseBlockerIssuesReport?: unknown;
+  releaseBlockerProgressReport?: unknown;
   modelAssetProvenanceReport?: unknown;
   modelAnalysisReplayReport?: unknown;
   modelDeliveryLifecycleReport?: unknown;
@@ -127,6 +128,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run release:blocker-issues',
     reportKey: 'releaseBlockerIssuesReport',
     requiredFor: ['handoff'],
+  },
+  {
+    key: 'release-blocker-progress',
+    label: 'Release blocker progress',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/release-blocker-progress.json',
+    refreshCommand: 'npm run release:blocker-progress',
+    reportKey: 'releaseBlockerProgressReport',
+    requiredFor: ['internal', 'store', 'handoff'],
   },
   {
     key: 'release-blocker-issue-filing-plan',
