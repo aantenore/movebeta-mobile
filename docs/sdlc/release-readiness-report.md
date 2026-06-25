@@ -124,6 +124,10 @@ platforms are validated on physical climbing videos and devices.
 - Sessions prepares a cue-validation reviewer assignment packet with reviewer-slot worksheet filters, row counts,
   score-cell counts, wall-angle coverage, negative privacy flags, and no coach identity, raw worksheet, report ID, path,
   token, credential, or raw-video export.
+- Sessions prepares a cue-validation collection runbook from the current seed, reviewer assignments, and worksheet
+  preflight state, showing consent, coverage, assignment, worksheet, preflight, and dataset phases with owners, current
+  phase, next action, negative privacy flags, and no coach identity, reviewer score, raw worksheet, report ID, path,
+  token, credential, or raw-video export.
 - Sessions prepares a cue-validation review worksheet from the study seed with null reviewer identities and null score
   fields for real coach completion.
 - Sessions prepares a cue-validation worksheet CSV with stable headers, escaped values, blank reviewer/score cells, and

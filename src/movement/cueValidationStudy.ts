@@ -208,6 +208,8 @@ export const cueValidationReviewerOnboardingPacketSchemaVersion = 'movebeta.cue-
 
 export const cueValidationReviewerAssignmentPacketSchemaVersion = 'movebeta.cue-validation-reviewer-assignment.v1';
 
+export const cueValidationCollectionRunbookSchemaVersion = 'movebeta.cue-validation-collection-runbook.v1';
+
 export const CueValidationReviewerOnboardingPacketSchema = z.object({
   acceptance: CueValidationStudyAcceptanceSchema,
   commands: z.array(
@@ -307,6 +309,74 @@ export const CueValidationReviewerAssignmentPacketSchema = z.object({
   }),
 });
 
+const CueValidationCollectionRunbookPhaseKeySchema = z.enum([
+  'collect-consent',
+  'cover-wall-angles',
+  'assign-reviewers',
+  'complete-worksheet',
+  'preflight-worksheet',
+  'compose-dataset',
+]);
+const CueValidationCollectionRunbookPhaseStatusSchema = z.enum(['blocked', 'ready', 'waiting']);
+const CueValidationCollectionRunbookStatusSchema = z.enum([
+  'blocked',
+  'needs-consent',
+  'needs-coverage',
+  'needs-review',
+  'ready-for-dataset',
+]);
+
+export const CueValidationCollectionRunbookPhaseSchema = z.object({
+  action: z.string(),
+  detail: z.string(),
+  key: CueValidationCollectionRunbookPhaseKeySchema,
+  label: z.string(),
+  owner: z.enum(['coach', 'product', 'qa']),
+  status: CueValidationCollectionRunbookPhaseStatusSchema,
+});
+
+export const CueValidationCollectionRunbookSchema = z.object({
+  acceptance: CueValidationStudyAcceptanceSchema,
+  generatedAt: z.string(),
+  instructions: z.array(z.string()),
+  phases: z.array(CueValidationCollectionRunbookPhaseSchema).length(6),
+  privacy: z.object({
+    coachPacketsIncluded: z.literal(false),
+    credentialValuesIncluded: z.literal(false),
+    keyFramesIncluded: z.literal(false),
+    landmarksIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    privateNotesIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawUrisIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    rawWorksheetIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    reviewerIdentitiesIncluded: z.literal(false),
+    reviewerScoresIncluded: z.literal(false),
+    reviewerScoresInvented: z.literal(false),
+    tokenLikeValuesIncluded: z.literal(false),
+    videoLeavesDevice: z.literal(false),
+  }),
+  schemaVersion: z.literal(cueValidationCollectionRunbookSchemaVersion),
+  sourceSeedGeneratedAt: z.string(),
+  summary: z.object({
+    assignmentCount: z.number().int().nonnegative(),
+    completeWorksheetRows: z.number().int().nonnegative(),
+    currentPhase: CueValidationCollectionRunbookPhaseKeySchema,
+    expectedWorksheetRows: z.number().int().nonnegative(),
+    missingScoreCount: z.number().int().nonnegative(),
+    missingWallAngles: z.array(z.enum(['slab', 'vertical', 'overhang'])),
+    nextAction: z.string(),
+    reviewerSlots: z.number().int().nonnegative(),
+    sourceClipCount: z.number().int().nonnegative(),
+    sourceCueCount: z.number().int().nonnegative(),
+    status: CueValidationCollectionRunbookStatusSchema,
+    targetClipCount: z.number().int().positive(),
+    worksheetPreflightStatus: CueValidationWorksheetPreflightStatusSchema,
+  }),
+});
+
 const CueValidationCompletedReviewSchema = z.object({
   cueId: z.string(),
   drillFit: z.number().int().min(1).max(5),
@@ -338,6 +408,7 @@ export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema
 export type CueValidationClipIntakeManifest = z.infer<typeof CueValidationClipIntakeManifestSchema>;
 export type CueValidationReviewerOnboardingPacket = z.infer<typeof CueValidationReviewerOnboardingPacketSchema>;
 export type CueValidationReviewerAssignmentPacket = z.infer<typeof CueValidationReviewerAssignmentPacketSchema>;
+export type CueValidationCollectionRunbook = z.infer<typeof CueValidationCollectionRunbookSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
 export type CueValidationWorksheetPreflight = z.infer<typeof CueValidationWorksheetPreflightSchema>;
 export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
@@ -361,6 +432,12 @@ export type CueValidationReviewerOnboardingPacketOptions = {
 };
 
 export type CueValidationReviewerAssignmentPacketOptions = {
+  generatedAt?: string;
+  reviewerCount?: number;
+};
+
+export type CueValidationCollectionRunbookOptions = {
+  completedWorksheetCsv?: string;
   generatedAt?: string;
   reviewerCount?: number;
 };
@@ -1228,6 +1305,216 @@ export function assertCueValidationReviewerAssignmentPacketIsPrivacySafe(packet:
   }
 }
 
+function collectionRunbookPhase({
+  action,
+  detail,
+  key,
+  label,
+  owner,
+  status,
+}: {
+  action: string;
+  detail: string;
+  key: z.infer<typeof CueValidationCollectionRunbookPhaseKeySchema>;
+  label: string;
+  owner: z.infer<typeof CueValidationCollectionRunbookPhaseSchema>['owner'];
+  status: z.infer<typeof CueValidationCollectionRunbookPhaseStatusSchema>;
+}) {
+  return CueValidationCollectionRunbookPhaseSchema.parse({ action, detail, key, label, owner, status });
+}
+
+function collectionRunbookStatus({
+  assignmentStatus,
+  clipCount,
+  manifestStatus,
+  preflightStatus,
+}: {
+  assignmentStatus: CueValidationReviewerAssignmentPacket['summary']['status'];
+  clipCount: number;
+  manifestStatus: CueValidationClipIntakeManifest['summary']['status'];
+  preflightStatus: CueValidationWorksheetPreflight['summary']['status'];
+}): z.infer<typeof CueValidationCollectionRunbookStatusSchema> {
+  if (preflightStatus === 'blocked') return 'blocked';
+  if (clipCount === 0 || manifestStatus === 'needs-consent') return 'needs-consent';
+  if (manifestStatus === 'needs-coverage' || assignmentStatus === 'needs-coverage') return 'needs-coverage';
+  if (preflightStatus === 'ready') return 'ready-for-dataset';
+  return 'needs-review';
+}
+
+function collectionRunbookCurrentPhase(status: z.infer<typeof CueValidationCollectionRunbookStatusSchema>) {
+  if (status === 'needs-consent') return 'collect-consent';
+  if (status === 'needs-coverage') return 'cover-wall-angles';
+  if (status === 'ready-for-dataset') return 'compose-dataset';
+  if (status === 'blocked') return 'preflight-worksheet';
+  return 'complete-worksheet';
+}
+
+export function buildCueValidationCollectionRunbook(
+  seed: CueValidationStudySeed,
+  options: CueValidationCollectionRunbookOptions = {},
+): CueValidationCollectionRunbook {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const generatedAt = options.generatedAt ?? new Date().toISOString();
+  const manifest = buildCueValidationClipIntakeManifest(parsedSeed, {
+    generatedAt,
+    reviewerCount: options.reviewerCount,
+  });
+  const assignment = buildCueValidationReviewerAssignmentPacket(parsedSeed, {
+    generatedAt,
+    reviewerCount: options.reviewerCount,
+  });
+  const preflight = buildCueValidationWorksheetPreflight(parsedSeed, options.completedWorksheetCsv ?? '', {
+    generatedAt,
+  });
+  const status = collectionRunbookStatus({
+    assignmentStatus: assignment.summary.status,
+    clipCount: parsedSeed.clipCount,
+    manifestStatus: manifest.summary.status,
+    preflightStatus: preflight.summary.status,
+  });
+  const currentPhase = collectionRunbookCurrentPhase(status);
+  const nextAction =
+    status === 'ready-for-dataset'
+      ? 'Compose the dataset JSON locally, then run npm run validation:cue.'
+      : status === 'blocked'
+        ? preflight.summary.nextAction
+        : status === 'needs-coverage'
+          ? 'Add consented clips until target count and required wall angles are covered.'
+          : status === 'needs-consent'
+            ? 'Grant cue-validation consent on real local reports before assigning coach reviews.'
+            : 'Send packet-only worksheet rows to real coach reviewers, then paste the completed CSV for preflight.';
+
+  const phases = [
+    collectionRunbookPhase({
+      action: parsedSeed.clipCount > 0 ? 'Keep active cue-validation consent attached to local reports.' : 'Grant cue-validation consent on real local reports.',
+      detail: `${parsedSeed.clipCount}/${parsedSeed.acceptance.minClips} consented clip(s) available.`,
+      key: 'collect-consent',
+      label: 'Collect consent',
+      owner: 'product',
+      status: parsedSeed.clipCount > 0 ? 'ready' : 'waiting',
+    }),
+    collectionRunbookPhase({
+      action:
+        manifest.summary.status === 'needs-coverage'
+          ? 'Balance collection across missing wall angles before adding more single-style clips.'
+          : 'Required wall-angle coverage is represented in the current seed.',
+      detail: `${manifest.summary.wallAngles.length}/${manifest.summary.targetWallAngles.length} wall angle(s) covered; ${manifest.summary.missingWallAngles.length} missing.`,
+      key: 'cover-wall-angles',
+      label: 'Cover wall angles',
+      owner: 'product',
+      status: manifest.summary.status === 'ready-for-review' ? 'ready' : 'waiting',
+    }),
+    collectionRunbookPhase({
+      action:
+        assignment.summary.status === 'ready-for-assignment'
+          ? 'Use reviewer-slot filters to assign packet-only rows to real coach reviewers.'
+          : 'Finish consent and coverage before reviewer-slot assignments are actionable.',
+      detail: `${assignment.summary.assignmentCount} assignment(s), ${assignment.summary.estimatedWorksheetRows} worksheet row(s), ${assignment.summary.estimatedScoreCells} score cell(s).`,
+      key: 'assign-reviewers',
+      label: 'Assign reviewers',
+      owner: 'product',
+      status: assignment.summary.status === 'ready-for-assignment' ? 'ready' : 'waiting',
+    }),
+    collectionRunbookPhase({
+      action:
+        preflight.summary.status === 'ready'
+          ? 'Completed worksheet has all expected real reviewer IDs and 1-5 score cells.'
+          : 'Collect real coach reviewer IDs and 1-5 scores in the worksheet CSV.',
+      detail: `${preflight.summary.completeRows}/${preflight.summary.expectedRows} worksheet row(s) complete; ${preflight.summary.missingScoreCount} score cell(s) missing.`,
+      key: 'complete-worksheet',
+      label: 'Complete worksheet',
+      owner: 'coach',
+      status: preflight.summary.status === 'ready' ? 'ready' : preflight.summary.status === 'blocked' ? 'blocked' : 'waiting',
+    }),
+    collectionRunbookPhase({
+      action: preflight.summary.nextAction,
+      detail: `Worksheet preflight status is ${preflight.summary.status}.`,
+      key: 'preflight-worksheet',
+      label: 'Preflight worksheet',
+      owner: 'qa',
+      status: preflight.summary.status === 'ready' ? 'ready' : preflight.summary.status === 'blocked' ? 'blocked' : 'waiting',
+    }),
+    collectionRunbookPhase({
+      action:
+        preflight.summary.status === 'ready'
+          ? 'Build the validation dataset JSON and run the release validation gate.'
+          : 'Wait until worksheet preflight is ready before composing dataset JSON.',
+      detail: `Dataset composition requires ${preflight.summary.expectedRows} complete seed-matching worksheet row(s).`,
+      key: 'compose-dataset',
+      label: 'Compose dataset',
+      owner: 'qa',
+      status: preflight.summary.status === 'ready' ? 'ready' : 'waiting',
+    }),
+  ];
+
+  const runbook = CueValidationCollectionRunbookSchema.parse({
+    acceptance: parsedSeed.acceptance,
+    generatedAt,
+    instructions: [
+      'Run this runbook from the Sessions seed that will produce the final worksheet.',
+      'Do not add coach names, contact details, raw worksheet rows, report IDs, raw video, screenshots, landmarks, local file paths, private notes, credentials, or tokens.',
+      'Use reviewer assignment filters for outreach, then paste the completed CSV back into Sessions before composing the dataset.',
+      'Run npm run validation:cue after dataset composition and keep the generated report fresh for release handoff.',
+    ],
+    phases,
+    privacy: {
+      coachPacketsIncluded: false,
+      credentialValuesIncluded: false,
+      keyFramesIncluded: false,
+      landmarksIncluded: false,
+      localPathsIncluded: false,
+      privateNotesIncluded: false,
+      rawArtifactsIncluded: false,
+      rawUrisIncluded: false,
+      rawVideoIncluded: false,
+      rawWorksheetIncluded: false,
+      reportIdsIncluded: false,
+      reviewerIdentitiesIncluded: false,
+      reviewerScoresIncluded: false,
+      reviewerScoresInvented: false,
+      tokenLikeValuesIncluded: false,
+      videoLeavesDevice: false,
+    },
+    schemaVersion: cueValidationCollectionRunbookSchemaVersion,
+    sourceSeedGeneratedAt: parsedSeed.generatedAt,
+    summary: {
+      assignmentCount: assignment.summary.assignmentCount,
+      completeWorksheetRows: preflight.summary.completeRows,
+      currentPhase,
+      expectedWorksheetRows: preflight.summary.expectedRows,
+      missingScoreCount: preflight.summary.missingScoreCount,
+      missingWallAngles: manifest.summary.missingWallAngles,
+      nextAction,
+      reviewerSlots: assignment.summary.reviewerSlots,
+      sourceClipCount: parsedSeed.clipCount,
+      sourceCueCount: parsedSeed.cueCount,
+      status,
+      targetClipCount: parsedSeed.acceptance.minClips,
+      worksheetPreflightStatus: preflight.summary.status,
+    },
+  });
+
+  return assertCueValidationCollectionRunbookIsPrivacySafe(runbook);
+}
+
+export function assertCueValidationCollectionRunbookIsPrivacySafe(runbook: CueValidationCollectionRunbook) {
+  const serialized = JSON.stringify(runbook);
+
+  if (forbiddenStudyKeyPattern.test(serialized) || forbiddenOnboardingPacketValuePattern.test(serialized)) {
+    throw new Error('Cue validation collection runbook failed privacy validation: raw artifact or credential text is present.');
+  }
+
+  const parsed = CueValidationCollectionRunbookSchema.parse(runbook);
+  const privacyFlags = Object.values(parsed.privacy);
+
+  if (privacyFlags.some(Boolean)) {
+    throw new Error('Cue validation collection runbook failed privacy validation: a forbidden artifact flag is enabled.');
+  }
+
+  return parsed;
+}
+
 export function buildCueValidationReviewWorksheet(
   seed: CueValidationStudySeed,
   options: CueValidationReviewWorksheetOptions = {},
@@ -1486,6 +1773,17 @@ export function formatCueValidationReviewerAssignmentPacketSummary(packet: CueVa
     `${parsed.summary.estimatedScoreCells} score cells`,
     `status ${parsed.summary.status}`,
     'reviewer identities: no',
+  ].join(' · ');
+}
+
+export function formatCueValidationCollectionRunbookSummary(runbook: CueValidationCollectionRunbook) {
+  const parsed = CueValidationCollectionRunbookSchema.parse(runbook);
+  return [
+    `Collection runbook: ${parsed.summary.status}`,
+    `phase ${parsed.summary.currentPhase}`,
+    `${parsed.summary.sourceClipCount}/${parsed.summary.targetClipCount} clips`,
+    `${parsed.summary.completeWorksheetRows}/${parsed.summary.expectedWorksheetRows} rows complete`,
+    `preflight ${parsed.summary.worksheetPreflightStatus}`,
   ].join(' · ');
 }
 

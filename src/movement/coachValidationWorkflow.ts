@@ -8,11 +8,13 @@ import {
   type CueValidationGateResult,
 } from './cueValidationDataset';
 import {
+  assertCueValidationCollectionRunbookIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   assertCueValidationWorksheetPreflightIsPrivacySafe,
+  buildCueValidationCollectionRunbook,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationReviewerAssignmentPacket,
   buildCueValidationReviewWorksheet,
@@ -20,11 +22,13 @@ import {
   buildCueValidationStudySeed,
   buildCueValidationWorksheetPreflight,
   defaultCueValidationStudyAcceptance,
+  formatCueValidationCollectionRunbookSummary,
   formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewerAssignmentPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
   formatCueValidationWorksheetPreflightSummary,
+  type CueValidationCollectionRunbook,
   type CueValidationCompletedDataset,
   type CueValidationReviewerAssignmentPacket,
   type CueValidationStudyAcceptance,
@@ -59,6 +63,8 @@ export type CoachValidationWorkflowProgress = {
 
 export type CoachValidationWorkflow = {
   action: string;
+  collectionRunbook: CueValidationCollectionRunbook;
+  collectionRunbookSummary: string;
   completedDataset?: CueValidationCompletedDataset;
   datasetGate?: CueValidationGateResult;
   errors: string[];
@@ -249,6 +255,12 @@ export function buildCoachValidationWorkflow(
   assertCueValidationReviewerAssignmentPacketIsPrivacySafe(reviewerAssignment);
   const reviewerAssignmentSummary = formatCueValidationReviewerAssignmentPacketSummary(reviewerAssignment);
   const completedWorksheetCsv = options.completedWorksheetCsv?.trim() ?? '';
+  const collectionRunbook = buildCueValidationCollectionRunbook(seed, {
+    completedWorksheetCsv,
+    generatedAt: options.generatedAt,
+  });
+  assertCueValidationCollectionRunbookIsPrivacySafe(collectionRunbook);
+  const collectionRunbookSummary = formatCueValidationCollectionRunbookSummary(collectionRunbook);
   const worksheetPreflight = buildCueValidationWorksheetPreflight(seed, completedWorksheetCsv, {
     generatedAt: options.generatedAt,
   });
@@ -261,6 +273,8 @@ export function buildCoachValidationWorkflow(
 
     return {
       action,
+      collectionRunbook,
+      collectionRunbookSummary,
       errors: [],
       progress,
       reviewerAssignment,
@@ -282,6 +296,8 @@ export function buildCoachValidationWorkflow(
 
     return {
       action,
+      collectionRunbook,
+      collectionRunbookSummary,
       errors: [],
       progress,
       reviewerAssignment,
@@ -325,6 +341,8 @@ export function buildCoachValidationWorkflow(
 
     return {
       action,
+      collectionRunbook,
+      collectionRunbookSummary,
       completedDataset,
       datasetGate,
       errors: [],
@@ -350,6 +368,8 @@ export function buildCoachValidationWorkflow(
 
     return {
       action,
+      collectionRunbook,
+      collectionRunbookSummary,
       errors,
       progress,
       reviewerAssignment,

@@ -39,6 +39,9 @@
 - Prepare a share-safe cue-validation reviewer assignment packet from the study seed with reviewer slot counts, worksheet
   row counts, score-cell counts, worksheet filters, wall-angle coverage, and explicit exclusion of coach identities, raw
   worksheet contents, report IDs, raw video, local paths, credentials, and tokens.
+- Show a share-safe cue-validation collection runbook in Sessions that combines the current study seed, reviewer
+  assignments, worksheet preflight status, current phase, phase owners, next action, and privacy checks without exporting
+  coach identities, reviewer scores, raw worksheet contents, report IDs, raw video, local paths, credentials, or tokens.
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
