@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T12:56:03.704Z
+Generated: 2026-06-25T14:03:46.939Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: dce80c23625dfce3eb6d6efb8c9ea77ace28d1c4
+- Base commit at generation: 714768688a89ae89cf24a776c34a52cc63cd7624
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 13ms; average inference 315ms
+- MoveNet readiness: ready; load 12ms; average inference 317ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -47,6 +47,7 @@ Generated: 2026-06-25T12:56:03.704Z
 - License review packet: `npm run release:license-review`
 - Feature completion doctor: `npm run feature:doctor`
 - Release blocker issue report: `npm run release:blocker-issues`
+- Release blocker progress: `npm run release:blocker-progress`
 - Release blocker issue filing plan: `npm run release:blocker-issues:file`
 - Release blocker issue web links: `npm run release:blocker-issues:links`
 - External evidence intake: `npm run release:evidence:intake`
@@ -73,6 +74,7 @@ Generated: 2026-06-25T12:56:03.704Z
 - [x] Cue validation starter kit report: `docs/sdlc/cue-validation-starter-kit-report.json`
 - [x] Cue validation review worksheet CSV: `docs/validation/cue-validation-review-worksheet.csv`
 - [x] Release blocker issues report: `docs/sdlc/release-blocker-issues-report.json`
+- [x] Release blocker progress: `docs/sdlc/release-blocker-progress.json`
 - [x] Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`
 - [x] Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`
 - [x] External evidence intake report: `docs/sdlc/external-evidence-intake-report.json`
