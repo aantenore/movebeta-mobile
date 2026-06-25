@@ -331,6 +331,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/model-asset-attribution.md`.
 - Model delivery lifecycle report: `docs/sdlc/model-delivery-lifecycle-report.json`,
   `docs/sdlc/model-delivery-lifecycle-report.md`.
+- Model download plan report: `docs/sdlc/model-download-plan-report.json`,
+  `docs/sdlc/model-download-plan-report.md`.
 - Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,

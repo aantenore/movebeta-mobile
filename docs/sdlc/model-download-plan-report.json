@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-06-25T15:11:30.280Z",
+  "model": {
+    "additionalDownloadBytes": 4963342,
+    "packagedBytes": 0,
+    "totalBytes": 4963342
+  },
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.model-download-plan.v1",
+  "steps": [
+    {
+      "action": "Keep /model-assets.json and listed /models files in the exported static build.",
+      "detail": "MoveNet SinglePose Lightning is shipped as same-origin static assets before deployment.",
+      "key": "package-delivery",
+      "label": "Package delivery",
+      "status": "ready",
+      "timing": "During build/export"
+    },
+    {
+      "action": "Use the configured trigger while online before relying on offline analysis.",
+      "detail": "The model is vendored during build, then the service worker downloads same-origin model assets on first online install or explicit warmup.",
+      "key": "download-trigger",
+      "label": "Download trigger",
+      "status": "ready",
+      "timing": "First online PWA install, app reload, or Warm model"
+    },
+    {
+      "action": "Warm the model cache while online.",
+      "detail": "Cache Storage still needs 3/3 model asset(s).",
+      "key": "cache-warmup",
+      "label": "Cache warmup",
+      "status": "action",
+      "timing": "Before offline use"
+    },
+    {
+      "action": "Use browser Web Crypto SHA-256 support when available; otherwise rely on cache presence.",
+      "detail": "Runtime integrity verification is not available in this environment.",
+      "key": "integrity-check",
+      "label": "Integrity check",
+      "status": "ready",
+      "timing": "After cache warmup"
+    },
+    {
+      "action": "Warm the model online, then switch offline and run a local smoke.",
+      "detail": "Offline analysis depends on cached model assets being available on this device/browser.",
+      "key": "offline-use",
+      "label": "Offline use",
+      "status": "action",
+      "timing": "Before the climbing session"
+    }
+  ],
+  "summary": {
+    "cacheReady": false,
+    "downloadRequired": true,
+    "downloadTrigger": "First online PWA install, app reload, or Warm model",
+    "network": "unknown",
+    "nextAction": "Open the PWA online once or use Warm model to populate the cache.",
+    "offlineReady": false,
+    "preference": "wifi-only",
+    "runtime": "web",
+    "status": "action",
+    "updateAvailable": false
+  }
+}

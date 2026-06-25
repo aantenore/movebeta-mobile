@@ -16,7 +16,7 @@
     "storeListing": true,
     "webSmoke": true
   },
-  "generatedAt": "2026-06-25T14:02:28.263Z",
+  "generatedAt": "2026-06-25T15:11:26.553Z",
   "nextAction": "Collect, validate, and promote every external proof reference before applying launch readiness evidence.",
   "privacy": {
     "credentialValuesIncluded": false,
@@ -43,7 +43,7 @@
       "storeListing": true,
       "webSmoke": true
     },
-    "generatedAt": "2026-06-25T14:02:27.992Z",
+    "generatedAt": "2026-06-25T15:11:26.290Z",
     "nextAction": "Collect and validate every external proof reference before promoting launch readiness evidence.",
     "privacy": {
       "credentialValuesIncluded": false,
@@ -66,7 +66,7 @@
           "status": "fail"
         }
       ],
-      "generatedAt": "2026-06-25T14:02:27.992Z",
+      "generatedAt": "2026-06-25T15:11:26.290Z",
       "nextAction": "Create docs/sdlc/external-evidence-intake.filled.json from docs/sdlc/external-evidence-intake.template.json, fill accepted proof references, then rerun npm run release:evidence:validate.",
       "privacy": {
         "credentialValuesIncluded": false,

@@ -361,6 +361,8 @@
   delivery, static asset blockers, JSON/Markdown report writes, and unsafe-value rejection.
 - Vitest model download plan tests cover native bundled delivery, cached PWA offline readiness, offline uncached PWA block
   state, pending update activation, and share-safety rejection.
+- Vitest model download plan report tests cover durable JSON/Markdown generation from lifecycle evidence, reviewer timing
+  rows, current network/preference state, additional-byte reporting, and share-safe output.
 - Browser smoke verifies the Plan tab model download plan card and prepared `movebeta.model-download-plan.v1` packet.
 - Vitest PWA field readiness tests cover verified PWA cache readiness, native packaged readiness, pending-update blockers,
   missing-cache action state, unsupported-browser blockers, and share-safety rejection.

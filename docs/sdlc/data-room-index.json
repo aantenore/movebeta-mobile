@@ -36,7 +36,7 @@
       "purpose": "Pin final handoff to the commit being transferred."
     }
   ],
-  "generatedAt": "2026-06-25T14:03:54.231Z",
+  "generatedAt": "2026-06-25T15:12:00.429Z",
   "items": [
     {
       "category": "release",
@@ -167,6 +167,17 @@
       "owner": "engineering",
       "purpose": "Build-time vendoring, browser warmup, native delivery, and offline reuse evidence.",
       "refreshCommand": "npm run model:delivery:lifecycle",
+      "sensitivity": "share-safe",
+      "status": "ready"
+    },
+    {
+      "category": "model",
+      "key": "model-download-plan",
+      "label": "Model download plan",
+      "location": "docs/sdlc/model-download-plan-report.json",
+      "owner": "engineering",
+      "purpose": "Runtime download, cache warmup, integrity, and offline-use plan for same-origin model assets.",
+      "refreshCommand": "npm run model:download:plan",
       "sensitivity": "share-safe",
       "status": "ready"
     },
@@ -448,10 +459,10 @@
   "summary": {
     "blockedCount": 0,
     "externalRequiredCount": 16,
-    "itemCount": 36,
+    "itemCount": 37,
     "missingCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readyCount": 17,
+    "readyCount": 18,
     "reviewCount": 3,
     "status": "needs-external-evidence"
   }

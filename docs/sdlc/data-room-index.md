@@ -1,11 +1,11 @@
 # Data Room Index
 
-Generated: 2026-06-25T14:03:54.231Z
+Generated: 2026-06-25T15:12:00.429Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 17/36
+- Items ready: 18/37
 - Review items: 3
 - External-required items: 16
 - Missing items: 0
@@ -37,6 +37,7 @@ Generated: 2026-06-25T14:03:54.231Z
 | MoveNet readiness report | model | ready | engineering | share-safe | `docs/sdlc/movenet-readiness-report.json` | `npm run model:movenet:readiness` |
 | Model verification suite | model | ready | engineering | share-safe | `docs/sdlc/model-verification-suite-report.json` | `npm run model:verification:suite` |
 | Model delivery lifecycle | model | ready | engineering | share-safe | `docs/sdlc/model-delivery-lifecycle-report.json` | `npm run model:delivery:lifecycle` |
+| Model download plan | model | ready | engineering | share-safe | `docs/sdlc/model-download-plan-report.json` | `npm run model:download:plan` |
 | Model asset provenance | legal | review | release | share-safe | `docs/sdlc/model-asset-provenance-report.json` | `npm run model:assets:provenance` |
 | Dependency license report | legal | review | release | share-safe | `docs/sdlc/dependency-license-report.json` | `npm run security:licenses` |
 | License review packet | legal | review | release | share-safe | `docs/sdlc/license-review-packet.json` | `npm run release:license-review` |

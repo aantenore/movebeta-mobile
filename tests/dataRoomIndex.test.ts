@@ -41,6 +41,7 @@ function readyReports(): DataRoomReportBundle {
     },
     modelAssetProvenanceReport: report('ready'),
     modelDeliveryLifecycleReport: report('ready'),
+    modelDownloadPlanReport: report('action'),
     modelVerificationSuiteReport: report('technical-ready'),
     moveNetReadinessReport: report('ready'),
     nativeQaEvidenceStarterReport: report('ready'),
@@ -81,9 +82,9 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 31,
+      itemCount: 32,
       missingCount: 0,
-      readyCount: 31,
+      readyCount: 32,
       reviewCount: 0,
       status: 'ready',
     });
@@ -91,6 +92,7 @@ describe('data room index', () => {
     expect(index.items.map((item) => item.key)).toContain('source-archive');
     expect(index.items.map((item) => item.key)).toContain('vercel-deployment-handoff');
     expect(index.items.map((item) => item.key)).toContain('license-review-packet');
+    expect(index.items.map((item) => item.key)).toContain('model-download-plan');
     expect(index.items.map((item) => item.key)).toContain('third-party-notices');
     expect(JSON.stringify(index)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
   });

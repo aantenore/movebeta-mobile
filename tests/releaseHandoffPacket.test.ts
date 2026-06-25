@@ -89,6 +89,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.model-delivery-lifecycle.v1',
     summary: { status: 'action' },
   });
+  writeJson(path.join(root, 'docs/sdlc/model-download-plan-report.json'), {
+    schemaVersion: 'movebeta.model-download-plan.v1',
+    summary: { status: 'action' },
+  });
   writeText(path.join(root, 'docs/sdlc/model-asset-attribution.md'), '# Model Asset Attribution');
   writeJson(path.join(root, 'docs/sdlc/github-workflow-report.json'), {
     schemaVersion: 'movebeta.github-workflow-report.v1',
@@ -229,6 +233,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('movenet-static-assets');
     expect(packet.commands.map((item) => item.key)).toContain('model-asset-provenance');
     expect(packet.commands.map((item) => item.key)).toContain('model-delivery-lifecycle');
+    expect(packet.commands.map((item) => item.key)).toContain('model-download-plan');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.commands.map((item) => item.key)).toContain('acquisition-readiness');
     expect(packet.commands.map((item) => item.key)).toContain('data-room-index');
@@ -244,6 +249,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('MoveNet static assets report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model asset provenance report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model delivery lifecycle report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Model download plan report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model asset attribution notice');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker progress');
@@ -288,6 +294,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('MoveNet static assets doctor');
     expect(markdown).toContain('Model asset provenance doctor');
     expect(markdown).toContain('Model delivery lifecycle report');
+    expect(markdown).toContain('Model download plan report');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('Acquisition readiness packet');
     expect(markdown).toContain('Data-room index');

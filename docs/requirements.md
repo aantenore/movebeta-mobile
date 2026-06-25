@@ -613,6 +613,9 @@
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
+- Model download plan evidence must be regenerable from release artifacts as share-safe JSON and Markdown, included in
+  release gate, freshness, handoff, data-room, and release-evidence packets, and show runtime, network preference,
+  download trigger, additional bytes, cache warmup, integrity, and offline-use timing without local paths or raw media.
 - Coach PWA analysis preflight must treat a pending service-worker update as an offline stale-model risk: offline
   real-video analysis is blocked until the PWA is refreshed and the model cache is warmed, while online analysis may
   proceed with explicit refresh guidance.
