@@ -80,6 +80,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   moveNetReadinessReport?: unknown;
   nativeQaEvidenceStarterReport?: unknown;
   pwaReadinessReport?: unknown;
+  storeReleaseAccountRunbook?: unknown;
   storeCredentialsSetupPacket?: unknown;
   storeCredentialsReport?: unknown;
   storeSubmissionPacket?: unknown;
@@ -305,6 +306,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/store-credentials-setup-packet.json',
     refreshCommand: 'npm run release:credentials:starter',
     reportKey: 'storeCredentialsSetupPacket',
+    requiredFor: ['store', 'handoff'],
+  },
+  {
+    key: 'store-release-account-runbook',
+    label: 'Store release account runbook',
+    maxAgeHours: 24,
+    owner: 'release',
+    path: 'docs/sdlc/store-release-account-runbook.json',
+    refreshCommand: 'npm run release:store-account:runbook',
+    reportKey: 'storeReleaseAccountRunbook',
     requiredFor: ['store', 'handoff'],
   },
   {

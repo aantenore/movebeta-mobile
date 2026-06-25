@@ -54,6 +54,7 @@ function readReports(rootDir: string): DataRoomReportBundle {
     releaseFreshnessReport: readJsonIfExists(rootDir, 'docs/sdlc/release-freshness-report.json'),
     releaseGateReport: readJsonIfExists(rootDir, 'docs/sdlc/release-gate-report.json'),
     releaseHandoffPacket: readJsonIfExists(rootDir, 'docs/sdlc/release-handoff-packet.json'),
+    storeReleaseAccountRunbook: readJsonIfExists(rootDir, 'docs/sdlc/store-release-account-runbook.json'),
     storeCredentialsSetupPacket: readJsonIfExists(rootDir, 'docs/sdlc/store-credentials-setup-packet.json'),
     storeSubmissionPacket: readJsonIfExists(rootDir, 'docs/store/store-submission-packet.json'),
     vercelDeploymentHandoff: readJsonIfExists(rootDir, 'docs/sdlc/vercel-deployment-handoff.json'),

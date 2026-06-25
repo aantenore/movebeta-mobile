@@ -150,6 +150,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Vercel workflow report', 'docs/sdlc/vercel-workflow-report.json'),
       artifact(rootDir, 'Vercel deployment handoff', 'docs/sdlc/vercel-deployment-handoff.json'),
       artifact(rootDir, 'Store credentials setup packet', 'docs/sdlc/store-credentials-setup-packet.json'),
+      artifact(rootDir, 'Store release account runbook', 'docs/sdlc/store-release-account-runbook.json'),
       artifact(rootDir, 'Store credentials env template', 'docs/sdlc/store-credentials.env.template'),
       artifact(rootDir, 'EAS project binding template', 'docs/sdlc/eas-project-binding.template.json'),
       artifact(rootDir, 'Store manifest', 'docs/store/store-manifest.json'),
@@ -275,6 +276,7 @@ export function buildReleaseHandoffPacket({
         'demo',
       ]),
       command('eas-strict', 'Strict EAS store gate', 'npm run release:eas:strict', ['store']),
+      command('store-release-account-runbook', 'Store release account runbook', 'npm run release:store-account:runbook', ['store']),
     ],
     generatedAt,
     product: {

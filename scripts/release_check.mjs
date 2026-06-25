@@ -19,6 +19,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'release:env:doctor'], key: 'envTemplateDoctor', label: 'Environment template doctor' },
   { command: ['npm', 'run', 'release:credentials:starter'], key: 'storeCredentialsStarter', label: 'Store credentials starter' },
   { command: ['npm', 'run', 'release:credentials:doctor'], key: 'storeCredentialsDoctor', label: 'Store credentials doctor' },
+  { command: ['npm', 'run', 'release:store-account:runbook'], key: 'storeReleaseAccountRunbook', label: 'Store release account runbook' },
   { command: ['npm', 'run', 'release:github:doctor'], key: 'githubWorkflowDoctor', label: 'GitHub workflow doctor' },
   { command: ['npm', 'run', 'feature:doctor'], key: 'featureCompletionDoctor', label: 'Feature completion doctor' },
   { command: ['npm', 'run', 'release:blocker-issues'], key: 'releaseBlockerIssues', label: 'Release blocker issue report' },

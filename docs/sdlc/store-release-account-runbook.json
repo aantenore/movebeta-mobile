@@ -1,0 +1,223 @@
+{
+  "app": {
+    "androidPackage": "com.movebeta.mobile",
+    "iosBundleIdentifier": "com.movebeta.mobile",
+    "name": "MoveBeta",
+    "slug": "movebeta-mobile"
+  },
+  "commands": [
+    {
+      "command": "npm run store:submission",
+      "key": "store-submission-packet",
+      "label": "Refresh store metadata packet",
+      "owner": "product",
+      "purpose": "Verify listing metadata, screenshots, privacy declarations, and copy-risk checks before account work."
+    },
+    {
+      "command": "npx eas-cli@latest init",
+      "key": "eas-init",
+      "label": "Bind Expo project",
+      "owner": "release",
+      "purpose": "Create the EAS project binding on the target Expo account and store only the generated key name location in app config."
+    },
+    {
+      "command": "npm run release:credentials:starter",
+      "key": "credentials-starter",
+      "label": "Prepare credential templates",
+      "owner": "release",
+      "purpose": "Generate the key-name setup packet, empty environment template, and EAS binding template without secret values."
+    },
+    {
+      "command": "npm run release:credentials:doctor",
+      "key": "credentials-doctor",
+      "label": "Check credential keys",
+      "owner": "release",
+      "purpose": "Verify Expo, App Store Connect, and Google Play key names without printing values."
+    },
+    {
+      "command": "npm run native:qa:validate",
+      "key": "native-qa-validate",
+      "label": "Validate native QA evidence",
+      "owner": "qa",
+      "purpose": "Verify Android and iOS physical-device evidence before store submission."
+    },
+    {
+      "command": "npm run release:eas:strict",
+      "key": "strict-eas-gate",
+      "label": "Run strict EAS gate",
+      "owner": "release",
+      "purpose": "Block TestFlight, Play internal testing, and production submission until account-bound prerequisites are ready."
+    },
+    {
+      "command": "npx eas-cli@latest submit --platform ios --profile production",
+      "key": "submit-ios",
+      "label": "Submit iOS build",
+      "owner": "release",
+      "purpose": "Submit the production iOS build after strict EAS and native QA evidence pass."
+    },
+    {
+      "command": "npx eas-cli@latest submit --platform android --profile production",
+      "key": "submit-android",
+      "label": "Submit Android build",
+      "owner": "release",
+      "purpose": "Submit the production Android build after strict EAS and native QA evidence pass."
+    }
+  ],
+  "generatedAt": "2026-06-25T12:54:45.951Z",
+  "phases": [
+    {
+      "action": "Regenerate and review the store submission packet.",
+      "commandKey": "store-submission-packet",
+      "dependsOn": [],
+      "evidence": [
+        "docs/store/store-submission-packet.json"
+      ],
+      "key": "store-metadata",
+      "label": "Store metadata readiness",
+      "owner": "product",
+      "requiredKeys": [],
+      "status": "ready"
+    },
+    {
+      "action": "Run EAS init on the target Expo account, then commit only the app-config binding location.",
+      "commandKey": "eas-init",
+      "dependsOn": [
+        "store-metadata"
+      ],
+      "evidence": [
+        "app.json expo.extra.eas.projectId key is configured"
+      ],
+      "key": "eas-project-binding",
+      "label": "EAS project binding",
+      "owner": "release",
+      "requiredKeys": [
+        "extra.eas.projectId"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Set EXPO_TOKEN in CI or the local release shell.",
+      "commandKey": "credentials-starter",
+      "dependsOn": [
+        "eas-project-binding"
+      ],
+      "evidence": [
+        "docs/sdlc/store-credentials-report.json"
+      ],
+      "key": "expo-token",
+      "label": "Expo automation token",
+      "owner": "release",
+      "requiredKeys": [
+        "EXPO_TOKEN"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Set the App Store Connect app id plus Apple ID or API key environment names outside the repository.",
+      "commandKey": "credentials-starter",
+      "dependsOn": [
+        "expo-token"
+      ],
+      "evidence": [
+        "docs/sdlc/store-credentials-report.json"
+      ],
+      "key": "ios-submit-account",
+      "label": "iOS submit account",
+      "owner": "release",
+      "requiredKeys": [
+        "MOVEBETA_ASC_APP_ID",
+        "MOVEBETA_APPLE_ID",
+        "ASC_API_KEY_ID",
+        "ASC_API_ISSUER_ID",
+        "ASC_API_KEY_P8_BASE64"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Set one Google Play service-account credential key in CI or the local release shell.",
+      "commandKey": "credentials-starter",
+      "dependsOn": [
+        "ios-submit-account"
+      ],
+      "evidence": [
+        "docs/sdlc/store-credentials-report.json"
+      ],
+      "key": "android-submit-account",
+      "label": "Android submit account",
+      "owner": "release",
+      "requiredKeys": [
+        "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
+        "MOVEBETA_GOOGLE_SERVICE_ACCOUNT_JSON_BASE64"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Fill native QA evidence with real Android and iOS physical-device runs, then validate it.",
+      "commandKey": "native-qa-validate",
+      "dependsOn": [
+        "android-submit-account"
+      ],
+      "evidence": [
+        "docs/sdlc/native-qa-evidence.json"
+      ],
+      "key": "native-qa-evidence",
+      "label": "Native QA evidence",
+      "owner": "qa",
+      "requiredKeys": [],
+      "status": "blocked"
+    },
+    {
+      "action": "Clear metadata, EAS binding, Expo token, and store account prerequisites before running strict EAS.",
+      "commandKey": "strict-eas-gate",
+      "dependsOn": [
+        "android-submit-account"
+      ],
+      "evidence": [
+        "terminal output from npm run release:eas:strict"
+      ],
+      "key": "strict-eas-gate",
+      "label": "Strict EAS gate",
+      "owner": "release",
+      "requiredKeys": [],
+      "status": "blocked"
+    },
+    {
+      "action": "Submit only after metadata, native QA evidence, and strict EAS are verified.",
+      "commandKey": "submit-ios",
+      "dependsOn": [
+        "native-qa-evidence",
+        "strict-eas-gate"
+      ],
+      "evidence": [
+        "App Store Connect submission id",
+        "Google Play Console release id"
+      ],
+      "key": "store-submit",
+      "label": "Store submit",
+      "owner": "release",
+      "requiredKeys": [],
+      "status": "blocked"
+    }
+  ],
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "projectIdsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "secretsIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "schemaVersion": "movebeta.store-release-account-runbook.v1",
+  "summary": {
+    "blockedPhaseCount": 7,
+    "currentCommand": "npx eas-cli@latest init",
+    "currentPhase": "eas-project-binding",
+    "nextAction": "Run EAS init on the target Expo account, then commit only the app-config binding location.",
+    "phaseCount": 8,
+    "readyPhaseCount": 1,
+    "status": "blocked",
+    "verifiedPhaseCount": 0
+  }
+}
