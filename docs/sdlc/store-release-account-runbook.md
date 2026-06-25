@@ -1,6 +1,6 @@
 # Store Release Account Runbook
 
-Generated: 2026-06-25T12:54:45.951Z
+Generated: 2026-06-25T14:02:25.266Z
 
 - Status: blocked
 - Current phase: eas-project-binding

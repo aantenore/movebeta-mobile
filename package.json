@@ -80,6 +80,7 @@
     "release:store-account:runbook": "tsx scripts/store_release_account_runbook.ts",
     "release:github:doctor": "node scripts/github_workflow_doctor.mjs",
     "release:blocker-issues": "tsx scripts/release_blocker_issue_report.ts",
+    "release:blocker-progress": "tsx scripts/release_blocker_progress.ts",
     "release:blocker-issues:file": "tsx scripts/release_blocker_issue_filing.ts",
     "release:blocker-issues:links": "tsx scripts/release_blocker_issue_links.ts",
     "release:evidence:intake": "tsx scripts/external_evidence_intake.ts",

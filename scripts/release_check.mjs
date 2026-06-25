@@ -23,6 +23,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'release:github:doctor'], key: 'githubWorkflowDoctor', label: 'GitHub workflow doctor' },
   { command: ['npm', 'run', 'feature:doctor'], key: 'featureCompletionDoctor', label: 'Feature completion doctor' },
   { command: ['npm', 'run', 'release:blocker-issues'], key: 'releaseBlockerIssues', label: 'Release blocker issue report' },
+  { command: ['npm', 'run', 'release:blocker-progress'], key: 'releaseBlockerProgress', label: 'Release blocker progress tracker' },
   { command: ['npm', 'run', 'release:blocker-issues:file'], key: 'releaseBlockerIssueFiling', label: 'Release blocker issue filing plan' },
   { command: ['npm', 'run', 'release:blocker-issues:links'], key: 'releaseBlockerIssueLinks', label: 'Release blocker issue web links' },
   { command: ['npm', 'run', 'release:evidence:intake'], key: 'externalEvidenceIntake', label: 'External evidence intake' },

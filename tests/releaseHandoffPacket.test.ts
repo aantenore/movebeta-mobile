@@ -246,6 +246,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Model delivery lifecycle report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Model asset attribution notice');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker progress');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issue filing plan');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence intake report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence validation report');
