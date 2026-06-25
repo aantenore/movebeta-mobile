@@ -585,6 +585,10 @@
 - The Coach capture flow must expose PWA field readiness before recording or importing real video, combining runtime,
   service-worker, model-cache, update-state, model-download, and offline-video checks into a share-safe packet without raw
   video, local paths, credentials, or token-like values.
+- The Coach capture flow must expose a session-launch checklist before recording or importing real video, combining
+  capture setup, model readiness, PWA field readiness, device readiness, analysis run-load, and privacy-boundary checks
+  into one ready/review/blocked decision and a share-safe packet without video URI, raw media, local paths, report IDs,
+  credentials, or token-like values.
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
