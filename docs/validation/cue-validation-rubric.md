@@ -83,3 +83,8 @@ identities, reviewer scores, report IDs, local paths, credentials, or raw video 
 Before real coach outreach, Sessions can prepare a `movebeta.cue-validation-reviewer-assignment.v1` packet. It maps
 reviewer slots to worksheet filters and aggregate row/score-cell coverage so product can assign packet-only review work
 without exporting coach identities, raw worksheet contents, report IDs, local paths, credentials, or raw video.
+
+Sessions also prepares a `movebeta.cue-validation-collection-runbook.v1` packet from the current seed, reviewer
+assignments, and worksheet preflight state. It lists the consent, coverage, assignment, worksheet, preflight, and dataset
+composition phases with owners and next action while excluding coach identities, reviewer scores, raw worksheet contents,
+report IDs, local paths, credentials, and raw video.

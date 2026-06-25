@@ -19,7 +19,7 @@
     ]
   },
   "clips": [],
-  "generatedAt": "2026-06-25T09:27:35.796Z",
+  "generatedAt": "2026-06-25T09:35:19.268Z",
   "instructions": [
     "Use this manifest to verify consented local reports before coach worksheet collection.",
     "Keep raw video, local file paths, frame data, landmarks, screenshots, and private notes outside this manifest.",
@@ -37,7 +37,7 @@
     "videoLeavesDevice": false
   },
   "schemaVersion": "movebeta.cue-validation-clip-intake-manifest.v1",
-  "sourceSeedGeneratedAt": "2026-06-25T09:27:35.796Z",
+  "sourceSeedGeneratedAt": "2026-06-25T09:35:19.268Z",
   "summary": {
     "clipCount": 0,
     "cueCount": 0,
