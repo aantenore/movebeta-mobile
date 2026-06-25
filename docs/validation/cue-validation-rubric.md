@@ -75,3 +75,7 @@ study seed. Sessions includes a local builder for this conversion so the product
 prepare gate-compatible JSON before running `npm run validation:cue`. The app also shows a local gate preview so teams
 can see missing clips, missing wall-angle coverage, reviewer gaps, score issues, or raw-artifact failures before sharing
 the dataset.
+
+Before composition, Sessions also shows a `movebeta.cue-validation-worksheet-preflight.v1` packet from the pasted CSV.
+It reports only aggregate row, reviewer, score, source-match, and privacy checks, never raw worksheet contents, reviewer
+identities, reviewer scores, report IDs, local paths, credentials, or raw video references.

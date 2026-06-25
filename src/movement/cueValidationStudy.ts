@@ -152,6 +152,58 @@ export const CueValidationReviewWorksheetSchema = z.object({
   sourceCueCount: z.number().int().nonnegative(),
 });
 
+export const cueValidationWorksheetPreflightSchemaVersion = 'movebeta.cue-validation-worksheet-preflight.v1';
+
+const CueValidationWorksheetPreflightStatusSchema = z.enum(['blocked', 'empty', 'ready', 'review']);
+const CueValidationWorksheetPreflightCheckStatusSchema = z.enum(['blocked', 'ready', 'review']);
+
+export const CueValidationWorksheetPreflightCheckSchema = z.object({
+  action: z.string(),
+  detail: z.string(),
+  key: z.enum([
+    'privacy-boundary',
+    'csv-header',
+    'row-coverage',
+    'source-seed-match',
+    'reviewer-identities',
+    'score-completeness',
+  ]),
+  label: z.string(),
+  status: CueValidationWorksheetPreflightCheckStatusSchema,
+});
+
+export const CueValidationWorksheetPreflightSchema = z.object({
+  checks: z.array(CueValidationWorksheetPreflightCheckSchema).length(6),
+  generatedAt: z.string(),
+  privacy: z.object({
+    credentialValuesIncluded: z.literal(false),
+    localPathsIncluded: z.literal(false),
+    rawArtifactsIncluded: z.literal(false),
+    rawWorksheetIncluded: z.literal(false),
+    rawVideoIncluded: z.literal(false),
+    reportIdsIncluded: z.literal(false),
+    reviewerIdentitiesIncluded: z.literal(false),
+    reviewerScoresIncluded: z.literal(false),
+    tokenLikeValuesIncluded: z.literal(false),
+  }),
+  schemaVersion: z.literal(cueValidationWorksheetPreflightSchemaVersion),
+  summary: z.object({
+    completeRows: z.number().int().nonnegative(),
+    distinctReviewerCount: z.number().int().nonnegative(),
+    duplicateRowCount: z.number().int().nonnegative(),
+    expectedRows: z.number().int().nonnegative(),
+    invalidScoreCount: z.number().int().nonnegative(),
+    mismatchedRowCount: z.number().int().nonnegative(),
+    missingReviewerIdCount: z.number().int().nonnegative(),
+    missingRowCount: z.number().int().nonnegative(),
+    missingScoreCount: z.number().int().nonnegative(),
+    nextAction: z.string(),
+    receivedRows: z.number().int().nonnegative(),
+    status: CueValidationWorksheetPreflightStatusSchema,
+    unknownRowCount: z.number().int().nonnegative(),
+  }),
+});
+
 export const cueValidationReviewerOnboardingPacketSchemaVersion = 'movebeta.cue-validation-reviewer-onboarding.v1';
 
 export const CueValidationReviewerOnboardingPacketSchema = z.object({
@@ -231,6 +283,7 @@ export type CueValidationStudySeed = z.infer<typeof CueValidationStudySeedSchema
 export type CueValidationClipIntakeManifest = z.infer<typeof CueValidationClipIntakeManifestSchema>;
 export type CueValidationReviewerOnboardingPacket = z.infer<typeof CueValidationReviewerOnboardingPacketSchema>;
 export type CueValidationReviewWorksheet = z.infer<typeof CueValidationReviewWorksheetSchema>;
+export type CueValidationWorksheetPreflight = z.infer<typeof CueValidationWorksheetPreflightSchema>;
 export type CueValidationCompletedDataset = z.infer<typeof CueValidationCompletedDatasetSchema>;
 
 export type CueValidationStudySeedOptions = {
@@ -451,6 +504,267 @@ function parseCompletedWorksheetCsv(csv: string) {
       worksheetRowId: rowId,
     };
   });
+}
+
+function preflightCheck({
+  action,
+  detail,
+  key,
+  label,
+  status,
+}: {
+  action: string;
+  detail: string;
+  key: z.infer<typeof CueValidationWorksheetPreflightCheckSchema>['key'];
+  label: string;
+  status: z.infer<typeof CueValidationWorksheetPreflightCheckStatusSchema>;
+}) {
+  return CueValidationWorksheetPreflightCheckSchema.parse({ action, detail, key, label, status });
+}
+
+function scoreState(value: string) {
+  if (value.trim().length === 0) return 'missing';
+  const score = Number(value);
+  return Number.isInteger(score) && score >= 1 && score <= 5 ? 'valid' : 'invalid';
+}
+
+function worksheetPreflightNextAction({
+  duplicateRowCount,
+  expectedRows,
+  headerValid,
+  invalidScoreCount,
+  mismatchedRowCount,
+  missingReviewerIdCount,
+  missingRowCount,
+  missingScoreCount,
+  parseError,
+  privacyBlocked,
+  status,
+  unknownRowCount,
+}: {
+  duplicateRowCount: number;
+  expectedRows: number;
+  headerValid: boolean;
+  invalidScoreCount: number;
+  mismatchedRowCount: number;
+  missingReviewerIdCount: number;
+  missingRowCount: number;
+  missingScoreCount: number;
+  parseError: boolean;
+  privacyBlocked: boolean;
+  status: z.infer<typeof CueValidationWorksheetPreflightStatusSchema>;
+  unknownRowCount: number;
+}) {
+  if (expectedRows === 0) return 'Grant cue-validation consent on local reports, then export a fresh worksheet CSV.';
+  if (status === 'empty') return 'Paste the completed coach worksheet CSV before building the validation dataset.';
+  if (privacyBlocked) return 'Remove raw artifact, local path, credential, or token-like text from the worksheet CSV.';
+  if (parseError || !headerValid) return 'Export a fresh worksheet CSV from the same Sessions seed and preserve the header row.';
+  if (unknownRowCount > 0 || duplicateRowCount > 0 || mismatchedRowCount > 0) {
+    return 'Use the worksheet CSV generated from the current Sessions seed; do not add, duplicate, or rewrite row identity columns.';
+  }
+  if (missingRowCount > 0) return 'Complete every expected worksheet row before composing the dataset JSON.';
+  if (missingReviewerIdCount > 0) return 'Fill every reviewerId cell with real coach reviewer identifiers.';
+  if (missingScoreCount > 0) return 'Fill relevance, timingAccuracy, drillFit, and safetyLanguage scores from 1 to 5 for every row.';
+  if (invalidScoreCount > 0) return 'Fix score cells so every score is an integer from 1 to 5.';
+  return 'Worksheet CSV is ready for local dataset composition and validation.';
+}
+
+export function assertCueValidationWorksheetPreflightIsPrivacySafe(preflight: CueValidationWorksheetPreflight) {
+  const text = JSON.stringify(preflight);
+  if (forbiddenCsvArtifactPattern.test(text)) {
+    throw new Error('Cue validation worksheet preflight contains raw artifact, local path, credential, or token-like text.');
+  }
+  return preflight;
+}
+
+export function buildCueValidationWorksheetPreflight(
+  seed: CueValidationStudySeed,
+  csv: string,
+  { generatedAt = new Date().toISOString() }: { generatedAt?: string } = {},
+): CueValidationWorksheetPreflight {
+  assertCueValidationStudySeedIsPrivacySafe(seed);
+  const parsedSeed = CueValidationStudySeedSchema.parse(seed);
+  const expectedWorksheet = buildCueValidationReviewWorksheet(parsedSeed, { generatedAt });
+  const expectedRows = new Map(expectedWorksheet.rows.map((row) => [row.id, row]));
+  const trimmedCsv = csv.trim();
+  const expectedRowCount = expectedWorksheet.rows.length;
+
+  let privacyBlocked = false;
+  let parseError = false;
+  let headerValid = false;
+  let receivedRows = 0;
+  let completeRows = 0;
+  let missingRowCount = expectedRowCount;
+  let unknownRowCount = 0;
+  let duplicateRowCount = 0;
+  let mismatchedRowCount = 0;
+  let missingReviewerIdCount = 0;
+  let missingScoreCount = 0;
+  let invalidScoreCount = 0;
+  const seenRowIds = new Set<string>();
+  const distinctReviewerIds = new Set<string>();
+
+  if (trimmedCsv.length > 0) {
+    try {
+      assertCueValidationReviewWorksheetCsvIsPrivacySafe(csv);
+    } catch {
+      privacyBlocked = true;
+    }
+  }
+
+  if (!privacyBlocked && trimmedCsv.length > 0) {
+    try {
+      const [headerRow, ...rows] = parseCsv(csv);
+      headerValid = Boolean(headerRow) && headerRow.join(',') === worksheetCsvHeaders.join(',');
+      receivedRows = rows.length;
+
+      if (headerValid) {
+        for (const row of rows) {
+          const record = Object.fromEntries(worksheetCsvHeaders.map((header, index) => [header, row[index] ?? '']));
+          const rowId = record.worksheetRowId;
+          const expected = expectedRows.get(rowId);
+          const duplicate = seenRowIds.has(rowId);
+          const reviewerId = record.reviewerId.trim();
+          const scoreStates = (['relevance', 'timingAccuracy', 'drillFit', 'safetyLanguage'] as const).map((field) =>
+            scoreState(record[field]),
+          );
+          const missingScores = scoreStates.filter((state) => state === 'missing').length;
+          const invalidScores = scoreStates.filter((state) => state === 'invalid').length;
+          const reviewerMissing = reviewerId.length === 0;
+          const matchesSeed =
+            Boolean(expected) &&
+            record.clipId === expected?.clipId &&
+            record.packetReportId === expected?.packetReportId &&
+            record.consentRecordId === expected?.consentRecordId &&
+            record.cueId === expected?.cueId &&
+            Number(record.reviewerSlot) === expected?.reviewerSlot &&
+            record.reviewerRole === expected?.reviewerRole &&
+            record.reviewMode === expected?.reviewMode;
+
+          if (!rowId || !expected) unknownRowCount += 1;
+          if (duplicate) duplicateRowCount += 1;
+          if (expected && !duplicate && !matchesSeed) mismatchedRowCount += 1;
+          if (reviewerMissing) missingReviewerIdCount += 1;
+          if (!reviewerMissing) distinctReviewerIds.add(reviewerId);
+          missingScoreCount += missingScores;
+          invalidScoreCount += invalidScores;
+          if (expected && !duplicate && matchesSeed && !reviewerMissing && missingScores === 0 && invalidScores === 0) {
+            completeRows += 1;
+          }
+          if (rowId) seenRowIds.add(rowId);
+        }
+
+        missingRowCount = [...expectedRows.keys()].filter((rowId) => !seenRowIds.has(rowId)).length;
+      }
+    } catch {
+      parseError = true;
+    }
+  }
+
+  const status: z.infer<typeof CueValidationWorksheetPreflightStatusSchema> =
+    expectedRowCount === 0 || trimmedCsv.length === 0
+      ? 'empty'
+      : privacyBlocked || parseError || !headerValid || unknownRowCount > 0 || duplicateRowCount > 0 || mismatchedRowCount > 0 || invalidScoreCount > 0
+        ? 'blocked'
+        : missingRowCount > 0 || missingReviewerIdCount > 0 || missingScoreCount > 0 || completeRows < expectedRowCount
+          ? 'review'
+          : 'ready';
+  const nextAction = worksheetPreflightNextAction({
+    duplicateRowCount,
+    expectedRows: expectedRowCount,
+    headerValid,
+    invalidScoreCount,
+    mismatchedRowCount,
+    missingReviewerIdCount,
+    missingRowCount,
+    missingScoreCount,
+    parseError,
+    privacyBlocked,
+    status,
+    unknownRowCount,
+  });
+  const rowShapeBlocked = privacyBlocked || parseError || !headerValid || unknownRowCount > 0 || duplicateRowCount > 0;
+  const packet = CueValidationWorksheetPreflightSchema.parse({
+    checks: [
+      preflightCheck({
+        action: privacyBlocked ? 'Remove forbidden text before sharing or composing dataset evidence.' : 'Keep the CSV free of raw video, local paths, credentials, and token-like values.',
+        detail: privacyBlocked ? 'Forbidden raw artifact-like text was rejected without echoing it.' : 'No forbidden raw artifact text is present in the preflight output.',
+        key: 'privacy-boundary',
+        label: 'Privacy boundary',
+        status: privacyBlocked ? 'blocked' : 'ready',
+      }),
+      preflightCheck({
+        action: headerValid ? 'Keep the exported worksheet header unchanged.' : 'Export a fresh worksheet CSV from Sessions and preserve the header row.',
+        detail: headerValid ? 'Worksheet header matches the expected format.' : trimmedCsv.length === 0 ? 'No worksheet CSV has been pasted yet.' : 'Worksheet header is missing, malformed, or from a different format.',
+        key: 'csv-header',
+        label: 'CSV header',
+        status: headerValid ? 'ready' : trimmedCsv.length === 0 ? 'review' : 'blocked',
+      }),
+      preflightCheck({
+        action: rowShapeBlocked || missingRowCount > 0 ? 'Use the complete worksheet generated from the current Sessions seed.' : 'All expected worksheet rows are present.',
+        detail: `${receivedRows}/${expectedRowCount} row(s) received; ${missingRowCount} missing, ${unknownRowCount} unknown, ${duplicateRowCount} duplicate.`,
+        key: 'row-coverage',
+        label: 'Row coverage',
+        status: rowShapeBlocked ? 'blocked' : missingRowCount > 0 || expectedRowCount === 0 ? 'review' : 'ready',
+      }),
+      preflightCheck({
+        action: mismatchedRowCount > 0 ? 'Do not edit clip, packet, consent, cue, reviewer slot, role, or review-mode columns.' : 'Keep row identity columns tied to the current seed.',
+        detail: `${mismatchedRowCount} row(s) do not match the source study seed.`,
+        key: 'source-seed-match',
+        label: 'Seed match',
+        status: rowShapeBlocked || mismatchedRowCount > 0 ? 'blocked' : expectedRowCount === 0 ? 'review' : 'ready',
+      }),
+      preflightCheck({
+        action: missingReviewerIdCount > 0 ? 'Fill every reviewerId cell after a real coach completes review.' : 'Reviewer identities are present in the CSV and withheld from this preflight packet.',
+        detail: `${missingReviewerIdCount} row(s) missing reviewerId; ${distinctReviewerIds.size} distinct reviewer(s) counted.`,
+        key: 'reviewer-identities',
+        label: 'Reviewer identities',
+        status: rowShapeBlocked ? 'blocked' : missingReviewerIdCount > 0 || expectedRowCount === 0 ? 'review' : 'ready',
+      }),
+      preflightCheck({
+        action:
+          invalidScoreCount > 0
+            ? 'Fix invalid score cells to integers from 1 to 5.'
+            : missingScoreCount > 0
+              ? 'Fill every 1-5 score cell after real coach review.'
+              : 'Score cells are complete and withheld from this preflight packet.',
+        detail: `${missingScoreCount} score cell(s) missing; ${invalidScoreCount} invalid score cell(s).`,
+        key: 'score-completeness',
+        label: 'Score completeness',
+        status: rowShapeBlocked || invalidScoreCount > 0 ? 'blocked' : missingScoreCount > 0 || expectedRowCount === 0 ? 'review' : 'ready',
+      }),
+    ],
+    generatedAt,
+    privacy: {
+      credentialValuesIncluded: false,
+      localPathsIncluded: false,
+      rawArtifactsIncluded: false,
+      rawWorksheetIncluded: false,
+      rawVideoIncluded: false,
+      reportIdsIncluded: false,
+      reviewerIdentitiesIncluded: false,
+      reviewerScoresIncluded: false,
+      tokenLikeValuesIncluded: false,
+    },
+    schemaVersion: cueValidationWorksheetPreflightSchemaVersion,
+    summary: {
+      completeRows,
+      distinctReviewerCount: distinctReviewerIds.size,
+      duplicateRowCount,
+      expectedRows: expectedRowCount,
+      invalidScoreCount,
+      mismatchedRowCount,
+      missingReviewerIdCount,
+      missingRowCount,
+      missingScoreCount,
+      nextAction,
+      receivedRows,
+      status,
+      unknownRowCount,
+    },
+  });
+
+  return assertCueValidationWorksheetPreflightIsPrivacySafe(packet);
 }
 
 export function buildCueValidationStudySeed(
@@ -962,6 +1276,18 @@ export function formatCueValidationCompletedDatasetSummary(dataset: CueValidatio
     `${reviewCount} real reviews`,
     `target ${parsed.acceptance.minClips} clips`,
     'ready for validation gate',
+  ].join(' · ');
+}
+
+export function formatCueValidationWorksheetPreflightSummary(preflight: CueValidationWorksheetPreflight) {
+  const parsed = CueValidationWorksheetPreflightSchema.parse(preflight);
+
+  return [
+    `Worksheet preflight: ${parsed.summary.status}`,
+    `${parsed.summary.completeRows}/${parsed.summary.expectedRows} rows complete`,
+    `${parsed.summary.distinctReviewerCount} reviewer(s) counted`,
+    `${parsed.summary.missingScoreCount} missing score(s)`,
+    `${parsed.summary.invalidScoreCount} invalid score(s)`,
   ].join(' · ');
 }
 

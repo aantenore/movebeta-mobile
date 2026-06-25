@@ -39,6 +39,10 @@
 - Prepare a local cue-validation review worksheet from the study seed with blank reviewer identities, blank score fields,
   packet-only review mode, and no raw artifacts.
 - Prepare a privacy-safe cue-validation worksheet CSV with stable headers, escaped cells, and blank reviewer/score cells.
+- Show a share-safe completed worksheet CSV preflight in Sessions before dataset composition, including expected row count,
+  completed row count, reviewer count, missing reviewer IDs, missing scores, invalid scores, source-seed mismatch, and
+  privacy-boundary checks without exporting raw worksheet contents, reviewer identities, reviewer scores, report IDs, raw
+  video, local paths, credentials, or tokens.
 - Build a versioned cue-validation dataset JSON from a completed worksheet CSV only when reviewer identities and all 1-5 scores
   are present and every row matches the original study seed.
 - Let users paste completed cue-validation worksheet CSV in Sessions and prepare the gate-compatible dataset JSON locally.
