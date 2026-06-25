@@ -30,7 +30,7 @@
       ]
     }
   },
-  "generatedAt": "2026-06-23T22:55:48.884Z",
+  "generatedAt": "2026-06-25T07:53:06.268Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -51,7 +51,7 @@
   "checks": [
     {
       "command": "npm run model:movenet:readiness",
-      "detail": "12ms load, 296ms avg inference, 298ms max inference",
+      "detail": "12ms load, 344ms avg inference, 349ms max inference",
       "key": "movenet-runtime",
       "label": "MoveNet runtime budget",
       "owner": "engineering",
@@ -67,7 +67,7 @@
     },
     {
       "command": "npm run model:movenet:readiness",
-      "detail": "296ms avg and 298ms max inference are inside budget",
+      "detail": "344ms avg and 349ms max inference are inside budget",
       "key": "movenet-inference-budget",
       "label": "Inference budget",
       "owner": "engineering",

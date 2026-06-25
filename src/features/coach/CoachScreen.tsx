@@ -46,6 +46,7 @@ import {
   formatVideoAnalysisWindow,
   withVideoAnalysisWindow,
 } from '@/video/analysisWindow';
+import { buildAnalysisResourcePlan, type AnalysisResourcePlan } from '@/video/analysisResourcePlan';
 import { buildClipTriagePlan } from '@/video/clipTriage';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
@@ -360,18 +361,79 @@ function VideoPreview({ source }: { source: VideoSourceResult }) {
   );
 }
 
+function AnalysisResourcePlanPanel({
+  onPreparePacket,
+  plan,
+}: {
+  onPreparePacket: () => void;
+  plan: AnalysisResourcePlan;
+}) {
+  const isBlocked = plan.summary.status === 'blocked';
+  const isReady = plan.summary.status === 'ready';
+
+  return (
+    <View style={[styles.resourcePlan, isBlocked ? styles.resourcePlanBlocked : isReady ? styles.resourcePlanReady : null]}>
+      <View style={styles.resourcePlanTop}>
+        <View style={styles.resourcePlanTitleRow}>
+          <Cpu color={isBlocked ? theme.colors.coral : isReady ? theme.colors.success : theme.colors.amber} size={17} />
+          <Text style={styles.resourcePlanTitle}>Analysis resources</Text>
+        </View>
+        <Text style={[styles.resourcePlanBadge, isBlocked ? styles.resourcePlanBadgeBlocked : isReady ? styles.resourcePlanBadgeReady : null]}>
+          {plan.summary.status}
+        </Text>
+      </View>
+      <Text style={styles.resourcePlanSummary}>{plan.summary.nextAction}</Text>
+      <View style={styles.resourcePlanMetrics}>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.estimatedSampledFrames} frames</Text>
+        <Text style={styles.resourcePlanMetric}>{formatAnalysisDuration(plan.summary.budgetMs)} budget</Text>
+        <Text style={styles.resourcePlanMetric}>{formatCacheBytes(plan.summary.decodeSurfaceBytes)} decode</Text>
+        <Text style={styles.resourcePlanMetric}>{plan.summary.workloadLevel}</Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {plan.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'blocked'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <Pressable accessibilityLabel="Prepare analysis resource packet" onPress={onPreparePacket} style={styles.resourcePlanAction}>
+        <Download color={theme.colors.brand} size={16} />
+        <Text style={styles.resourcePlanActionText}>Resource packet</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function VideoIntakePanel({
   analysisWindowMode,
   onAnalysisWindowModeChange,
+  onPrepareResourcePacket,
   source,
 }: {
   analysisWindowMode: AnalysisWindowMode;
   onAnalysisWindowModeChange: (mode: AnalysisWindowMode) => void;
+  onPrepareResourcePacket: (plan: AnalysisResourcePlan) => void;
   source: VideoSourceResult;
 }) {
   const assessment = assessVideoIntake(source.video);
   const triage = buildClipTriagePlan(source.video, assessment);
   const analysisWindow = buildVideoAnalysisWindow(source.video, analysisWindowMode);
+  const resourcePlan = buildAnalysisResourcePlan({ mode: analysisWindowMode, video: source.video });
   const windowControlsVisible = source.video.durationMs > videoAnalysisConfig.recommendedAnalysisDurationMs;
   const isBlocked = assessment.status === 'blocked';
   const isReady = assessment.status === 'ready';
@@ -480,6 +542,8 @@ function VideoIntakePanel({
           </View>
         ) : null}
       </View>
+
+      <AnalysisResourcePlanPanel onPreparePacket={() => onPrepareResourcePacket(resourcePlan)} plan={resourcePlan} />
 
       {assessment.issues.length > 0 ? (
         <View style={styles.intakeIssues}>
@@ -916,6 +980,7 @@ export function CoachScreen() {
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
+  const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const pwaPreflight = usePwaModelPreflight();
@@ -948,6 +1013,11 @@ export function CoachScreen() {
   function updateSessionMetadata(nextMetadata: typeof defaultEditableSession) {
     setSessionMetadata(nextMetadata);
     setActiveSource((source) => (source ? updateVideoSourceSession(source, nextMetadata) : source));
+  }
+
+  function prepareAnalysisResourcePacket(plan: AnalysisResourcePlan) {
+    selectionFeedback();
+    setPreparedResourcePacket(JSON.stringify(plan, null, 2));
   }
 
   async function runAnalysis(
@@ -1103,6 +1173,7 @@ export function CoachScreen() {
         width: metadata.width,
       });
 
+      setPreparedResourcePacket('');
       setActiveSource(source);
       setCameraOpen(false);
       await runAnalysis(source, selectedAttemptId, false);
@@ -1156,6 +1227,7 @@ export function CoachScreen() {
       },
       sessionMetadata,
     );
+    setPreparedResourcePacket('');
     setActiveSource(source);
     setCameraOpen(false);
     await runAnalysis(source, selectedAttemptId, false);
@@ -1163,6 +1235,7 @@ export function CoachScreen() {
 
   function selectDemoAttempt(sessionId: string) {
     selectionFeedback();
+    setPreparedResourcePacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
     void runAnalysis(null, sessionId, false);
@@ -1311,10 +1384,24 @@ export function CoachScreen() {
         analysisWindowMode={analysisWindowMode}
         onAnalysisWindowModeChange={(mode) => {
           selectionFeedback();
+          setPreparedResourcePacket('');
           setAnalysisWindowMode(mode);
         }}
+        onPrepareResourcePacket={prepareAnalysisResourcePacket}
         source={intakeSource}
       />
+      {preparedResourcePacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared analysis resource packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Analysis resource packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedResourcePacket}
+          />
+        </View>
+      ) : null}
 
       {errorMessage ? (
         <View style={styles.error}>
@@ -2295,6 +2382,151 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   analysisWindowTop: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  resourcePacketBox: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  resourcePacketText: {
+    color: theme.colors.text,
+    fontFamily: 'Courier',
+    fontSize: 11,
+    lineHeight: 15,
+    minHeight: 180,
+  },
+  resourcePacketTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  resourcePlan: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    gap: 8,
+    padding: theme.spacing.sm,
+  },
+  resourcePlanAction: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  resourcePlanActionText: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  resourcePlanBadge: {
+    backgroundColor: '#FFF3DF',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.amber,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    textTransform: 'uppercase',
+  },
+  resourcePlanBadgeBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
+  resourcePlanBadgeReady: {
+    backgroundColor: '#E8F4EE',
+    color: theme.colors.success,
+  },
+  resourcePlanBlocked: {
+    borderColor: '#F0C7BD',
+  },
+  resourcePlanMetric: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.sm,
+    color: theme.colors.text,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  resourcePlanMetrics: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  resourcePlanReady: {
+    borderColor: '#B8D8C8',
+  },
+  resourcePlanStep: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  resourcePlanStepBlocked: {
+    color: theme.colors.coral,
+  },
+  resourcePlanStepCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  resourcePlanStepDetail: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+  },
+  resourcePlanStepReady: {
+    color: theme.colors.success,
+  },
+  resourcePlanSteps: {
+    gap: 7,
+  },
+  resourcePlanStepStatus: {
+    color: theme.colors.amber,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    width: 50,
+  },
+  resourcePlanStepTitle: {
+    color: theme.colors.ink,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  resourcePlanSummary: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  resourcePlanTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  resourcePlanTitleRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: 7,
+  },
+  resourcePlanTop: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: theme.spacing.sm,
