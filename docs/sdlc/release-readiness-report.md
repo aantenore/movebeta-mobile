@@ -208,6 +208,9 @@ platforms are validated on physical climbing videos and devices.
   the offline block when model assets are not cached.
 - Coach workflow derives Warming model/Analyzing/Recording labels and disabled capture/edit states from a tested contract
   to prevent duplicate record/import/analyze actions during local model preparation.
+- Coach intake shows an analysis resource plan before execution, including sampled frames, runtime budget, decode-surface
+  estimate, selected analysis window, and a `movebeta.analysis-resource-plan.v1` packet that excludes video URI and raw
+  media.
 - Plan tab shows a model download plan derived from lifecycle and runtime readiness, distinguishing native packaged
   delivery from PWA download timing, extra bytes, cache warmup, integrity, update activation, and offline-use steps.
 - Coach PWA preflight blocks offline real-video analysis when a service-worker update is pending, preventing stale cached

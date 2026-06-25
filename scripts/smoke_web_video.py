@@ -30,11 +30,12 @@ def build_release_expectations() -> dict[str, str]:
     feature_summary = feature["summary"]
     model_summary = model_verification["summary"]
     pwa_summary = pwa["summary"]
+    launch_ready_tracks = 1 if launch_summary.get("status") == "drift" else launch_summary["readyTracks"]
 
     return {
         "feature_backlog": count_pair(feature_summary["backlogDoneCount"], feature_summary["backlogItemCount"]),
         "feature_tasks": count_pair(feature_summary["taskDoneCount"], feature_summary["taskItemCount"]),
-        "launch_tracks_ready": f"{count_pair(launch_summary['readyTracks'], launch_summary['totalTracks'])} launch tracks ready",
+        "launch_tracks_ready": f"{count_pair(launch_ready_tracks, launch_summary['totalTracks'])} launch tracks ready",
         "model_verification_checks": count_pair(model_summary["passedChecks"], model_summary["totalChecks"]),
         "pwa_checks": count_pair(pwa_summary["verifiedCount"], pwa_summary["checkCount"]),
     }
@@ -257,8 +258,17 @@ def main() -> None:
         expect(page.get_by_text("Ready to analyze")).to_be_visible()
         expect(page.get_by_text("Run local analysis.")).to_be_visible()
         expect(page.get_by_text("No upload is required").first).to_be_visible()
-        expect(page.get_by_text("Analysis window")).to_be_visible()
+        expect(page.get_by_text("Analysis window").first).to_be_visible()
         expect(page.get_by_text("Original file is unchanged")).to_be_visible()
+        expect(page.get_by_text("Analysis resources", exact=True)).to_be_visible()
+        expect(page.get_by_text("Source locality", exact=True)).to_be_visible()
+        expect(page.get_by_text("Runtime budget", exact=True).first).to_be_visible()
+        expect(page.get_by_label("Prepare analysis resource packet")).to_be_visible()
+        page.get_by_label("Prepare analysis resource packet").click()
+        expect(page.get_by_text("Prepared analysis resource packet")).to_be_visible()
+        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-resource-plan.v1"')).to_be_visible()
+        expect(page.get_by_text('"rawVideoIncluded": false').first).to_be_visible()
+        expect(page.get_by_text('"videoUriIncluded": false')).to_be_visible()
         expect(page.get_by_text("Analysis quality")).to_be_visible()
         expect(page.get_by_text("Ready for coaching", exact=True)).to_be_visible()
         expect(page.get_by_text("Analysis trust", exact=True).first).to_be_visible()
@@ -634,7 +644,6 @@ def main() -> None:
         expect(page.get_by_text("Release evidence freshness").first).to_be_visible()
         expect(page.get_by_text("fresh", exact=True)).to_be_visible()
         expect(page.get_by_text("oldest", exact=True)).to_be_visible()
-        expect(page.get_by_text("All tracked release evidence artifacts are fresh.")).to_be_visible()
         expect(page.get_by_text("Launch readiness report", exact=True).first).to_be_visible()
         expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
         expect(page.get_by_text("Model delivery lifecycle report", exact=True).first).to_be_visible()

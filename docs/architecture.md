@@ -79,6 +79,9 @@ uncached real-video analysis remains blocked.
 Coach workflow lock state is derived by `src/features/coach/coachWorkflowState.ts`, so warmup, analysis, and recording
 phases share one disabled-state and action-label contract across analyze, record, import, metadata, calibration, and lens
 controls.
+`src/video/analysisResourcePlan.ts` provides the Coach intake resource planner. It uses the selected analysis window,
+configured sampler frame limits, runtime budget thresholds, and decode-surface thresholds to classify local workload
+before the model runs, then serializes only numeric/video-type metadata in a share-safe packet.
 The Plan tab also derives `src/core/modelDownloadPlan.ts` from lifecycle and runtime readiness, separating packaged native
 model delivery from PWA model download planning. The plan reports additional bytes, network preference, update activation,
 cache warmup, integrity, and offline-use steps as a share-safe packet.

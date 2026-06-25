@@ -341,6 +341,9 @@
   stale-model risk while allowing online analysis with explicit refresh guidance and automatic warmup when uncached.
 - Vitest Coach workflow-state tests cover idle, model warmup, analysis, recording, and warmup-over-analysis priority for
   disabled controls and state copy.
+- Vitest analysis resource plan tests cover short ready clips, long full-clip review, selected-window planning, remote
+  source blocking, large decode-surface review, and share-safety rejection.
+- Browser smoke verifies the Coach tab analysis resource card and prepared `movebeta.analysis-resource-plan.v1` packet.
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
