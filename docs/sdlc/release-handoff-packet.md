@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T09:36:35.120Z
+Generated: 2026-06-25T12:56:03.704Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 6f91bd40ed0fc19996d806b2ad19443990ab2a1f
+- Base commit at generation: dce80c23625dfce3eb6d6efb8c9ea77ace28d1c4
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 9ms; average inference 305ms
+- MoveNet readiness: ready; load 13ms; average inference 315ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -62,6 +62,7 @@ Generated: 2026-06-25T09:36:35.120Z
 - Vercel deployment handoff: `npm run web:vercel:handoff`
 - Vercel prebuilt production deploy: `npx vercel build --prod --token=$VERCEL_TOKEN && npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN`
 - Strict EAS store gate: `npm run release:eas:strict`
+- Store release account runbook: `npm run release:store-account:runbook`
 
 ## Artifacts
 
@@ -102,6 +103,7 @@ Generated: 2026-06-25T09:36:35.120Z
 - [x] Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`
 - [x] Vercel deployment handoff: `docs/sdlc/vercel-deployment-handoff.json`
 - [x] Store credentials setup packet: `docs/sdlc/store-credentials-setup-packet.json`
+- [x] Store release account runbook: `docs/sdlc/store-release-account-runbook.json`
 - [x] Store credentials env template: `docs/sdlc/store-credentials.env.template`
 - [x] EAS project binding template: `docs/sdlc/eas-project-binding.template.json`
 - [x] Store manifest: `docs/store/store-manifest.json`

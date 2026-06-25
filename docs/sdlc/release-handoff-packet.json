@@ -187,6 +187,11 @@
     },
     {
       "exists": true,
+      "label": "Store release account runbook",
+      "path": "docs/sdlc/store-release-account-runbook.json"
+    },
+    {
+      "exists": true,
       "label": "Store credentials env template",
       "path": "docs/sdlc/store-credentials.env.template"
     },
@@ -603,9 +608,17 @@
       "requiredFor": [
         "store"
       ]
+    },
+    {
+      "command": "npm run release:store-account:runbook",
+      "key": "store-release-account-runbook",
+      "label": "Store release account runbook",
+      "requiredFor": [
+        "store"
+      ]
     }
   ],
-  "generatedAt": "2026-06-25T09:36:35.120Z",
+  "generatedAt": "2026-06-25T12:56:03.704Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -615,9 +628,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "6f91bd40ed0fc19996d806b2ad19443990ab2a1f",
+    "baseCommitSha": "dce80c23625dfce3eb6d6efb8c9ea77ace28d1c4",
     "changedPaths": [],
-    "commitSha": "6f91bd40ed0fc19996d806b2ad19443990ab2a1f",
+    "commitSha": "dce80c23625dfce3eb6d6efb8c9ea77ace28d1c4",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -702,8 +715,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 305,
-    "moveNetLoadMs": 9,
+    "moveNetAverageInferenceMs": 315,
+    "moveNetLoadMs": 13,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
