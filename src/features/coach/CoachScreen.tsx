@@ -13,6 +13,8 @@ import { PoseOverlay } from '@/components/PoseOverlay';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { StateView } from '@/components/StateView';
+import { buildAnalysisDeviceReadiness, type AnalysisDeviceReadiness } from '@/core/analysisDeviceReadiness';
+import { browserAnalysisDeviceProbe, resolveBrowserAnalysisDeviceProbe } from '@/core/analysisDeviceReadinessBrowser';
 import { appConfig } from '@/core/config';
 import { buildAnalysisExecutionPlan, type AnalysisExecutionPlan } from '@/core/analysisExecutionPlan';
 import { selectionFeedback } from '@/core/haptics';
@@ -971,6 +973,49 @@ function usePwaModelPreflight() {
   };
 }
 
+function useAnalysisDeviceReadiness() {
+  const [probe, setProbe] = useState(() => browserAnalysisDeviceProbe());
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refresh() {
+      const nextProbe = await resolveBrowserAnalysisDeviceProbe();
+      if (!cancelled) setProbe(nextProbe);
+    }
+
+    const handleOnlineState = () => {
+      void refresh();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', handleOnlineState);
+      window.addEventListener('offline', handleOnlineState);
+    }
+
+    void refresh();
+
+    return () => {
+      cancelled = true;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('online', handleOnlineState);
+        window.removeEventListener('offline', handleOnlineState);
+      }
+    };
+  }, []);
+
+  async function refreshDeviceReadiness() {
+    const nextProbe = await resolveBrowserAnalysisDeviceProbe();
+    setProbe(nextProbe);
+    return buildAnalysisDeviceReadiness({ probe: nextProbe });
+  }
+
+  return {
+    readiness: buildAnalysisDeviceReadiness({ probe }),
+    refreshDeviceReadiness,
+  };
+}
+
 function formatCacheBytes(value: number) {
   if (value >= 1_000_000) return `${Math.round(value / 100_000) / 10} MB`;
   if (value >= 1_000) return `${Math.round(value / 100) / 10} KB`;
@@ -1035,6 +1080,93 @@ function PwaModelPreflightPanel({
   );
 }
 
+function AnalysisDeviceReadinessPanel({
+  disabled,
+  onPreparePacket,
+  onRefresh,
+  readiness,
+}: {
+  disabled: boolean;
+  onPreparePacket: () => void;
+  onRefresh: () => void;
+  readiness: AnalysisDeviceReadiness;
+}) {
+  const isBlocked = readiness.summary.status === 'blocked';
+  const isReady = readiness.summary.status === 'ready';
+
+  return (
+    <View style={[styles.modelPreflight, isBlocked ? styles.modelPreflightBlocked : isReady ? styles.modelPreflightReady : null]}>
+      <View style={styles.modelPreflightTop}>
+        <View style={styles.modelPreflightTitleRow}>
+          {isBlocked ? (
+            <TriangleAlert color={theme.colors.coral} size={18} />
+          ) : (
+            <Gauge color={isReady ? theme.colors.success : theme.colors.amber} size={18} />
+          )}
+          <View style={styles.modelPreflightTitleGroup}>
+            <Text style={styles.modelPreflightTitle}>Device readiness</Text>
+            <Text style={styles.modelPreflightDetail}>{readiness.summary.nextAction}</Text>
+          </View>
+        </View>
+        <Text style={[styles.modelPreflightBadge, isBlocked ? styles.modelPreflightBadgeBlocked : isReady ? styles.modelPreflightBadgeReady : null]}>
+          {readiness.summary.status}
+        </Text>
+      </View>
+
+      <View style={styles.modelPreflightMetrics}>
+        <Text style={styles.modelPreflightMetric}>{readiness.signals.runtime}</Text>
+        <Text style={styles.modelPreflightMetric}>{readiness.signals.hardwareConcurrency ?? 'unknown'} cores</Text>
+        <Text style={styles.modelPreflightMetric}>{readiness.signals.deviceMemoryGb ?? 'unknown'} GB</Text>
+        <Text style={styles.modelPreflightMetric}>
+          {typeof readiness.signals.batteryLevel === 'number' ? `${Math.round(readiness.signals.batteryLevel * 100)}% battery` : 'battery unknown'}
+        </Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {readiness.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'blocked'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <View style={styles.modelPreflightActions}>
+        <Pressable
+          accessibilityLabel="Refresh device readiness"
+          disabled={disabled}
+          onPress={onRefresh}
+          style={[styles.modelPreflightButton, disabled ? styles.disabled : null]}
+        >
+          <RotateCcw color={theme.colors.brand} size={16} />
+          <Text style={styles.modelPreflightButtonText}>Refresh</Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Prepare device readiness packet"
+          disabled={disabled}
+          onPress={onPreparePacket}
+          style={[styles.modelPreflightButton, disabled ? styles.disabled : null]}
+        >
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.modelPreflightButtonText}>Device packet</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export function CoachScreen() {
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
@@ -1050,11 +1182,13 @@ export function CoachScreen() {
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
   const [activeSource, setActiveSource] = useState<ActiveSource>(null);
+  const [preparedDevicePacket, setPreparedDevicePacket] = useState('');
   const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
   const [preparedExecutionPacket, setPreparedExecutionPacket] = useState('');
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const pwaPreflight = usePwaModelPreflight();
+  const devicePreflight = useAnalysisDeviceReadiness();
   const intakeSource = activeSource ?? getDemoVideoSource(selectedAttemptId);
   const modelPreflight = buildPwaAnalysisPreflight({
     hasLocalVideo: Boolean(activeSource),
@@ -1089,6 +1223,11 @@ export function CoachScreen() {
   function prepareAnalysisResourcePacket(plan: AnalysisResourcePlan) {
     selectionFeedback();
     setPreparedResourcePacket(JSON.stringify(plan, null, 2));
+  }
+
+  function prepareDeviceReadinessPacket(readiness: AnalysisDeviceReadiness) {
+    selectionFeedback();
+    setPreparedDevicePacket(JSON.stringify(readiness, null, 2));
   }
 
   function prepareAnalysisExecutionPacket(plan: AnalysisExecutionPlan) {
@@ -1251,6 +1390,7 @@ export function CoachScreen() {
 
       setPreparedResourcePacket('');
       setPreparedExecutionPacket('');
+      setPreparedDevicePacket('');
       setActiveSource(source);
       setCameraOpen(false);
       await runAnalysis(source, selectedAttemptId, false);
@@ -1306,6 +1446,7 @@ export function CoachScreen() {
     );
     setPreparedResourcePacket('');
     setPreparedExecutionPacket('');
+    setPreparedDevicePacket('');
     setActiveSource(source);
     setCameraOpen(false);
     await runAnalysis(source, selectedAttemptId, false);
@@ -1315,6 +1456,7 @@ export function CoachScreen() {
     selectionFeedback();
     setPreparedResourcePacket('');
     setPreparedExecutionPacket('');
+    setPreparedDevicePacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
     void runAnalysis(null, sessionId, false);
@@ -1400,6 +1542,12 @@ export function CoachScreen() {
         readiness={pwaPreflight.readiness}
         warming={modelWarmupLoading}
       />
+      <AnalysisDeviceReadinessPanel
+        disabled={workflow.captureDisabled}
+        onPreparePacket={() => prepareDeviceReadinessPacket(devicePreflight.readiness)}
+        onRefresh={() => void devicePreflight.refreshDeviceReadiness()}
+        readiness={devicePreflight.readiness}
+      />
 
       <CaptureCalibrationPanel
         assessment={captureSetupAssessment}
@@ -1465,6 +1613,7 @@ export function CoachScreen() {
           selectionFeedback();
           setPreparedResourcePacket('');
           setPreparedExecutionPacket('');
+          setPreparedDevicePacket('');
           setAnalysisWindowMode(mode);
         }}
         modelPreflight={modelPreflight}
@@ -1472,6 +1621,18 @@ export function CoachScreen() {
         onPrepareResourcePacket={prepareAnalysisResourcePacket}
         source={intakeSource}
       />
+      {preparedDevicePacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared device readiness packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Device readiness packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedDevicePacket}
+          />
+        </View>
+      ) : null}
       {preparedResourcePacket ? (
         <View style={styles.resourcePacketBox}>
           <Text style={styles.resourcePacketTitle}>Prepared analysis resource packet</Text>
@@ -1781,6 +1942,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '800',
     lineHeight: 18,
+  },
+  modelPreflightActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
   },
   modelPreflightBadge: {
     backgroundColor: '#FFF3DF',
