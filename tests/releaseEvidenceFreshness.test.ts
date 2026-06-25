@@ -43,6 +43,7 @@ function bundle(generatedAt = '2026-06-20T10:00:00.000Z'): ReleaseEvidenceFreshn
     modelAssetProvenanceReport: report(generatedAt),
     modelAnalysisReplayReport: report(generatedAt),
     modelDeliveryLifecycleReport: report(generatedAt),
+    modelDownloadPlanReport: report(generatedAt),
     moveNetStaticAssetsReport: report(generatedAt),
     modelVerificationSuiteReport: report(generatedAt),
     moveNetReadinessReport: report(generatedAt),
@@ -71,8 +72,8 @@ describe('release evidence freshness', () => {
     expect(ReleaseEvidenceFreshnessSchema.parse(freshness)).toEqual(freshness);
     expect(freshness.schemaVersion).toBe(releaseEvidenceFreshnessSchemaVersion);
     expect(freshness.summary).toMatchObject({
-      artifactCount: 35,
-      freshCount: 35,
+      artifactCount: 36,
+      freshCount: 36,
       invalidDateCount: 0,
       maxObservedAgeHours: 2,
       missingDateCount: 0,

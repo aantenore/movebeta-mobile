@@ -93,6 +93,7 @@ export type DataRoomReportBundle = {
   licenseReviewPacket?: unknown;
   modelAssetProvenanceReport?: unknown;
   modelDeliveryLifecycleReport?: unknown;
+  modelDownloadPlanReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
   nativeQaEvidenceStarterReport?: unknown;
@@ -295,6 +296,18 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready', 'action'],
     refreshCommand: 'npm run model:delivery:lifecycle',
     reportKey: 'modelDeliveryLifecycleReport',
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'model',
+    key: 'model-download-plan',
+    label: 'Model download plan',
+    location: 'docs/sdlc/model-download-plan-report.json',
+    owner: 'engineering',
+    purpose: 'Runtime download, cache warmup, integrity, and offline-use plan for same-origin model assets.',
+    readyStatuses: ['ready', 'action', 'blocked'],
+    refreshCommand: 'npm run model:download:plan',
+    reportKey: 'modelDownloadPlanReport',
     sensitivity: 'share-safe',
   },
   {

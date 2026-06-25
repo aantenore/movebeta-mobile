@@ -55,6 +55,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('moveNetStaticAssets');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('modelAssetProvenance');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('modelDeliveryLifecycle');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('modelDownloadPlan');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('pwaReadiness');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('webSmokeReport');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('vercelDeploymentReadiness');

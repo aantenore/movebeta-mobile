@@ -275,6 +275,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Explain when static model assets are vendored, fetched by the browser, cached, and reused offline.',
     },
     {
+      command: 'npm run model:download:plan',
+      key: 'model-download-plan',
+      label: 'Model download plan report',
+      owner: 'engineering',
+      purpose: 'Refresh same-origin model download, cache warmup, integrity, and offline-use timing evidence.',
+    },
+    {
       command: 'npm run validation:cue:doctor',
       key: 'cue-validation-doctor',
       label: 'Cue validation dataset doctor',
@@ -477,6 +484,13 @@ export function buildReleaseEvidencePacket({
       key: 'model-delivery-lifecycle-report',
       label: 'Model delivery lifecycle report',
       path: 'docs/sdlc/model-delivery-lifecycle-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
+    },
+    {
+      command: 'npm run model:download:plan',
+      key: 'model-download-plan-report',
+      label: 'Model download plan report',
+      path: 'docs/sdlc/model-download-plan-report.json',
       status: artifactStatus(findCheck(launchReadiness, 'modelReadiness')),
     },
   ];
