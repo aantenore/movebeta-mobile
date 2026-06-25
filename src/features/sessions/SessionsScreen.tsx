@@ -750,6 +750,73 @@ function ValidationCampaignPanel({
   );
 }
 
+function ValidationWorksheetPreflightPanel({
+  onPreparePreflight,
+  workflow,
+}: {
+  onPreparePreflight: () => void;
+  workflow: CoachValidationWorkflow;
+}) {
+  const preflight = workflow.worksheetPreflight;
+  const isReady = preflight.summary.status === 'ready';
+  const isBlocked = preflight.summary.status === 'blocked';
+
+  return (
+    <View style={styles.campaignShell}>
+      <View style={styles.libraryTop}>
+        <View style={styles.libraryTitleGroup}>
+          <Text style={styles.campaignTitle}>Worksheet preflight</Text>
+          <Text style={styles.libraryMeta}>{preflight.summary.nextAction}</Text>
+        </View>
+        <Text style={[styles.libraryBadge, isReady ? styles.libraryBadgeReady : isBlocked ? styles.libraryBadgeHigh : null]}>
+          {preflight.summary.status}
+        </Text>
+      </View>
+      <View style={styles.libraryStats}>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>
+            {preflight.summary.completeRows}/{preflight.summary.expectedRows}
+          </Text>
+          <Text style={styles.libraryStatLabel}>Rows complete</Text>
+        </View>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{preflight.summary.distinctReviewerCount}</Text>
+          <Text style={styles.libraryStatLabel}>Reviewers</Text>
+        </View>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{preflight.summary.missingScoreCount}</Text>
+          <Text style={styles.libraryStatLabel}>Missing scores</Text>
+        </View>
+        <View style={styles.libraryStat}>
+          <Text style={styles.libraryStatValue}>{preflight.summary.invalidScoreCount}</Text>
+          <Text style={styles.libraryStatLabel}>Invalid scores</Text>
+        </View>
+      </View>
+      <Text style={styles.libraryPrivacy}>{workflow.worksheetPreflightSummary}</Text>
+      <View style={styles.qaCheckList}>
+        {preflight.checks.map((check) => (
+          <View key={check.key} style={styles.qaCheckRow}>
+            <ShieldCheck color={check.status === 'ready' ? theme.colors.success : check.status === 'blocked' ? theme.colors.coral : theme.colors.amber} size={14} />
+            <View style={styles.libraryTitleGroup}>
+              <Text style={styles.qaCheckTitle}>{check.label}</Text>
+              <Text style={styles.libraryPrivacy}>{check.detail}</Text>
+            </View>
+            <Text style={[styles.libraryBadge, check.status === 'ready' ? styles.libraryBadgeReady : check.status === 'blocked' ? styles.libraryBadgeHigh : null]}>
+              {check.status}
+            </Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.libraryActionRow}>
+        <Pressable accessibilityLabel="Prepare cue validation worksheet preflight" onPress={onPreparePreflight} style={styles.secondaryAction}>
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.secondaryActionText}>Preflight packet</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export function SessionsScreen() {
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
   const [coachConsentByReport, setCoachConsentByReport] = useState<Record<string, CoachReviewConsentRecord>>({});
@@ -1010,6 +1077,14 @@ export function SessionsScreen() {
     });
   }
 
+  function prepareCueValidationWorksheetPreflight() {
+    selectionFeedback();
+    setPreparedExport({
+      body: `${coachValidationWorkflow.worksheetPreflightSummary}\n\n${JSON.stringify(coachValidationWorkflow.worksheetPreflight, null, 2)}`,
+      title: 'Prepared cue validation worksheet preflight',
+    });
+  }
+
   async function sharePreparedExport() {
     if (!preparedExport) return;
     selectionFeedback();
@@ -1164,6 +1239,10 @@ export function SessionsScreen() {
                 placeholderTextColor={theme.colors.muted}
                 style={styles.csvInput}
                 value={completedWorksheetCsv}
+              />
+              <ValidationWorksheetPreflightPanel
+                onPreparePreflight={prepareCueValidationWorksheetPreflight}
+                workflow={coachValidationWorkflow}
               />
               <Pressable
                 accessibilityLabel="Build cue validation dataset"
@@ -1337,6 +1416,24 @@ const styles = StyleSheet.create({
   campaignTitle: {
     color: theme.colors.ink,
     fontSize: 18,
+    fontWeight: '900',
+  },
+  qaCheckList: {
+    gap: theme.spacing.xs,
+  },
+  qaCheckRow: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  qaCheckTitle: {
+    color: theme.colors.ink,
+    fontSize: 12,
     fontWeight: '900',
   },
   libraryBadge: {

@@ -213,3 +213,4 @@
 | T209 | Add Coach model download timing packet | Done |
 | T210 | Add Coach PWA field readiness packet | Done |
 | T211 | Add Coach session launch checklist and packet | Done |
+| T212 | Add cue-validation worksheet CSV preflight | Done |

@@ -11,17 +11,21 @@ import {
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
+  assertCueValidationWorksheetPreflightIsPrivacySafe,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
+  buildCueValidationWorksheetPreflight,
   defaultCueValidationStudyAcceptance,
   formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
+  formatCueValidationWorksheetPreflightSummary,
   type CueValidationCompletedDataset,
   type CueValidationStudyAcceptance,
   type CueValidationStudySeedOptions,
+  type CueValidationWorksheetPreflight,
 } from './cueValidationStudy';
 import {
   assertCueValidationReliabilityReportIsPrivacySafe,
@@ -62,6 +66,8 @@ export type CoachValidationWorkflow = {
   shareableDatasetJson?: string;
   shareableStatusJson: string;
   status: CoachValidationWorkflowStatus;
+  worksheetPreflight: CueValidationWorksheetPreflight;
+  worksheetPreflightSummary: string;
   worksheetCsv: string;
   worksheetSummary: string;
 };
@@ -234,6 +240,11 @@ export function buildCoachValidationWorkflow(
   const worksheetCsv = buildCueValidationReviewWorksheetCsv(worksheet);
   assertCueValidationReviewWorksheetCsvIsPrivacySafe(worksheetCsv);
   const completedWorksheetCsv = options.completedWorksheetCsv?.trim() ?? '';
+  const worksheetPreflight = buildCueValidationWorksheetPreflight(seed, completedWorksheetCsv, {
+    generatedAt: options.generatedAt,
+  });
+  assertCueValidationWorksheetPreflightIsPrivacySafe(worksheetPreflight);
+  const worksheetPreflightSummary = formatCueValidationWorksheetPreflightSummary(worksheetPreflight);
 
   if (seed.clipCount === 0) {
     const action = 'Grant cue-validation consent on real local reports before building reviewer worksheets.';
@@ -247,6 +258,8 @@ export function buildCoachValidationWorkflow(
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status: 'needs-consent' }),
       status: 'needs-consent',
+      worksheetPreflight,
+      worksheetPreflightSummary,
       worksheetCsv,
       worksheetSummary: formatCueValidationReviewWorksheetSummary(worksheet),
     };
@@ -264,6 +277,8 @@ export function buildCoachValidationWorkflow(
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status: 'needs-review' }),
       status: 'needs-review',
+      worksheetPreflight,
+      worksheetPreflightSummary,
       worksheetCsv,
       worksheetSummary: formatCueValidationReviewWorksheetSummary(worksheet),
     };
@@ -308,6 +323,8 @@ export function buildCoachValidationWorkflow(
       shareableDatasetJson: JSON.stringify(completedDataset, null, 2),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status }),
       status,
+      worksheetPreflight,
+      worksheetPreflightSummary,
       worksheetCsv,
       worksheetSummary: `${datasetSummary} · ${gateSummary} · ${reliabilitySummary}`,
     };
@@ -324,6 +341,8 @@ export function buildCoachValidationWorkflow(
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors, progress, status: 'blocked' }),
       status: 'blocked',
+      worksheetPreflight,
+      worksheetPreflightSummary,
       worksheetCsv,
       worksheetSummary: formatCueValidationReviewWorksheetSummary(worksheet),
     };

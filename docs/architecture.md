@@ -172,6 +172,10 @@ Expo prebuild autolinks it into generated iOS/Android projects. The adapter also
 camera/import normalization. Android `:app:assembleDebug` has been verified locally; iOS source is ready for
 CocoaPods/Xcode validation on a machine with full Xcode installed.
 
+`buildCueValidationWorksheetPreflight` reuses the same study seed and worksheet parser before dataset composition, so
+Sessions can show aggregate row/reviewer/score/source-match readiness without exporting raw worksheet contents or coach
+identities.
+
 ## Storage Strategy
 
 The default persistence layer stores reports rather than raw video. React Native runtimes use `SQLiteReportRepository`
