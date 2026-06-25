@@ -85,6 +85,10 @@ before the model runs, then serializes only numeric/video-type metadata in a sha
 `src/core/analysisExecutionPlan.ts` sits above intake, triage, PWA model preflight, and resource planning. It produces a
 single local execution checklist for Coach, including blocked, review, warmup-required, and ready states without carrying
 raw video URIs or media references into shareable evidence.
+`src/core/analysisDeviceReadiness.ts` and `src/core/analysisDeviceReadinessBrowser.ts` provide a device-signal preflight
+for on-device analysis. Web builds read optional coarse browser signals such as Battery API, hardware concurrency, device
+memory, and storage estimate; native builds use an explicit native fallback until platform-specific battery or thermal
+adapters are added. The exported packet keeps only coarse runtime signals and negative privacy flags.
 The Plan tab also derives `src/core/modelDownloadPlan.ts` from lifecycle and runtime readiness, separating packaged native
 model delivery from PWA model download planning. The plan reports additional bytes, network preference, update activation,
 cache warmup, integrity, and offline-use steps as a share-safe packet.
