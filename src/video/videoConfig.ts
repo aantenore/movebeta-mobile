@@ -16,6 +16,12 @@ export const videoAnalysisConfig = {
     highDecodeSurfaceBytes: 12_500_000,
     highSampledFrameCount: 40,
   },
+  deviceReadiness: {
+    lowBatteryLevel: 0.25,
+    minimumDeviceMemoryGb: 3,
+    minimumFreeStorageBytes: 500_000_000,
+    minimumHardwareConcurrency: 4,
+  },
   clipTriage: {
     issuePenalties: {
       longDuration: 22,

@@ -573,6 +573,9 @@
 - The Coach video intake flow must expose a local execution checklist that combines clip intake, clip triage, model
   readiness, resource budget, and privacy boundary into one can-start decision, including warmup-required, review, blocked,
   and ready states plus a share-safe packet that excludes video URI, raw media, local paths, and credentials.
+- The Coach capture flow must expose local device readiness before analysis, using available browser/native runtime,
+  battery, compute, and storage signals to classify ready or review states, provide refresh and share-safe packet actions,
+  and exclude video URI, raw media, local paths, and credentials.
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
