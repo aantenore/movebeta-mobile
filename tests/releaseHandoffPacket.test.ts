@@ -239,6 +239,8 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('model-delivery-lifecycle');
     expect(packet.commands.map((item) => item.key)).toContain('model-download-plan');
     expect(packet.commands.map((item) => item.key)).toContain('ios-toolchain-setup');
+    expect(packet.commands.map((item) => item.key)).toContain('cue-validation-composition');
+    expect(packet.commands.map((item) => item.key)).toContain('cue-validation-compose-dataset');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.commands.map((item) => item.key)).toContain('acquisition-readiness');
     expect(packet.commands.map((item) => item.key)).toContain('data-room-index');
@@ -260,6 +262,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker progress');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issue filing plan');
     expect(packet.artifacts.map((item) => item.label)).toContain('iOS toolchain setup packet');
+    expect(packet.artifacts.map((item) => item.label)).toContain('Cue validation dataset composition packet');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence intake report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence validation report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence promotion report');
@@ -302,6 +305,8 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Model delivery lifecycle report');
     expect(markdown).toContain('Model download plan report');
     expect(markdown).toContain('iOS toolchain setup packet');
+    expect(markdown).toContain('Cue-validation dataset composition packet');
+    expect(markdown).toContain('Cue-validation dataset composer');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('Acquisition readiness packet');
     expect(markdown).toContain('Data-room index');

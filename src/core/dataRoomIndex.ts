@@ -83,6 +83,7 @@ type DataRoomSeed = Omit<DataRoomIndexItem, 'status'> & {
 
 export type DataRoomReportBundle = {
   acquisitionReadinessPacket?: unknown;
+  cueValidationDatasetCompositionPacket?: unknown;
   cueValidationDatasetReport?: unknown;
   dependencyLicenseReport?: unknown;
   externalEvidenceIntakeReport?: unknown;
@@ -508,6 +509,19 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready'],
     refreshCommand: 'npm run native:qa:starter',
     reportKey: 'nativeQaEvidenceStarterReport',
+    sensitivity: 'external-proof-reference',
+  },
+  {
+    category: 'validation',
+    externalStatuses: ['needs-coverage', 'needs-real-review', 'needs-seed', 'ready-to-compose', 'ready-to-validate'],
+    key: 'cue-validation-dataset-composition-packet',
+    label: 'Cue-validation dataset composition packet',
+    location: 'docs/sdlc/cue-validation-dataset-composition-packet.json',
+    owner: 'product',
+    purpose: 'Share-safe cue-validation seed, worksheet, dataset composition, and validation handoff state.',
+    readyStatuses: ['dataset-ready'],
+    refreshCommand: 'npm run validation:cue:composition',
+    reportKey: 'cueValidationDatasetCompositionPacket',
     sensitivity: 'external-proof-reference',
   },
   {

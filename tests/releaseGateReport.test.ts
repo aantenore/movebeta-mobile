@@ -38,6 +38,7 @@ describe('release gate report', () => {
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('iosToolchainSetupPacket');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationStarterKit');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationDatasetDoctor');
+    expect(report.steps.map((item: { key: string }) => item.key)).toContain('cueValidationDatasetComposition');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('envTemplateDoctor');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsStarter');
     expect(report.steps.map((item: { key: string }) => item.key)).toContain('storeCredentialsDoctor');

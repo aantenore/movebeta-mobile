@@ -41,9 +41,9 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 25,
+      artifactCount: 26,
       blockerCount: 5,
-      commandCount: 30,
+      commandCount: 32,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
@@ -54,6 +54,8 @@ describe('release evidence packet', () => {
     expect(packet.commands.map((command) => command.command)).toContain('npm run native:ios:pods');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:env:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:starter');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:composition');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:composition -- --write-dataset');
     expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:credentials:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run feature:doctor');
@@ -80,6 +82,7 @@ describe('release evidence packet', () => {
       ['store-credentials-report', 'blocked'],
       ['native-qa-evidence', 'blocked'],
       ['cue-validation-dataset-report', 'blocked'],
+      ['cue-validation-dataset-composition-packet', 'blocked'],
       ['cue-validation-dataset', 'blocked'],
       ['launch-readiness-report', 'blocked'],
       ['feature-completion-report', 'blocked'],

@@ -220,3 +220,4 @@
 | T216 | Add release blocker progress tracker | Done |
 | T217 | Add durable model download plan report | Done |
 | T218 | Add durable iOS toolchain setup packet report | Done |
+| T219 | Add durable cue-validation dataset composition packet and CLI composer | Done |

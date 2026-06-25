@@ -222,6 +222,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
       releaseGateReport.steps.some((step) => step.key === 'modelAnalysisReplay') &&
       releaseGateReport.steps.some((step) => step.key === 'iosToolchainDoctor') &&
       releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetDoctor') &&
+      releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetComposition') &&
       releaseGateReport.steps.some((step) => step.key === 'storeCredentialsDoctor') &&
       releaseGateReport.steps.some((step) => step.key === 'webSmokeReport') &&
       releaseGateReport.steps.every((step) => step.status === 'pass'),

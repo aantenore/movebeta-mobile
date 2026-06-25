@@ -19,6 +19,7 @@ function allArtifactsAvailable(overrides: Record<string, boolean> = {}) {
 function readyReports(): DataRoomReportBundle {
   return {
     acquisitionReadinessPacket: report('ready'),
+    cueValidationDatasetCompositionPacket: report('dataset-ready'),
     cueValidationDatasetReport: report('ready'),
     dependencyLicenseReport: report('ready'),
     externalEvidenceIntakeReport: report('ready'),
@@ -83,9 +84,9 @@ describe('data room index', () => {
     expect(index.summary).toMatchObject({
       blockedCount: 0,
       externalRequiredCount: 0,
-      itemCount: 33,
+      itemCount: 34,
       missingCount: 0,
-      readyCount: 33,
+      readyCount: 34,
       reviewCount: 0,
       status: 'ready',
     });
@@ -95,6 +96,7 @@ describe('data room index', () => {
     expect(index.items.map((item) => item.key)).toContain('vercel-deployment-handoff');
     expect(index.items.map((item) => item.key)).toContain('license-review-packet');
     expect(index.items.map((item) => item.key)).toContain('model-download-plan');
+    expect(index.items.map((item) => item.key)).toContain('cue-validation-dataset-composition-packet');
     expect(index.items.map((item) => item.key)).toContain('third-party-notices');
     expect(JSON.stringify(index)).not.toMatch(/BEGIN PRIVATE KEY|ghp_|github_pat_|pat_|sk_live_|file:\/\/|\/Users\//i);
   });
