@@ -135,6 +135,13 @@ export function buildReleaseEvidencePacket({
       purpose: 'Refresh full-Xcode, workspace, Pods, and build-settings readiness before iOS beta or store work.',
     },
     {
+      command: 'npm run native:ios:setup',
+      key: 'ios-toolchain-setup',
+      label: 'iOS toolchain setup packet',
+      owner: 'engineering',
+      purpose: 'Generate the share-safe full-Xcode and iOS build-log unblock packet from the current doctor report.',
+    },
+    {
       command: 'npm run native:ios:pods',
       key: 'ios-pods-install',
       label: 'iOS Pods install',
@@ -344,6 +351,13 @@ export function buildReleaseEvidencePacket({
       key: 'ios-toolchain-report',
       label: 'iOS toolchain report',
       path: 'docs/sdlc/ios-toolchain-report.json',
+      status: artifactStatus(findCheck(launchReadiness, 'iosBuild')),
+    },
+    {
+      command: 'npm run native:ios:setup',
+      key: 'ios-toolchain-setup-packet',
+      label: 'iOS toolchain setup packet',
+      path: 'docs/sdlc/ios-toolchain-setup-packet.json',
       status: artifactStatus(findCheck(launchReadiness, 'iosBuild')),
     },
     {

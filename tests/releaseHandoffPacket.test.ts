@@ -98,6 +98,10 @@ function makeProjectRoot() {
     schemaVersion: 'movebeta.github-workflow-report.v1',
     status: 'blocked',
   });
+  writeJson(path.join(root, 'docs/sdlc/ios-toolchain-setup-packet.json'), {
+    schemaVersion: 'movebeta.ios-toolchain-setup-packet.v1',
+    summary: { status: 'needs-full-xcode' },
+  });
   writeJson(path.join(root, 'docs/sdlc/dependency-license-report.json'), {
     schemaVersion: 'movebeta.dependency-license-report.v1',
     status: 'review',
@@ -234,6 +238,7 @@ describe('release handoff packet', () => {
     expect(packet.commands.map((item) => item.key)).toContain('model-asset-provenance');
     expect(packet.commands.map((item) => item.key)).toContain('model-delivery-lifecycle');
     expect(packet.commands.map((item) => item.key)).toContain('model-download-plan');
+    expect(packet.commands.map((item) => item.key)).toContain('ios-toolchain-setup');
     expect(packet.commands.map((item) => item.key)).toContain('release-freshness');
     expect(packet.commands.map((item) => item.key)).toContain('acquisition-readiness');
     expect(packet.commands.map((item) => item.key)).toContain('data-room-index');
@@ -254,6 +259,7 @@ describe('release handoff packet', () => {
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issues report');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker progress');
     expect(packet.artifacts.map((item) => item.label)).toContain('Release blocker issue filing plan');
+    expect(packet.artifacts.map((item) => item.label)).toContain('iOS toolchain setup packet');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence intake report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence validation report');
     expect(packet.artifacts.map((item) => item.label)).toContain('External evidence promotion report');
@@ -295,6 +301,7 @@ describe('release handoff packet', () => {
     expect(markdown).toContain('Model asset provenance doctor');
     expect(markdown).toContain('Model delivery lifecycle report');
     expect(markdown).toContain('Model download plan report');
+    expect(markdown).toContain('iOS toolchain setup packet');
     expect(markdown).toContain('Release evidence freshness doctor');
     expect(markdown).toContain('Acquisition readiness packet');
     expect(markdown).toContain('Data-room index');

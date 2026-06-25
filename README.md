@@ -335,6 +335,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/model-download-plan-report.md`.
 - Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
   `docs/sdlc/model-verification-suite-report.md`.
+- iOS toolchain setup packet: `docs/sdlc/ios-toolchain-setup-packet.json`,
+  `docs/sdlc/ios-toolchain-setup-packet.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
   `docs/sdlc/release-blocker-issues-report.md`.
 - Release blocker progress: `docs/sdlc/release-blocker-progress.json`,

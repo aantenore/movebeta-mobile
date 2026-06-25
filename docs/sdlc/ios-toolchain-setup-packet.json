@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "action": "Install full Xcode from Apple, open it once, accept licenses, then rerun the iOS toolchain doctor.",
+      "key": "full-xcode",
+      "label": "Full Xcode installed",
+      "owner": "engineering",
+      "proof": [
+        "docs/sdlc/ios-toolchain-report.json reports fullXcode true"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Select the full Xcode Developer directory using the standard Xcode selection workflow, then rerun the doctor.",
+      "key": "developer-directory",
+      "label": "Developer directory selected",
+      "owner": "engineering",
+      "proof": [
+        "docs/sdlc/ios-toolchain-report.json reports commandLineToolsOnly false"
+      ],
+      "status": "blocked"
+    },
+    {
+      "action": "Keep the generated iOS workspace present before build verification.",
+      "key": "workspace",
+      "label": "iOS workspace present",
+      "owner": "engineering",
+      "proof": [
+        "docs/sdlc/ios-toolchain-report.json reports workspaceExists true"
+      ],
+      "status": "ready"
+    },
+    {
+      "action": "Run the local CocoaPods install command until MoveBetaPose is installed.",
+      "key": "pods",
+      "label": "CocoaPods installed",
+      "owner": "engineering",
+      "proof": [
+        "docs/sdlc/ios-toolchain-report.json reports podsInstalled true"
+      ],
+      "status": "ready"
+    },
+    {
+      "action": "Run the build-settings probe after full Xcode, workspace, and Pods are ready.",
+      "key": "build-settings",
+      "label": "Build settings probe",
+      "owner": "engineering",
+      "proof": [
+        "docs/sdlc/ios-toolchain-report.json reports buildSettingsProbe pass"
+      ],
+      "status": "review"
+    },
+    {
+      "action": "Run an iOS simulator or device build and capture a share-safe build log before physical-device QA.",
+      "key": "ios-build-log",
+      "label": "iOS build log captured",
+      "owner": "release",
+      "proof": [
+        "iOS simulator or device build log"
+      ],
+      "status": "blocked"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run native:ios:doctor",
+      "key": "ios-toolchain-doctor",
+      "label": "Refresh iOS toolchain report",
+      "owner": "engineering",
+      "purpose": "Refresh full-Xcode, workspace, Pods, and build-settings evidence."
+    },
+    {
+      "command": "npm run native:ios:pods",
+      "key": "ios-pods",
+      "label": "Refresh iOS Pods",
+      "owner": "engineering",
+      "purpose": "Install or repair iOS Pods for the native pose module."
+    },
+    {
+      "command": "npx expo run:ios --device",
+      "key": "ios-device-build",
+      "label": "Run iOS device build",
+      "owner": "release",
+      "purpose": "Verify the native app shell and local analysis on iOS after full Xcode is ready."
+    }
+  ],
+  "generatedAt": "2026-06-25T15:19:53.528Z",
+  "privacy": {
+    "credentialValuesIncluded": false,
+    "localPathsIncluded": false,
+    "rawArtifactsIncluded": false,
+    "rawVideoIncluded": false,
+    "tokenLikeValuesIncluded": false
+  },
+  "reportStatus": "blocked",
+  "reportSchemaVersion": "movebeta.ios-toolchain-report.v1",
+  "schemaVersion": "movebeta.ios-toolchain-setup-packet.v1",
+  "summary": {
+    "blockedCheckCount": 3,
+    "nextAction": "Install and select full Xcode, rerun npm run native:ios:doctor, then run an iOS simulator or device build.",
+    "readyCheckCount": 2,
+    "status": "needs-full-xcode",
+    "totalCheckCount": 6
+  }
+}

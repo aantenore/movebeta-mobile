@@ -66,6 +66,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   externalEvidenceValidationReport?: unknown;
   featureCompletionReport?: unknown;
   githubWorkflowReport?: unknown;
+  iosToolchainSetupPacket?: unknown;
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
   licenseReviewPacket?: unknown;
@@ -279,6 +280,16 @@ const reportConfigs: FreshnessConfig[] = [
     refreshCommand: 'npm run native:ios:doctor',
     reportKey: 'iosToolchainReport',
     requiredFor: ['store'],
+  },
+  {
+    key: 'ios-toolchain-setup-packet',
+    label: 'iOS toolchain setup packet',
+    maxAgeHours: 24,
+    owner: 'engineering',
+    path: 'docs/sdlc/ios-toolchain-setup-packet.json',
+    refreshCommand: 'npm run native:ios:setup',
+    reportKey: 'iosToolchainSetupPacket',
+    requiredFor: ['store', 'handoff'],
   },
   {
     key: 'native-qa-evidence-starter-report',
