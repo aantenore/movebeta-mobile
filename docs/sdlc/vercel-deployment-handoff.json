@@ -50,7 +50,7 @@
       "purpose": "Restore a previous production deployment if post-deploy smoke or monitoring fails."
     }
   ],
-  "generatedAt": "2026-06-25T08:33:00.475Z",
+  "generatedAt": "2026-06-25T08:39:28.447Z",
   "phases": [
     {
       "evidence": [
@@ -62,7 +62,7 @@
       "label": "Static release proof",
       "nextAction": "Run npm run release:check before deployment.",
       "owner": "engineering",
-      "status": "verified"
+      "status": "ready-to-run"
     },
     {
       "evidence": [
@@ -152,7 +152,7 @@
     "externalActionCount": 3,
     "nextAction": "Run npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN on the target Vercel account.",
     "phaseCount": 7,
-    "readyPhaseCount": 3,
+    "readyPhaseCount": 2,
     "status": "handoff-ready",
     "workflowStatus": "template-ready"
   }

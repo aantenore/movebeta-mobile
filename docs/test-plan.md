@@ -597,6 +597,9 @@ Coach model download timing coverage:
 - `tests/modelDownloadPlan.test.ts` covers the shared native/PWA download-plan contract used by Plan and Coach.
 - Browser smoke verifies the Coach Model download timing card, download trigger step, and share-safe
   `movebeta.model-download-plan.v1` packet before capture.
+- `tests/pwaFieldReadiness.test.ts` covers the shared PWA field-readiness contract used by Plan and Coach.
+- Browser smoke verifies the Coach Field readiness card, runtime-surface step, and share-safe
+  `movebeta.pwa-field-readiness.v1` packet before capture.
 
 ## Native QA Before Store Submission
 
