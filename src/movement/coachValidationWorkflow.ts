@@ -10,19 +10,23 @@ import {
 import {
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
+  assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   assertCueValidationWorksheetPreflightIsPrivacySafe,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
+  buildCueValidationReviewerAssignmentPacket,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
   buildCueValidationWorksheetPreflight,
   defaultCueValidationStudyAcceptance,
   formatCueValidationCompletedDatasetSummary,
+  formatCueValidationReviewerAssignmentPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
   formatCueValidationWorksheetPreflightSummary,
   type CueValidationCompletedDataset,
+  type CueValidationReviewerAssignmentPacket,
   type CueValidationStudyAcceptance,
   type CueValidationStudySeedOptions,
   type CueValidationWorksheetPreflight,
@@ -59,6 +63,8 @@ export type CoachValidationWorkflow = {
   datasetGate?: CueValidationGateResult;
   errors: string[];
   progress: CoachValidationWorkflowProgress;
+  reviewerAssignment: CueValidationReviewerAssignmentPacket;
+  reviewerAssignmentSummary: string;
   reliabilityReport?: CueValidationReliabilityReport;
   reliabilitySummary?: string;
   schemaVersion: typeof coachValidationWorkflowSchemaVersion;
@@ -239,6 +245,9 @@ export function buildCoachValidationWorkflow(
   assertCueValidationReviewWorksheetIsPrivacySafe(worksheet);
   const worksheetCsv = buildCueValidationReviewWorksheetCsv(worksheet);
   assertCueValidationReviewWorksheetCsvIsPrivacySafe(worksheetCsv);
+  const reviewerAssignment = buildCueValidationReviewerAssignmentPacket(seed, { generatedAt: options.generatedAt });
+  assertCueValidationReviewerAssignmentPacketIsPrivacySafe(reviewerAssignment);
+  const reviewerAssignmentSummary = formatCueValidationReviewerAssignmentPacketSummary(reviewerAssignment);
   const completedWorksheetCsv = options.completedWorksheetCsv?.trim() ?? '';
   const worksheetPreflight = buildCueValidationWorksheetPreflight(seed, completedWorksheetCsv, {
     generatedAt: options.generatedAt,
@@ -254,6 +263,8 @@ export function buildCoachValidationWorkflow(
       action,
       errors: [],
       progress,
+      reviewerAssignment,
+      reviewerAssignmentSummary,
       schemaVersion: coachValidationWorkflowSchemaVersion,
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status: 'needs-consent' }),
@@ -273,6 +284,8 @@ export function buildCoachValidationWorkflow(
       action,
       errors: [],
       progress,
+      reviewerAssignment,
+      reviewerAssignmentSummary,
       schemaVersion: coachValidationWorkflowSchemaVersion,
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors: [], progress, status: 'needs-review' }),
@@ -318,6 +331,8 @@ export function buildCoachValidationWorkflow(
       progress,
       reliabilityReport,
       reliabilitySummary,
+      reviewerAssignment,
+      reviewerAssignmentSummary,
       schemaVersion: coachValidationWorkflowSchemaVersion,
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableDatasetJson: JSON.stringify(completedDataset, null, 2),
@@ -337,6 +352,8 @@ export function buildCoachValidationWorkflow(
       action,
       errors,
       progress,
+      reviewerAssignment,
+      reviewerAssignmentSummary,
       schemaVersion: coachValidationWorkflowSchemaVersion,
       seedSummary: formatCueValidationStudySeedSummary(seed),
       shareableStatusJson: buildStatusExport({ action, errors, progress, status: 'blocked' }),
