@@ -535,6 +535,12 @@
   for the remaining external launch blockers.
 - Plan tab prepares a release critical path packet with raw videos, local paths, credential values, and token-like
   strings excluded before sharing.
+- Plan tab shows release blocker progress with owner, dependency, missing proof count, accepted reference types, current
+  command, and next action for every remaining external launch blocker.
+- Plan tab prepares a release blocker progress packet with raw videos, local paths, credential values, raw artifacts, and
+  token-like strings excluded before sharing.
+- Vitest release blocker progress tests cover default missing-proof/dependency-blocked aggregation, accepted proof
+  references after dependency clearance, and unsafe value rejection.
 - Plan tab shows release blocker issue drafts with issue count, owners, credential key names, titles, labels, commands,
   proof expectations, and the repository GitHub issue template path.
 - Plan tab prepares a release blocker issue packet with credential values, raw video, raw artifacts, and local paths

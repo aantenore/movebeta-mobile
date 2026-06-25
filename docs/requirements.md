@@ -199,6 +199,8 @@
   lists each required proof artifact, command, owner, affected track, and secret/env key name without exposing values.
 - Show a release critical path in the Plan tab that sequences launch blockers by owner lane, dependency, command, proof
   artifact, and affected launch track.
+- Show a release blocker progress tracker in the Plan tab that joins owner, dependency state, missing proof counts,
+  accepted reference types, current command, and next action for every remaining external blocker.
 - Prepare a share-safe release critical path packet from the Plan tab with ready, ready-to-start, blocked step counts,
   dependency keys, lane counts, commands, proof expectations, and explicit negative privacy flags.
 - Prepare a share-safe release unblock packet from the Plan tab that packages external blockers, commands, proof
@@ -551,6 +553,9 @@
 - External evidence intake must provide a share-safe report and fill-in template for every remaining external blocker,
   accepting only relative repository paths, report identifiers, issue URLs, CI run URLs, or provider-console state
   references while rejecting credential values, raw video paths, local machine paths, and token-like values.
+- Release blocker progress packets must be schema-versioned, generated from release unblock, critical path, intake, and
+  validation evidence, count dependency-blocked versus proof-missing work, and reject credential values, local paths, raw
+  artifacts, raw video references, and token-like strings.
 - External evidence validation must verify filled proof references before release claims use them, requiring an explicit
   accepted reference type for every proof row and rejecting unsupported URLs, absolute paths, raw artifacts, credential
   values, and token-like data.

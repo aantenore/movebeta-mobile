@@ -51,6 +51,7 @@ function readReports(rootDir: string): DataRoomReportBundle {
     nativeQaEvidenceStarterReport: readJsonIfExists(rootDir, 'docs/sdlc/native-qa-evidence-starter-report.json'),
     pwaReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/pwa-readiness-report.json'),
     releaseBlockerIssueWebLinks: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-issue-web-links.json'),
+    releaseBlockerProgressReport: readJsonIfExists(rootDir, 'docs/sdlc/release-blocker-progress.json'),
     releaseFreshnessReport: readJsonIfExists(rootDir, 'docs/sdlc/release-freshness-report.json'),
     releaseGateReport: readJsonIfExists(rootDir, 'docs/sdlc/release-gate-report.json'),
     releaseHandoffPacket: readJsonIfExists(rootDir, 'docs/sdlc/release-handoff-packet.json'),

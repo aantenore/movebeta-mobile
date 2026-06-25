@@ -98,6 +98,7 @@ export type DataRoomReportBundle = {
   nativeQaEvidenceStarterReport?: unknown;
   pwaReadinessReport?: unknown;
   releaseBlockerIssueWebLinks?: unknown;
+  releaseBlockerProgressReport?: unknown;
   releaseFreshnessReport?: unknown;
   releaseGateReport?: unknown;
   releaseHandoffPacket?: unknown;
@@ -232,6 +233,19 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready'],
     refreshCommand: 'npm run release:blocker-issues:links',
     reportKey: 'releaseBlockerIssueWebLinks',
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'release',
+    key: 'release-blocker-progress',
+    label: 'Release blocker progress',
+    location: 'docs/sdlc/release-blocker-progress.json',
+    owner: 'release',
+    purpose: 'Aggregated external blocker progress with dependencies, proof counts, owners, and current commands.',
+    externalStatuses: ['needs-external-evidence'],
+    readyStatuses: ['ready'],
+    refreshCommand: 'npm run release:blocker-progress',
+    reportKey: 'releaseBlockerProgressReport',
     sensitivity: 'share-safe',
   },
   {

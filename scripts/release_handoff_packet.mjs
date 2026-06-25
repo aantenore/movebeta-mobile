@@ -120,6 +120,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Cue validation starter kit report', 'docs/sdlc/cue-validation-starter-kit-report.json'),
       artifact(rootDir, 'Cue validation review worksheet CSV', 'docs/validation/cue-validation-review-worksheet.csv'),
       artifact(rootDir, 'Release blocker issues report', 'docs/sdlc/release-blocker-issues-report.json'),
+      artifact(rootDir, 'Release blocker progress', 'docs/sdlc/release-blocker-progress.json'),
       artifact(rootDir, 'Release blocker issue filing plan', 'docs/sdlc/release-blocker-issue-filing-plan.json'),
       artifact(rootDir, 'Release blocker issue web links', 'docs/sdlc/release-blocker-issue-web-links.json'),
       artifact(rootDir, 'External evidence intake report', 'docs/sdlc/external-evidence-intake-report.json'),
@@ -212,6 +213,10 @@ export function buildReleaseHandoffPacket({
       command('feature-completion', 'Feature completion doctor', 'npm run feature:doctor', ['demo', 'internal', 'store']),
       command('release-blocker-issues', 'Release blocker issue report', 'npm run release:blocker-issues', [
         'demo',
+        'internal',
+        'store',
+      ]),
+      command('release-blocker-progress', 'Release blocker progress', 'npm run release:blocker-progress', [
         'internal',
         'store',
       ]),

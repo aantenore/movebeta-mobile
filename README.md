@@ -172,6 +172,8 @@ web build with `npm run store:screenshots`.
   owners, affected tracks, and credential key names without secret values.
 - Release critical path in the Plan tab that sequences external blockers across real-world validation, native build/QA,
   and store-account lanes with dependencies and share-safe packet export.
+- Release blocker progress in the Plan tab and CLI that joins owners, dependency blockers, missing proof counts, accepted
+  reference types, current commands, and next action for the remaining external blockers.
 - Release evidence scenarios in the Plan tab that compare proof-collection bundles, projected ready tracks, cleared
   blockers, missing prerequisites, and share-safe packet export before account, device, or coach-review work starts.
 - Release evidence freshness guard in the Plan tab and CLI to catch stale generated reports before handoff or store work.
@@ -333,6 +335,8 @@ MoveBeta now includes lightweight SDLC artifacts for the full product loop:
   `docs/sdlc/model-verification-suite-report.md`.
 - Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
   `docs/sdlc/release-blocker-issues-report.md`.
+- Release blocker progress: `docs/sdlc/release-blocker-progress.json`,
+  `docs/sdlc/release-blocker-progress.md`.
 - Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`,
   `docs/sdlc/release-blocker-issue-filing-plan.md`.
 - Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`,
@@ -441,6 +445,8 @@ template, and EAS project binding template. Fill credential values only in the l
 or store-provider consoles; do not commit a filled copy.
 Run `npm run release:store-account:runbook` to generate the ordered account runbook from metadata, EAS binding,
 credential, native QA, strict-gate, and submit readiness without including secret values or project id values.
+Run `npm run release:blocker-progress` to generate the current owner/dependency/proof tracker for all external launch
+blockers before sharing handoff evidence.
 
 Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
 `docs/sdlc/native-qa-evidence-input.template.json` as the structured run input. Generate the current runbook and input
