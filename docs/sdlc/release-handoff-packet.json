@@ -27,6 +27,11 @@
     },
     {
       "exists": true,
+      "label": "Cue validation dataset composition packet",
+      "path": "docs/sdlc/cue-validation-dataset-composition-packet.json"
+    },
+    {
+      "exists": true,
       "label": "Cue validation review worksheet CSV",
       "path": "docs/validation/cue-validation-review-worksheet.csv"
     },
@@ -439,6 +444,22 @@
       ]
     },
     {
+      "command": "npm run validation:cue:composition",
+      "key": "cue-validation-composition",
+      "label": "Cue-validation dataset composition packet",
+      "requiredFor": [
+        "store"
+      ]
+    },
+    {
+      "command": "npm run validation:cue:composition -- --write-dataset",
+      "key": "cue-validation-compose-dataset",
+      "label": "Cue-validation dataset composer",
+      "requiredFor": [
+        "store"
+      ]
+    },
+    {
       "command": "npm run validation:cue",
       "key": "cue-validation",
       "label": "Coach cue-validation gate",
@@ -660,7 +681,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-25T15:21:06.530Z",
+  "generatedAt": "2026-06-25T15:44:10.009Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -670,9 +691,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "8f2b1a6030a19b0581a2f0b0536da1334a8a9f73",
+    "baseCommitSha": "f979a2cbe27eab16ac79a2214fe000ebfdee17c1",
     "changedPaths": [],
-    "commitSha": "8f2b1a6030a19b0581a2f0b0536da1334a8a9f73",
+    "commitSha": "f979a2cbe27eab16ac79a2214fe000ebfdee17c1",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -757,8 +778,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 327,
-    "moveNetLoadMs": 13,
+    "moveNetAverageInferenceMs": 321,
+    "moveNetLoadMs": 12,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,
