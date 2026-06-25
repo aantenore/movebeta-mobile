@@ -697,6 +697,8 @@ platforms are validated on physical climbing videos and devices.
   provenance report, model delivery lifecycle report, license review packet, third-party notices, PWA readiness report,
   web smoke report, Vercel deployment report, Vercel workflow report, acquisition readiness packet, data-room index,
   release archive artifacts, and 31 verification commands.
+- Coach now exposes the shared model download timing plan before capture, so PWA users can see first-online-launch,
+  warmup, cache, offline, and native bundled delivery state without opening the Plan tab.
 - `npm run handoff:git`: passed and reports `main` with origin `https://github.com/aantenore/movebeta-mobile.git`.
 - Private GitHub repository `https://github.com/aantenore/movebeta-mobile` is created and `main` is pushed.
 - iOS `xcodebuild -workspace ios/MoveBeta.xcworkspace -scheme MoveBeta -configuration Debug -sdk iphonesimulator -showBuildSettings`: blocked by the generated iOS toolchain report because this machine has Command Line Tools, not full Xcode.

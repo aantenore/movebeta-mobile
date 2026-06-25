@@ -210,3 +210,4 @@
 | T206 | Add local analysis execution checklist and packet | Done |
 | T207 | Add local device readiness preflight and packet | Done |
 | T208 | Add local analysis run-load cooldown and packet | Done |
+| T209 | Add Coach model download timing packet | Done |

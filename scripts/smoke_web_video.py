@@ -188,6 +188,17 @@ def main() -> None:
         expect(page.get_by_text("Model cache ready").first).to_be_visible()
         expect(page.get_by_text("Warm model", exact=True).first).to_be_visible()
         expect(page.get_by_text("Assets 3/3").first).to_be_visible()
+        expect(page.get_by_text("Model download timing", exact=True)).to_be_visible()
+        expect(page.get_by_text("Download trigger", exact=True).first).to_be_visible()
+        expect(page.get_by_label("Prepare model download timing packet")).to_be_visible()
+        page.get_by_label("Prepare model download timing packet").click()
+        expect(page.get_by_text("Prepared model download timing packet")).to_be_visible()
+        expect(page.get_by_role("textbox", name="Model download timing packet JSON")).to_have_value(
+            re.compile(r'"schemaVersion": "movebeta\.model-download-plan\.v1"')
+        )
+        expect(page.get_by_role("textbox", name="Model download timing packet JSON")).to_have_value(
+            re.compile(r'"rawVideoIncluded": false')
+        )
         expect(page.get_by_text("Session metadata")).to_be_visible()
         expect(page.get_by_text("Coach lens", exact=True).first).to_be_visible()
         expect(page.get_by_text("Balanced", exact=True).first).to_be_visible()

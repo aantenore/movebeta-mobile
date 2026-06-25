@@ -592,6 +592,12 @@ node scripts/serve-web.mjs dist 8083
 MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py
 ```
 
+Coach model download timing coverage:
+
+- `tests/modelDownloadPlan.test.ts` covers the shared native/PWA download-plan contract used by Plan and Coach.
+- Browser smoke verifies the Coach Model download timing card, download trigger step, and share-safe
+  `movebeta.model-download-plan.v1` packet before capture.
+
 ## Native QA Before Store Submission
 
 - Android custom dev build with `native-platform-pose`.
