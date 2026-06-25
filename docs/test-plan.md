@@ -605,6 +605,13 @@ Coach model download timing coverage:
 - Browser smoke verifies the Coach Session launch card, model-readiness step, and share-safe
   `movebeta.coach-session-launch.v1` packet before capture.
 
+Cue-validation worksheet preflight coverage:
+
+- `tests/cueValidationWorksheetPreflight.test.ts` covers empty, blank, completed, and raw-artifact worksheet CSV states.
+- `tests/coachValidationWorkflow.test.ts` verifies the preflight stays aligned with the Sessions validation workflow.
+- Browser smoke verifies the Sessions Worksheet preflight panel, share-safe preflight packet, and ready transition after
+  completing reviewer and score cells.
+
 ## Native QA Before Store Submission
 
 - Android custom dev build with `native-platform-pose`.

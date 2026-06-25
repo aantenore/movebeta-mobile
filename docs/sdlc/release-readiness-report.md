@@ -127,6 +127,9 @@ platforms are validated on physical climbing videos and devices.
   raw-artifact text rejection.
 - Sessions can compose validation dataset JSON from completed worksheet CSV only after real reviewer IDs and 1-5 scores
   are present and rows still match the original study seed.
+- Sessions shows a completed worksheet CSV preflight before dataset composition, reporting aggregate row, reviewer,
+  score, source-match, and privacy readiness without exporting raw worksheet contents, reviewer identities, scores, report
+  IDs, local paths, credentials, or raw video.
 - Sessions can preview cue-validation production readiness locally, and automated parity tests keep that preview aligned
   with the CLI gate used for release validation.
 - Privacy can prepare a diagnostics support packet without raw video, URI, key-frame, landmark, account, or secret artifacts.
