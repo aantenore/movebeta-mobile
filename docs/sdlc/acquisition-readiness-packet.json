@@ -146,7 +146,7 @@
       "purpose": "Refresh source and web distribution archives with SHA-256 manifest evidence."
     }
   ],
-  "generatedAt": "2026-06-25T08:49:25.714Z",
+  "generatedAt": "2026-06-25T08:50:21.328Z",
   "privacy": {
     "credentialValuesIncluded": false,
     "localPathsIncluded": false,
@@ -173,16 +173,16 @@
       "status": "ready"
     },
     {
-      "detail": "The latest release gate report contains a failing step.",
+      "detail": "The automated release gate is passing.",
       "evidence": [
         "docs/sdlc/release-gate-report.json",
         "npm run release:check"
       ],
       "key": "release-gate",
       "label": "Release gate",
-      "nextAction": "Run npm run release:check and fix the first failing gate.",
+      "nextAction": "Regenerate the gate after any source or evidence change.",
       "owner": "engineering",
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "detail": "1/3 launch track(s) ready with 10 external blocker reference(s) still tracked.",
@@ -276,13 +276,13 @@
     }
   ],
   "summary": {
-    "blockedSignalCount": 1,
+    "blockedSignalCount": 0,
     "dueDiligenceArtifactCount": 18,
     "externalBlockerCount": 10,
-    "nextAction": "Run npm run release:check and fix the first failing gate.",
-    "readySignalCount": 4,
+    "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
+    "readySignalCount": 5,
     "reviewSignalCount": 3,
     "signalCount": 9,
-    "status": "blocked"
+    "status": "needs-external-clearance"
   }
 }
