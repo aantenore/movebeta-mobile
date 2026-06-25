@@ -48,6 +48,8 @@ describe('release unblock checklist', () => {
     expect(credentials?.commands).toContain('npm run release:eas:strict');
     expect(cueValidation?.commands).toEqual([
       'npm run validation:cue:starter',
+      'npm run validation:cue:composition',
+      'npm run validation:cue:composition -- --write-dataset',
       'npm run validation:cue',
       'npm run validation:cue:doctor',
     ]);

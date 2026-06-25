@@ -60,7 +60,13 @@ const releaseUnblockConfigs: Partial<Record<LaunchReadinessCheck['key'], Release
       'The cue-validation dataset uses consented climbing clips and real coach review rows.',
       'The dataset validator passes without template placeholders or local raw-video references.',
     ],
-    commands: ['npm run validation:cue:starter', 'npm run validation:cue', 'npm run validation:cue:doctor'],
+    commands: [
+      'npm run validation:cue:starter',
+      'npm run validation:cue:composition',
+      'npm run validation:cue:composition -- --write-dataset',
+      'npm run validation:cue',
+      'npm run validation:cue:doctor',
+    ],
     proof: ['docs/validation/cue-validation-dataset.json', 'docs/sdlc/cue-validation-dataset-report.json'],
   },
   easCredentials: {

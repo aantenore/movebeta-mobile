@@ -145,6 +145,7 @@ describe('data room index', () => {
     expect(index.summary.externalRequiredCount).toBeGreaterThanOrEqual(5);
     expect(index.items.find((item) => item.key === 'external-cueValidationDataset')).toMatchObject({
       location: 'docs/validation/cue-validation-dataset.json',
+      refreshCommand: 'npm run validation:cue:starter && npm run validation:cue:composition && npm run validation:cue:doctor',
       status: 'external-required',
     });
     expect(index.items.find((item) => item.key === 'external-nativeDeviceQa')).toMatchObject({

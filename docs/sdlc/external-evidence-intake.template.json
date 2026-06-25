@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:42:37.176Z",
+  "generatedAt": "2026-06-25T15:50:12.104Z",
   "instructions": [
     "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
     "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",
@@ -96,6 +96,8 @@
       ],
       "commands": [
         "npm run validation:cue:starter",
+        "npm run validation:cue:composition",
+        "npm run validation:cue:composition -- --write-dataset",
         "npm run validation:cue",
         "npm run validation:cue:doctor"
       ],

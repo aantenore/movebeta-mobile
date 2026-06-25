@@ -389,6 +389,9 @@
 - Cue validation starter kit with `npm run validation:cue:starter`, which writes the share-safe study seed, clip intake
   manifest, reviewer onboarding packet, blank worksheet JSON/CSV, and SDLC report without creating the final production
   dataset or inventing reviewer identities and scores.
+- Cue validation dataset composition packet with `npm run validation:cue:composition`, which reports seed, worksheet,
+  dataset, phase, command, and next-action state, and writes `docs/validation/cue-validation-dataset.json` only when
+  rerun with `-- --write-dataset` after a ready completed-worksheet preflight.
 - Cue validation dataset doctor with `npm run validation:cue:doctor`, which writes
   `docs/sdlc/cue-validation-dataset-report.json` and is included in `npm run release:check`.
 - Native QA runbook generation with `npm run native:qa:runbook`.

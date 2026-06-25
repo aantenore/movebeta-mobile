@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-25T15:42:37.176Z",
+  "generatedAt": "2026-06-25T15:50:12.104Z",
   "intakeTemplate": {
-    "generatedAt": "2026-06-25T15:42:37.176Z",
+    "generatedAt": "2026-06-25T15:50:12.104Z",
     "instructions": [
       "Use relative repository paths, issue URLs, CI run URLs, or provider-console state references only.",
       "Do not paste credential values, private keys, raw video paths, absolute local paths, reviewer identities, or raw local artifacts.",
@@ -98,6 +98,8 @@
         ],
         "commands": [
           "npm run validation:cue:starter",
+          "npm run validation:cue:composition",
+          "npm run validation:cue:composition -- --write-dataset",
           "npm run validation:cue",
           "npm run validation:cue:doctor"
         ],
@@ -303,6 +305,8 @@
         "action": "Run the versioned cue-validation dataset gate on real consented coach review data.",
         "commands": [
           "npm run validation:cue:starter",
+          "npm run validation:cue:composition",
+          "npm run validation:cue:composition -- --write-dataset",
           "npm run validation:cue",
           "npm run validation:cue:doctor"
         ],
@@ -376,7 +380,7 @@
     "schemaVersion": "movebeta.release-unblock-checklist.v1",
     "summary": {
       "blockedItems": 5,
-      "commandCount": 15,
+      "commandCount": 17,
       "nextAction": "Capture physical iOS and Android evidence for camera, import, latency, battery, thermal, and airplane mode.",
       "ownerCount": 4,
       "proofCount": 8,
@@ -384,7 +388,7 @@
     }
   },
   "summary": {
-    "commandCount": 15,
+    "commandCount": 17,
     "intakeItemCount": 5,
     "nextAction": "Fill the template with share-safe references to real proof artifacts, then rerun release readiness checks.",
     "ownerCount": 4,
