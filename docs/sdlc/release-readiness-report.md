@@ -216,6 +216,8 @@ platforms are validated on physical climbing videos and devices.
   `movebeta.analysis-execution-plan.v1` packet.
 - Coach capture shows device readiness before analysis, using available runtime, battery, compute, and storage signals,
   plus refresh and `movebeta.analysis-device-readiness.v1` packet actions without exporting raw media or local paths.
+- Coach capture shows analysis run load for the active app session, including repeated-run cooldown, high-budget review,
+  sustained runtime review, clear action, and `movebeta.analysis-run-load.v1` packet export without report ids or raw media.
 - Plan tab shows a model download plan derived from lifecycle and runtime readiness, distinguishing native packaged
   delivery from PWA download timing, extra bytes, cache warmup, integrity, update activation, and offline-use steps.
 - Coach PWA preflight blocks offline real-video analysis when a service-worker update is pending, preventing stale cached

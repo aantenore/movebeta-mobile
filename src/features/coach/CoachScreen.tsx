@@ -15,6 +15,12 @@ import { Section } from '@/components/Section';
 import { StateView } from '@/components/StateView';
 import { buildAnalysisDeviceReadiness, type AnalysisDeviceReadiness } from '@/core/analysisDeviceReadiness';
 import { browserAnalysisDeviceProbe, resolveBrowserAnalysisDeviceProbe } from '@/core/analysisDeviceReadinessBrowser';
+import {
+  buildAnalysisRunLoad,
+  createAnalysisRunLoadRecord,
+  type AnalysisRunLoad,
+  type AnalysisRunLoadRecord,
+} from '@/core/analysisRunLoad';
 import { appConfig } from '@/core/config';
 import { buildAnalysisExecutionPlan, type AnalysisExecutionPlan } from '@/core/analysisExecutionPlan';
 import { selectionFeedback } from '@/core/haptics';
@@ -55,7 +61,7 @@ import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
 import { buildLiveRecordingGuide, type LiveRecordingGuide } from '@/video/liveRecordingGuide';
 import { readLocalVideoMetadata } from '@/video/videoMetadata';
-import { formatAnalysisDuration } from '@/video/performanceBudget';
+import { formatAnalysisDuration, resolveVideoAnalysisBudgetMs } from '@/video/performanceBudget';
 import {
   createCameraVideoSource,
   createImportedVideoSourceWithSession,
@@ -1167,6 +1173,86 @@ function AnalysisDeviceReadinessPanel({
   );
 }
 
+function AnalysisRunLoadPanel({
+  disabled,
+  load,
+  onClear,
+  onPreparePacket,
+}: {
+  disabled: boolean;
+  load: AnalysisRunLoad;
+  onClear: () => void;
+  onPreparePacket: () => void;
+}) {
+  const isCooldown = load.summary.status === 'cooldown';
+  const isReady = load.summary.status === 'ready';
+
+  return (
+    <View style={[styles.modelPreflight, isCooldown ? styles.modelPreflightBlocked : isReady ? styles.modelPreflightReady : null]}>
+      <View style={styles.modelPreflightTop}>
+        <View style={styles.modelPreflightTitleRow}>
+          <Clock color={isCooldown ? theme.colors.coral : isReady ? theme.colors.success : theme.colors.amber} size={18} />
+          <View style={styles.modelPreflightTitleGroup}>
+            <Text style={styles.modelPreflightTitle}>Analysis run load</Text>
+            <Text style={styles.modelPreflightDetail}>{load.summary.nextAction}</Text>
+          </View>
+        </View>
+        <Text style={[styles.modelPreflightBadge, isCooldown ? styles.modelPreflightBadgeBlocked : isReady ? styles.modelPreflightBadgeReady : null]}>
+          {load.summary.status}
+        </Text>
+      </View>
+      <View style={styles.modelPreflightMetrics}>
+        <Text style={styles.modelPreflightMetric}>{load.summary.recentRunCount} recent</Text>
+        <Text style={styles.modelPreflightMetric}>{formatAnalysisDuration(load.summary.totalRecentAnalysisMs)} runtime</Text>
+        <Text style={styles.modelPreflightMetric}>{formatAnalysisDuration(load.summary.cooldownRemainingMs)} cooldown</Text>
+        <Text style={styles.modelPreflightMetric}>{load.summary.reviewCount} review</Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {load.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'action'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <View style={styles.modelPreflightActions}>
+        <Pressable
+          accessibilityLabel="Prepare analysis run load packet"
+          disabled={disabled}
+          onPress={onPreparePacket}
+          style={[styles.modelPreflightButton, disabled ? styles.disabled : null]}
+        >
+          <Download color={theme.colors.brand} size={16} />
+          <Text style={styles.modelPreflightButtonText}>Run-load packet</Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Clear analysis run load"
+          disabled={disabled || load.summary.recentRunCount === 0}
+          onPress={onClear}
+          style={[styles.modelPreflightButton, disabled || load.summary.recentRunCount === 0 ? styles.disabled : null]}
+        >
+          <RotateCcw color={theme.colors.brand} size={16} />
+          <Text style={styles.modelPreflightButtonText}>Clear load</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export function CoachScreen() {
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
@@ -1178,6 +1264,7 @@ export function CoachScreen() {
   const [recording, setRecording] = useState(false);
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [modelWarmupLoading, setModelWarmupLoading] = useState(false);
+  const [analysisRunRecords, setAnalysisRunRecords] = useState<AnalysisRunLoadRecord[]>([]);
   const [selectedAttemptId, setSelectedAttemptId] = useState(attempts[0].session.id);
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
@@ -1185,11 +1272,17 @@ export function CoachScreen() {
   const [preparedDevicePacket, setPreparedDevicePacket] = useState('');
   const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
   const [preparedExecutionPacket, setPreparedExecutionPacket] = useState('');
+  const [preparedRunLoadPacket, setPreparedRunLoadPacket] = useState('');
   const [sessionMetadata, setSessionMetadata] = useState(defaultEditableSession);
   const [captureCalibration, setCaptureCalibration] = useState<CaptureCalibrationInput>(defaultCaptureCalibrationInput);
   const pwaPreflight = usePwaModelPreflight();
   const devicePreflight = useAnalysisDeviceReadiness();
   const intakeSource = activeSource ?? getDemoVideoSource(selectedAttemptId);
+  const activeAnalysisWindow = buildVideoAnalysisWindow(intakeSource.video, analysisWindowMode);
+  const analysisRunLoad = buildAnalysisRunLoad({
+    currentBudgetMs: resolveVideoAnalysisBudgetMs(activeAnalysisWindow.durationMs),
+    records: analysisRunRecords,
+  });
   const modelPreflight = buildPwaAnalysisPreflight({
     hasLocalVideo: Boolean(activeSource),
     online: pwaPreflight.online,
@@ -1233,6 +1326,17 @@ export function CoachScreen() {
   function prepareAnalysisExecutionPacket(plan: AnalysisExecutionPlan) {
     selectionFeedback();
     setPreparedExecutionPacket(JSON.stringify(plan, null, 2));
+  }
+
+  function prepareAnalysisRunLoadPacket(load: AnalysisRunLoad) {
+    selectionFeedback();
+    setPreparedRunLoadPacket(JSON.stringify(load, null, 2));
+  }
+
+  function clearAnalysisRunLoad() {
+    selectionFeedback();
+    setAnalysisRunRecords([]);
+    setPreparedRunLoadPacket('');
   }
 
   async function runAnalysis(
@@ -1301,6 +1405,19 @@ export function CoachScreen() {
         ? await analyzeVideoAttempt(sourceForAnalysis.video, sourceForAnalysis.session, coachLens)
         : await analyzeDemoAttempt(sessionId, coachLens);
       setReport(nextReport);
+      setPreparedRunLoadPacket('');
+      setAnalysisRunRecords((records) =>
+        [
+          ...records,
+          createAnalysisRunLoadRecord({
+            activeDurationMs: nextReport.engine.analysisWindow?.durationMs ?? nextReport.session.durationMs,
+            analysisMs: nextReport.performance.analysisMs,
+            budgetMs: nextReport.performance.budgetMs,
+            provider: nextReport.engine.provider,
+            sourceType: nextReport.session.source,
+          }),
+        ].slice(-videoAnalysisConfig.analysisRunLoad.maxRecords),
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : 'The local analysis pipeline failed.';
       setErrorMessage(message);
@@ -1391,6 +1508,7 @@ export function CoachScreen() {
       setPreparedResourcePacket('');
       setPreparedExecutionPacket('');
       setPreparedDevicePacket('');
+      setPreparedRunLoadPacket('');
       setActiveSource(source);
       setCameraOpen(false);
       await runAnalysis(source, selectedAttemptId, false);
@@ -1447,6 +1565,7 @@ export function CoachScreen() {
     setPreparedResourcePacket('');
     setPreparedExecutionPacket('');
     setPreparedDevicePacket('');
+    setPreparedRunLoadPacket('');
     setActiveSource(source);
     setCameraOpen(false);
     await runAnalysis(source, selectedAttemptId, false);
@@ -1457,6 +1576,7 @@ export function CoachScreen() {
     setPreparedResourcePacket('');
     setPreparedExecutionPacket('');
     setPreparedDevicePacket('');
+    setPreparedRunLoadPacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
     void runAnalysis(null, sessionId, false);
@@ -1548,6 +1668,12 @@ export function CoachScreen() {
         onRefresh={() => void devicePreflight.refreshDeviceReadiness()}
         readiness={devicePreflight.readiness}
       />
+      <AnalysisRunLoadPanel
+        disabled={workflow.captureDisabled}
+        load={analysisRunLoad}
+        onClear={clearAnalysisRunLoad}
+        onPreparePacket={() => prepareAnalysisRunLoadPacket(analysisRunLoad)}
+      />
 
       <CaptureCalibrationPanel
         assessment={captureSetupAssessment}
@@ -1614,6 +1740,7 @@ export function CoachScreen() {
           setPreparedResourcePacket('');
           setPreparedExecutionPacket('');
           setPreparedDevicePacket('');
+          setPreparedRunLoadPacket('');
           setAnalysisWindowMode(mode);
         }}
         modelPreflight={modelPreflight}
@@ -1630,6 +1757,18 @@ export function CoachScreen() {
             accessibilityLabel="Device readiness packet JSON"
             style={styles.resourcePacketText}
             value={preparedDevicePacket}
+          />
+        </View>
+      ) : null}
+      {preparedRunLoadPacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared analysis run load packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Analysis run load packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedRunLoadPacket}
           />
         </View>
       ) : null}

@@ -350,6 +350,9 @@
 - Vitest analysis device readiness tests cover strong device signals, low battery, weak compute, low storage, native
   fallback, and share-safety rejection.
 - Browser smoke verifies the Coach tab device readiness card and prepared `movebeta.analysis-device-readiness.v1` packet.
+- Vitest analysis run-load tests cover empty ready state, repeated-run cooldown, old-record expiry, high budget review,
+  sustained runtime review, and share-safety rejection.
+- Browser smoke verifies the Coach tab run-load card and prepared `movebeta.analysis-run-load.v1` packet.
 - PWA model-cache warmup tests cover integrity-supported partial state when cached assets do not all verify.
 - Browser smoke verifies cached byte totals, verified asset counts, and SHA-256 integrity flags in the prepared warmup
   packet.
