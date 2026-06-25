@@ -89,6 +89,9 @@ raw video URIs or media references into shareable evidence.
 for on-device analysis. Web builds read optional coarse browser signals such as Battery API, hardware concurrency, device
 memory, and storage estimate; native builds use an explicit native fallback until platform-specific battery or thermal
 adapters are added. The exported packet keeps only coarse runtime signals and negative privacy flags.
+`src/core/analysisRunLoad.ts` tracks in-session local analysis run volume with configurable window, cooldown, current
+budget, and sustained runtime thresholds. Coach records only aggregate timing/provider/source metadata after successful
+analyses, then exposes a cooldown recommendation and share-safe packet without report ids, URIs, or raw media.
 The Plan tab also derives `src/core/modelDownloadPlan.ts` from lifecycle and runtime readiness, separating packaged native
 model delivery from PWA model download planning. The plan reports additional bytes, network preference, update activation,
 cache warmup, integrity, and offline-use steps as a share-safe packet.

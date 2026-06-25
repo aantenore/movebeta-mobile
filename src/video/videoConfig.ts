@@ -22,6 +22,14 @@ export const videoAnalysisConfig = {
     minimumFreeStorageBytes: 500_000_000,
     minimumHardwareConcurrency: 4,
   },
+  analysisRunLoad: {
+    cooldownMs: 180_000,
+    highBudgetMs: 60_000,
+    maxRecords: 12,
+    reviewRunCount: 3,
+    sustainedRuntimeReviewMs: 90_000,
+    windowMs: 600_000,
+  },
   clipTriage: {
     issuePenalties: {
       longDuration: 22,

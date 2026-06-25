@@ -576,6 +576,9 @@
 - The Coach capture flow must expose local device readiness before analysis, using available browser/native runtime,
   battery, compute, and storage signals to classify ready or review states, provide refresh and share-safe packet actions,
   and exclude video URI, raw media, local paths, and credentials.
+- The Coach capture flow must track local analysis run load during the active app session, warn when repeated analyses or
+  sustained runtime suggest cooldown, expose reset and share-safe packet actions, and exclude video URI, raw media, local
+  paths, report IDs, and credentials.
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
