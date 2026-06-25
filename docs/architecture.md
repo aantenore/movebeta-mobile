@@ -178,6 +178,9 @@ identities.
 `buildCueValidationReviewerAssignmentPacket` sits between reviewer onboarding and worksheet completion, deriving reviewer
 slot workloads and worksheet filters from the same seed without adding coach identities, raw worksheet contents, report
 IDs, local paths, or raw media.
+`buildCueValidationCollectionRunbook` composes the current seed, assignment packet, and worksheet preflight into a
+phase-owned campaign runbook so Sessions can guide the real review collection loop without leaking coach identities,
+scores, report IDs, raw worksheet rows, or media references.
 
 ## Storage Strategy
 

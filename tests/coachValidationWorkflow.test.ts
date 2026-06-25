@@ -8,6 +8,7 @@ import {
 } from '../src/movement/coachValidationWorkflow';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import {
+  assertCueValidationCollectionRunbookIsPrivacySafe,
   assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
 } from '../src/movement/cueValidationStudy';
@@ -136,7 +137,15 @@ describe('coach validation workflow', () => {
 
     expect(() => assertCueValidationReviewWorksheetCsvIsPrivacySafe(workflow.worksheetCsv)).not.toThrow();
     expect(() => assertCueValidationReviewerAssignmentPacketIsPrivacySafe(workflow.reviewerAssignment)).not.toThrow();
+    expect(() => assertCueValidationCollectionRunbookIsPrivacySafe(workflow.collectionRunbook)).not.toThrow();
     expect(workflow).toMatchObject({
+      collectionRunbook: {
+        summary: {
+          currentPhase: 'complete-worksheet',
+          sourceClipCount: 1,
+          status: 'needs-review',
+        },
+      },
       progress: {
         consentedClipCount: 1,
         missingWallAngles: [],
@@ -153,6 +162,7 @@ describe('coach validation workflow', () => {
       },
       status: 'needs-review',
     });
+    expect(workflow.collectionRunbookSummary).toContain('Collection runbook: needs-review');
     expect(workflow.reviewerAssignmentSummary).toContain('reviewer slot assignments');
     expect(workflow.worksheetCsv).toContain('worksheetRowId,clipId,packetReportId');
     expect(workflow.worksheetCsv).not.toMatch(/file:\/\/|rawVideo|videoUri|privateNote/i);

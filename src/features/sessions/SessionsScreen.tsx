@@ -682,9 +682,11 @@ function CoachLibraryPanel({
 }
 
 function ValidationCampaignPanel({
+  onPrepareRunbook,
   onPrepareStatusExport,
   workflow,
 }: {
+  onPrepareRunbook: () => void;
   onPrepareStatusExport: () => void;
   workflow: CoachValidationWorkflow;
 }) {
@@ -731,6 +733,7 @@ function ValidationCampaignPanel({
           </View>
         </View>
         <Text style={styles.libraryFocus}>{workflow.action}</Text>
+        <Text style={styles.libraryPrivacy}>{workflow.collectionRunbookSummary}</Text>
         <Text style={styles.libraryPrivacy}>{workflow.reviewerAssignmentSummary}</Text>
         <Text style={styles.libraryPrivacy}>{workflow.worksheetSummary}</Text>
         {workflow.reliabilitySummary ? <Text style={styles.libraryPrivacy}>{workflow.reliabilitySummary}</Text> : null}
@@ -756,6 +759,10 @@ function ValidationCampaignPanel({
           </View>
         ) : null}
         <View style={styles.libraryActionRow}>
+          <Pressable accessibilityLabel="Prepare validation collection runbook" onPress={onPrepareRunbook} style={styles.secondaryAction}>
+            <Target color={theme.colors.brand} size={16} />
+            <Text style={styles.secondaryActionText}>Runbook</Text>
+          </Pressable>
           <Pressable accessibilityLabel="Export validation campaign status" onPress={onPrepareStatusExport} style={styles.secondaryAction}>
             <Download color={theme.colors.brand} size={16} />
             <Text style={styles.secondaryActionText}>Export status</Text>
@@ -1105,6 +1112,14 @@ export function SessionsScreen() {
     });
   }
 
+  function prepareValidationCollectionRunbook() {
+    selectionFeedback();
+    setPreparedExport({
+      body: `${coachValidationWorkflow.collectionRunbookSummary}\n\n${JSON.stringify(coachValidationWorkflow.collectionRunbook, null, 2)}`,
+      title: 'Prepared validation collection runbook',
+    });
+  }
+
   function prepareCueValidationWorksheetPreflight() {
     selectionFeedback();
     setPreparedExport({
@@ -1254,6 +1269,7 @@ export function SessionsScreen() {
           />
 
           <ValidationCampaignPanel
+            onPrepareRunbook={prepareValidationCollectionRunbook}
             onPrepareStatusExport={prepareValidationCampaignStatus}
             workflow={coachValidationWorkflow}
           />

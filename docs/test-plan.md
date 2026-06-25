@@ -615,6 +615,10 @@ Cue-validation worksheet preflight coverage:
   score-cell counts, worksheet filters, status, negative privacy flags, and raw-artifact/token rejection.
 - Browser smoke verifies the Sessions Assignments action and share-safe `movebeta.cue-validation-reviewer-assignment.v1`
   packet before worksheet completion.
+- `tests/cueValidationStudy.test.ts` covers the collection runbook across needs-review, ready-for-dataset, and unsafe
+  export states, including phase owners, current phase, worksheet preflight status, and negative privacy flags.
+- Browser smoke verifies the Sessions Runbook action and share-safe `movebeta.cue-validation-collection-runbook.v1`
+  packet before worksheet completion.
 
 ## Native QA Before Store Submission
 

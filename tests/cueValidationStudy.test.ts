@@ -4,12 +4,14 @@ import { createCoachReviewConsentRecord } from '../src/movement/coachConsentRepo
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import {
   assertCueValidationClipIntakeManifestIsPrivacySafe,
+  assertCueValidationCollectionRunbookIsPrivacySafe,
   assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationReviewerOnboardingPacketIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationClipIntakeManifest,
+  buildCueValidationCollectionRunbook,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationReviewerAssignmentPacket,
@@ -17,15 +19,18 @@ import {
   buildCueValidationDatasetFromCompletedWorksheetCsv,
   buildCueValidationStudySeed,
   cueValidationClipIntakeManifestSchemaVersion,
+  cueValidationCollectionRunbookSchemaVersion,
   cueValidationReviewerAssignmentPacketSchemaVersion,
   cueValidationReviewerOnboardingPacketSchemaVersion,
   formatCueValidationClipIntakeManifestSummary,
+  formatCueValidationCollectionRunbookSummary,
   formatCueValidationCompletedDatasetSummary,
   formatCueValidationReviewerAssignmentPacketSummary,
   formatCueValidationReviewerOnboardingPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
   type CueValidationClipIntakeManifest,
+  type CueValidationCollectionRunbook,
   type CueValidationReviewerAssignmentPacket,
   type CueValidationReviewerOnboardingPacket,
   type CueValidationReviewWorksheet,
@@ -451,6 +456,132 @@ describe('cue validation study seed', () => {
     };
 
     expect(() => assertCueValidationReviewerAssignmentPacketIsPrivacySafe(unsafePacket)).toThrow(/raw artifact or credential/i);
+  });
+
+  it('builds a privacy-safe collection runbook for the current study seed and worksheet state', async () => {
+    const report = await buildReport('collection-runbook-project');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:27:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        generatedAt: '2026-06-20T00:28:00.000Z',
+      },
+    );
+
+    const runbook = buildCueValidationCollectionRunbook(seed, {
+      generatedAt: '2026-06-20T00:29:00.000Z',
+      reviewerCount: 2,
+    });
+    const serialized = JSON.stringify(runbook);
+
+    expect(() => assertCueValidationCollectionRunbookIsPrivacySafe(runbook)).not.toThrow();
+    expect(runbook).toMatchObject({
+      generatedAt: '2026-06-20T00:29:00.000Z',
+      privacy: {
+        coachPacketsIncluded: false,
+        credentialValuesIncluded: false,
+        keyFramesIncluded: false,
+        landmarksIncluded: false,
+        localPathsIncluded: false,
+        privateNotesIncluded: false,
+        rawArtifactsIncluded: false,
+        rawUrisIncluded: false,
+        rawVideoIncluded: false,
+        rawWorksheetIncluded: false,
+        reportIdsIncluded: false,
+        reviewerIdentitiesIncluded: false,
+        reviewerScoresIncluded: false,
+        reviewerScoresInvented: false,
+        tokenLikeValuesIncluded: false,
+        videoLeavesDevice: false,
+      },
+      schemaVersion: cueValidationCollectionRunbookSchemaVersion,
+      sourceSeedGeneratedAt: seed.generatedAt,
+      summary: {
+        assignmentCount: 2,
+        completeWorksheetRows: 0,
+        currentPhase: 'complete-worksheet',
+        expectedWorksheetRows: seed.cueCount * 2,
+        missingScoreCount: 0,
+        missingWallAngles: [],
+        reviewerSlots: 2,
+        sourceClipCount: 1,
+        sourceCueCount: seed.cueCount,
+        status: 'needs-review',
+        targetClipCount: 1,
+        worksheetPreflightStatus: 'empty',
+      },
+    });
+    expect(runbook.phases.map((phase) => phase.key)).toEqual([
+      'collect-consent',
+      'cover-wall-angles',
+      'assign-reviewers',
+      'complete-worksheet',
+      'preflight-worksheet',
+      'compose-dataset',
+    ]);
+    expect(formatCueValidationCollectionRunbookSummary(runbook)).toBe(
+      `Collection runbook: needs-review · phase complete-worksheet · 1/1 clips · 0/${seed.cueCount * 2} rows complete · preflight empty`,
+    );
+    expect(serialized).not.toContain(report.id);
+    expect(serialized).not.toMatch(/file:\/\/|\/Users\/|ghp_|pat_|BEGIN PRIVATE KEY|rawVideoUri|videoUri/i);
+  });
+
+  it('marks the collection runbook ready for dataset after completed worksheet preflight passes', async () => {
+    const report = await buildReport('collection-runbook-ready');
+    const seed = buildCueValidationStudySeed(
+      [report],
+      [createCoachReviewConsentRecord(report.id, { grantedAt: '2026-06-20T00:30:00.000Z' })],
+      {
+        acceptance: {
+          minClips: 1,
+          requiredWallAngles: [report.session.wallAngle],
+        },
+        generatedAt: '2026-06-20T00:31:00.000Z',
+      },
+    );
+    const worksheet = buildCueValidationReviewWorksheet(seed, {
+      generatedAt: '2026-06-20T00:32:00.000Z',
+      reviewerCount: 2,
+    });
+    const completedWorksheetCsv = completeWorksheetCsv(buildCueValidationReviewWorksheetCsv(worksheet), 5);
+    const runbook = buildCueValidationCollectionRunbook(seed, {
+      completedWorksheetCsv,
+      generatedAt: '2026-06-20T00:33:00.000Z',
+      reviewerCount: 2,
+    });
+
+    expect(() => assertCueValidationCollectionRunbookIsPrivacySafe(runbook)).not.toThrow();
+    expect(runbook.summary).toMatchObject({
+      completeWorksheetRows: worksheet.rowCount,
+      currentPhase: 'compose-dataset',
+      expectedWorksheetRows: worksheet.rowCount,
+      missingScoreCount: 0,
+      status: 'ready-for-dataset',
+      worksheetPreflightStatus: 'ready',
+    });
+    expect(runbook.phases.find((phase) => phase.key === 'compose-dataset')).toMatchObject({
+      owner: 'qa',
+      status: 'ready',
+    });
+  });
+
+  it('rejects collection runbooks with raw artifact or credential text', () => {
+    const seed = buildCueValidationStudySeed([], [], { generatedAt: '2026-06-20T00:34:00.000Z' });
+    const runbook = buildCueValidationCollectionRunbook(seed, { generatedAt: '2026-06-20T00:35:00.000Z' });
+    const unsafeRunbook: CueValidationCollectionRunbook = {
+      ...runbook,
+      instructions: [
+        ...runbook.instructions,
+        'Attach file:///private/raw-video.mov and token ghp_1234567890abcdefTOKENVALUE.',
+      ],
+    };
+
+    expect(() => assertCueValidationCollectionRunbookIsPrivacySafe(unsafeRunbook)).toThrow(/raw artifact or credential/i);
   });
 
   it('builds a blank review worksheet without inventing coach identities or scores', async () => {
