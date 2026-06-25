@@ -23,6 +23,7 @@ import {
 } from '@/core/analysisRunLoad';
 import { appConfig } from '@/core/config';
 import { buildAnalysisExecutionPlan, type AnalysisExecutionPlan } from '@/core/analysisExecutionPlan';
+import { buildCoachSessionLaunch, type CoachSessionLaunch } from '@/core/coachSessionLaunch';
 import { buildModelDeliveryLifecycle } from '@/core/modelDeliveryLifecycle';
 import { buildModelDownloadPlan, type ModelDownloadPlan } from '@/core/modelDownloadPlan';
 import { selectionFeedback } from '@/core/haptics';
@@ -1236,6 +1237,77 @@ function PwaFieldReadinessPanel({
   );
 }
 
+function CoachSessionLaunchPanel({
+  disabled,
+  launch,
+  onPreparePacket,
+}: {
+  disabled: boolean;
+  launch: CoachSessionLaunch;
+  onPreparePacket: () => void;
+}) {
+  const isBlocked = launch.summary.status === 'blocked';
+  const isReady = launch.summary.status === 'ready';
+
+  return (
+    <View style={[styles.modelPreflight, isBlocked ? styles.modelPreflightBlocked : isReady ? styles.modelPreflightReady : null]}>
+      <View style={styles.modelPreflightTop}>
+        <View style={styles.modelPreflightTitleRow}>
+          {isBlocked ? (
+            <TriangleAlert color={theme.colors.coral} size={18} />
+          ) : (
+            <ShieldCheck color={isReady ? theme.colors.success : theme.colors.amber} size={18} />
+          )}
+          <View style={styles.modelPreflightTitleGroup}>
+            <Text style={styles.modelPreflightTitle}>Session launch</Text>
+            <Text style={styles.modelPreflightDetail}>{launch.summary.nextAction}</Text>
+          </View>
+        </View>
+        <Text style={[styles.modelPreflightBadge, isBlocked ? styles.modelPreflightBadgeBlocked : isReady ? styles.modelPreflightBadgeReady : null]}>
+          {launch.summary.status}
+        </Text>
+      </View>
+      <View style={styles.modelPreflightMetrics}>
+        <Text style={styles.modelPreflightMetric}>start {launch.summary.canStartCapture ? 'yes' : 'no'}</Text>
+        <Text style={styles.modelPreflightMetric}>session {launch.summary.readyForSession ? 'ready' : 'review'}</Text>
+        <Text style={styles.modelPreflightMetric}>{launch.summary.blockedCount} blocked</Text>
+        <Text style={styles.modelPreflightMetric}>{launch.summary.reviewCount} review</Text>
+      </View>
+      <View style={styles.resourcePlanSteps}>
+        {launch.steps.map((step) => (
+          <View key={step.key} style={styles.resourcePlanStep}>
+            <Text
+              style={[
+                styles.resourcePlanStepStatus,
+                step.status === 'blocked'
+                  ? styles.resourcePlanStepBlocked
+                  : step.status === 'ready'
+                    ? styles.resourcePlanStepReady
+                    : null,
+              ]}
+            >
+              {step.status}
+            </Text>
+            <View style={styles.resourcePlanStepCopy}>
+              <Text style={styles.resourcePlanStepTitle}>{step.label}</Text>
+              <Text style={styles.resourcePlanStepDetail}>{step.detail}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <Pressable
+        accessibilityLabel="Prepare Coach session launch packet"
+        disabled={disabled}
+        onPress={onPreparePacket}
+        style={[styles.modelPreflightButton, disabled ? styles.disabled : null]}
+      >
+        <Download color={theme.colors.brand} size={16} />
+        <Text style={styles.modelPreflightButtonText}>Launch packet</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function AnalysisDeviceReadinessPanel({
   disabled,
   onPreparePacket,
@@ -1422,6 +1494,7 @@ export function CoachScreen() {
   const [preparedDevicePacket, setPreparedDevicePacket] = useState('');
   const [preparedModelDownloadPacket, setPreparedModelDownloadPacket] = useState('');
   const [preparedFieldReadinessPacket, setPreparedFieldReadinessPacket] = useState('');
+  const [preparedSessionLaunchPacket, setPreparedSessionLaunchPacket] = useState('');
   const [preparedResourcePacket, setPreparedResourcePacket] = useState('');
   const [preparedExecutionPacket, setPreparedExecutionPacket] = useState('');
   const [preparedRunLoadPacket, setPreparedRunLoadPacket] = useState('');
@@ -1460,6 +1533,13 @@ export function CoachScreen() {
     warmingModel: modelWarmupLoading,
   });
   const captureSetupAssessment = assessCaptureCalibration(captureCalibration);
+  const coachSessionLaunch = buildCoachSessionLaunch({
+    capture: captureSetupAssessment,
+    deviceReadiness: devicePreflight.readiness,
+    fieldReadiness: pwaFieldReadiness,
+    modelPreflight,
+    runLoad: analysisRunLoad,
+  });
   const capturePrepProtocol = buildCapturePrepProtocol({
     calibration: captureSetupAssessment,
     report,
@@ -1477,6 +1557,11 @@ export function CoachScreen() {
   function updateSessionMetadata(nextMetadata: typeof defaultEditableSession) {
     setSessionMetadata(nextMetadata);
     setActiveSource((source) => (source ? updateVideoSourceSession(source, nextMetadata) : source));
+  }
+
+  function updateCaptureCalibration(nextCalibration: CaptureCalibrationInput) {
+    setCaptureCalibration(nextCalibration);
+    setPreparedSessionLaunchPacket('');
   }
 
   function prepareAnalysisResourcePacket(plan: AnalysisResourcePlan) {
@@ -1499,6 +1584,11 @@ export function CoachScreen() {
     setPreparedFieldReadinessPacket(JSON.stringify(readiness, null, 2));
   }
 
+  function prepareCoachSessionLaunchPacket(launch: CoachSessionLaunch) {
+    selectionFeedback();
+    setPreparedSessionLaunchPacket(JSON.stringify(launch, null, 2));
+  }
+
   function prepareAnalysisExecutionPacket(plan: AnalysisExecutionPlan) {
     selectionFeedback();
     setPreparedExecutionPacket(JSON.stringify(plan, null, 2));
@@ -1513,6 +1603,13 @@ export function CoachScreen() {
     selectionFeedback();
     setAnalysisRunRecords([]);
     setPreparedRunLoadPacket('');
+    setPreparedSessionLaunchPacket('');
+  }
+
+  async function refreshDeviceReadiness() {
+    setPreparedDevicePacket('');
+    setPreparedSessionLaunchPacket('');
+    await devicePreflight.refreshDeviceReadiness();
   }
 
   async function runAnalysis(
@@ -1557,6 +1654,7 @@ export function CoachScreen() {
           const warmup = await pwaPreflight.warmModelCache();
           setPreparedModelDownloadPacket('');
           setPreparedFieldReadinessPacket('');
+          setPreparedSessionLaunchPacket('');
           if (warmup.summary.status !== 'ready' && !warmup.summary.online) {
             setLoading(false);
             setReport(null);
@@ -1616,6 +1714,7 @@ export function CoachScreen() {
       const result = await pwaPreflight.warmModelCache();
       setPreparedModelDownloadPacket('');
       setPreparedFieldReadinessPacket('');
+      setPreparedSessionLaunchPacket('');
       if (result.summary.status !== 'ready') {
         setErrorMessage(result.summary.nextAction);
       }
@@ -1690,6 +1789,7 @@ export function CoachScreen() {
       setPreparedDevicePacket('');
       setPreparedModelDownloadPacket('');
       setPreparedFieldReadinessPacket('');
+      setPreparedSessionLaunchPacket('');
       setPreparedRunLoadPacket('');
       setActiveSource(source);
       setCameraOpen(false);
@@ -1749,6 +1849,7 @@ export function CoachScreen() {
     setPreparedDevicePacket('');
     setPreparedModelDownloadPacket('');
     setPreparedFieldReadinessPacket('');
+    setPreparedSessionLaunchPacket('');
     setPreparedRunLoadPacket('');
     setActiveSource(source);
     setCameraOpen(false);
@@ -1762,6 +1863,7 @@ export function CoachScreen() {
     setPreparedDevicePacket('');
     setPreparedModelDownloadPacket('');
     setPreparedFieldReadinessPacket('');
+    setPreparedSessionLaunchPacket('');
     setPreparedRunLoadPacket('');
     setActiveSource(null);
     setSelectedAttemptId(sessionId);
@@ -1858,10 +1960,15 @@ export function CoachScreen() {
         onPreparePacket={() => preparePwaFieldReadinessPacket(pwaFieldReadiness)}
         readiness={pwaFieldReadiness}
       />
+      <CoachSessionLaunchPanel
+        disabled={workflow.captureDisabled}
+        launch={coachSessionLaunch}
+        onPreparePacket={() => prepareCoachSessionLaunchPacket(coachSessionLaunch)}
+      />
       <AnalysisDeviceReadinessPanel
         disabled={workflow.captureDisabled}
         onPreparePacket={() => prepareDeviceReadinessPacket(devicePreflight.readiness)}
-        onRefresh={() => void devicePreflight.refreshDeviceReadiness()}
+        onRefresh={() => void refreshDeviceReadiness()}
         readiness={devicePreflight.readiness}
       />
       <AnalysisRunLoadPanel
@@ -1875,7 +1982,7 @@ export function CoachScreen() {
         assessment={captureSetupAssessment}
         calibration={captureCalibration}
         disabled={workflow.captureDisabled}
-        onChange={setCaptureCalibration}
+        onChange={updateCaptureCalibration}
       />
       <CapturePrepProtocolPanel protocol={capturePrepProtocol} />
       <SessionMetadataEditor disabled={workflow.captureDisabled} metadata={sessionMetadata} onChange={updateSessionMetadata} />
@@ -1938,6 +2045,7 @@ export function CoachScreen() {
           setPreparedDevicePacket('');
           setPreparedModelDownloadPacket('');
           setPreparedFieldReadinessPacket('');
+          setPreparedSessionLaunchPacket('');
           setPreparedRunLoadPacket('');
           setAnalysisWindowMode(mode);
         }}
@@ -1979,6 +2087,18 @@ export function CoachScreen() {
             accessibilityLabel="Coach field readiness packet JSON"
             style={styles.resourcePacketText}
             value={preparedFieldReadinessPacket}
+          />
+        </View>
+      ) : null}
+      {preparedSessionLaunchPacket ? (
+        <View style={styles.resourcePacketBox}>
+          <Text style={styles.resourcePacketTitle}>Prepared Coach session launch packet</Text>
+          <TextInput
+            editable={false}
+            multiline
+            accessibilityLabel="Coach session launch packet JSON"
+            style={styles.resourcePacketText}
+            value={preparedSessionLaunchPacket}
           />
         </View>
       ) : null}
