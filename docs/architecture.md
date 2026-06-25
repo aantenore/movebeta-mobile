@@ -82,6 +82,9 @@ controls.
 `src/video/analysisResourcePlan.ts` provides the Coach intake resource planner. It uses the selected analysis window,
 configured sampler frame limits, runtime budget thresholds, and decode-surface thresholds to classify local workload
 before the model runs, then serializes only numeric/video-type metadata in a share-safe packet.
+`src/core/analysisExecutionPlan.ts` sits above intake, triage, PWA model preflight, and resource planning. It produces a
+single local execution checklist for Coach, including blocked, review, warmup-required, and ready states without carrying
+raw video URIs or media references into shareable evidence.
 The Plan tab also derives `src/core/modelDownloadPlan.ts` from lifecycle and runtime readiness, separating packaged native
 model delivery from PWA model download planning. The plan reports additional bytes, network preference, update activation,
 cache warmup, integrity, and offline-use steps as a share-safe packet.

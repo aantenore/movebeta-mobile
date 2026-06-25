@@ -570,6 +570,9 @@
 - The Coach video intake flow must expose a local analysis resource plan before execution, derived from source metadata
   and the selected analysis window, with sampled-frame count, runtime budget, decode-surface estimate, workload status,
   and a share-safe packet that excludes video URI, raw media, local paths, and credentials.
+- The Coach video intake flow must expose a local execution checklist that combines clip intake, clip triage, model
+  readiness, resource budget, and privacy boundary into one can-start decision, including warmup-required, review, blocked,
+  and ready states plus a share-safe packet that excludes video URI, raw media, local paths, and credentials.
 - The Plan surface must expose a share-safe model download plan that distinguishes native bundled delivery from PWA
   same-origin download, reports whether additional model bytes are still needed, respects manual/Wi-Fi-first planning,
   surfaces pending PWA updates, and lists the steps required before offline gym use.
