@@ -76,6 +76,7 @@ export type ReleaseEvidenceFreshnessReportBundle = {
   modelAssetProvenanceReport?: unknown;
   modelAnalysisReplayReport?: unknown;
   modelDeliveryLifecycleReport?: unknown;
+  modelDownloadPlanReport?: unknown;
   moveNetStaticAssetsReport?: unknown;
   modelVerificationSuiteReport?: unknown;
   moveNetReadinessReport?: unknown;
@@ -247,6 +248,16 @@ const reportConfigs: FreshnessConfig[] = [
     path: 'docs/sdlc/model-delivery-lifecycle-report.json',
     refreshCommand: 'npm run model:delivery:lifecycle',
     reportKey: 'modelDeliveryLifecycleReport',
+    requiredFor: ['demo', 'internal', 'handoff'],
+  },
+  {
+    key: 'model-download-plan-report',
+    label: 'Model download plan report',
+    maxAgeHours: 168,
+    owner: 'engineering',
+    path: 'docs/sdlc/model-download-plan-report.json',
+    refreshCommand: 'npm run model:download:plan',
+    reportKey: 'modelDownloadPlanReport',
     requiredFor: ['demo', 'internal', 'handoff'],
   },
   {

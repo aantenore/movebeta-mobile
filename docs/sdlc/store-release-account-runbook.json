@@ -63,7 +63,7 @@
       "purpose": "Submit the production Android build after strict EAS and native QA evidence pass."
     }
   ],
-  "generatedAt": "2026-06-25T14:02:25.266Z",
+  "generatedAt": "2026-06-25T15:11:23.284Z",
   "phases": [
     {
       "action": "Regenerate and review the store submission packet.",

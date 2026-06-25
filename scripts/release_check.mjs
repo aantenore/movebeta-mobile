@@ -35,6 +35,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'model:movenet:assets:check'], key: 'moveNetStaticAssets', label: 'MoveNet static model assets doctor' },
   { command: ['npm', 'run', 'model:assets:provenance'], key: 'modelAssetProvenance', label: 'Model asset provenance doctor' },
   { command: ['npm', 'run', 'model:delivery:lifecycle'], key: 'modelDeliveryLifecycle', label: 'Model delivery lifecycle report' },
+  { command: ['npm', 'run', 'model:download:plan'], key: 'modelDownloadPlan', label: 'Model download plan report' },
   { command: ['npm', 'run', 'web:pwa:check'], key: 'pwaReadiness', label: 'PWA static readiness doctor' },
   { command: ['npm', 'run', 'web:smoke:report'], key: 'webSmokeReport', label: 'Exported web smoke report' },
   { command: ['npm', 'run', 'web:vercel:check'], key: 'vercelDeploymentReadiness', label: 'Vercel deployment readiness doctor' },

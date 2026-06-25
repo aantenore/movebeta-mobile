@@ -132,6 +132,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'MoveNet static assets report', 'docs/sdlc/movenet-static-assets-report.json'),
       artifact(rootDir, 'Model asset provenance report', 'docs/sdlc/model-asset-provenance-report.json'),
       artifact(rootDir, 'Model delivery lifecycle report', 'docs/sdlc/model-delivery-lifecycle-report.json'),
+      artifact(rootDir, 'Model download plan report', 'docs/sdlc/model-download-plan-report.json'),
       artifact(rootDir, 'Model asset attribution notice', 'docs/sdlc/model-asset-attribution.md'),
       artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
       artifact(rootDir, 'Model verification suite report', 'docs/sdlc/model-verification-suite-report.json'),
@@ -194,6 +195,11 @@ export function buildReleaseHandoffPacket({
         'store',
       ]),
       command('model-delivery-lifecycle', 'Model delivery lifecycle report', 'npm run model:delivery:lifecycle', [
+        'demo',
+        'internal',
+        'store',
+      ]),
+      command('model-download-plan', 'Model download plan report', 'npm run model:download:plan', [
         'demo',
         'internal',
         'store',

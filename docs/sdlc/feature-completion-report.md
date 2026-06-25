@@ -1,11 +1,11 @@
 # Feature Completion Report
 
-Generated: 2026-06-25T14:02:26.168Z
+Generated: 2026-06-25T15:11:24.382Z
 
 - Status: external-blocked
-- Tasks done: 213/216
-- Backlog done: 167/169
-- Traceability covered: 199/199
+- Tasks done: 214/217
+- Backlog done: 168/170
+- Traceability covered: 200/200
 - Internal gaps: 0
 - External blockers: 10
 - Credential values included: no
