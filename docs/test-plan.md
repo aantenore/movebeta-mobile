@@ -145,6 +145,8 @@
   JSON/Markdown report writes.
 - Vitest iOS toolchain setup packet tests for blocked and ready packet generation, sanitized command/proof copy, negative
   privacy flags, and local-path/token rejection before sharing.
+- Vitest iOS toolchain setup packet script tests for durable JSON/Markdown writes, ready versus full-Xcode-blocked
+  states, command rendering, and machine-path/token exclusion.
 - Vitest store credentials doctor tests for blocked/ready EAS credential states, secret-value exclusion, and durable
   JSON/Markdown report writes.
 - Vitest store credentials setup packet tests for blocked/ready credential-group summaries, required key names, and

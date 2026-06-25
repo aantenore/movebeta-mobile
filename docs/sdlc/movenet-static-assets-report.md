@@ -1,6 +1,6 @@
 # MoveNet Static Assets Report
 
-Generated: 2026-06-25T15:11:29.583Z
+Generated: 2026-06-25T15:20:01.057Z
 
 - Status: ready
 - Checks: 7/7

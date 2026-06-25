@@ -41,15 +41,16 @@ describe('release evidence packet', () => {
 
     expect(packet.schemaVersion).toBe(releaseEvidencePacketSchemaVersion);
     expect(packet.summary).toMatchObject({
-      artifactCount: 24,
+      artifactCount: 25,
       blockerCount: 5,
-      commandCount: 29,
+      commandCount: 30,
       externalEvidenceCount: 3,
       readyTracks: 1,
       status: 'needs-external-evidence',
       totalTracks: 3,
     });
     expect(packet.commands.map((command) => command.command)).toContain('npm run native:ios:doctor');
+    expect(packet.commands.map((command) => command.command)).toContain('npm run native:ios:setup');
     expect(packet.commands.map((command) => command.command)).toContain('npm run native:ios:pods');
     expect(packet.commands.map((command) => command.command)).toContain('npm run release:env:doctor');
     expect(packet.commands.map((command) => command.command)).toContain('npm run validation:cue:starter');
@@ -75,6 +76,7 @@ describe('release evidence packet', () => {
       ['release-gate-report', 'ready'],
       ['env-template-report', 'ready'],
       ['ios-toolchain-report', 'blocked'],
+      ['ios-toolchain-setup-packet', 'blocked'],
       ['store-credentials-report', 'blocked'],
       ['native-qa-evidence', 'blocked'],
       ['cue-validation-dataset-report', 'blocked'],

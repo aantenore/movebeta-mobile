@@ -14,6 +14,7 @@ export const releaseGateSteps = [
   { command: ['npm', 'run', 'native:qa:runbook'], key: 'nativeQaRunbook', label: 'Native QA runbook generation' },
   { command: ['npm', 'run', 'native:qa:starter'], key: 'nativeQaEvidenceStarter', label: 'Native QA evidence starter' },
   { command: ['npm', 'run', 'native:ios:doctor'], key: 'iosToolchainDoctor', label: 'iOS toolchain doctor' },
+  { command: ['npm', 'run', 'native:ios:setup'], key: 'iosToolchainSetupPacket', label: 'iOS toolchain setup packet' },
   { command: ['npm', 'run', 'validation:cue:starter'], key: 'cueValidationStarterKit', label: 'Cue validation starter kit' },
   { command: ['npm', 'run', 'validation:cue:doctor'], key: 'cueValidationDatasetDoctor', label: 'Cue validation dataset doctor' },
   { command: ['npm', 'run', 'release:env:doctor'], key: 'envTemplateDoctor', label: 'Environment template doctor' },

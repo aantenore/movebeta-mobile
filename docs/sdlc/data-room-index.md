@@ -1,13 +1,13 @@
 # Data Room Index
 
-Generated: 2026-06-25T15:12:50.519Z
+Generated: 2026-06-25T15:20:28.087Z
 
 ## Summary
 
 - Status: needs-external-evidence
-- Items ready: 18/37
+- Items ready: 18/38
 - Review items: 3
-- External-required items: 16
+- External-required items: 17
 - Missing items: 0
 - Blocked items: 0
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
@@ -52,6 +52,7 @@ Generated: 2026-06-25T15:12:50.519Z
 | Store release account runbook | distribution | external-required | release | credential-names-only | `docs/sdlc/store-release-account-runbook.json` | `npm run release:store-account:runbook` |
 | GitHub workflow report | security | external-required | engineering | credential-names-only | `docs/sdlc/github-workflow-report.json` | `npm run release:github:doctor` |
 | iOS toolchain report | native | external-required | engineering | share-safe | `docs/sdlc/ios-toolchain-report.json` | `npm run native:ios:doctor` |
+| iOS toolchain setup packet | native | external-required | engineering | share-safe | `docs/sdlc/ios-toolchain-setup-packet.json` | `npm run native:ios:setup` |
 | Native QA evidence starter | native | external-required | qa | external-proof-reference | `docs/sdlc/native-qa-evidence-starter-report.json` | `npm run native:qa:starter` |
 | Cue-validation dataset report | validation | external-required | product | external-proof-reference | `docs/sdlc/cue-validation-dataset-report.json` | `npm run validation:cue:doctor` |
 | Source archive | archive | ready | release | source-archive | `../movebeta-mobile-source.zip` | `npm run release:archives` |

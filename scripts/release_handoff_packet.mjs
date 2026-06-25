@@ -137,6 +137,7 @@ export function buildReleaseHandoffPacket({
       artifact(rootDir, 'Model analysis replay report', 'docs/sdlc/model-analysis-replay-report.json'),
       artifact(rootDir, 'Model verification suite report', 'docs/sdlc/model-verification-suite-report.json'),
       artifact(rootDir, 'Native QA runbook', 'docs/sdlc/native-qa-runbook.json'),
+      artifact(rootDir, 'iOS toolchain setup packet', 'docs/sdlc/ios-toolchain-setup-packet.json'),
       artifact(rootDir, 'Native QA evidence starter report', 'docs/sdlc/native-qa-evidence-starter-report.json'),
       artifact(rootDir, 'Native QA evidence input template', 'docs/sdlc/native-qa-evidence-input.template.json'),
       artifact(rootDir, 'GitHub workflow report', 'docs/sdlc/github-workflow-report.json'),
@@ -202,6 +203,9 @@ export function buildReleaseHandoffPacket({
       command('model-download-plan', 'Model download plan report', 'npm run model:download:plan', [
         'demo',
         'internal',
+        'store',
+      ]),
+      command('ios-toolchain-setup', 'iOS toolchain setup packet', 'npm run native:ios:setup', [
         'store',
       ]),
       command('native-qa-starter', 'Native QA evidence starter', 'npm run native:qa:starter', ['internal', 'store']),

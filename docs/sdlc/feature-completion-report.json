@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:11:24.382Z",
+  "generatedAt": "2026-06-25T15:19:55.737Z",
   "launchReadiness": {
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "openChecks": [
@@ -53,15 +53,15 @@
   "schemaVersion": "movebeta.feature-completion-report.v1",
   "status": "external-blocked",
   "summary": {
-    "backlogDoneCount": 168,
-    "backlogItemCount": 170,
+    "backlogDoneCount": 169,
+    "backlogItemCount": 171,
     "externalBlockerCount": 10,
     "internalGapCount": 0,
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "taskDoneCount": 214,
-    "taskItemCount": 217,
-    "traceabilityCoveredCount": 200,
-    "traceabilityItemCount": 200
+    "taskDoneCount": 215,
+    "taskItemCount": 218,
+    "traceabilityCoveredCount": 201,
+    "traceabilityItemCount": 201
   },
   "findings": {
     "backlog": [

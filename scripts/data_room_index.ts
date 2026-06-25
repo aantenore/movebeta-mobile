@@ -41,6 +41,7 @@ function readReports(rootDir: string): DataRoomReportBundle {
     externalEvidenceIntakeReport: readJsonIfExists(rootDir, 'docs/sdlc/external-evidence-intake-report.json'),
     featureCompletionReport: readJsonIfExists(rootDir, 'docs/sdlc/feature-completion-report.json'),
     githubWorkflowReport: readJsonIfExists(rootDir, 'docs/sdlc/github-workflow-report.json'),
+    iosToolchainSetupPacket: readJsonIfExists(rootDir, 'docs/sdlc/ios-toolchain-setup-packet.json'),
     iosToolchainReport: readJsonIfExists(rootDir, 'docs/sdlc/ios-toolchain-report.json'),
     launchReadinessReport: readJsonIfExists(rootDir, 'docs/sdlc/launch-readiness-report.json'),
     licenseReviewPacket: readJsonIfExists(rootDir, 'docs/sdlc/license-review-packet.json'),

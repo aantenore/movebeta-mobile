@@ -88,6 +88,7 @@ export type DataRoomReportBundle = {
   externalEvidenceIntakeReport?: unknown;
   featureCompletionReport?: unknown;
   githubWorkflowReport?: unknown;
+  iosToolchainSetupPacket?: unknown;
   iosToolchainReport?: unknown;
   launchReadinessReport?: unknown;
   licenseReviewPacket?: unknown;
@@ -481,6 +482,19 @@ const dataRoomSeeds: DataRoomSeed[] = [
     readyStatuses: ['ready'],
     refreshCommand: 'npm run native:ios:doctor',
     reportKey: 'iosToolchainReport',
+    sensitivity: 'share-safe',
+  },
+  {
+    category: 'native',
+    externalStatuses: ['needs-full-xcode'],
+    key: 'ios-toolchain-setup-packet',
+    label: 'iOS toolchain setup packet',
+    location: 'docs/sdlc/ios-toolchain-setup-packet.json',
+    owner: 'engineering',
+    purpose: 'Share-safe full-Xcode, Developer directory, Pods, build-settings, and iOS build-log unblock plan.',
+    readyStatuses: ['ready-for-ios-build'],
+    refreshCommand: 'npm run native:ios:setup',
+    reportKey: 'iosToolchainSetupPacket',
     sensitivity: 'share-safe',
   },
   {
