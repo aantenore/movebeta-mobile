@@ -97,6 +97,8 @@ model delivery from PWA model download planning. The plan reports additional byt
 cache warmup, integrity, and offline-use steps as a share-safe packet.
 Coach reuses that same download-plan contract beside capture controls, so the climber sees whether the model is bundled,
 downloaded on first online PWA launch, warmed manually, or already offline-ready before recording or importing video.
+Coach also reuses `src/core/pwaFieldReadiness.ts` beside capture controls, combining runtime, service-worker, model-cache,
+update-state, model download, and offline-video checks into the same share-safe packet that Plan exposes for field use.
 Coach PWA preflight treats `updateAvailable` as a stale-model guard for real videos: offline analysis is blocked until
 the installed PWA refreshes and rewarms model assets, while online analysis keeps a visible refresh requirement and can
 still trigger the same-origin warmup path when assets are uncached.

@@ -43,7 +43,7 @@
       "status": "review"
     }
   ],
-  "generatedAt": "2026-06-25T08:32:48.229Z",
+  "generatedAt": "2026-06-25T08:39:15.527Z",
   "modelName": "MoveNet SinglePose Lightning",
   "privacy": {
     "credentialValuesIncluded": false,
