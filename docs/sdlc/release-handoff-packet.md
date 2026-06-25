@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T15:21:06.530Z
+Generated: 2026-06-25T15:44:10.009Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 8f2b1a6030a19b0581a2f0b0536da1334a8a9f73
+- Base commit at generation: f979a2cbe27eab16ac79a2214fe000ebfdee17c1
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 13ms; average inference 327ms
+- MoveNet readiness: ready; load 12ms; average inference 321ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -42,6 +42,8 @@ Generated: 2026-06-25T15:21:06.530Z
 - Native QA evidence starter: `npm run native:qa:starter`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Cue-validation starter kit: `npm run validation:cue:starter`
+- Cue-validation dataset composition packet: `npm run validation:cue:composition`
+- Cue-validation dataset composer: `npm run validation:cue:composition -- --write-dataset`
 - Coach cue-validation gate: `npm run validation:cue`
 - Store credentials starter: `npm run release:credentials:starter`
 - GitHub workflow doctor: `npm run release:github:doctor`
@@ -74,6 +76,7 @@ Generated: 2026-06-25T15:21:06.530Z
 - [x] Launch readiness report: `docs/sdlc/launch-readiness-report.json`
 - [x] Feature completion report: `docs/sdlc/feature-completion-report.json`
 - [x] Cue validation starter kit report: `docs/sdlc/cue-validation-starter-kit-report.json`
+- [x] Cue validation dataset composition packet: `docs/sdlc/cue-validation-dataset-composition-packet.json`
 - [x] Cue validation review worksheet CSV: `docs/validation/cue-validation-review-worksheet.csv`
 - [x] Release blocker issues report: `docs/sdlc/release-blocker-issues-report.json`
 - [x] Release blocker progress: `docs/sdlc/release-blocker-progress.json`
