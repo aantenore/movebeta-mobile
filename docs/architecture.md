@@ -175,6 +175,9 @@ CocoaPods/Xcode validation on a machine with full Xcode installed.
 `buildCueValidationWorksheetPreflight` reuses the same study seed and worksheet parser before dataset composition, so
 Sessions can show aggregate row/reviewer/score/source-match readiness without exporting raw worksheet contents or coach
 identities.
+`buildCueValidationReviewerAssignmentPacket` sits between reviewer onboarding and worksheet completion, deriving reviewer
+slot workloads and worksheet filters from the same seed without adding coach identities, raw worksheet contents, report
+IDs, local paths, or raw media.
 
 ## Storage Strategy
 

@@ -7,7 +7,10 @@ import {
   coachValidationWorkflowSchemaVersion,
 } from '../src/movement/coachValidationWorkflow';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
-import { assertCueValidationReviewWorksheetCsvIsPrivacySafe } from '../src/movement/cueValidationStudy';
+import {
+  assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
+  assertCueValidationReviewWorksheetCsvIsPrivacySafe,
+} from '../src/movement/cueValidationStudy';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import { samplePoseFrames, sampleSession } from '../src/movement/sampleSession';
 
@@ -132,6 +135,7 @@ describe('coach validation workflow', () => {
     );
 
     expect(() => assertCueValidationReviewWorksheetCsvIsPrivacySafe(workflow.worksheetCsv)).not.toThrow();
+    expect(() => assertCueValidationReviewerAssignmentPacketIsPrivacySafe(workflow.reviewerAssignment)).not.toThrow();
     expect(workflow).toMatchObject({
       progress: {
         consentedClipCount: 1,
@@ -139,8 +143,17 @@ describe('coach validation workflow', () => {
         targetClipCount: 1,
         wallAngles: ['vertical'],
       },
+      reviewerAssignment: {
+        summary: {
+          assignmentCount: 2,
+          estimatedWorksheetRows: report.cues.length * 2,
+          sourceClipCount: 1,
+          status: 'ready-for-assignment',
+        },
+      },
       status: 'needs-review',
     });
+    expect(workflow.reviewerAssignmentSummary).toContain('reviewer slot assignments');
     expect(workflow.worksheetCsv).toContain('worksheetRowId,clipId,packetReportId');
     expect(workflow.worksheetCsv).not.toMatch(/file:\/\/|rawVideo|videoUri|privateNote/i);
   });

@@ -127,7 +127,7 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-25T09:21:57.753Z",
+  "generatedAt": "2026-06-25T09:28:05.143Z",
   "schemaVersion": "movebeta.launch-readiness-report.v1",
   "summary": {
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",

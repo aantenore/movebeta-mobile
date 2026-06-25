@@ -32,18 +32,21 @@ import {
 } from '@/movement/coachLibraryExport';
 import {
   assertCueValidationClipIntakeManifestIsPrivacySafe,
+  assertCueValidationReviewerAssignmentPacketIsPrivacySafe,
   assertCueValidationReviewerOnboardingPacketIsPrivacySafe,
   assertCueValidationReviewWorksheetIsPrivacySafe,
   assertCueValidationReviewWorksheetCsvIsPrivacySafe,
   assertCueValidationStudySeedIsPrivacySafe,
   buildCueValidationClipIntakeManifest,
   buildCueValidationDatasetFromCompletedWorksheetCsv,
+  buildCueValidationReviewerAssignmentPacket,
   buildCueValidationReviewerOnboardingPacket,
   buildCueValidationReviewWorksheet,
   buildCueValidationReviewWorksheetCsv,
   buildCueValidationStudySeed,
   formatCueValidationClipIntakeManifestSummary,
   formatCueValidationCompletedDatasetSummary,
+  formatCueValidationReviewerAssignmentPacketSummary,
   formatCueValidationReviewerOnboardingPacketSummary,
   formatCueValidationReviewWorksheetSummary,
   formatCueValidationStudySeedSummary,
@@ -518,6 +521,7 @@ function CoachLibraryPanel({
   library,
   onPrepareExport,
   onPrepareValidationClipManifest,
+  onPrepareValidationReviewerAssignment,
   onPrepareValidationReviewerOnboarding,
   onPrepareValidationSeed,
   onPrepareValidationWorksheet,
@@ -526,6 +530,7 @@ function CoachLibraryPanel({
   library: CoachLibrary;
   onPrepareExport?: () => void;
   onPrepareValidationClipManifest?: () => void;
+  onPrepareValidationReviewerAssignment?: () => void;
   onPrepareValidationReviewerOnboarding?: () => void;
   onPrepareValidationSeed?: () => void;
   onPrepareValidationWorksheet?: () => void;
@@ -584,6 +589,16 @@ function CoachLibraryPanel({
             >
               <UserCheck color={theme.colors.brand} size={16} />
               <Text style={styles.secondaryActionText}>Reviewer packet</Text>
+            </Pressable>
+          ) : null}
+          {onPrepareValidationReviewerAssignment ? (
+            <Pressable
+              accessibilityLabel="Prepare cue validation reviewer assignments"
+              onPress={onPrepareValidationReviewerAssignment}
+              style={styles.secondaryAction}
+            >
+              <Target color={theme.colors.brand} size={16} />
+              <Text style={styles.secondaryActionText}>Assignments</Text>
             </Pressable>
           ) : null}
           {onPrepareValidationWorksheet ? (
@@ -716,6 +731,7 @@ function ValidationCampaignPanel({
           </View>
         </View>
         <Text style={styles.libraryFocus}>{workflow.action}</Text>
+        <Text style={styles.libraryPrivacy}>{workflow.reviewerAssignmentSummary}</Text>
         <Text style={styles.libraryPrivacy}>{workflow.worksheetSummary}</Text>
         {workflow.reliabilitySummary ? <Text style={styles.libraryPrivacy}>{workflow.reliabilitySummary}</Text> : null}
         {workflow.reliabilityReport && workflow.reliabilityReport.summary.lowConsensusCueCount > 0 ? (
@@ -1012,6 +1028,18 @@ export function SessionsScreen() {
     });
   }
 
+  async function prepareCueValidationReviewerAssignmentPacket() {
+    selectionFeedback();
+    const seed = await buildCurrentCueValidationStudySeed();
+    assertCueValidationStudySeedIsPrivacySafe(seed);
+    const packet = buildCueValidationReviewerAssignmentPacket(seed);
+    assertCueValidationReviewerAssignmentPacketIsPrivacySafe(packet);
+    setPreparedExport({
+      body: `${formatCueValidationReviewerAssignmentPacketSummary(packet)}\n\n${JSON.stringify(packet, null, 2)}`,
+      title: 'Prepared cue validation reviewer assignments',
+    });
+  }
+
   async function prepareCueValidationReviewWorksheet() {
     selectionFeedback();
     const seed = await buildCurrentCueValidationStudySeed();
@@ -1218,6 +1246,7 @@ export function SessionsScreen() {
             library={coachLibrary}
             onPrepareExport={prepareCoachLibraryExport}
             onPrepareValidationClipManifest={() => void prepareCueValidationClipIntakeManifest()}
+            onPrepareValidationReviewerAssignment={() => void prepareCueValidationReviewerAssignmentPacket()}
             onPrepareValidationReviewerOnboarding={() => void prepareCueValidationReviewerOnboardingPacket()}
             onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
             onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
