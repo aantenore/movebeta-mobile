@@ -97,6 +97,11 @@
     },
     {
       "exists": true,
+      "label": "Model download plan report",
+      "path": "docs/sdlc/model-download-plan-report.json"
+    },
+    {
+      "exists": true,
       "label": "Model asset attribution notice",
       "path": "docs/sdlc/model-asset-attribution.md"
     },
@@ -385,6 +390,16 @@
       ]
     },
     {
+      "command": "npm run model:download:plan",
+      "key": "model-download-plan",
+      "label": "Model download plan report",
+      "requiredFor": [
+        "demo",
+        "internal",
+        "store"
+      ]
+    },
+    {
       "command": "npm run native:qa:starter",
       "key": "native-qa-starter",
       "label": "Native QA evidence starter",
@@ -632,7 +647,7 @@
       ]
     }
   ],
-  "generatedAt": "2026-06-25T14:03:46.939Z",
+  "generatedAt": "2026-06-25T15:12:42.185Z",
   "product": {
     "androidPackage": "com.movebeta.mobile",
     "appName": "MoveBeta",
@@ -642,9 +657,9 @@
   },
   "repository": {
     "branch": "main",
-    "baseCommitSha": "714768688a89ae89cf24a776c34a52cc63cd7624",
+    "baseCommitSha": "44537441efe3dcc48c4bb4f23d59cea4cebd3a35",
     "changedPaths": [],
-    "commitSha": "714768688a89ae89cf24a776c34a52cc63cd7624",
+    "commitSha": "44537441efe3dcc48c4bb4f23d59cea4cebd3a35",
     "remoteUrl": "https://github.com/aantenore/movebeta-mobile.git",
     "worktreeDirty": false
   },
@@ -729,8 +744,8 @@
     "expectedScreenshots": 12,
     "launchNextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "launchStatus": "blocked",
-    "moveNetAverageInferenceMs": 317,
-    "moveNetLoadMs": 12,
+    "moveNetAverageInferenceMs": 312,
+    "moveNetLoadMs": 13,
     "moveNetStatus": "ready",
     "modelVerificationStatus": "technical-ready",
     "readyTracks": 1,

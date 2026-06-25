@@ -1,20 +1,20 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T14:03:46.939Z
+Generated: 2026-06-25T15:12:42.185Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 714768688a89ae89cf24a776c34a52cc63cd7624
+- Base commit at generation: 44537441efe3dcc48c4bb4f23d59cea4cebd3a35
 - Worktree dirty at generation: no
 
 ## Summary
 
 - Release gate: pass
 - Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 12ms; average inference 317ms
+- MoveNet readiness: ready; load 13ms; average inference 312ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
 - Blockers: 5
@@ -37,6 +37,7 @@ Generated: 2026-06-25T14:03:46.939Z
 - MoveNet static assets doctor: `npm run model:movenet:assets:check`
 - Model asset provenance doctor: `npm run model:assets:provenance`
 - Model delivery lifecycle report: `npm run model:delivery:lifecycle`
+- Model download plan report: `npm run model:download:plan`
 - Native QA evidence starter: `npm run native:qa:starter`
 - Physical-device QA validator: `npm run native:qa:validate`
 - Cue-validation starter kit: `npm run validation:cue:starter`
@@ -86,6 +87,7 @@ Generated: 2026-06-25T14:03:46.939Z
 - [x] MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`
 - [x] Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`
 - [x] Model delivery lifecycle report: `docs/sdlc/model-delivery-lifecycle-report.json`
+- [x] Model download plan report: `docs/sdlc/model-download-plan-report.json`
 - [x] Model asset attribution notice: `docs/sdlc/model-asset-attribution.md`
 - [x] Model analysis replay report: `docs/sdlc/model-analysis-replay-report.json`
 - [x] Model verification suite report: `docs/sdlc/model-verification-suite-report.json`
