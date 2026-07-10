@@ -1,7 +1,8 @@
 # Cue Validation Rubric
 
-Use this rubric only with athlete-consented climbing clips or coach review packets. Raw video is not required for the
-default review workflow; the packet contains session context, quality signals, metrics, cues, and timeline events.
+Use this rubric only with athlete-consented climbing clips or coach review packets. The current automated dataset checks
+packet clarity, agreement, and safety language. Because raw video is not part of that dataset, it cannot validate false
+positives, missed cues, or timestamp accuracy by itself.
 
 ## Review Scores
 
@@ -22,9 +23,9 @@ Each generated cue is scored from 1 to 5 on four criteria:
 
 ## Validation Set
 
-Minimum useful set before production claims:
+Minimum original-video study before production claims:
 
-- 20+ consented indoor clips across slab, vertical, and overhang.
+- 30+ consented indoor clips across slab, vertical, and overhang, including no-cue examples.
 - At least two reviewers per clip where possible.
 - Grade spread from beginner to intermediate; advanced clips should be labeled separately.
 - Record whether the review used packet-only context or packet plus raw local video.
@@ -61,9 +62,12 @@ Then run the production validation gate:
 npm run validation:cue
 ```
 
-The default production threshold requires the `movebeta.cue-validation-dataset.v1` schema version, 20 consented clips,
+The current packet-quality threshold requires the `movebeta.cue-validation-dataset.v1` schema version, 20 consented clips,
 slab/vertical/overhang coverage, at least two distinct reviewers per clip, packet-only review evidence, average cue score
 of 4 or higher, safety-language scores of 4 or higher, and no raw video URI, key-frame, or pose landmark artifacts in the dataset.
+
+Passing this command is necessary but not sufficient for a paid launch. Production coaching claims additionally require
+the 30-clip original-video study and accuracy thresholds in `docs/product-strategy.md`.
 
 The Sessions tab can prepare a local `movebeta.cue-validation-study-seed.v1` export from active cue-validation consent.
 That seed contains packet-only review tasks and target thresholds, but it deliberately contains no reviewer scores. Real

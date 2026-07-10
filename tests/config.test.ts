@@ -19,6 +19,7 @@ describe('app config', () => {
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
     expect(appConfig.tfjsMoveNetModelUrl).toBe('/models/movenet/singlepose/lightning/4/model.json');
     expect(appConfig.coachLens).toBe('balanced');
+    expect(appConfig.productExperience).toBe('consumer');
     expect(appConfig.billingReadiness.provider).toBe('none');
     expect(appConfig.billingReadiness.entitlementSource).toBe('plan-catalog');
   });

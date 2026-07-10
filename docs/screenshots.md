@@ -1,51 +1,28 @@
 # MoveBeta Screenshots
 
-These screenshots are generated from the exported web build with `npm run store:screenshots`.
+These screenshots are generated from the exported consumer PWA with the licensed climbing fixture documented in
+[`store/screenshot-plan.md`](store/screenshot-plan.md). The fixture is processed in the browser and is not committed.
 
-## Analyze
+## Coach
 
-![Analyze tab showing on-device coaching, capture setup, quality, replay plan, phases, and cue trust](store/screenshots/01-analyze.png)
+![Coach screen with local video import and capture guidance](store/screenshots/01-coach.png)
 
-## Drills
+## Pose Analysis
 
-![Drills tab showing evidence-based weekly drills and practice logging](store/screenshots/02-drills.png)
+![Real climbing video with synchronized on-device pose overlay](store/screenshots/02-analysis.png)
+
+## Focused Repeat
+
+![Explicit repeat comparison against the selected baseline](store/screenshots/03-repeat.png)
+
+## Attempts
+
+![Local attempt history with derived reports only](store/screenshots/04-attempts.png)
 
 ## Progress
 
-![Progress tab showing technique trends, readiness, benchmarks, cue feedback, repeat outcomes, and project queue](store/screenshots/03-progress.png)
+![Progress screen with the latest compatible focused repeat](store/screenshots/05-progress.png)
 
-## Sessions
+## Settings
 
-![Sessions tab showing local attempts, review detail, training log, consent, exports, and validation workflow](store/screenshots/04-sessions.png)
-
-## Plan
-
-![Plan tab showing freemium catalog, capability matrix, and launch readiness](store/screenshots/05-plan.png)
-
-## Release Unblock
-
-![Plan tab release unblock checklist showing external blockers, commands, proof artifacts, and credential key names](store/screenshots/07-release-unblock.png)
-
-## Release Critical Path
-
-![Plan tab release critical path showing parallel owner lanes, dependencies, commands, and proof artifacts](store/screenshots/09-release-critical-path.png)
-
-## Release Evidence Scenarios
-
-![Plan tab release evidence scenarios showing projected launch tracks, cleared blockers, and missing prerequisites](store/screenshots/10-release-evidence-scenarios.png)
-
-## Release Freshness
-
-![Plan tab release evidence freshness guard showing generated report age, stale counts, and refresh commands](store/screenshots/11-release-freshness.png)
-
-## Model Delivery Lifecycle
-
-![Plan tab model delivery lifecycle showing build-time vendoring, browser warmup, native bundle delivery, and offline reuse](store/screenshots/12-model-delivery.png)
-
-## Privacy
-
-![Privacy tab showing no-upload defaults, diagnostics, backup, and offline readiness](store/screenshots/06-privacy.png)
-
-## Data Portability
-
-![Privacy tab showing local backup restore preview with checksum, restore, new, existing, and skipped counts](store/screenshots/08-data-portability.png)
+![Privacy boundary, export, and local deletion controls](store/screenshots/06-settings.png)

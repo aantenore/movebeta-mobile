@@ -176,15 +176,20 @@ private class AndroidMlKitPoseEstimator {
     val image = InputImage.fromBitmap(bitmap, 0)
     val pose = Tasks.await(detector.process(image))
     val landmarks = requiredLandmarks.mapNotNull { (name, type) ->
-      val landmark = pose.getPoseLandmark(type) ?: return null
+      val landmark = pose.getPoseLandmark(type) ?: return@mapNotNull null
       val position = landmark.position
+      val normalizedX = position.x.toDouble() / max(bitmap.width, 1).toDouble()
+      val normalizedY = position.y.toDouble() / max(bitmap.height, 1).toDouble()
       mapOf(
+        "inFrame" to (normalizedX >= 0 && normalizedX <= 1 && normalizedY >= 0 && normalizedY <= 1),
         "name" to name,
-        "x" to clamp(position.x.toDouble() / max(bitmap.width, 1).toDouble()),
-        "y" to clamp(position.y.toDouble() / max(bitmap.height, 1).toDouble()),
+        "x" to clamp(normalizedX),
+        "y" to clamp(normalizedY),
         "visibility" to clamp(landmark.inFrameLikelihood.toDouble())
       )
     }
+
+    if (landmarks.isEmpty()) return null
 
     return mapOf(
       "timestampMs" to timestampMs,

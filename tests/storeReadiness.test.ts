@@ -32,16 +32,10 @@ describe('store readiness', () => {
     expect(manifest.privacy.rawVideoUploadDefault).toBe(false);
     expect(manifest.screenshots.map((item) => item.route)).toEqual([
       'analyze',
-      'drills',
-      'progress',
+      'analyze',
+      'analyze',
       'sessions',
-      'plan',
-      'privacy',
-      'plan',
-      'plan',
-      'plan',
-      'plan',
-      'plan',
+      'progress',
       'privacy',
     ]);
   });

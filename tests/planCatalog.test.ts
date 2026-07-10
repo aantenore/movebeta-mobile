@@ -16,7 +16,6 @@ describe('plan catalog', () => {
     expect(catalog[1].status).toBe('upgrade');
     expect(catalog[1].highlightedUnlocks.map((item) => item.capability)).toEqual([
       'unlimited-history',
-      'attempt-comparison',
       'advanced-drill-packs',
       'coach-packets',
       'optional-encrypted-sync',

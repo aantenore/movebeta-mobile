@@ -61,6 +61,19 @@ describe('MoveNet pose mapper', () => {
     expect(frame.landmarks.find((landmark) => landmark.name === 'rightAnkle')?.visibility).toBe(0);
   });
 
+  it('retains out-of-frame evidence while clamping overlay coordinates', () => {
+    const pose = moveNetPoseFromFrame(samplePoseFrames[0]);
+    const leftWrist = pose.keypoints.find((keypoint) => keypoint.name === moveNetRequiredKeypoints.leftWrist);
+    if (!leftWrist) throw new Error('Missing test keypoint.');
+    leftWrist.x = dimensions.width * 1.12;
+
+    const frame = mapMoveNetPoseToFrame(pose, dimensions, 0);
+    const mappedWrist = frame.landmarks.find((landmark) => landmark.name === 'leftWrist');
+
+    expect(mappedWrist?.inFrame).toBe(false);
+    expect(mappedWrist?.x).toBe(1);
+  });
+
   it('feeds mapped MoveNet frames into the local movement analyzer report contract', async () => {
     const mappedFrames = samplePoseFrames.map((frame) =>
       mapMoveNetPoseToFrame(moveNetPoseFromFrame(frame), dimensions, frame.timestampMs),

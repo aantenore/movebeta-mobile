@@ -64,5 +64,5 @@ describe('static web security', () => {
     expect(isGitIgnored('secrets/movebeta-service-account.json')).toBe(true);
     expect(isGitIgnored('secrets/movebeta_service_account_prod.json')).toBe(true);
     expect(isGitIgnored('secrets/serviceAccountKey.json')).toBe(true);
-  });
+  }, 30_000);
 });

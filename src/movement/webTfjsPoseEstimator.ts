@@ -118,6 +118,7 @@ async function createDetector() {
 
   const poseDetection: PoseDetectionModule = await import('@tensorflow-models/pose-detection');
   const modelConfig = {
+    enableSmoothing: false,
     modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
     ...(appConfig.tfjsMoveNetModelUrl ? { modelUrl: appConfig.tfjsMoveNetModelUrl } : {}),
   };

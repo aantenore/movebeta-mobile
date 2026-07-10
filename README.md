@@ -1,490 +1,161 @@
-# MoveBeta Mobile
+# MoveBeta
 
-Cross-platform mobile prototype for an on-device climbing movement coach. The app analyzes a short climbing attempt,
-extracts body landmarks locally, scores movement quality, and turns those signals into concrete coaching cues and drills.
+MoveBeta is a local-first climbing movement review app for indoor boulderers. A climber imports or records a short
+attempt, reviews one pose-based movement focus at the relevant video moment, films the same climb again, and compares the
+repeat against an explicit baseline.
 
-The current build records video in-app, imports local climbing clips, previews the selected source, and runs a fully
-local analysis workflow. Video recording uses a muted configurable profile, and local duration/dimensions are resolved
-from the file before intake when the runtime can read them. Web runtimes try TensorFlow.js MoveNet for real pose
-extraction and fall back to deterministic local landmarks when the browser cannot decode the source. Custom native
-builds can use the local `movebeta-pose` Expo module: Apple Vision on iOS and ML Kit Pose Detection on Android, behind
-the same pipeline contract. Reports are persisted locally, include analysis quality and performance evidence, can be
-refreshed, exported as JSON, shared through the native share sheet, and deleted with their private training log, drill
-practice log, and coach-consent record from the Sessions tab.
+The consumer app is intentionally narrow. It is not a guidebook, social network, universal AI coach, or medical tool.
 
-## Product Wedge
+## Product Loop
 
-- Post-climb movement review for indoor climbing and board sessions.
-- Video does not leave the device by default.
-- Reports store only landmarks, metrics, cues, and timeline events.
-- Local MVP workflow: record or import a video, run local analysis, review cues, export/delete the report.
-- Freemium model: free local analysis and trend preview, paid deeper history, advanced drills, team tools, and optional
-  encrypted sync.
+1. Record on iOS or Android, or import a local video in the installable PWA.
+2. Run pose estimation and movement scoring on the device.
+3. Review the video with a synchronized landmark overlay and one primary focus.
+4. Mark the focus useful, unclear, or inaccurate.
+5. Film a focused repeat with the project, baseline, and target cue preserved.
+6. Compare only compatible attempts from the same climb.
+7. Export or delete the derived local history at any time.
+
+The selected video is not uploaded and is not stored in report history. Reports contain derived pose frames, quality
+evidence, movement signals, and focus cues.
+
+## Product Status
+
+The exported PWA is a functional private beta. The real-video smoke test covers import, local MoveNet inference,
+synchronized overlay, focus feedback, an explicit repeat, comparison, persistence, offline reload, and responsive
+layouts.
+
+The analysis is based on 2D pose proxies. It can measure low-movement time, elbow-flexion time, lateral torso offset,
+and rapid ankle movement. It cannot prove foot contact, distance from the wall, intent, fatigue, injury risk, or the
+single correct beta.
+Production coaching claims remain blocked until a consented coach-reviewed dataset passes the thresholds in
+[`docs/product-strategy.md`](docs/product-strategy.md).
+
+Android native code builds locally. The iOS source parses, but full iOS compilation and physical-device inference still
+require a machine with full Xcode. Store release also requires real-device QA, account credentials, and cue validation;
+the repository does not pretend those external gates have passed.
 
 ## Screenshots
 
-Current app screenshots are documented in [`docs/screenshots.md`](docs/screenshots.md) and generated from the exported
-web build with `npm run store:screenshots`.
+The current consumer flow is documented in [`docs/screenshots.md`](docs/screenshots.md). Regenerate it with:
+
+```bash
+MOVEBETA_TEST_VIDEO=/absolute/path/to/climbing.mp4 npm run store:screenshots
+```
+
+## Business Model
+
+The private beta ships free with the complete local workflow and all locally stored reports visible. The launch
+hypothesis is freemium: Free keeps the attempt-focus-repeat loop; Pro adds long-horizon project history, longitudinal
+comparisons, and encrypted backup. A Coach workspace remains deferred until video review, athlete separation, consent,
+billing, and cue validation are real workflows.
+
+Billing is not implemented, and public configuration is not treated as a paid entitlement.
 
 ## Stack
 
-- Expo SDK 56 and Expo Router.
-- React Native 0.85 with TypeScript strict mode.
-- Expo Camera, Image Picker, Media Library, and Expo Video for capture, import, permissions, and preview.
-- Native video metadata reads through `movebeta-pose` with browser and picker/timer/default fallback.
-- Video intake readiness for local URI validation, duration checks, resolution warnings, sampled-frame estimates, and
-  recorder timing.
-- Editable session metadata for attempt title, gym or wall, grade or focus, and wall angle.
-- Capture setup calibration for privacy, framing, angle, distance, lighting, wall contrast, and phone stability before
-  recording.
-- TensorFlow.js MoveNet for browser-side pose extraction from local video sources.
-- Reusable MoveNet keypoint mapper that converts model output into the normalized `PoseFrame` analysis contract.
-- Local Expo native module for Apple Vision and Android ML Kit pose extraction.
-- Zod contracts for movement data and report validation.
-- Local rule engine for coaching cues.
-- Local report repository with native SQLite storage and browser/mobile-safe persistence fallback.
-- Selectable local session review with quality, performance, focus metric, primary cue, timeline, and privacy evidence.
-- Private per-report training log with project status, cue usefulness feedback, effort, confidence, notes, tags, and local persistence.
-- Progress project queue generated from private training logs with next-repeat prioritization.
-- Capability-based Free, Pro, and Coach entitlement model with active plan configuration.
-- Plan catalog tab with current tier, upgrade path, capability matrix, and provider-agnostic billing readiness.
-- Launch readiness cockpit driven by replaceable evidence for demo, internal beta, and store-submission tracks.
-- Durable per-report coach consent records with grant, revoke, and delete behavior.
-- Local coach library queue from active consented reports with review priority, signal status, and privacy-safe context counts.
-- Local coach team templates for high-priority reviews, follow-through reviews, signal retakes, and privacy-safe packet handoff.
-- Versioned local coach library export that batches consented queue metadata and team templates without raw artifacts.
-- Privacy deletion receipts that remove the local report, private training log, drill practice log, and coach consent
-  record together.
-- Privacy-safe local backup and restore JSON for reports, training logs, drill practice logs, and coach consent records
-  without raw video, with an offline content checksum for restore verification.
-- Explicitly consented coach review packets that include privacy-safe athlete context from local training logs, cue
-  feedback, and drill practice while excluding raw video, video URI, key-frame landmarks, private notes, drill notes, and
-  medical claims.
-- Privacy-safe diagnostics support packets that include only aggregate quality, provider, consent, and sanitized events.
-- Airplane-mode readiness self-check for the local analysis workflow.
-- Store readiness manifest, privacy declarations, listing copy, and automated screenshot capture.
-- Cue validation scoring harness and rubric for consented coach review datasets.
-- Versioned cue validation dataset gate for consented clip studies before production movement-quality claims.
-- Local cue-validation study seed export from consented coach packets, with review tasks but no invented reviewer scores.
-- Local cue-validation review worksheet export with blank coach score rows and no reviewer identity defaults.
-- Privacy-safe cue-validation worksheet CSV export for spreadsheet-based coach review collection.
-- Completed worksheet CSV composer for building versioned validation dataset JSON only after real coach scores are filled.
-- Sessions dataset builder that accepts a completed worksheet CSV and prepares gate-compatible validation JSON locally.
-- In-app cue-validation gate preview that reports whether the completed dataset is ready or which checks still need data.
-- Share-safe cue-validation reviewer onboarding packet for coach instructions, review criteria, command checklist, and
-  raw-video-free collection handoff.
-- Analysis quality scoring for frame coverage, landmark coverage, and pose visibility.
-- Capture-readiness guidance that turns weak video signal into concrete retake advice.
-- Analysis trust summary that combines local quality, body coverage, cue evidence, runtime budget, evidence timeline, and
-  privacy boundary into a coaching/review/retake decision.
-- Share-safe analysis trust packet for exporting the local coaching/review/retake decision without raw media, landmarks,
-  private notes, local paths, or token-like values.
-- Analysis trust trend that aggregates coaching-ready, review-first, journal-only, and retake decisions across local
-  reports without raw video or private notes.
-- Share-safe analysis trust trend packet for exporting reliability status, counts, latest decision, and next action
-  without raw media, report ids, private notes, local paths, or token-like values.
-- Beta replay plan that turns local cue and metric evidence into setup, crux, and exit actions for the next attempt.
-- Movement phase breakdown that scores launch, crux, and finish phases from local cues and timeline events.
-- Cue trust scoring that grades each coaching cue from pose quality, timing evidence, runtime budget, and validation readiness.
-- Report-level video analysis performance evidence with local duration, frame rate, and budget status.
-- Local progress insights for best signal, next focus metric, and attempt-to-attempt trend deltas.
-- Local progress filters for wall angle, grade, and gym.
-- Personal benchmarks for best overall, wall angle, grade, and gym attempts after the active local filters.
-- Next session plan that combines readiness, benchmarks, drills, and private project notes into a local training block.
-- Share-safe technique readiness packet for exporting status, focus, warm-up, next action, risk, and drill guidance
-  without raw media, report ids, private notes, local paths, or token-like values.
-- Session agenda that composes training load, next-session plan, and closeout evidence into a local minute-by-minute
-  plan with intensity labels and privacy-safe proof.
-- Share-safe session agenda packet with versioned JSON, summary, block timing, intensity labels, and negative privacy
-  flags.
-- Attempt pacing plan that turns local agenda, load, and pre-send evidence into rest windows, attempt caps, hard-try
-  slots, and stop rules before adding intensity.
-- Share-safe attempt pacing packet with versioned JSON, attempt budget summary, rest windows, stop rules, and negative
-  privacy flags.
-- Local rest timer controls from attempt pacing steps for following in-session rest windows without cloud state.
-- Session closeout checklist that turns the plan, pre-send guard, drill logs, repeat outcomes, and privacy boundary into
-  the next local logging actions.
-- Training load balance that summarizes recent private effort, repeat, and drill logs into a local recommendation without
-  exposing raw video or private notes.
-- Share-safe training load packet for exporting load status, score, window, derived counts, recommendation, next action,
-  and signals without raw media, report ids, private notes, local paths, or token-like values.
-- Recurring cue pattern tracking for persistent, emerging, and cleared technique issues.
-- Cue usefulness insights that turn private cue feedback into useful, unclear, and review signals.
-- Repeat-outcome logging for comparable attempts after applying a beta plan, including repeat status, attempts, and
-  resolved cue tracking.
-- Repeat-outcome Progress insights for success rate, stalled repeat detection, resolved cues, and next-repeat action.
-- Technique readiness scoring that turns local trends and private training logs into next-session guidance.
-- Latest attempt comparison against the previous local report with cue status and next-repeat guidance.
-- Evidence-based weekly drill plans generated from local report cues.
-- Feedback-adapted drill plans that reinforce useful cues and flag unclear or not-useful cues for variants.
-- Private drill practice logging for completed or skipped suggested drills.
-- Practice consistency insights from private drill completion and skip history.
-- Practice-aware next-session planning that lowers intensity when suggested drills are repeatedly skipped.
-- Replaceable pose-estimator boundary for native platform, MediaPipe, Core ML, or TensorFlow Lite builds.
-- MoveNet model execution smoke for verifying that the local TensorFlow.js model loads and runs inference.
-- MoveNet pose contract tests that replay model-shaped keypoints through the local movement analyzer.
-- MoveNet readiness report with load-time, inference-time, backend, memory, budget checks, and explicit real-video
-  validation limitations.
-- Model evidence sync from release reports, including automatic real-world validation promotion only after a share-safe
-  cue-validation dataset doctor report is ready.
-- Generated native QA runbook for physical iOS and Android validation, including workflow steps, performance budgets,
-  and a draft evidence payload that remains blocked until real device values are entered.
-- In-app native QA evidence kit in the Plan tab with required device runs, workflows, budgets, placeholder policy, and
-  validator command before internal beta or store submission.
-- In-app native QA evidence composer for Android/iOS physical-run measurements, with local validation before committing
-  proof JSON.
-- Share-safe native QA evidence composer export with schema version, validator summary, and raw path/token rejection.
-- Cue-validation clip intake manifest for consented clip coverage, wall-angle gaps, required coach review rows, and
-  raw-artifact-free handoff planning.
-- In-app provider readiness cockpit in the Plan tab for primary video provider, fallback provider, native target, and
-  local privacy boundary.
-- Provider-agnostic commercial readiness cockpit in the Plan tab for billing adapter selection, paid plan mappings,
-  receipt-validation mode, sandbox proof, and credential-free configuration hygiene.
-- Share-safe commercial readiness packet from the Plan tab for founder, product, engineering, and release handoff
-  without payment data, receipt values, secrets, local paths, or raw artifacts.
-- Share-safe validation pilot kit from the Plan tab with consent principles, wall-angle pilot sprints, capture setup,
-  coach review rules, closeout commands, and no raw video, identities, local paths, credentials, or invented scores.
-- Share-safe validation consent packet from the Plan tab with athlete script, bystander policy, withdrawal policy,
-  per-wall-angle consent checks, and no raw video, identities, local paths, credentials, or token-like values.
-- Machine-readable iOS toolchain doctor for full-Xcode, workspace, Pods, and build-settings readiness.
-- Share-safe iOS toolchain setup packet from the Plan tab with sanitized full-Xcode/build unblock checks, commands, proof
-  expectations, and no local paths, credentials, tokens, raw artifacts, or raw video.
-- Machine-readable cue validation dataset doctor for missing, malformed, or incomplete real-review datasets.
-- Machine-readable store credentials doctor for Expo, App Store Connect, and Google Play key presence without secret
-  values.
-- Machine-readable feature completion doctor for task, backlog, traceability, and launch-readiness drift, separating
-  internal gaps from external data, device, account, and credential blockers.
-- Store submission packet for metadata, privacy declarations, screenshots, copy-risk scan, and store commands without
-  credentials or raw artifacts.
-- Store credentials setup packet in the Plan tab for EAS project binding, Expo token, App Store Connect, and Play Console
-  key names without credential values.
-- In-app Native QA evidence validator preview with CLI parity tests and raw local artifact rejection before device
-  evidence can satisfy release readiness.
-- Evidence collection plan in the Plan tab with cue-validation clips, coach review rows, wall-angle coverage, native
-  device checks, and external evidence owners derived from release contracts.
-- Balanced validation collection batches in the Plan tab, with per-wall-angle clip targets, review-row estimates, and
-  privacy-first capture checklist derived from acceptance thresholds.
-- Share-safe validation collection packet from the Plan tab, with balanced batches, reviewer slot templates, workflow
-  commands, and explicit raw-video/path/credential exclusion flags.
-- Share-safe validation consent packet from the Plan tab, with local-analysis consent copy, per-batch metadata fields,
-  withdrawal handling, and explicit raw-video/path/identity/token exclusion flags.
-- Release unblock checklist in the Plan tab with launch-derived external blockers, proof artifacts, release commands,
-  owners, affected tracks, and credential key names without secret values.
-- Release critical path in the Plan tab that sequences external blockers across real-world validation, native build/QA,
-  and store-account lanes with dependencies and share-safe packet export.
-- Release blocker progress in the Plan tab and CLI that joins owners, dependency blockers, missing proof counts, accepted
-  reference types, current commands, and next action for the remaining external blockers.
-- Release evidence scenarios in the Plan tab that compare proof-collection bundles, projected ready tracks, cleared
-  blockers, missing prerequisites, and share-safe packet export before account, device, or coach-review work starts.
-- Release evidence freshness guard in the Plan tab and CLI to catch stale generated reports before handoff or store work.
-- Model verification suite in the Plan tab and CLI to aggregate MoveNet runtime budgets, model-shaped replay coverage,
-  wall-angle coverage, movement metric coverage, cue output coverage, privacy checks, and real-validation gaps.
-- Model delivery lifecycle in the Plan tab and CLI to show build-time vendoring, same-origin browser download, cache
-  warmup, and offline reuse for the shipped model assets.
-- Release evidence packet in the Plan tab that aggregates launch, model, provider, native QA, iOS toolchain, and blocker
-  evidence into one share-safe JSON handoff.
-- Evidence reconciliation in the Plan tab that accepts share-safe release report JSON, previews which launch blockers
-  would clear, and prepares a versioned no-secret reconciliation packet.
-- Release blocker issue report CLI that regenerates issue-ready external blocker drafts from current launch evidence
-  without filing GitHub issues or exposing secret values.
-- Release blocker issue filing CLI that writes a dry-run filing plan by default and requires `--create` plus
-  `MOVEBETA_RELEASE_ISSUE_CREATE=1` before creating GitHub issues.
-- Plan tab release blocker issue filing export that prepares the same dry-run filing JSON from mobile-safe core logic,
-  keeping Node and GitHub CLI mutation code out of the app runtime.
-- Release blocker issue web-link export in the Plan tab and CLI that generates prefilled GitHub issue URLs from a
-  configurable repository without exposing secrets or local artifacts.
-- External evidence intake CLI that turns every open blocker into share-safe proof-reference rows and a fill-in template
-  before real device, coach, account, or CI evidence is collected.
-- External evidence validation CLI that checks filled proof references for accepted reference types and share-safe values
-  before handoff or store-readiness claims rely on them.
-- External evidence promotion CLI that creates a reviewable launch-readiness evidence candidate only after proof
-  references validate, without mutating release configuration automatically.
-- External evidence apply guard that writes a share-safe dry-run report by default and applies promoted launch-readiness
-  evidence to `app.json` only with explicit `--write-app-config` approval.
-- Installable static PWA export with manifest, service worker, Vercel static config, and no backend/API route requirement.
-- Share-safe Vercel deployment readiness in the Plan tab and CLI for static prebuilt deployment checks, project binding,
-  deployment-secret availability, prebuilt deploy commands, and no backend/API surface.
-- Vercel static production workflow template plus readiness doctor for GitHub Actions activation, required secret-name
-  references, release gate ordering, post-deploy smoke, and artifact upload evidence without committed secret values.
-- In-app PWA runtime readiness in the Plan tab for install prompt state, standalone mode, service worker/cache readiness,
-  network state, update state, and share-safe install guidance.
-- Store credentials setup starter for share-safe EAS project binding guidance, empty credential key templates, and
-  release-gate evidence without Expo, Apple, Google, service-account, or project-id values in source control.
-- GitHub Actions quality workflow template for `main` and pull requests that installs from `package-lock.json`, runs the
-  shared local release gate, and uploads machine-readable release evidence as build artifacts after activation.
-- GitHub workflow activation doctor that checks template presence, active workflow status, GitHub CLI auth, OAuth
-  scopes, and token exclusion before attempting workflow pushes.
-- Dependency license doctor that creates an offline package/license inventory from lockfile-installed dependencies before
-  release handoff.
-- Vitest for domain tests.
+- Expo SDK 56, Expo Router, React Native 0.85, and strict TypeScript.
+- TensorFlow.js MoveNet with same-origin static model assets for the web PWA.
+- A local Expo module using Apple Vision on iOS and ML Kit Accurate Pose Detection on Android.
+- Expo Camera, Image Picker, and Video for capture, import, playback, and synchronized replay.
+- Zod contracts for all movement, report, comparison, and configuration boundaries.
+- SQLite on native and versioned local storage on web.
+- Vitest for domain, privacy, persistence, model-contract, and release tests.
+- Playwright for exported PWA, real-video, offline, and screenshot verification.
+
+The pose provider is replaceable behind one pipeline contract. Provider and model identity are stored with every report,
+and incompatible reports are rejected before comparison.
 
 ## Local Setup
 
+Use Node 24 and install the locked dependencies:
+
 ```bash
-npm install
+npm ci
 npm run quality
-npm run model:movenet:smoke
-npm run model:movenet:readiness
-npm run model:analysis:replay
-npm run model:verification:suite
-npm run model:evidence:sync
 npm run export:web
 npm run preview:web
-npm run store:manifest
-npm run store:screenshots
-npm run toolchain:ios
-npm run native:android:debug
-npm run native:android:manifest
-npm run native:ios:doctor
-npm run release:env:doctor
-npm run release:credentials:starter
-npm run release:credentials:doctor
-npm run release:blocker-issues
-npm run release:blocker-issues:file
-npm run release:blocker-issues:links
-npm run release:evidence:intake
-npm run release:evidence:validate
-npm run release:evidence:promote
-npm run release:evidence:apply
-npm run validation:cue:starter
-npm run validation:cue:composition
-npm run validation:cue:doctor
-npm run model:movenet:assets:download
-npm run model:movenet:assets:check
-npm run model:delivery:lifecycle
-npm run web:pwa:check
-npm run web:vercel:check
-npm run web:vercel:workflow
-npm run native:qa:runbook
-npm run native:qa:starter
-npm run ci
-npm run release:eas:check
-npm run release:readiness
 ```
+
+The preview is available at [http://localhost:8082](http://localhost:8082).
+
+Run the complete real-video web flow:
+
+```bash
+MOVEBETA_SMOKE_URL=http://127.0.0.1:8082 \
+MOVEBETA_TEST_VIDEO=/absolute/path/to/climbing.mp4 \
+python3 scripts/smoke_web_video.py
+```
+
+Useful release checks:
+
+```bash
+npm run web:pwa:check
+npm run model:movenet:assets:check
+npm run model:movenet:smoke
+npm run native:android:debug
+npm run native:ios:doctor
+npm run release:check
+```
+
+`release:check` reports external blockers instead of fabricating evidence for physical devices, stores, or coach review.
 
 ## Configuration
 
+Consumer defaults live in `app.json` and can be replaced at build time:
+
 ```bash
-EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER=local-fixture
+EXPO_PUBLIC_MOVEBETA_PRODUCT_EXPERIENCE=consumer
 EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER=web-tfjs-movenet
 EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER=native-platform-pose
 EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL=/models/movenet/singlepose/lightning/4/model.json
 EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
-EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
-EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY=aantenore/movebeta-mobile
-EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":false,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"nativeQaRunbook":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
 
-`EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` accepts the same JSON shape as Expo `extra.launchReadinessEvidence`,
-so CI, EAS profiles, or release managers can update launch evidence without changing application code.
+`diagnostic` product experience is reserved for internal builds. It exposes model, validation, and release tooling that is
+hidden from the consumer navigation.
 
-Supported local provider keys:
+## Model Delivery
 
-- `local-fixture`: deterministic preview provider for tests and web demos.
-- `local-video-fallback`: deterministic test adapter; rejected for recorded or imported user video.
-- `web-tfjs-movenet`: browser-side TensorFlow.js MoveNet provider for local video pose extraction.
-- `native-platform-pose`: local Expo module using Apple Vision on iOS and ML Kit on Android.
-- `native-mediapipe`: reserved future native bridge for MediaPipe Pose Landmarker; rejected clearly in this build.
-- `native-coreml`: reserved future iOS bridge for a custom Core ML pose model; rejected clearly in this build.
-- `native-tflite`: reserved future Android/iOS TensorFlow Lite bridge; rejected clearly in this build.
+MoveNet graph and weight shards are committed under `public/models/` with SHA-256 digests in
+`public/model-assets.json`. The web export serves them from the app origin. The service worker caches the application
+shell and model assets so later analyses can run offline; no inference backend or API route is required.
 
 ## Project Shape
 
 ```text
-src/
-  app/                  Expo navigation entries
-  components/           Shared interface primitives
-  core/                 Theme, haptics, configuration
-  features/             Product screens
-  movement/             On-device movement contracts, provider boundary, pipeline, analyzer
-  video/                Video capture/import normalization, intake readiness, and source configuration
-tests/                  Domain and privacy tests
-docs/                   Product, architecture, requirements, and test notes
+src/app/                 Expo Router entries
+src/components/          Shared UI primitives
+src/core/                Configuration, storage, entitlements, and product services
+src/features/            Coach, Attempts, Progress, Settings, and internal screens
+src/movement/            Pose contracts, providers, analyzer, comparison, and evidence
+src/video/               Capture, import, metadata, intake, and sampling
+modules/movebeta-pose/    Apple Vision and Android ML Kit Expo module
+tests/                   Automated contract and regression tests
+scripts/                 Build, smoke, screenshot, and release automation
+docs/                    Product, architecture, validation, store, and SDLC evidence
 ```
 
-## Software Lifecycle
+## Native Builds
 
-MoveBeta now includes lightweight SDLC artifacts for the full product loop:
-
-- Delivery contract and acceptance threshold: `docs/sdlc/delivery-contract.md`.
-- Definition of Done and quality gates: `docs/sdlc/definition-of-done.md`.
-- Requirement-to-test traceability: `docs/sdlc/traceability-matrix.md`.
-- Release checklist and operational runbook: `docs/sdlc/release-checklist.md`, `docs/sdlc/runbook.md`.
-- Release readiness report for this build: `docs/sdlc/release-readiness-report.md`.
-- Machine-readable release gate report: `docs/sdlc/release-gate-report.json`.
-- Machine-detected launch readiness report: `docs/sdlc/launch-readiness-report.json`.
-- iOS toolchain report: `docs/sdlc/ios-toolchain-report.json`, `docs/sdlc/ios-toolchain-report.md`.
-- Cue validation dataset report: `docs/sdlc/cue-validation-dataset-report.json`,
-  `docs/sdlc/cue-validation-dataset-report.md`.
-- Environment template report: `docs/sdlc/env-template-report.json`, `docs/sdlc/env-template-report.md`.
-- Store credentials report: `docs/sdlc/store-credentials-report.json`, `docs/sdlc/store-credentials-report.md`.
-- Store credentials setup starter: `docs/sdlc/store-credentials-setup-packet.json`,
-  `docs/sdlc/store-credentials-setup-packet.md`, `docs/sdlc/store-credentials.env.template`, and
-  `docs/sdlc/eas-project-binding.template.json`.
-- GitHub workflow report: `docs/sdlc/github-workflow-report.json`, `docs/sdlc/github-workflow-report.md`.
-- Dependency license report: `docs/sdlc/dependency-license-report.json`,
-  `docs/sdlc/dependency-license-report.md`.
-- Model-analysis replay report: `docs/sdlc/model-analysis-replay-report.json`.
-- MoveNet static assets report: `docs/sdlc/movenet-static-assets-report.json`,
-  `docs/sdlc/movenet-static-assets-report.md`; model graph and weight shards live under
-  `public/models/movenet/singlepose/lightning/4` and are listed in `public/model-assets.json`.
-- Model asset provenance report: `docs/sdlc/model-asset-provenance-report.json`,
-  `docs/sdlc/model-asset-provenance-report.md`, and the attribution notice at
-  `docs/sdlc/model-asset-attribution.md`.
-- Model delivery lifecycle report: `docs/sdlc/model-delivery-lifecycle-report.json`,
-  `docs/sdlc/model-delivery-lifecycle-report.md`.
-- Model download plan report: `docs/sdlc/model-download-plan-report.json`,
-  `docs/sdlc/model-download-plan-report.md`.
-- Model verification suite report: `docs/sdlc/model-verification-suite-report.json`,
-  `docs/sdlc/model-verification-suite-report.md`.
-- iOS toolchain setup packet: `docs/sdlc/ios-toolchain-setup-packet.json`,
-  `docs/sdlc/ios-toolchain-setup-packet.md`.
-- Cue-validation dataset composition packet: `docs/sdlc/cue-validation-dataset-composition-packet.json`,
-  `docs/sdlc/cue-validation-dataset-composition-packet.md`; use
-  `npm run validation:cue:composition -- --write-dataset` only after the completed worksheet preflight is ready.
-- Release blocker issue report: `docs/sdlc/release-blocker-issues-report.json`,
-  `docs/sdlc/release-blocker-issues-report.md`.
-- Release blocker progress: `docs/sdlc/release-blocker-progress.json`,
-  `docs/sdlc/release-blocker-progress.md`.
-- Release blocker issue filing plan: `docs/sdlc/release-blocker-issue-filing-plan.json`,
-  `docs/sdlc/release-blocker-issue-filing-plan.md`.
-- Release blocker issue web links: `docs/sdlc/release-blocker-issue-web-links.json`,
-  `docs/sdlc/release-blocker-issue-web-links.md`.
-- External evidence intake report and template: `docs/sdlc/external-evidence-intake-report.json`,
-  `docs/sdlc/external-evidence-intake-report.md`, `docs/sdlc/external-evidence-intake.template.json`.
-- External evidence validation report: `docs/sdlc/external-evidence-validation-report.json`,
-  `docs/sdlc/external-evidence-validation-report.md`; optional filled input lives at
-  `docs/sdlc/external-evidence-intake.filled.json` and should contain references only, not raw evidence.
-- External evidence promotion report: `docs/sdlc/external-evidence-promotion-report.json`,
-  `docs/sdlc/external-evidence-promotion-report.md`; it carries the reviewable launch-readiness evidence candidate.
-- External evidence apply report: `docs/sdlc/external-evidence-apply-report.json`,
-  `docs/sdlc/external-evidence-apply-report.md`; it records dry-run/apply status without storing raw evidence.
-- PWA readiness report: `docs/sdlc/pwa-readiness-report.json`, `docs/sdlc/pwa-readiness-report.md`.
-- Vercel deployment report: `docs/sdlc/vercel-deployment-report.json`,
-  `docs/sdlc/vercel-deployment-report.md`.
-- Vercel workflow report: `docs/sdlc/vercel-workflow-report.json`, `docs/sdlc/vercel-workflow-report.md`.
-- Release handoff packet for stakeholder or buyer review: `docs/sdlc/release-handoff-packet.md`,
-  `docs/sdlc/release-handoff-packet.json`.
-- Release archive integrity manifest: `../movebeta-mobile-release-archives.md`,
-  `../movebeta-mobile-release-archives.json`, with SHA-256 checksums and worktree-state evidence.
-- MoveNet model readiness report: `docs/sdlc/movenet-readiness-report.json`.
-- Native QA runbook and device-evidence template: `docs/sdlc/native-qa-runbook.json`,
-  `docs/sdlc/native-qa-evidence.template.json`.
-- Native QA evidence starter: `docs/sdlc/native-qa-evidence-starter-report.json` and
-  `docs/sdlc/native-qa-evidence-input.template.json`.
-- Cue validation starter kit: `docs/sdlc/cue-validation-starter-kit-report.json`,
-  `docs/validation/cue-validation-study-seed.json`, and blank worksheet JSON/CSV artifacts for real coach scoring.
-- Native QA evidence kit contract: `src/core/nativeQaEvidenceKit.ts`.
-- Store listing, privacy declarations, manifest, and screenshots: `docs/store/`.
-- Git handoff and first-push procedure: `docs/sdlc/git-handoff.md`.
-- Risk register, incident response, and ADRs: `docs/sdlc/risk-register.md`, `docs/sdlc/incident-response.md`, `docs/adr/`.
-- CI workflow template: `docs/sdlc/ci-templates/github-actions-quality.yml`; move it to
-  `.github/workflows/quality.yml` after the GitHub token has `workflow` scope.
-
-The local release gate is:
-
-```bash
-npm run release:check
-npm run model:movenet:assets:download
-npm run model:analysis:replay
-npm run model:movenet:assets:check
-npm run model:assets:provenance
-npm run model:delivery:lifecycle
-npm run model:verification:suite
-npm run model:evidence:sync
-npm run validation:cue:starter
-npm run release:blocker-issues
-npm run release:blocker-issues:file
-npm run release:evidence:intake
-npm run release:evidence:validate
-npm run release:evidence:promote
-npm run release:evidence:apply
-npm run native:ios:doctor
-npm run release:env:doctor
-npm run release:credentials:starter
-npm run release:credentials:doctor
-npm run web:vercel:check
-npm run web:vercel:workflow
-npm run release:readiness
-npm run release:archives
-npm run release:handoff
-```
-
-Use `npm run release:full` to run the full local quality gate and refresh the machine-detected launch readiness report in
-one command, including the release handoff packet.
-
-The web app can be deployed as a static installable PWA without a backend. Run `npm run export:web`,
-`npm run web:pwa:check`, `npm run web:vercel:check`, and `npm run web:vercel:workflow`; `vercel.json` points Vercel at
-`dist` and does not define API routes or serverless functions. The Vercel doctors keep account binding, workflow
-activation, and deployment token values outside source control while documenting prebuilt deploy commands and a static
-GitHub Actions deployment template. Use Vercel plan selection according to the intended personal or commercial
-deployment context.
-
-The web MoveNet graph and weight shards are downloaded during setup or release with
-`npm run model:movenet:assets:download`, then committed under `public/models/...` with SHA-256 digests in
-`public/model-assets.json`. Runtime analysis loads the configured same-origin model URL instead of fetching model weights
-from the upstream catalog during the first user analysis. The post-export step injects hashed Expo bundles, router
-assets, and metadata into `dist/sw.js`; the service worker also caches `/model-assets.json` and every listed
-`/models/...` asset, then derives the service-worker cache version from those app, shell, metadata, and model asset
-contents so installed clients receive a fresh cache name when shipped assets change.
-The Plan tab PWA runtime check reads Cache Storage for `/model-assets.json` and the listed same-origin model assets, so
-offline video-analysis readiness is not claimed until the model cache is warm.
-When browser Web Crypto is available, that same runtime check also requires SHA-256 model integrity before claiming
-offline analysis readiness and includes verified asset counts in the install guidance packet.
-The Plan tab also includes a Warm model action that fetches and caches those same-origin model files explicitly and
-prepares a share-safe warmup result before offline gym use. When Web Crypto is available, the warmup also compares cached
-byte counts and SHA-256 digests against `model-assets.json` so the packet can distinguish cached assets from verified
-assets.
-`npm run model:delivery:lifecycle` and the Plan tab Model delivery lifecycle card make the download timing explicit:
-model files are vendored during build/release, fetched from the app origin on first online PWA launch or warmup, then
-reused from Cache Storage for offline analysis after the cache is ready.
-
-The EAS release gates are:
-
-```bash
-npm run release:eas:check
-npm run release:eas:strict
-```
-
-`release:eas:check` validates the committed build and submit configuration while reporting account-bound Expo, Apple,
-and Google prerequisites as warnings. `release:eas:strict` must pass before submitting to TestFlight, Play internal
-testing, or production, and expects the project id plus store credentials to be injected from environment or CI secrets.
-Run `npm run release:credentials:starter` before strict submission setup to refresh the share-safe packet, empty env-key
-template, and EAS project binding template. Fill credential values only in the local shell, CI secrets, EAS credentials,
-or store-provider consoles; do not commit a filled copy.
-Run `npm run release:store-account:runbook` to generate the ordered account runbook from metadata, EAS binding,
-credential, native QA, strict-gate, and submit readiness without including secret values or project id values.
-Run `npm run release:blocker-progress` to generate the current owner/dependency/proof tracker for all external launch
-blockers before sharing handoff evidence.
-
-Native store validation uses `docs/sdlc/native-qa-runbook.json` as the executable test plan and
-`docs/sdlc/native-qa-evidence-input.template.json` as the structured run input. Generate the current runbook and input
-template with `npm run native:qa:runbook` and `npm run native:qa:starter`, fill real iOS and Android device measurements,
-then run `npm run native:qa:starter -- --input <filled-template.json>`. Add `--write-evidence` only when the candidate
-passes and should become `docs/sdlc/native-qa-evidence.json`, then execute `npm run native:qa:validate`.
-Cue-quality validation uses `docs/validation/cue-validation-dataset.template.json` as the study template. Copy it to
-`docs/validation/cue-validation-dataset.json`, fill consented coach review packets and reviews, then execute
-`npm run validation:cue`.
-
-## Native Build Note
-
-Expo Go cannot run the native pose bridge. Use a custom Expo development build or native run:
+Expo Go cannot load the local pose module. Use a custom development build:
 
 ```bash
 npx expo prebuild --no-install
-npm run toolchain:ios
 npm run native:android:debug
 npm run native:ios:pods
 npm run native:ios:doctor
-npm run release:eas:check
-npm run release:credentials:doctor
-npx eas-cli@latest build -p ios --profile production
-npx eas-cli@latest build -p android --profile production
 ```
 
-Android debug build is verified locally with the bundled Temurin 17 JDK and local Android SDK under `.tools`. iOS source
-is implemented and `pod install` is verified with the local Ruby/CocoaPods toolchain under `.tools/ruby-3.3.11`. The
-Android build also validates the merged manifest for camera/import permissions, no audio permission, and disabled backup.
-iOS compilation still requires full Xcode, while this machine currently exposes only Command Line Tools. Run
-`npm run native:ios:doctor` to refresh the current blocker report before iOS beta or store work.
+Android uses the bundled local JDK and SDK helpers. iOS compilation requires full Xcode; Command Line Tools alone are not
+enough. Physical-device acceptance criteria and evidence templates live in `docs/sdlc/native-qa-runbook.json`.
+
+## Documentation
+
+- Product and business decisions: [`docs/product-strategy.md`](docs/product-strategy.md)
+- Architecture: [`docs/architecture.md`](docs/architecture.md)
+- Requirements: [`docs/requirements.md`](docs/requirements.md)
+- Test plan: [`docs/test-plan.md`](docs/test-plan.md)
+- Data governance: [`docs/data-governance.md`](docs/data-governance.md)
+- Release evidence and external blockers: [`docs/sdlc/`](docs/sdlc/)

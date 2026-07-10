@@ -19,7 +19,7 @@ describe('capture readiness', () => {
     const readiness = assessCaptureReadiness(quality({}));
 
     expect(readiness.status).toBe('ready');
-    expect(readiness.title).toBe('Ready for coaching');
+    expect(readiness.title).toBe('Ready for pose review');
     expect(readiness.checks.every((check) => check.status === 'pass')).toBe(true);
     expect(readiness.action).toContain('baseline');
   });
@@ -50,7 +50,28 @@ describe('capture readiness', () => {
     );
 
     expect(readiness.status).toBe('retake');
-    expect(readiness.action).toBe('Retake before trusting technique cues.');
+    expect(readiness.action).toBe('Retake before using movement focus cues.');
     expect(readiness.checks.filter((check) => check.status === 'fail')).toHaveLength(3);
+  });
+
+  it('rejects a high aggregate score when hands or feet are persistently cropped', () => {
+    const readiness = assessCaptureReadiness(
+      quality({
+        extremityCoverage: 0.35,
+        inFrameCoverage: 0.61,
+        score: 94,
+      }),
+    );
+
+    expect(readiness.status).toBe('retake');
+    expect(readiness.checks.find((check) => check.id === 'extremity-coverage')?.status).toBe('fail');
+    expect(readiness.checks.find((check) => check.id === 'in-frame-coverage')?.status).toBe('fail');
+  });
+
+  it('rejects a distant subject even when landmark confidence is high', () => {
+    const readiness = assessCaptureReadiness(quality({ score: 95, subjectScale: 0.15 }));
+
+    expect(readiness.status).toBe('retake');
+    expect(readiness.checks.find((check) => check.id === 'subject-scale')?.status).toBe('fail');
   });
 });

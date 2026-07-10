@@ -45,7 +45,8 @@ function findMetric(report: LocalAnalysisReport | null, metricId: string) {
 export function summarizeProgress(reports: LocalAnalysisReport[], annotations: ReportAnnotation[] = []): ProgressInsightSummary {
   const orderedReports = sortReports(reports);
   const latestReport = orderedReports[0] ?? null;
-  const previousReport = orderedReports[1] ?? null;
+  const attemptComparison = compareLatestAttempts(orderedReports, annotations);
+  const previousReport = attemptComparison?.baselineReport ?? null;
   const latestMetrics = measuredMovementMetrics(latestReport?.metrics ?? []);
   const bestMetric = latestMetrics.length > 0 ? [...latestMetrics].sort((a, b) => b.score - a.score)[0] : null;
   const focusMetric = latestMetrics.length > 0 ? [...latestMetrics].sort((a, b) => a.score - b.score)[0] : null;
@@ -65,7 +66,7 @@ export function summarizeProgress(reports: LocalAnalysisReport[], annotations: R
 
   return {
     attemptCount: orderedReports.length,
-    attemptComparison: compareLatestAttempts(orderedReports, annotations),
+    attemptComparison,
     averageQuality: Math.round(average(orderedReports.map((report) => report.analysisQuality.score))),
     bestMetric,
     focusMetric,
