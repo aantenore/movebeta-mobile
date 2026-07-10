@@ -1,6 +1,7 @@
 import type { LocalAnalysisReport, MovementMetric } from './contracts';
 import { compareLatestAttempts, type AttemptComparison } from './attemptComparison';
 import type { ReportAnnotation } from './reportAnnotationRepository';
+import { measuredMovementMetrics, movementMetricIsMeasured } from './metricEvidence';
 
 export type MetricTrend = {
   id: string;
@@ -37,14 +38,15 @@ function directionFromDelta(delta: number | null): MetricTrend['direction'] {
 }
 
 function findMetric(report: LocalAnalysisReport | null, metricId: string) {
-  return report?.metrics.find((metric) => metric.id === metricId) ?? null;
+  const metric = report?.metrics.find((item) => item.id === metricId) ?? null;
+  return movementMetricIsMeasured(metric) ? metric : null;
 }
 
 export function summarizeProgress(reports: LocalAnalysisReport[], annotations: ReportAnnotation[] = []): ProgressInsightSummary {
   const orderedReports = sortReports(reports);
   const latestReport = orderedReports[0] ?? null;
   const previousReport = orderedReports[1] ?? null;
-  const latestMetrics = latestReport?.metrics ?? [];
+  const latestMetrics = measuredMovementMetrics(latestReport?.metrics ?? []);
   const bestMetric = latestMetrics.length > 0 ? [...latestMetrics].sort((a, b) => b.score - a.score)[0] : null;
   const focusMetric = latestMetrics.length > 0 ? [...latestMetrics].sort((a, b) => a.score - b.score)[0] : null;
   const trends: MetricTrend[] = latestMetrics.map((metric) => {

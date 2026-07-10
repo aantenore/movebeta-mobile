@@ -16,12 +16,15 @@ export function MovementMetricRow({ metric }: MovementMetricRowProps) {
       </View>
       <View style={styles.score}>
         <Text style={styles.value}>
-          {metric.value}
-          {metric.unit === '/100' ? '' : ` ${metric.unit}`}
+          {metric.status === 'insufficient-data'
+            ? 'Unavailable'
+            : `${metric.value}${metric.unit === '/100' ? '' : ` ${metric.unit}`}`}
         </Text>
-        <View style={styles.track}>
-          <View style={[styles.bar, { width: `${metric.score}%` }]} />
-        </View>
+        {metric.status === 'measured' ? (
+          <View style={styles.track}>
+            <View style={[styles.bar, { width: `${metric.score}%` }]} />
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -58,7 +61,7 @@ const styles = StyleSheet.create({
   },
   value: {
     color: theme.colors.brandDark,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
   },
   track: {

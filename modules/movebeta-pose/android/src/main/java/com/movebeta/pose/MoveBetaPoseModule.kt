@@ -3,6 +3,7 @@ package com.movebeta.pose
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.PoseDetection
@@ -93,7 +94,8 @@ private class AndroidMlKitPoseEstimator {
     val durationMs = positiveDouble(input["durationMs"], 12_000.0)
     val frameIntervalMs = positiveDouble(input["frameIntervalMs"], 350.0)
     val minFrames = positiveInt(input["minFrames"], 10)
-    val maxFrames = positiveInt(input["maxFrames"], 48)
+    val maxFrames = positiveInt(input["maxFrames"], 96)
+    val maxInferenceLongSidePx = positiveInt(input["maxInferenceLongSidePx"], 960)
     val analysisStartMs = analysisStartMs(input["analysisStartMs"], durationMs)
     val analysisEndMs = analysisEndMs(input["analysisEndMs"], durationMs, analysisStartMs)
     val timestamps = frameTimestamps(analysisStartMs, analysisEndMs, frameIntervalMs, minFrames, maxFrames)
@@ -106,8 +108,22 @@ private class AndroidMlKitPoseEstimator {
 
     try {
       setDataSource(retriever, context, uri)
+      val sourceWidth = positiveInt(
+        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toIntOrNull(),
+        positiveInt(input["width"], 1080)
+      )
+      val sourceHeight = positiveInt(
+        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull(),
+        positiveInt(input["height"], 1920)
+      )
       val frames = timestamps.mapNotNull { timestampMs ->
-        val bitmap = retriever.getFrameAtTime((timestampMs * 1000).toLong(), MediaMetadataRetriever.OPTION_CLOSEST)
+        val bitmap = decodedFrame(
+          retriever,
+          timestampMs,
+          sourceWidth,
+          sourceHeight,
+          maxInferenceLongSidePx
+        )
         bitmap?.let {
           try {
             estimateFrame(detector, it, timestampMs)
@@ -126,6 +142,30 @@ private class AndroidMlKitPoseEstimator {
       detector.close()
       retriever.release()
     }
+  }
+
+  private fun decodedFrame(
+    retriever: MediaMetadataRetriever,
+    timestampMs: Double,
+    sourceWidth: Int,
+    sourceHeight: Int,
+    maxLongSidePx: Int
+  ): Bitmap? {
+    val timestampUs = (timestampMs * 1000).toLong()
+    val longSide = max(sourceWidth, sourceHeight)
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1 || longSide <= maxLongSidePx) {
+      return retriever.getFrameAtTime(timestampUs, MediaMetadataRetriever.OPTION_CLOSEST)
+    }
+
+    val scale = maxLongSidePx.toDouble() / longSide.toDouble()
+    val targetWidth = max(1, (sourceWidth * scale).toInt())
+    val targetHeight = max(1, (sourceHeight * scale).toInt())
+    return retriever.getScaledFrameAtTime(
+      timestampUs,
+      MediaMetadataRetriever.OPTION_CLOSEST,
+      targetWidth,
+      targetHeight
+    )
   }
 
   private fun estimateFrame(

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   assertWebSmokeReportIsShareSafe,
   buildWebSmokeReport,
+  parseWebSmokeRuntimeEvidence,
   renderWebSmokeReportMarkdown,
   WEB_SMOKE_REPORT_SCHEMA_VERSION,
   writeWebSmokeReport,
@@ -49,6 +50,20 @@ describe('web smoke report', () => {
     expect(report.checks.map((check) => check.key)).toContain('pwa-offline-model-cache');
     expect(report.diagnostics).toBeUndefined();
     expect(JSON.stringify(report)).not.toMatch(/\/Users\/|file:\/\/|ghp_|\.mov|\.mp4/i);
+  });
+
+  it('captures only aggregate real-video inference evidence from smoke output', () => {
+    const evidence = parseWebSmokeRuntimeEvidence(
+      '{"desktop":"pass","mobile":"pass","pwaOffline":"pass","realVideo":{"processedFrames":12,"qualityScore":86,"metricStatuses":{"flow":"measured"}}}',
+    );
+
+    expect(evidence?.realVideo).toEqual({
+      metricStatuses: { flow: 'measured' },
+      processedFrames: 12,
+      qualityScore: 86,
+      status: 'pass',
+    });
+    expect(JSON.stringify(evidence)).not.toMatch(/file:|blob:|\.mp4/i);
   });
 
   it('sanitizes failure diagnostics before writing shareable evidence', () => {

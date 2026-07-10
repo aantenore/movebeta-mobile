@@ -273,7 +273,7 @@ EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN=free
 EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE=on-device
 EXPO_PUBLIC_MOVEBETA_API_BASE_URL=https://api.movebeta.example/v1
 EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY=aantenore/movebeta-mobile
-EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":true,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"nativeQaRunbook":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
+EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE={"releaseGate":false,"webSmoke":true,"privacyManifest":true,"storeListing":true,"modelReadiness":true,"nativeQaRunbook":true,"androidDebugBuild":true,"iosPods":true,"iosBuild":false,"nativeDeviceQa":false,"cueValidationDataset":false,"easProject":false,"easCredentials":false}
 ```
 
 `EXPO_PUBLIC_MOVEBETA_LAUNCH_READINESS_EVIDENCE` accepts the same JSON shape as Expo `extra.launchReadinessEvidence`,
@@ -282,7 +282,7 @@ so CI, EAS profiles, or release managers can update launch evidence without chan
 Supported local provider keys:
 
 - `local-fixture`: deterministic preview provider for tests and web demos.
-- `local-video-fallback`: deterministic local video adapter for Expo/web runtimes without native frame processors.
+- `local-video-fallback`: deterministic test adapter; rejected for recorded or imported user video.
 - `web-tfjs-movenet`: browser-side TensorFlow.js MoveNet provider for local video pose extraction.
 - `native-platform-pose`: local Expo module using Apple Vision on iOS and ML Kit on Android.
 - `native-mediapipe`: reserved future native bridge for MediaPipe Pose Landmarker; rejected clearly in this build.

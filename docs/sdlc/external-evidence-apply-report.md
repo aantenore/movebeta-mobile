@@ -1,6 +1,6 @@
 # External Evidence Apply Report
 
-Generated: 2026-06-25T15:50:12.914Z
+Generated: 2026-07-10T08:48:19.638Z
 
 - Status: needs-evidence
 - Write requested: no
@@ -30,7 +30,7 @@ Generated: 2026-06-25T15:50:12.914Z
   "nativeQaRunbook": true,
   "nativeDeviceQa": false,
   "privacyManifest": true,
-  "releaseGate": true,
+  "releaseGate": false,
   "storeListing": true,
   "webSmoke": true
 }

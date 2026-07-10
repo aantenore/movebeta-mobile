@@ -16,6 +16,7 @@ modules/*/android/build/
 modules/*/ios/build/
 *.orig.*
 *.jks
+*.keystore
 *.p8
 *.p12
 *.key
@@ -34,7 +35,15 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env*
+!.env.example
+!.env.*.example
+.vercel/
+
+# cloud credentials and service accounts
+**/*service-account*.json
+**/*service_account*.json
+**/serviceAccountKey*.json
 
 # typescript
 *.tsbuildinfo

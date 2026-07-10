@@ -10,6 +10,7 @@ import {
 function dependencies(overrides: Partial<PreparedExportShareDependencies> = {}): PreparedExportShareDependencies {
   return {
     cacheDirectory: 'file:///cache/',
+    deleteFile: vi.fn(async () => undefined),
     isFileSharingAvailable: vi.fn(async () => true),
     shareFile: vi.fn(async () => undefined),
     shareText: vi.fn(async () => undefined),
@@ -65,10 +66,10 @@ describe('prepared export share', () => {
       mimeType: 'application/json',
     });
     expect(deps.shareText).not.toHaveBeenCalled();
+    expect(deps.deleteFile).toHaveBeenCalledWith('file:///cache/prepared-coach-packet.json', { idempotent: true });
     expect(result).toMatchObject({
       fileName: 'prepared-coach-packet.json',
       method: 'file',
-      uri: 'file:///cache/prepared-coach-packet.json',
     });
   });
 
@@ -90,6 +91,7 @@ describe('prepared export share', () => {
       message: 'Prepared export\n\npayload',
       title: 'Prepared export',
     });
+    expect(deps.deleteFile).not.toHaveBeenCalled();
     expect(result).toEqual({ method: 'text' });
   });
 
@@ -112,6 +114,7 @@ describe('prepared export share', () => {
       message: 'Prepared export\n\npayload',
       title: 'Prepared export',
     });
+    expect(deps.deleteFile).toHaveBeenCalledWith('file:///cache/prepared-export.json', { idempotent: true });
     expect(result).toEqual({ method: 'text' });
   });
 });

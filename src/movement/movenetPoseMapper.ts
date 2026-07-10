@@ -38,7 +38,7 @@ function mapKeypoint(name: LandmarkName, keypoint: Keypoint | undefined, dimensi
 
   return {
     name,
-    visibility: clamp(keypoint.score ?? 1),
+    visibility: clamp(keypoint.score ?? 0),
     x: clamp(keypoint.x / Math.max(dimensions.width, 1)),
     y: clamp(keypoint.y / Math.max(dimensions.height, 1)),
     z: keypoint.z,

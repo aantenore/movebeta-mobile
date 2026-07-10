@@ -1,12 +1,12 @@
 import { appConfig } from '@/core/config';
 
 import type { ClimbSession, CoachLensKey, VideoAsset } from './contracts';
+import { throwIfAnalysisAborted, type AnalysisRunOptions } from './analysisCancellation';
 import { deleteAnalysisBundle, formatAnalysisBundleDeletionReceipt } from './privacyDeletion';
 import {
   createPoseEstimator,
   OnDeviceMovementPipeline,
   onDeviceMovementPipeline,
-  type AnalysisProvider,
   type PoseEstimator,
 } from './onDevicePipeline';
 import { reportRepository } from './reportRepository';
@@ -16,32 +16,54 @@ export async function analyzeSampleSession(coachLens?: CoachLensKey) {
   return analyzeDemoAttempt(sampleAttempts[0].session.id, coachLens);
 }
 
-export async function analyzeDemoAttempt(sessionId: string, coachLens?: CoachLensKey) {
+export async function analyzeDemoAttempt(
+  sessionId: string,
+  coachLens?: CoachLensKey,
+  options: AnalysisRunOptions = {},
+) {
   const attempt = sampleAttempts.find((item) => item.session.id === sessionId) ?? sampleAttempts[0];
-  const report = await onDeviceMovementPipeline.analyze(attempt.video, attempt.session, { coachLens });
-  return reportRepository.saveReport(report);
+  return onDeviceMovementPipeline.analyze(attempt.video, attempt.session, { coachLens, signal: options.signal });
 }
 
-async function createVideoEstimator(): Promise<PoseEstimator> {
-  const provider = appConfig.videoAnalysisProvider === 'local-fixture' ? 'local-video-fallback' : appConfig.videoAnalysisProvider;
-  const estimator = createPoseEstimator(provider);
-  return (await estimator.isAvailable()) ? estimator : createPoseEstimator('local-video-fallback');
-}
-
-async function runVideoPipeline(video: VideoAsset, session: ClimbSession, provider?: AnalysisProvider, coachLens?: CoachLensKey) {
-  const estimator = provider ? createPoseEstimator(provider) : await createVideoEstimator();
-  const pipeline = new OnDeviceMovementPipeline({ poseEstimator: estimator });
-  return pipeline.analyze(video, session, { coachLens });
-}
-
-export async function analyzeVideoAttempt(video: VideoAsset, session: ClimbSession, coachLens?: CoachLensKey) {
-  let report;
-  try {
-    report = await runVideoPipeline(video, session, undefined, coachLens);
-  } catch (error) {
-    if (appConfig.videoAnalysisProvider === 'local-video-fallback') throw error;
-    report = await runVideoPipeline(video, session, 'local-video-fallback', coachLens);
+async function createVideoEstimator(options: AnalysisRunOptions = {}): Promise<PoseEstimator> {
+  throwIfAnalysisAborted(options.signal);
+  const provider = appConfig.videoAnalysisProvider;
+  if (provider === 'local-fixture' || provider === 'local-video-fallback') {
+    throw new Error(`${provider} is a synthetic demo/test provider and cannot analyze recorded or imported video.`);
   }
+
+  const estimator = createPoseEstimator(provider);
+  if (!(await estimator.isAvailable())) {
+    const action =
+      provider === 'web-tfjs-movenet'
+        ? 'Use a browser with local video decoding and WebGL support, then warm the MoveNet cache before retrying.'
+        : 'Install a custom MoveBeta development or release build with the native pose module; Expo Go is not supported.';
+    throw new Error(`The configured on-device pose provider (${provider}) is unavailable. ${action}`);
+  }
+
+  throwIfAnalysisAborted(options.signal);
+  return estimator;
+}
+
+async function runVideoPipeline(
+  video: VideoAsset,
+  session: ClimbSession,
+  coachLens?: CoachLensKey,
+  options: AnalysisRunOptions = {},
+) {
+  const estimator = await createVideoEstimator(options);
+  const pipeline = new OnDeviceMovementPipeline({ poseEstimator: estimator });
+  return pipeline.analyze(video, session, { coachLens, signal: options.signal });
+}
+
+export async function analyzeVideoAttempt(
+  video: VideoAsset,
+  session: ClimbSession,
+  coachLens?: CoachLensKey,
+  options: AnalysisRunOptions = {},
+) {
+  const report = await runVideoPipeline(video, session, coachLens, options);
+  throwIfAnalysisAborted(options.signal);
   return reportRepository.saveReport(report);
 }
 

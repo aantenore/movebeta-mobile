@@ -1,6 +1,6 @@
 # PWA Readiness Report
 
-Generated: 2026-06-25T15:50:16.516Z
+Generated: 2026-07-10T08:48:24.356Z
 
 - Status: ready
 - Checks: 11/11

@@ -6,9 +6,16 @@ export function validateAndroidManifest(manifest) {
       pass: /<uses-permission[^>]+android:name="android\.permission\.CAMERA"/.test(manifest),
     },
     {
-      detail: 'READ_MEDIA_VIDEO permission must be present for selected video import.',
-      id: 'read-media-video-permission',
-      pass: /<uses-permission[^>]+android:name="android\.permission\.READ_MEDIA_VIDEO"/.test(manifest),
+      detail: 'Broad media and legacy storage permissions must stay absent; the system picker grants selected-file access.',
+      id: 'broad-media-permissions-absent',
+      pass: !/android:name="android\.permission\.(READ_MEDIA_(IMAGES|VIDEO)|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE)"/.test(
+        manifest,
+      ),
+    },
+    {
+      detail: 'SYSTEM_ALERT_WINDOW must stay absent from production manifests.',
+      id: 'overlay-permission-absent',
+      pass: !/android:name="android\.permission\.SYSTEM_ALERT_WINDOW"/.test(manifest),
     },
     {
       detail: 'RECORD_AUDIO must stay absent because movement analysis does not need audio.',

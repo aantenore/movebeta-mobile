@@ -49,9 +49,31 @@ function makeProjectRoot() {
   ].join('\n'));
   writeJson(path.join(root, 'docs/sdlc/release-gate-report.json'), {
     completedAt: '2026-06-20T08:00:00.000Z',
+    evidence: {
+      ci: {
+        blockedStepKeys: [],
+        failedStepKeys: [],
+        label: 'Active CI workflow evidence',
+        missingStepKeys: [],
+        requiredStepKeys: ['githubWorkflowDoctor'],
+        status: 'pass',
+      },
+      native: {
+        blockedStepKeys: [],
+        failedStepKeys: [],
+        label: 'Native build and physical-device QA evidence',
+        missingStepKeys: [],
+        requiredStepKeys: ['nativeQaEvidenceValidation', 'iosToolchainDoctor'],
+        status: 'pass',
+      },
+    },
+    releaseReady: true,
     schemaVersion: 'movebeta.release-gate-report.v1',
     startedAt: '2026-06-20T07:59:00.000Z',
     status: 'pass',
+    summary: {
+      releaseReady: true,
+    },
     steps: [
       'quality',
       'modelReadiness',
@@ -403,6 +425,18 @@ describe('launch readiness doctor', () => {
 
     expect(report.checks.find((check) => check.key === 'releaseGate')?.status).toBe('drift');
     expect(report.tracks.find((track) => track.key === 'demo')?.status).toBe('drift');
+  });
+
+  it('rejects a nominal pass report without explicit native and CI evidence', () => {
+    const rootDir = makeProjectRoot();
+    const reportPath = path.join(rootDir, 'docs/sdlc/release-gate-report.json');
+    const releaseGate = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    delete releaseGate.releaseReady;
+    delete releaseGate.summary.releaseReady;
+    delete releaseGate.evidence;
+    writeJson(reportPath, releaseGate);
+
+    expect(detectLaunchReadinessEvidence(rootDir, { NODE_ENV: 'test' }).releaseGate).toBe(false);
   });
 
   it('blocks demo readiness when the MoveNet model report is missing', () => {

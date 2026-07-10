@@ -1,940 +1,208 @@
-import csv
-import io
 import json
 import os
 import re
 from pathlib import Path
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import Page, expect, sync_playwright
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+def assert_responsive_scene(page: Page) -> None:
+    state = page.evaluate(
+        """() => ({
+          h1Count: [...document.querySelectorAll('h1')]
+            .filter((element) => element.getBoundingClientRect().width > 0).length,
+          innerWidth: window.innerWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+          visibleHiddenFocusables: [...document.querySelectorAll('[aria-hidden="true"] [tabindex="0"]')]
+            .filter((element) => element.getBoundingClientRect().width > 0).length,
+        })"""
+    )
+    assert state["h1Count"] == 1, state
+    assert state["scrollWidth"] <= state["innerWidth"] + 1, state
+    assert state["visibleHiddenFocusables"] == 0, state
 
 
-def read_report(relative_path: str) -> dict:
-    with (REPO_ROOT / relative_path).open(encoding="utf-8") as handle:
-        return json.load(handle)
+def open_tab(page: Page, tab_name: str, heading: str) -> None:
+    tab = page.get_by_role("tab", name=tab_name, exact=True)
+    expect(tab).to_have_count(1)
+    tab.click()
+    expect(page.get_by_role("heading", name=heading, exact=True)).to_be_visible()
+    assert_responsive_scene(page)
 
 
-def count_pair(done: int, total: int) -> str:
-    return f"{done}/{total}"
+def verify_pwa(page: Page, base_url: str) -> None:
+    expect(page.locator('link[rel="manifest"]')).to_have_attribute("href", "/manifest.json")
+    expect(page.locator('link[rel="stylesheet"][href="/pwa.css"]')).to_have_count(1)
+    manifest = page.evaluate("async () => fetch('/manifest.json').then((response) => response.json())")
+    assert manifest["name"] == "MoveBeta On-Device Climbing Coach"
+    assert manifest["display"] == "standalone"
+
+    model_manifest = page.evaluate("async () => fetch('/model-assets.json').then((response) => response.json())")
+    assert model_manifest["schemaVersion"] == "movebeta.static-model-assets.v1"
+    assert model_manifest["modelUrl"] in model_manifest["assets"]
+    assert all(file.get("sha256") for file in model_manifest["files"])
+    assert page.evaluate(
+        "async (path) => fetch(path).then((response) => response.status)", model_manifest["modelUrl"]
+    ) == 200
+
+    service_worker = page.evaluate("async () => fetch('/sw.js').then((response) => response.text())")
+    assert re.search(r"const CACHE_VERSION = ['\"]v-[a-f0-9]{16}['\"];", service_worker)
+    assert "/model-assets.json" in service_worker
+    assert "/pwa.css" in service_worker
+
+    page.evaluate(
+        """async () => {
+          await navigator.serviceWorker.ready;
+          if (navigator.serviceWorker.controller) return;
+          await new Promise((resolve) => {
+            const timeout = setTimeout(resolve, 5000);
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              clearTimeout(timeout);
+              resolve();
+            }, { once: true });
+          });
+        }"""
+    )
+    cached_paths = page.evaluate(
+        """async () => {
+          const paths = new Set();
+          for (const key of await caches.keys()) {
+            const cache = await caches.open(key);
+            for (const request of await cache.keys()) paths.add(new URL(request.url).pathname);
+          }
+          return [...paths];
+        }"""
+    )
+    for required_path in ["/index.html", "/model-assets.json", "/pwa.css", *model_manifest["assets"]]:
+        assert required_path in cached_paths, required_path
+
+    page.context.set_offline(True)
+    try:
+        page.reload(wait_until="domcontentloaded")
+        expect(page.get_by_role("heading", name="On-device climbing coach", exact=True)).to_be_visible()
+        assert page.evaluate(
+            "async (path) => fetch(path).then((response) => response.status)", model_manifest["modelUrl"]
+        ) == 200
+    finally:
+        page.context.set_offline(False)
+    page.goto(base_url, wait_until="networkidle")
 
 
-def build_release_expectations() -> dict[str, str]:
-    launch = read_report("docs/sdlc/launch-readiness-report.json")
-    feature = read_report("docs/sdlc/feature-completion-report.json")
-    model_verification = read_report("docs/sdlc/model-verification-suite-report.json")
-    pwa = read_report("docs/sdlc/pwa-readiness-report.json")
+def verify_core_routes(page: Page) -> None:
+    expect(page.get_by_role("heading", name="On-device climbing coach", exact=True)).to_be_visible()
+    expect(page.get_by_role("button", name="Import", exact=True)).to_be_visible()
+    expect(page.get_by_role("button", name="Record", exact=True)).to_have_count(0)
+    expect(page.get_by_text("Model cache ready", exact=True)).to_be_visible()
+    assert_responsive_scene(page)
 
-    launch_summary = launch["summary"]
-    feature_summary = feature["summary"]
-    model_summary = model_verification["summary"]
-    pwa_summary = pwa["summary"]
-    launch_ready_tracks = 1 if launch_summary.get("status") == "drift" else launch_summary["readyTracks"]
+    open_tab(page, "Sessions", "Local attempts")
+    expect(page.get_by_text("No local reports yet", exact=True)).to_be_visible()
 
+    open_tab(page, "Drills", "Practice from evidence")
+    expect(page.get_by_text("No drill plan yet", exact=True)).to_be_visible()
+    expect(page.get_by_text("Advanced pack locked", exact=True)).to_be_visible()
+
+    open_tab(page, "Progress", "Technique trends")
+    expect(page.get_by_text("Attempts", exact=True)).to_be_visible()
+
+    open_tab(page, "Plan", "Plan catalog")
+    expect(page.get_by_role("heading", name="Current plan", exact=True)).to_be_visible()
+
+    open_tab(page, "Privacy", "No upload by default")
+    expect(page.get_by_role("heading", name="Airplane-mode readiness", exact=True)).to_be_visible()
+
+
+def verify_real_video_analysis(page: Page, video_path: Path) -> dict:
+    assert video_path.is_file(), "Configured real-video smoke fixture is missing."
+    open_tab(page, "Analyze", "On-device climbing coach")
+    page.get_by_label("Attempt title").fill("Browser real-video smoke")
+    page.get_by_label("Gym or wall").fill("Local smoke wall")
+    page.get_by_label("Grade or focus").fill("Technique check")
+
+    with page.expect_file_chooser() as chooser_info:
+        page.get_by_role("button", name="Import", exact=True).click()
+    chooser_info.value.set_files(str(video_path))
+    expect(page.locator("video")).to_be_visible(timeout=20_000)
+    expect(page.get_by_text("Analysis quality", exact=True)).to_have_count(0)
+
+    page.get_by_role("button", name="Analyze", exact=True).click()
+    expect(page.get_by_text("Analysis quality", exact=True)).to_be_visible(timeout=120_000)
+    expect(page.get_by_role("heading", name="Movement metrics", exact=True)).to_be_visible()
+
+    persisted = page.evaluate(
+        """() => {
+          const envelope = JSON.parse(localStorage.getItem('movebeta.reports.v1') || '{}');
+          return envelope.reports || [];
+        }"""
+    )
+    assert len(persisted) == 1, persisted
+    report = persisted[0]
+    assert report["session"]["source"] == "import"
+    assert report["session"]["title"] == "Browser real-video smoke"
+    assert report["engine"]["provider"] == "web-tfjs-movenet"
+    assert report["engine"]["model"] == "movenet-singlepose-lightning-v4"
+    assert report["engine"]["cueEngineVersion"] == "movebeta-cue-engine-v2.0.0"
+    assert report["engine"]["processedFrames"] >= 10
+    assert all(metric["status"] in {"measured", "insufficient-data"} for metric in report["metrics"])
+    assert "blob:" not in json.dumps(report)
+
+    open_tab(page, "Sessions", "Local attempts")
+    visible_report_titles = page.evaluate(
+        """() => [...document.querySelectorAll('*')].filter((element) =>
+          element.children.length === 0 &&
+          element.textContent === 'Browser real-video smoke' &&
+          element.getBoundingClientRect().width > 0
+        ).length"""
+    )
+    assert visible_report_titles >= 1
     return {
-        "feature_backlog": count_pair(feature_summary["backlogDoneCount"], feature_summary["backlogItemCount"]),
-        "feature_tasks": count_pair(feature_summary["taskDoneCount"], feature_summary["taskItemCount"]),
-        "launch_tracks_ready": f"{count_pair(launch_ready_tracks, launch_summary['totalTracks'])} launch tracks ready",
-        "model_verification_checks": count_pair(model_summary["passedChecks"], model_summary["totalChecks"]),
-        "pwa_checks": count_pair(pwa_summary["verifiedCount"], pwa_summary["checkCount"]),
+        "processedFrames": report["engine"]["processedFrames"],
+        "qualityScore": report["analysisQuality"]["score"],
+        "metricStatuses": {metric["id"]: metric["status"] for metric in report["metrics"]},
     }
-
-
-def complete_validation_csv(blank_csv: str) -> str:
-    source = io.StringIO(blank_csv)
-    reader = csv.DictReader(source)
-    output = io.StringIO()
-    writer = csv.DictWriter(output, fieldnames=reader.fieldnames or [])
-    writer.writeheader()
-
-    for row in reader:
-        row["reviewerId"] = f"coach-{row['reviewerSlot']}"
-        row["relevance"] = "5"
-        row["timingAccuracy"] = "5"
-        row["drillFit"] = "5"
-        row["safetyLanguage"] = "5"
-        row["status"] = "reviewed"
-        if "notes" in row:
-            row["notes"] = "Smoke reviewed"
-        writer.writerow(row)
-
-    return output.getvalue()
 
 
 def main() -> None:
     base_url = os.environ.get("MOVEBETA_SMOKE_URL", "http://127.0.0.1:8083")
-    release_expectations = build_release_expectations()
+    video_value = os.environ.get("MOVEBETA_TEST_VIDEO")
     console_errors: list[str] = []
     page_errors: list[str] = []
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 390, "height": 844})
+        context = browser.new_context(viewport={"width": 320, "height": 700})
+        page = context.new_page()
         page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
         page.on("pageerror", lambda error: page_errors.append(str(error)))
-        page.goto(base_url)
-        page.wait_for_load_state("networkidle")
+        page.goto(base_url, wait_until="networkidle")
 
-        expect(page.locator('link[rel="manifest"]')).to_have_attribute("href", "/manifest.json")
-        manifest = page.evaluate("async () => await fetch('/manifest.json').then((response) => response.json())")
-        assert manifest["name"] == "MoveBeta On-Device Climbing Coach"
-        assert manifest["display"] == "standalone"
-        assert any(icon.get("sizes") == "192x192" for icon in manifest["icons"])
-        assert any(icon.get("sizes") == "512x512" for icon in manifest["icons"])
-        service_worker_text = page.evaluate("async () => await fetch('/sw.js').then((response) => response.text())")
-        assert "self.addEventListener('fetch'" in service_worker_text
-        assert "caches.open" in service_worker_text
-        assert "/model-assets.json" in service_worker_text
-        assert "/model-delivery-policy.json" in service_worker_text
-        assert "cacheModelAssets" in service_worker_text
-        assert "EXPORT_ASSETS" in service_worker_text
-        assert re.search(r"const CACHE_VERSION = ['\"]v-[a-f0-9]{16}['\"];", service_worker_text)
-        assert "const CACHE_VERSION = 'v1'" not in service_worker_text
-        assert 'const CACHE_VERSION = "v1"' not in service_worker_text
-        model_assets = page.evaluate("async () => await fetch('/model-assets.json').then((response) => response.json())")
-        assert model_assets["schemaVersion"] == "movebeta.static-model-assets.v1"
-        assert model_assets["modelUrl"] == "/models/movenet/singlepose/lightning/4/model.json"
-        assert "/models/movenet/singlepose/lightning/4/model.json" in model_assets["assets"]
-        model_asset_bytes = model_assets["summary"]["totalBytes"]
-        model_delivery_policy = page.evaluate("async () => await fetch('/model-delivery-policy.json').then((response) => response.json())")
-        assert model_delivery_policy["schemaVersion"] == "movebeta.model-delivery-policy.v1"
-        assert model_delivery_policy["web"]["downloadStrategy"] == "precache-on-install"
-        model_json = page.evaluate(
-            "async () => await fetch('/models/movenet/singlepose/lightning/4/model.json').then((response) => response.json())"
-        )
-        assert len(model_json["weightsManifest"]) > 0
-        first_shard = model_json["weightsManifest"][0]["paths"][0]
-        shard_status = page.evaluate(
-            """async (path) => {
-              const response = await fetch(`/models/movenet/singlepose/lightning/4/${path}`);
-              return response.status;
-            }""",
-            first_shard,
-        )
-        assert shard_status == 200
-        export_assets = page.evaluate(
-            """async () => {
-              const text = await fetch('/sw.js').then((response) => response.text());
-              return [...text.matchAll(/"([^"]+)"/g)]
-                .map((match) => match[1])
-                .filter((value) => value === '/metadata.json' || value.startsWith('/_expo/static/') || value.startsWith('/assets/'));
-            }"""
-        )
-        assert any(asset.startswith("/_expo/static/js/web/entry-") for asset in export_assets)
-
-        page.evaluate(
-            """async () => {
-              if (!('serviceWorker' in navigator)) throw new Error('Service worker unavailable');
-              await navigator.serviceWorker.ready;
-              if (navigator.serviceWorker.controller) return true;
-              await new Promise((resolve) => {
-                const timeout = setTimeout(resolve, 3000);
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                  clearTimeout(timeout);
-                  resolve();
-                }, { once: true });
-              });
-              return true;
-            }"""
-        )
-        cache_state = page.evaluate(
-            """async () => {
-              const keys = await caches.keys();
-              const paths = new Set();
-              for (const key of keys) {
-                const cache = await caches.open(key);
-                const requests = await cache.keys();
-                for (const request of requests) {
-                  paths.add(new URL(request.url).pathname);
-                }
-              }
-              return {
-                controlled: Boolean(navigator.serviceWorker.controller),
-                keys,
-                paths: [...paths].sort(),
-              };
-            }"""
-        )
-        required_cached_paths = [
-            "/index.html",
-            "/model-delivery-policy.json",
-            "/model-assets.json",
-            model_assets["modelUrl"],
-            *model_assets["assets"],
-            *export_assets,
-        ]
-        for cached_path in required_cached_paths:
-            assert cached_path in cache_state["paths"], cached_path
-        assert any(re.match(r"movebeta-pwa-v-[a-f0-9]{16}$", key) for key in cache_state["keys"]), cache_state["keys"]
-
-        page.context.set_offline(True)
-        try:
-            page.goto(base_url)
-            page.wait_for_load_state("networkidle")
-            expect(page.get_by_text("On-device climbing coach")).to_be_visible()
-            offline_model_status = page.evaluate(
-                "async (path) => await fetch(path).then((response) => response.status)",
-                model_assets["modelUrl"],
-            )
-            assert offline_model_status == 200
-        finally:
-            page.context.set_offline(False)
-        page.goto(base_url)
-        page.wait_for_load_state("networkidle")
-
-        expect(page.get_by_text("On-device climbing coach")).to_be_visible()
-        expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
-        expect(page.get_by_text("Model cache ready").first).to_be_visible()
-        expect(page.get_by_text("Warm model", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Assets 3/3").first).to_be_visible()
-        expect(page.get_by_text("Model download timing", exact=True)).to_be_visible()
-        expect(page.get_by_text("Download trigger", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare model download timing packet")).to_be_visible()
-        page.get_by_label("Prepare model download timing packet").click()
-        expect(page.get_by_text("Prepared model download timing packet")).to_be_visible()
-        expect(page.get_by_role("textbox", name="Model download timing packet JSON")).to_have_value(
-            re.compile(r'"schemaVersion": "movebeta\.model-download-plan\.v1"')
-        )
-        expect(page.get_by_role("textbox", name="Model download timing packet JSON")).to_have_value(
-            re.compile(r'"rawVideoIncluded": false')
-        )
-        expect(page.get_by_text("Field readiness", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Runtime surface", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare PWA field readiness packet from Coach")).to_be_visible()
-        page.get_by_label("Prepare PWA field readiness packet from Coach").click()
-        expect(page.get_by_text("Prepared Coach field readiness packet")).to_be_visible()
-        expect(page.get_by_role("textbox", name="Coach field readiness packet JSON")).to_have_value(
-            re.compile(r'"schemaVersion": "movebeta\.pwa-field-readiness\.v1"')
-        )
-        expect(page.get_by_role("textbox", name="Coach field readiness packet JSON")).to_have_value(
-            re.compile(r'"rawVideoIncluded": false')
-        )
-        expect(page.get_by_text("Session launch", exact=True)).to_be_visible()
-        expect(page.get_by_text("Model readiness", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare Coach session launch packet")).to_be_visible()
-        page.get_by_label("Prepare Coach session launch packet").click()
-        expect(page.get_by_text("Prepared Coach session launch packet")).to_be_visible()
-        expect(page.get_by_role("textbox", name="Coach session launch packet JSON")).to_have_value(
-            re.compile(r'"schemaVersion": "movebeta\.coach-session-launch\.v1"')
-        )
-        expect(page.get_by_role("textbox", name="Coach session launch packet JSON")).to_have_value(
-            re.compile(r'"videoUriIncluded": false')
-        )
-        expect(page.get_by_text("Session metadata")).to_be_visible()
-        expect(page.get_by_text("Coach lens", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Balanced", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Footwork", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Body position", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Power conservation", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Capture setup", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Setup ready").first).to_be_visible()
-        expect(page.get_by_text("Capture prep protocol")).to_be_visible()
-        expect(page.get_by_text("Protocol ready", exact=True)).to_be_visible()
-        expect(page.get_by_text("Verify local evidence")).to_be_visible()
-        expect(page.get_by_text("Raw video stays on device by default")).to_be_visible()
-        expect(page.get_by_label("People: Clear")).to_be_visible()
-        expect(page.get_by_label("Gym or wall")).to_be_visible()
-        expect(page.get_by_label("Grade or focus")).to_be_visible()
-        expect(page.get_by_text("Record", exact=True)).to_be_visible()
-        expect(page.get_by_text("Import", exact=True)).to_be_visible()
-        expect(page.get_by_text("Demo sources")).to_be_visible()
-        expect(page.get_by_text("Analysis quality")).to_be_visible()
-        expect(page.get_by_text("Ready for coaching", exact=True)).to_be_visible()
-        expect(page.get_by_text("Analysis trust", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Coaching signal ready").first).to_be_visible()
-        expect(page.get_by_text("Beta replay plan")).to_be_visible()
-        expect(page.get_by_text("Reduce bent-arm time").first).to_be_visible()
-        expect(page.get_by_text("Movement phases")).to_be_visible()
-        expect(page.get_by_text("Primary phase:")).to_be_visible()
-        expect(page.get_by_text("Cue trust", exact=True)).to_be_visible()
-        expect(page.get_by_text("Validation: pending")).to_be_visible()
-        expect(page.get_by_text("Movement metrics", exact=True)).to_be_visible()
-        expect(page.get_by_text("Coach cues")).to_be_visible()
-
-        page.get_by_text("Vertical sequence repeat").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Vertical sequence repeat")).to_be_visible()
-        expect(page.get_by_text("local-fixture")).to_be_visible()
-
-        page.get_by_role("tab", name="Drills").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Practice from evidence")).to_be_visible()
-        expect(page.get_by_text("Weekly drill plan")).to_be_visible()
-        expect(page.get_by_text("Feedback").first).to_be_visible()
-        expect(page.get_by_text("untested").first).to_be_visible()
-        expect(page.get_by_text("Practice log").first).to_be_visible()
-        expect(page.get_by_text("not logged").first).to_be_visible()
-        page.get_by_text("Done", exact=True).first.click()
-        expect(page.get_by_text("completed").first).to_be_visible()
-        page.get_by_text("Skip", exact=True).nth(1).click()
-        page.get_by_text("Skip", exact=True).nth(2).click()
-        expect(page.get_by_text("skipped").first).to_be_visible()
-        expect(page.get_by_text("Advanced drill pack", exact=True)).to_be_visible()
-        expect(page.get_by_text("Pack status")).to_be_visible()
-        expect(page.get_by_text("Readiness", exact=True)).to_be_visible()
-        expect(page.get_by_text("Criteria").first).to_be_visible()
-        expect(page.get_by_text("Plan access").first).to_be_visible()
-        expect(page.get_by_text("Unlocks with Pro")).to_be_visible()
+        verify_pwa(page, base_url)
+        verify_core_routes(page)
+        real_video_result = verify_real_video_analysis(page, Path(video_value)) if video_value else None
 
         page.set_viewport_size({"width": 1280, "height": 900})
-        page.get_by_role("tab", name="Analyze").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Capture a climbing attempt")).to_be_visible()
-        page.get_by_label("Gym or wall").fill("MoonBoard Room")
-        page.get_by_label("Grade or focus").fill("7a")
-        page.get_by_label("View: Diagonal").click()
-        expect(page.get_by_text("Setup can improve").first).to_be_visible()
-        expect(page.get_by_text("Capture with review", exact=True)).to_be_visible()
-        page.get_by_label("View: Side On").click()
-        expect(page.get_by_text("Device readiness", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Power", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Compute", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare device readiness packet")).to_be_visible()
-        page.get_by_label("Prepare device readiness packet").click()
-        expect(page.get_by_text("Prepared device readiness packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-device-readiness.v1"')).to_be_visible()
-        expect(page.get_by_text('"videoUriIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Analysis run load", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Recent volume", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare analysis run load packet")).to_be_visible()
-        page.get_by_label("Prepare analysis run load packet").click()
-        expect(page.get_by_text("Prepared analysis run load packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-run-load.v1"')).to_be_visible()
-        expect(page.get_by_text('"reportIdsIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"videoUriIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Clip ready", exact=True)).to_be_visible()
-        expect(page.get_by_text("Ready to analyze", exact=True)).to_be_visible()
-        expect(page.get_by_text("Run local analysis.")).to_be_visible()
-        expect(page.get_by_text("No upload is required").first).to_be_visible()
-        expect(page.get_by_text("Analysis window").first).to_be_visible()
-        expect(page.get_by_text("Original file is unchanged")).to_be_visible()
-        expect(page.get_by_text("Analysis resources", exact=True)).to_be_visible()
-        expect(page.get_by_text("Source locality", exact=True)).to_be_visible()
-        expect(page.get_by_text("Runtime budget", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare analysis resource packet")).to_be_visible()
-        page.get_by_label("Prepare analysis resource packet").click()
-        expect(page.get_by_text("Prepared analysis resource packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-resource-plan.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').first).to_be_visible()
-        expect(page.get_by_text('"videoUriIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Execution checklist", exact=True)).to_be_visible()
-        expect(page.get_by_text("Model readiness", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare analysis execution packet")).to_be_visible()
-        page.get_by_label("Prepare analysis execution packet").click()
-        expect(page.get_by_text("Prepared analysis execution packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-execution-plan.v1"')).to_be_visible()
-        expect(page.get_by_role("textbox", name="Analysis execution packet JSON")).to_have_value(
-            re.compile(r'"canStartAnalysis": true')
-        )
-        expect(page.get_by_text('"videoUriIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Analysis quality")).to_be_visible()
-        expect(page.get_by_text("Ready for coaching", exact=True)).to_be_visible()
-        expect(page.get_by_text("Analysis trust", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Beta replay plan")).to_be_visible()
-        expect(page.get_by_text("Movement phases")).to_be_visible()
-        expect(page.get_by_text("Cue trust", exact=True)).to_be_visible()
-        expect(page.get_by_text("Movement metrics", exact=True)).to_be_visible()
+        page.goto(base_url, wait_until="networkidle")
+        expect(page.get_by_role("heading", name="On-device climbing coach", exact=True)).to_be_visible()
+        assert_responsive_scene(page)
 
-        page.get_by_role("tab", name="Progress").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Technique trends")).to_be_visible()
-        expect(page.get_by_text("Analysis trust trend", exact=True)).to_be_visible()
-        expect(page.get_by_text("Latest decision", exact=True)).to_be_visible()
-        expect(page.get_by_text("Ready reports", exact=True)).to_be_visible()
-        expect(page.get_by_text("Review first", exact=True)).to_be_visible()
-        expect(page.get_by_text("Retake/journal", exact=True)).to_be_visible()
-        expect(page.get_by_text(re.compile("Local boundary crossings:"))).to_be_visible()
-        page.get_by_text("Trend packet", exact=True).click()
-        expect(page.get_by_text("Prepared analysis trust trend packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-trust-trend-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"reportIdsIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Next session plan")).to_be_visible()
-        expect(page.get_by_text("Target", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Session agenda", exact=True)).to_be_visible()
-        expect(page.get_by_text("Load", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Closeout", exact=True).first).to_be_visible()
-        page.get_by_text("Agenda packet", exact=True).click()
-        expect(page.get_by_text("Prepared session agenda packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.session-agenda-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Attempt pacing", exact=True)).to_be_visible()
-        expect(page.get_by_text("Reset pacing", exact=True)).to_be_visible()
-        expect(page.get_by_text("max attempts")).to_be_visible()
-        expect(page.get_by_text("Fall/regression limit")).to_be_visible()
-        page.get_by_text("Pacing packet", exact=True).click()
-        expect(page.get_by_text("Prepared attempt pacing packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.attempt-pacing-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').first).to_be_visible()
-        page.get_by_text("Start rest", exact=True).first.click()
-        expect(page.get_by_text("Rest timer", exact=True)).to_be_visible()
-        expect(page.get_by_text("Stay with the current pacing plan.")).to_be_visible()
-        expect(page.get_by_text("Clear", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Session closeout")).to_be_visible()
-        expect(page.get_by_text("Reset before next hard try", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Training log", exact=True)).to_be_visible()
-        expect(page.get_by_text("Drill follow-through", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Raw video included: no", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Training load", exact=True)).to_be_visible()
-        expect(page.get_by_text("Recommendation", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Effort balance", exact=True)).to_be_visible()
-        expect(page.get_by_text("Repeat load", exact=True)).to_be_visible()
-        page.get_by_text("Load packet", exact=True).click()
-        expect(page.get_by_text("Prepared training load packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.training-load-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"reportIdsIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Pre-send guard")).to_be_visible()
-        expect(page.get_by_text("Load cap: easy")).to_be_visible()
-        expect(page.get_by_text("Reset before another hard try")).to_be_visible()
-        expect(page.get_by_text("Technique readiness").first).to_be_visible()
-        expect(page.get_by_text("Next action").first).to_be_visible()
-        page.get_by_text("Readiness packet", exact=True).click()
-        expect(page.get_by_text("Prepared technique readiness packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.technique-readiness-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"reportIdsIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Personal benchmarks")).to_be_visible()
-        expect(page.get_by_text("Best overall")).to_be_visible()
-        expect(page.get_by_text("Cue patterns")).to_be_visible()
-        expect(page.get_by_text("Latest cues")).to_be_visible()
-        expect(page.get_by_text("Cue usefulness")).to_be_visible()
-        expect(page.get_by_text("No cue feedback yet")).to_be_visible()
-        expect(page.get_by_text("Practice consistency")).to_be_visible()
-        expect(page.get_by_text("Completion", exact=True)).to_be_visible()
-        expect(page.get_by_text("Status blocked")).to_be_visible()
-        expect(page.get_by_text("Beta memory", exact=True)).to_be_visible()
-        expect(page.get_by_text("No beta memory yet")).to_be_visible()
-        expect(page.get_by_text("Practice reset session")).to_be_visible()
-        expect(page.get_by_text("Attempt comparison")).to_be_visible()
-        expect(page.get_by_text("Smart baseline:")).to_be_visible()
-        expect(page.get_by_text("Current trend")).to_be_visible()
-        expect(page.get_by_text("Pro history preview")).to_be_visible()
-        expect(page.get_by_text("Plan access").first).to_be_visible()
-
-        page.get_by_role("tab", name="Sessions").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Local attempts", exact=True)).to_be_visible()
-        expect(page.get_by_text("Session review")).to_be_visible()
-        expect(page.get_by_text("Analysis trust", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Focus metric")).to_be_visible()
-        expect(page.get_by_text("Primary cue", exact=True)).to_be_visible()
-        expect(page.get_by_text("Timeline", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Local evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Analysis evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Analysis window").first).to_be_visible()
-        expect(page.get_by_text("Privacy boundary").first).to_be_visible()
-        page.get_by_text("Evidence", exact=True).nth(0).click()
-        expect(page.get_by_text("Prepared analysis evidence")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-evidence-export.v1"')).to_be_visible()
-        page.get_by_text("Trust", exact=True).nth(0).click()
-        expect(page.get_by_text("Prepared analysis trust packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.analysis-trust-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Training log", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Repeat outcome", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Cue feedback", exact=True)).to_be_visible()
-        page.get_by_label("Project status Repeat").click()
-        page.get_by_label("Effort 4").click()
-        page.get_by_label("Confidence 5").click()
-        page.get_by_label("Repeat outcome Improved").click()
-        page.get_by_label("Repeat attempts 2").click()
-        page.get_by_label(re.compile("Resolved cue")).first.click()
-        page.get_by_text("Useful", exact=True).first.click()
-        page.get_by_label("Private training note").fill("Left hip in before the crux.")
-        page.get_by_label("Training log tags").fill("board, crux")
-        page.get_by_text("Save", exact=True).click()
-        page.get_by_role("tab", name="Progress").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("History filters")).to_be_visible()
-        page.get_by_label("vertical", exact=True).click()
-        expect(page.get_by_text("1 active filters")).to_be_visible()
-        page.get_by_label("Clear progress filters").click()
-        expect(page.get_by_text("Project queue")).to_be_visible()
-        expect(page.get_by_text("Useful rate")).to_be_visible()
-        expect(page.get_by_text("Repeat outcomes", exact=True)).to_be_visible()
-        expect(page.get_by_text("Success", exact=True)).to_be_visible()
-        expect(page.get_by_text("Improved 1").first).to_be_visible()
-        expect(page.get_by_text("Beta memory", exact=True)).to_be_visible()
-        expect(page.get_by_text("Stored", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Status ready").first).to_be_visible()
-        expect(page.get_by_text("Next repeat", exact=True)).to_be_visible()
-        expect(page.get_by_text("confidence 5/5")).to_be_visible()
-        page.get_by_role("tab", name="Drills").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("reinforce").first).to_be_visible()
-        expect(page.get_by_text("marked useful").first).to_be_visible()
-        page.get_by_role("tab", name="Sessions").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Coach packet", exact=True).nth(0)).to_be_visible()
-        page.get_by_text("Coach packet", exact=True).nth(0).click()
-        expect(page.get_by_text("Consent required")).to_be_visible()
-        page.get_by_text("Consent", exact=True).nth(0).click()
-        expect(page.get_by_text("Coach library")).to_be_visible()
-        expect(page.get_by_text("Consented packets")).to_be_visible()
-        expect(page.get_by_text("Ready packets")).to_be_visible()
-        expect(page.get_by_text("Raw video included: no", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Team templates")).to_be_visible()
-        expect(page.get_by_text("Privacy-safe packet review")).to_be_visible()
-        expect(page.get_by_text("Validation campaign")).to_be_visible()
-        expect(page.get_by_text("Real-world cue evidence tracker")).to_be_visible()
-        expect(page.get_by_text("1/20", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Consensus", exact=True)).to_be_visible()
-        expect(page.get_by_text("Runbook", exact=True)).to_be_visible()
-        page.get_by_text("Runbook", exact=True).click()
-        expect(page.get_by_text("Prepared validation collection runbook")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-collection-runbook.v1"')).to_be_visible()
-        expect(page.get_by_text('"currentPhase": "cover-wall-angles"')).to_be_visible()
-        expect(page.get_by_text('"rawWorksheetIncluded": false')).to_be_visible()
-        expect(page.get_by_text("Export status")).to_be_visible()
-        page.get_by_text("Export status", exact=True).click()
-        expect(page.get_by_text("Prepared validation campaign status")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.coach-validation-workflow.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        page.get_by_text("Export library", exact=True).click()
-        expect(page.get_by_text("Prepared coach library export")).to_be_visible()
-        expect(page.get_by_label("Share prepared export")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.coach-library-export.v1"')).to_be_visible()
-        expect(page.get_by_text('"privateNotesIncluded": false').first).to_be_visible()
-        expect(page.get_by_text('"templates"')).to_be_visible()
-        page.get_by_text("Validation seed", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation seed")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-study-seed.v1"')).to_be_visible()
-        expect(page.get_by_text('"reviewerScoresInvented": false')).to_be_visible()
-        expect(page.get_by_text('"reviewTasks"')).to_be_visible()
-        page.get_by_text("Clip manifest", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation clip manifest")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-clip-intake-manifest.v1"')).to_be_visible()
-        expect(page.get_by_text('"coachPacketsIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"requiredCoachReviewRows"')).to_be_visible()
-        page.get_by_text("Reviewer packet", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation reviewer packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-reviewer-onboarding.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"reviewerScoresInvented": false').last).to_be_visible()
-        page.get_by_text("Assignments", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation reviewer assignments")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-reviewer-assignment.v1"')).to_be_visible()
-        expect(page.get_by_text('"reviewerIdentitiesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"rawWorksheetIncluded": false')).to_be_visible()
-        page.get_by_text("Review worksheet", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation worksheet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-review-worksheet.v1"')).to_be_visible()
-        expect(page.get_by_text('"reviewerId": null')).to_be_visible()
-        expect(page.get_by_text('"rowCount"')).to_be_visible()
-        page.get_by_text("Worksheet CSV", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation worksheet CSV")).to_be_visible()
-        completed_csv_input = page.get_by_label("Completed cue validation worksheet CSV")
-        expect(completed_csv_input).to_have_value(re.compile("worksheetRowId,clipId,packetReportId"))
-        expect(completed_csv_input).to_have_value(re.compile("awaiting-real-review"))
-        expect(page.get_by_text("Worksheet preflight", exact=True)).to_be_visible()
-        expect(page.get_by_text("Preflight packet", exact=True)).to_be_visible()
-        page.get_by_text("Preflight packet", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation worksheet preflight")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-worksheet-preflight.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawWorksheetIncluded": false')).to_be_visible()
-        completed_csv_input.fill(complete_validation_csv(completed_csv_input.input_value()))
-        expect(page.get_by_text("Worksheet preflight: ready").first).to_be_visible()
-        page.get_by_text("Build dataset", exact=True).click()
-        expect(page.get_by_text("Prepared cue validation dataset")).to_be_visible()
-        expect(page.get_by_text("Validation gate: needs data").first).to_be_visible()
-        expect(page.get_by_text("Reliability: ready").first).to_be_visible()
-        expect(page.get_by_text("max spread 0/4").first).to_be_visible()
-        expect(page.get_by_text("At least 20 consented clips are required.").first).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.cue-validation-dataset.v1"')).to_be_visible()
-        expect(page.get_by_text('"reviewerId": "coach-1"')).to_be_visible()
-        page.get_by_text("Coach packet", exact=True).nth(0).click()
-        expect(page.get_by_text("Prepared coach packet")).to_be_visible()
-        expect(page.get_by_text('"athleteContext"')).to_be_visible()
-        expect(page.get_by_text('"drillPractice"')).to_be_visible()
-        expect(page.get_by_text('"privateNoteIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"noteIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.coach-review.v2"')).to_be_visible()
-        expect(page.get_by_text('"cueTrust"')).to_be_visible()
-        expect(page.get_by_text('"validationStatus": "needs-review"')).to_be_visible()
-        expect(page.get_by_text('"repeatOutcome"')).to_be_visible()
-
-        page.get_by_role("tab", name="Plan").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("Plan catalog")).to_be_visible()
-        expect(page.get_by_text("Current plan").first).to_be_visible()
-        expect(page.get_by_text("Upgrade path")).to_be_visible()
-        expect(page.get_by_text("Capability matrix")).to_be_visible()
-        expect(page.get_by_text("Launch readiness", exact=True)).to_be_visible()
-        expect(page.get_by_text(release_expectations["launch_tracks_ready"])).to_be_visible()
-        expect(page.get_by_text("Stakeholder demo", exact=True)).to_be_visible()
-        expect(page.get_by_text("Internal native beta", exact=True)).to_be_visible()
-        expect(page.get_by_text("Store submission", exact=True)).to_be_visible()
-        expect(page.get_by_text("Real cue-validation dataset").first).to_be_visible()
-        expect(page.get_by_text("Feature completion", exact=True)).to_be_visible()
-        expect(page.get_by_text("Feature completion audit")).to_be_visible()
-        expect(page.get_by_text(release_expectations["feature_tasks"], exact=True)).to_be_visible()
-        expect(page.get_by_text(release_expectations["feature_backlog"], exact=True)).to_be_visible()
-        expect(page.get_by_text("internal gaps", exact=True)).to_be_visible()
-        expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
-        expect(page.get_by_text("Model evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Technical ready")).to_be_visible()
-        expect(page.get_by_text("MoveNet execution", exact=True)).to_be_visible()
-        expect(page.get_by_text("Model-shaped replay", exact=True)).to_be_visible()
-        expect(page.get_by_text("Real climbing validation", exact=True).first).to_be_visible()
-        expect(page.get_by_text("20 clips and 40 review rows still required")).to_be_visible()
-        expect(page.get_by_text("Model verification suite", exact=True).first).to_be_visible()
-        expect(page.get_by_text(release_expectations["model_verification_checks"], exact=True)).to_be_visible()
-        expect(page.get_by_text("wall angles", exact=True)).to_be_visible()
-        expect(page.get_by_text("Runtime, replay, cue, metric, wall-angle, and privacy checks pass locally.")).to_be_visible()
-        expect(page.get_by_text("Cue outputs: 7")).to_be_visible()
-        expect(page.get_by_text("Static MoveNet assets", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Model assets", exact=True)).to_be_visible()
-        page.get_by_text("Model assets", exact=True).click()
-        expect(page.get_by_text("Prepared MoveNet static assets packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.movenet-static-assets-report.v1"')).to_be_visible()
-        expect(page.get_by_text('"modelUrl": "/models/movenet/singlepose/lightning/4/model.json"')).to_be_visible()
-        expect(page.get_by_text("Model asset provenance", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Provenance", exact=True)).to_be_visible()
-        page.get_by_text("Provenance", exact=True).click()
-        expect(page.get_by_text("Prepared model asset provenance packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.model-asset-provenance-report.v1"')).to_be_visible()
-        expect(page.get_by_text('"provider": "TensorFlow Hub"')).to_be_visible()
-        expect(page.get_by_text("Model delivery lifecycle", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Lifecycle", exact=True)).to_be_visible()
-        page.get_by_text("Lifecycle", exact=True).click()
-        expect(page.get_by_text("Prepared model delivery lifecycle packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.model-delivery-lifecycle.v1"')).to_be_visible()
-        expect(page.get_by_text('"downloadTrigger"')).to_be_visible()
-        expect(page.get_by_text("Model download plan", exact=True).first).to_be_visible()
-        expect(page.get_by_label("Prepare model download plan packet")).to_be_visible()
-        page.get_by_label("Prepare model download plan packet").click()
-        expect(page.get_by_text("Prepared model download plan")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.model-download-plan.v1"')).to_be_visible()
-        expect(page.get_by_text('"additionalDownloadBytes"')).to_be_visible()
-        expect(page.get_by_text("Provider readiness")).to_be_visible()
-        expect(page.get_by_text("Provider path needs device proof")).to_be_visible()
-        expect(page.get_by_text("web-tfjs-movenet", exact=True).first).to_be_visible()
-        expect(page.get_by_text("local-video-fallback", exact=True)).to_be_visible()
-        expect(page.get_by_text("native-platform-pose", exact=True)).to_be_visible()
-        expect(page.get_by_text("Fallback provider")).to_be_visible()
-        expect(page.get_by_text("Native QA evidence kit")).to_be_visible()
-        expect(page.get_by_text("device runs", exact=True).first).to_be_visible()
-        expect(page.get_by_text("workflows", exact=True)).to_be_visible()
-        expect(page.get_by_text("Template placeholders are rejected by the native QA validator.")).to_be_visible()
-        expect(page.get_by_text("Evidence validator preview")).to_be_visible()
-        expect(page.get_by_text("0/2 ready runs").first).to_be_visible()
-        expect(page.get_by_text("24 blocking checks")).to_be_visible()
-        expect(page.get_by_text("No raw artifact references accepted")).to_be_visible()
-        expect(page.get_by_text("Native QA evidence composer")).to_be_visible()
-        expect(page.get_by_text("Use composed JSON")).to_be_visible()
-        expect(page.get_by_text("Evidence JSON", exact=True)).to_be_visible()
-        page.get_by_text("Evidence JSON", exact=True).click()
-        expect(page.get_by_text("Prepared native QA evidence JSON")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.native-qa-evidence-composer-export.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawArtifactsIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("QA runbook", exact=True)).to_be_visible()
-        page.get_by_text("QA runbook", exact=True).click()
-        expect(page.get_by_text("Prepared native QA runbook")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.native-qa-runbook-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_label("Share prepared plan export")).to_be_visible()
-        expect(page.get_by_text("Android physical device", exact=True)).to_be_visible()
-        expect(page.get_by_text("iOS physical device", exact=True)).to_be_visible()
-        expect(page.get_by_text("Physical-device evidence import")).to_be_visible()
-        expect(page.get_by_text("Paste JSON")).to_be_visible()
-        expect(page.get_by_text("Paste native QA evidence JSON")).to_be_visible()
-        expect(page.get_by_text("0 blocking checks", exact=True)).to_be_visible()
-        expect(page.get_by_text("iOS toolchain setup", exact=True).first).to_be_visible()
-        expect(page.get_by_text("ready checks", exact=True)).to_be_visible()
-        expect(page.get_by_text("doctor", exact=True)).to_be_visible()
-        expect(page.get_by_text("iOS packet", exact=True)).to_be_visible()
-        page.get_by_text("iOS packet", exact=True).click()
-        expect(page.get_by_text("Prepared iOS toolchain setup packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.ios-toolchain-setup-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"localPathsIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Evidence collection plan")).to_be_visible()
-        expect(page.get_by_text("20", exact=True).first).to_be_visible()
-        expect(page.get_by_text("review rows", exact=True).first).to_be_visible()
-        expect(page.get_by_text("device checks")).to_be_visible()
-        expect(page.get_by_text("max spread 1/4")).to_be_visible()
-        expect(page.get_by_text("pilot sprints", exact=True)).to_be_visible()
-        expect(page.get_by_text("consent steps", exact=True)).to_be_visible()
-        expect(page.get_by_text("Consent packet", exact=True)).to_be_visible()
-        page.get_by_text("Consent packet", exact=True).click()
-        expect(page.get_by_text("Prepared validation consent packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.validation-consent-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"athleteIdentitiesIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"videoUriIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Pilot kit", exact=True)).to_be_visible()
-        page.get_by_text("Pilot kit", exact=True).click()
-        expect(page.get_by_text("Prepared validation pilot kit")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.validation-pilot-kit.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"reviewerScoresInvented": false')).to_be_visible()
-        expect(page.get_by_text("Product: Consented climbing clips across wall angles")).to_be_visible()
-        expect(page.get_by_text("Field validation ops", exact=True).first).to_be_visible()
-        expect(page.get_by_text("20", exact=True).first).to_be_visible()
-        expect(page.get_by_text("review rows", exact=True).last).to_be_visible()
-        expect(page.get_by_text("device runs", exact=True).last).to_be_visible()
-        expect(page.get_by_text("Prepare consented packets", exact=True)).to_be_visible()
-        expect(page.get_by_text("Collect real evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Validate release evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Promote release evidence", exact=True)).to_be_visible()
-        expect(page.get_by_text("Ops packet", exact=True)).to_be_visible()
-        page.get_by_text("Ops packet", exact=True).click()
-        expect(page.get_by_text("Prepared field validation ops packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.field-validation-ops-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"reviewerScoresInvented": false')).to_be_visible()
-        expect(page.get_by_text('"videoLeavesDevice": false').last).to_be_visible()
-        expect(page.get_by_text("Release unblock checklist")).to_be_visible()
-        expect(page.get_by_text("5", exact=True).first).to_be_visible()
-        expect(page.get_by_text("blockers", exact=True).first).to_be_visible()
-        expect(page.get_by_text("iOS build verification").first).to_be_visible()
-        expect(page.get_by_text("Native device QA evidence").first).to_be_visible()
-        expect(page.get_by_text("EAS project binding").first).to_be_visible()
-        expect(page.get_by_text("npm run release:credentials:starter", exact=True).first).to_be_visible()
-        expect(page.get_by_text("EXPO_TOKEN")).to_be_visible()
-        expect(page.get_by_text("Prepare packet", exact=True)).to_be_visible()
-        page.get_by_text("Prepare packet", exact=True).click()
-        expect(page.get_by_text("Prepared release unblock packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-unblock-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"credentialValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_label("Share prepared plan export")).to_be_visible()
-        expect(page.get_by_text("Release critical path").first).to_be_visible()
-        expect(page.get_by_text("ready steps", exact=True)).to_be_visible()
-        expect(page.get_by_text("can start", exact=True)).to_be_visible()
-        expect(page.get_by_text("lanes", exact=True)).to_be_visible()
-        expect(page.get_by_text("1. Real cue-validation dataset")).to_be_visible()
-        expect(page.get_by_text("2. iOS build verification")).to_be_visible()
-        expect(page.get_by_text("3. Native device QA evidence")).to_be_visible()
-        expect(page.get_by_text("Blocked by: iosBuild").first).to_be_visible()
-        expect(page.get_by_text("Critical path packet", exact=True)).to_be_visible()
-        page.get_by_text("Critical path packet", exact=True).click()
-        expect(page.get_by_text("Prepared release critical path")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-critical-path.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Release blocker progress").first).to_be_visible()
-        expect(page.get_by_text("proofs missing", exact=True)).to_be_visible()
-        expect(page.get_by_text("blocked deps", exact=True)).to_be_visible()
-        expect(page.get_by_text("Progress packet", exact=True)).to_be_visible()
-        page.get_by_text("Progress packet", exact=True).click()
-        expect(page.get_by_text("Prepared release blocker progress")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-blocker-progress.v1"')).to_be_visible()
-        expect(page.get_by_text('"missingProofCount": 8').first).to_be_visible()
-        expect(page.get_by_text('"tokenLikeValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Release evidence scenarios").first).to_be_visible()
-        expect(page.get_by_text("best tracks", exact=True)).to_be_visible()
-        expect(page.get_by_text("max clears", exact=True)).to_be_visible()
-        expect(page.get_by_text("1. Validation pilot")).to_be_visible()
-        expect(page.get_by_text("2. Native beta proof")).to_be_visible()
-        expect(page.get_by_text("4. Store submission proof")).to_be_visible()
-        expect(page.get_by_text("Scenario packet", exact=True)).to_be_visible()
-        page.get_by_text("Scenario packet", exact=True).click()
-        expect(page.get_by_text("Prepared release evidence scenarios")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-evidence-scenario-planner.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Release evidence freshness").first).to_be_visible()
-        expect(page.get_by_text("fresh", exact=True)).to_be_visible()
-        expect(page.get_by_text("oldest", exact=True)).to_be_visible()
-        expect(page.get_by_text("Launch readiness report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Model delivery lifecycle report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Installable PWA").first).to_be_visible()
-        expect(page.get_by_text(release_expectations["pwa_checks"], exact=True).first).to_be_visible()
-        expect(page.get_by_text("backend", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Vercel static deployment config")).to_be_visible()
-        expect(page.get_by_text("No backend surface required")).to_be_visible()
-        expect(page.get_by_text("PWA runtime", exact=True)).to_be_visible()
-        expect(page.get_by_text("Install surface", exact=True)).to_be_visible()
-        expect(page.get_by_text("Service worker", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Offline cache", exact=True)).to_be_visible()
-        expect(page.get_by_text("Model cache", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Model integrity", exact=True)).to_be_visible()
-        expect(page.get_by_label("Warm PWA model cache")).to_be_visible()
-        page.get_by_label("Warm PWA model cache").click()
-        expect(page.get_by_text("Prepared PWA model cache warmup")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.pwa-model-cache-warmup.v1"')).to_be_visible()
-        expect(page.get_by_text('"assetsExpected": 3')).to_be_visible()
-        expect(page.get_by_text('"assetsVerified": 3')).to_be_visible()
-        expect(page.get_by_text(f'"bytesCached": {model_asset_bytes}')).to_be_visible()
-        expect(page.get_by_text('"integritySupported": true')).to_be_visible()
-        expect(page.get_by_text('"integrityVerified": true')).to_be_visible()
-        expect(page.get_by_text('"status": "ready"').first).to_be_visible()
-        expect(page.get_by_text("Install app", exact=True)).to_be_visible()
-        page.get_by_text("Install app", exact=True).click()
-        expect(page.get_by_text("Prepared PWA install guidance")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.pwa-runtime-readiness.v1"')).to_be_visible()
-        expect(page.get_by_text('"modelCacheReady": true')).to_be_visible()
-        expect(page.get_by_text('"modelAssetsExpected": 3')).to_be_visible()
-        expect(page.get_by_text('"modelAssetsVerified": 3')).to_be_visible()
-        expect(page.get_by_text(f'"modelBytesCached": {model_asset_bytes}')).to_be_visible()
-        expect(page.get_by_text('"modelIntegritySupported": true')).to_be_visible()
-        expect(page.get_by_text('"modelIntegrityVerified": true')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_label("Activate pending PWA update")).to_be_visible()
-        page.get_by_label("Activate pending PWA update").click()
-        expect(page.get_by_text("Prepared PWA update activation")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.pwa-update-activation.v1"')).to_be_visible()
-        expect(page.get_by_text("PWA field readiness", exact=True)).to_be_visible()
-        expect(page.get_by_text("Runtime surface", exact=True).last).to_be_visible()
-        expect(page.get_by_text("Offline video", exact=True).last).to_be_visible()
-        expect(page.get_by_label("Prepare PWA field readiness packet", exact=True)).to_be_visible()
-        page.get_by_label("Prepare PWA field readiness packet", exact=True).click()
-        expect(page.get_by_text("Prepared PWA field readiness")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.pwa-field-readiness.v1"').last).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Vercel deployment").first).to_be_visible()
-        expect(page.get_by_text("Static", exact=True)).to_be_visible()
-        expect(page.get_by_text("Vercel static config")).to_be_visible()
-        expect(page.get_by_text("Vercel project binding")).to_be_visible()
-        expect(page.get_by_text("Vercel packet", exact=True)).to_be_visible()
-        page.get_by_text("Vercel packet", exact=True).click()
-        expect(page.get_by_text("Prepared Vercel deployment packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.vercel-deployment-readiness.v1"')).to_be_visible()
-        expect(page.get_by_text('"backendRequired": false')).to_be_visible()
-        expect(page.get_by_text('"npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN"')).to_be_visible()
-        expect(page.get_by_text("Vercel workflow").first).to_be_visible()
-        expect(page.get_by_text("Template", exact=True)).to_be_visible()
-        expect(page.get_by_text("Workflow template", exact=True)).to_be_visible()
-        expect(page.get_by_text("Active workflow file", exact=True)).to_be_visible()
-        expect(page.get_by_text("Workflow packet", exact=True)).to_be_visible()
-        page.get_by_text("Workflow packet", exact=True).click()
-        expect(page.get_by_text("Prepared Vercel workflow packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.vercel-workflow-readiness.v1"')).to_be_visible()
-        expect(page.get_by_text('"secretValuesIncluded": false')).to_be_visible()
-        expect(page.get_by_text("Evidence reconciliation").first).to_be_visible()
-        expect(page.get_by_text("Release evidence reconciliation")).to_be_visible()
-        expect(page.get_by_text("would clear", exact=True)).to_be_visible()
-        expect(page.get_by_text("projected tracks", exact=True)).to_be_visible()
-        expect(page.get_by_text("proof gaps", exact=True)).to_be_visible()
-        expect(page.get_by_text("Share-safe only")).to_be_visible()
-        expect(page.get_by_text("No iOS toolchain report was provided.")).to_be_visible()
-        expect(page.get_by_text("No native QA evidence payload was provided.")).to_be_visible()
-        expect(page.get_by_text("No cue-validation dataset report was provided.")).to_be_visible()
-        expect(page.get_by_text("Reconciliation packet", exact=True)).to_be_visible()
-        page.get_by_text("Reconciliation packet", exact=True).click()
-        expect(page.get_by_text("Prepared release evidence reconciliation")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-evidence-reconciliation.v1"')).to_be_visible()
-        expect(page.get_by_text('"tokenLikeValuesIncluded": false').first).to_be_visible()
-        expect(page.get_by_text("Release blocker issues").first).to_be_visible()
-        expect(page.get_by_text("issues", exact=True).first).to_be_visible()
-        expect(page.get_by_text("key names", exact=True).first).to_be_visible()
-        expect(page.get_by_text("[Release Blocker] EAS project binding").first).to_be_visible()
-        expect(page.get_by_text("Issue packet", exact=True)).to_be_visible()
-        page.get_by_text("Issue packet", exact=True).click()
-        expect(page.get_by_text("Prepared release blocker issue packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-blocker-issue-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"issueTemplatePath": ".github/ISSUE_TEMPLATE/release_blocker.md"')).to_be_visible()
-        expect(page.get_by_text('"credentialValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"EXPO_TOKEN"')).to_be_visible()
-        expect(page.get_by_text("Release blocker issue filing").first).to_be_visible()
-        expect(page.get_by_text("planned", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Filing plan", exact=True)).to_be_visible()
-        page.get_by_text("Filing plan", exact=True).click()
-        expect(page.get_by_text("Prepared release blocker issue filing plan")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-blocker-issue-filing.v1"')).to_be_visible()
-        expect(page.get_by_text('"createEnabled": false')).to_be_visible()
-        expect(page.get_by_text('"credentialValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Release blocker issue links").first).to_be_visible()
-        expect(page.get_by_text("ready links", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Issue links", exact=True)).to_be_visible()
-        page.get_by_text("Issue links", exact=True).click()
-        expect(page.get_by_text("Prepared release blocker issue web links")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-blocker-issue-web-links.v1"')).to_be_visible()
-        expect(page.get_by_text('"repository": "aantenore/movebeta-mobile"')).to_be_visible()
-        expect(page.get_by_text('"webUrl": "https://github.com/aantenore/movebeta-mobile/issues/new?').first).to_be_visible()
-        expect(page.get_by_text('"credentialValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text("Release evidence packet").first).to_be_visible()
-        expect(page.get_by_text("artifacts", exact=True).first).to_be_visible()
-        expect(page.get_by_text("commands", exact=True).first).to_be_visible()
-        expect(page.get_by_text("iOS toolchain report", exact=True)).to_be_visible()
-        expect(page.get_by_text("MoveNet static assets report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Model delivery lifecycle report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Environment template report", exact=True)).to_be_visible()
-        expect(page.get_by_text("External evidence apply report", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Cue validation dataset report", exact=True)).to_be_visible()
-        expect(page.get_by_text("Store credentials report", exact=True)).to_be_visible()
-        expect(page.get_by_text("Evidence packet", exact=True)).to_be_visible()
-        page.get_by_text("Evidence packet", exact=True).click()
-        expect(page.get_by_text("Prepared release evidence packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.release-evidence-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"rawVideoIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"command": "npm run native:ios:doctor"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run release:env:doctor"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run validation:cue:doctor"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run release:credentials:doctor"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run release:evidence:apply"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run release:freshness:doctor"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run model:movenet:assets:check"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run model:delivery:lifecycle"')).to_be_visible()
-        expect(page.get_by_text("Store submission packet", exact=True).first).to_be_visible()
-        expect(page.get_by_text("Store packet", exact=True)).to_be_visible()
-        expect(page.get_by_text("0/4 credential groups ready")).to_be_visible()
-        page.get_by_text("Store packet", exact=True).click()
-        expect(page.get_by_text("Prepared store submission packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.store-submission-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"trackingEnabled": false')).to_be_visible()
-        expect(page.get_by_text('"status": "metadata-ready"').first).to_be_visible()
-        page.get_by_text("Credentials packet", exact=True).click()
-        expect(page.get_by_text("Prepared store credentials setup packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.store-credentials-setup-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"credentialValuesIncluded": false').last).to_be_visible()
-        expect(page.get_by_text('"extra.eas.projectId"')).to_be_visible()
-        expect(page.get_by_text('"EXPO_TOKEN"')).to_be_visible()
-        page.get_by_text("Account runbook", exact=True).click()
-        expect(page.get_by_text("Prepared store release account runbook")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.store-release-account-runbook.v1"')).to_be_visible()
-        expect(page.get_by_text('"currentCommand": "npx eas-cli@latest init"')).to_be_visible()
-        expect(page.get_by_text('"command": "npm run release:eas:strict"')).to_be_visible()
-        expect(page.get_by_text('"projectIdsIncluded": false')).to_be_visible()
-        expect(page.get_by_text("Safety language guard")).to_be_visible()
-        expect(page.get_by_text("Copy risk status")).to_be_visible()
-        expect(page.get_by_text("Clear", exact=True).last).to_be_visible()
-        expect(page.get_by_text("No medical, injury-prevention, or route-safety claims found in checked Plan copy.")).to_be_visible()
-        expect(page.get_by_text("Commercial readiness")).to_be_visible()
-        expect(page.get_by_text("Commercial checkout not connected")).to_be_visible()
-        expect(page.get_by_text("Billing provider adapter")).to_be_visible()
-        expect(page.get_by_text("Paid plan product mappings")).to_be_visible()
-        expect(page.get_by_text("0/2", exact=True)).to_be_visible()
-        expect(page.get_by_text("No credential values in config")).to_be_visible()
-        expect(page.get_by_text("Commercial packet", exact=True)).to_be_visible()
-        page.get_by_text("Commercial packet", exact=True).click()
-        expect(page.get_by_text("Prepared commercial readiness packet")).to_be_visible()
-        expect(page.get_by_text('"schemaVersion": "movebeta.commercial-readiness-packet.v1"')).to_be_visible()
-        expect(page.get_by_text('"paymentDataIncluded": false')).to_be_visible()
-        expect(page.get_by_text('"receiptValuesIncluded": false')).to_be_visible()
-
-        page.get_by_role("tab", name="Privacy").click()
-        page.wait_for_load_state("networkidle")
-        expect(page.get_by_text("No upload by default")).to_be_visible()
-        expect(page.get_by_text("Airplane-mode readiness")).to_be_visible()
-        page.get_by_text("Check", exact=True).click()
-        expect(page.get_by_text("Ready for offline analysis", exact=True)).to_be_visible()
-        expect(page.get_by_text("Diagnostics", exact=True)).to_be_visible()
-        page.get_by_text("Prepare", exact=True).click()
-        expect(page.get_by_text("Privacy-safe support packet")).to_be_visible()
-        expect(page.get_by_text('"excludedArtifacts"')).to_be_visible()
-        expect(page.get_by_text("Data portability")).to_be_visible()
-        page.get_by_text("Backup", exact=True).click()
-        expect(page.get_by_text("Local backup JSON")).to_be_visible()
-        expect(page.get_by_role("textbox", name="Local backup JSON")).to_have_value(re.compile('"schemaVersion"'))
-        expect(page.get_by_role("textbox", name="Local backup JSON")).to_have_value(re.compile('"drillPractice"'))
-        page.get_by_text("Restore backup", exact=True).click()
-        expect(page.get_by_text("Status: restored")).to_be_visible()
-        expect(page.get_by_text("Reports restored:")).to_be_visible()
-        expect(page.get_by_text("Drill practice records restored:")).to_be_visible()
-
-        page.get_by_role("tab", name="Sessions").click()
-        page.wait_for_load_state("networkidle")
-        page.get_by_label("Delete Vertical sequence repeat").first.click()
-        expect(page.get_by_text("Local deletion receipt")).to_be_visible()
-        expect(page.get_by_text("Private training log: deleted")).to_be_visible()
-        expect(page.get_by_text("Coach consent record: deleted")).to_be_visible()
-        expect(page.get_by_text("Video left device: no").last).to_be_visible()
-
+        unexpected_console_errors = [
+            message for message in console_errors if "ERR_INTERNET_DISCONNECTED" not in message
+        ]
+        assert not page_errors, page_errors
+        assert not unexpected_console_errors, unexpected_console_errors
         browser.close()
 
-    if page_errors:
-      raise AssertionError(f"Page errors: {page_errors}")
-    if console_errors:
-      ignored = [item for item in console_errors if "favicon" not in item.lower()]
-      if ignored:
-        raise AssertionError(f"Console errors: {ignored}")
+    print(
+        json.dumps(
+            {
+                "desktop": "pass",
+                "mobile": "pass",
+                "pwaOffline": "pass",
+                "realVideo": real_video_result or "not-requested",
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

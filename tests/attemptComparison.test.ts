@@ -77,7 +77,13 @@ describe('attempt comparison', () => {
 
   it('classifies metric improvements and regressions from score deltas', async () => {
     const [baseline] = await buildSampleReports();
-    const current = withMetricScore(withMetricScore(baseline, 'flow', 95), 'foot-cuts', 40);
+    const baselineFlow = baseline.metrics.find((metric) => metric.id === 'flow')?.score ?? 50;
+    const baselineFootCuts = baseline.metrics.find((metric) => metric.id === 'foot-cuts')?.score ?? 50;
+    const current = withMetricScore(
+      withMetricScore(baseline, 'flow', Math.min(100, baselineFlow + 10)),
+      'foot-cuts',
+      Math.max(0, baselineFootCuts - 10),
+    );
     const comparison = compareAttempts(current, baseline);
 
     expect(comparison.metrics.find((metric) => metric.id === 'flow')?.direction).toBe('improved');

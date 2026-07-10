@@ -21,6 +21,13 @@ export type TechniqueReadinessPlan = {
   warmup: string;
 };
 
+export type TechniqueReadinessSafetyCap = {
+  headline: string;
+  maxStatus: TechniqueReadinessStatus;
+  nextAction: string;
+  risk: string;
+};
+
 export const TechniqueReadinessStatusSchema = z.enum(['ready', 'repeat', 'recover', 'baseline']);
 
 export const TechniqueReadinessPacketSchema = z.object({
@@ -116,6 +123,29 @@ function warmupFor(status: TechniqueReadinessStatus, focus: string) {
   if (status === 'recover') return `Use 10 minutes of easy movement, then one low-intensity ${focus.toLowerCase()} check.`;
   if (status === 'repeat') return `Warm up with two easy repeats that exaggerate ${focus.toLowerCase()} before the project attempt.`;
   return `Warm up normally, then add one quality repeat focused on ${focus.toLowerCase()} before increasing difficulty.`;
+}
+
+const readinessStatusRank: Record<TechniqueReadinessStatus, number> = {
+  baseline: 0,
+  recover: 1,
+  repeat: 2,
+  ready: 3,
+};
+
+export function applyTechniqueReadinessSafetyCap(
+  plan: TechniqueReadinessPlan,
+  cap: TechniqueReadinessSafetyCap,
+): TechniqueReadinessPlan {
+  if (readinessStatusRank[plan.status] <= readinessStatusRank[cap.maxStatus]) return plan;
+
+  return {
+    ...plan,
+    headline: cap.headline,
+    nextAction: cap.nextAction,
+    risk: cap.risk,
+    status: cap.maxStatus,
+    warmup: warmupFor(cap.maxStatus, plan.focus),
+  };
 }
 
 function headlineFor(status: TechniqueReadinessStatus) {

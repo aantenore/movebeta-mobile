@@ -8,11 +8,12 @@ import {
   resolveConfiguredCoachLens,
   resolveLaunchReadinessEvidence,
   resolveModelEvidence,
+  resolveRuntimeVideoAnalysisProvider,
 } from '../src/core/config';
 
 describe('app config', () => {
   it('loads bundled launch readiness and model evidence from app extra', () => {
-    expect(appConfig.launchReadinessEvidence?.releaseGate).toBe(true);
+    expect(appConfig.launchReadinessEvidence?.releaseGate).toBe(false);
     expect(appConfig.launchReadinessEvidence?.iosBuild).toBe(false);
     expect(appConfig.modelEvidence?.modelName).toBe('MoveNet SinglePose Lightning');
     expect(appConfig.nativeVideoAnalysisProvider).toBe('native-platform-pose');
@@ -44,6 +45,39 @@ describe('app config', () => {
     expect(resolveConfiguredCoachLens('body-position')).toBe('body-position');
     expect(resolveConfiguredCoachLens('unknown-lens')).toBe('balanced');
     expect(resolveConfiguredCoachLens(undefined)).toBe('balanced');
+  });
+
+  it('selects the native pose provider in native runtimes even when a web provider is configured', () => {
+    expect(
+      resolveRuntimeVideoAnalysisProvider({
+        nativeProvider: 'native-platform-pose',
+        nativeRuntime: true,
+        webProvider: 'web-tfjs-movenet',
+      }),
+    ).toBe('native-platform-pose');
+    expect(
+      resolveRuntimeVideoAnalysisProvider({
+        nativeProvider: 'native-platform-pose',
+        nativeRuntime: false,
+        webProvider: 'web-tfjs-movenet',
+      }),
+    ).toBe('web-tfjs-movenet');
+  });
+
+  it('rejects synthetic and reserved providers in production runtime selection', () => {
+    expect(() =>
+      resolveRuntimeVideoAnalysisProvider({
+        nativeProvider: 'native-coreml',
+        nativeRuntime: true,
+        webProvider: 'web-tfjs-movenet',
+      }),
+    ).toThrow();
+    expect(() =>
+      resolveRuntimeVideoAnalysisProvider({
+        nativeRuntime: false,
+        webProvider: 'local-video-fallback',
+      }),
+    ).toThrow();
   });
 
   it('parses launch readiness evidence from Expo extra objects', () => {

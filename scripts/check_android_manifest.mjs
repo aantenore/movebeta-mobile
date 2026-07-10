@@ -12,13 +12,13 @@ const manifestPath = join(
   'build',
   'intermediates',
   'merged_manifests',
-  'debug',
-  'processDebugManifest',
+  'release',
+  'processReleaseManifest',
   'AndroidManifest.xml',
 );
 
 if (!existsSync(manifestPath)) {
-  throw new Error(`Missing merged Android manifest at ${manifestPath}. Run npm run native:android:debug first.`);
+  throw new Error(`Missing merged release Android manifest at ${manifestPath}. Run npm run native:android:debug first.`);
 }
 
 const manifest = readFileSync(manifestPath, 'utf8');

@@ -16,7 +16,7 @@
 | T12 | Add CI workflow, PR/issue templates, dependency update policy, and release gate scripts | Done |
 | T13 | Add consent policy, report repository contract, failure-mode tests, and mobile release config | Done |
 | T14 | Add selectable bundled attempts as a camera/import workaround for the runnable MVP | Done |
-| T15 | Add real video record, import, preview, source normalization, and local video fallback analysis | Done |
+| T15 | Add real video record, import, preview, source normalization, and fail-closed on-device analysis | Done |
 | T16 | Validate native camera/import flows on physical iOS and Android devices | Next |
 | T17 | Add browser-side TensorFlow.js MoveNet provider for local video pose extraction | Done |
 | T18 | Install local Android toolchain and verify native Android debug build | Done |

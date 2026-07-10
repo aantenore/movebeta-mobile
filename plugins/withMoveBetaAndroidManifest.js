@@ -1,7 +1,14 @@
 const { AndroidConfig, withAndroidManifest } = require('@expo/config-plugins');
 
-const requiredPermissions = ['android.permission.CAMERA', 'android.permission.READ_MEDIA_VIDEO'];
-const removedPermissions = new Set(['android.permission.RECORD_AUDIO']);
+const requiredPermissions = ['android.permission.CAMERA'];
+const blockedPermissions = [
+  'android.permission.READ_MEDIA_IMAGES',
+  'android.permission.READ_MEDIA_VIDEO',
+  'android.permission.READ_EXTERNAL_STORAGE',
+  'android.permission.WRITE_EXTERNAL_STORAGE',
+  'android.permission.RECORD_AUDIO',
+  'android.permission.SYSTEM_ALERT_WINDOW',
+];
 
 function permissionName(permission) {
   return permission?.$?.['android:name'];
@@ -14,14 +21,17 @@ function ensurePermission(permissions, name) {
 }
 
 function normalizePermissions(manifest) {
+  AndroidConfig.Manifest.ensureToolsAvailable(manifest);
+  AndroidConfig.Permissions.addBlockedPermissions(manifest, blockedPermissions);
+
   const permissions = manifest.manifest['uses-permission'] ?? [];
-  const filtered = permissions.filter((permission) => !removedPermissions.has(permissionName(permission)));
 
   for (const name of requiredPermissions) {
-    ensurePermission(filtered, name);
+    ensurePermission(permissions, name);
   }
 
-  manifest.manifest['uses-permission'] = filtered;
+  manifest.manifest['uses-permission'] = permissions;
+  return manifest;
 }
 
 module.exports = function withMoveBetaAndroidManifest(config) {
@@ -35,3 +45,5 @@ module.exports = function withMoveBetaAndroidManifest(config) {
     return androidConfig;
   });
 };
+
+module.exports.normalizePermissions = normalizePermissions;

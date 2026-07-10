@@ -5,7 +5,7 @@
       "cueIds": [
         "cue-lockoff",
         "cue-hip",
-        "cue-pause"
+        "cue-foot-cut"
       ],
       "frameCount": 35,
       "metricIds": [
@@ -26,7 +26,7 @@
       "analysisQualityScore": 100,
       "cueIds": [
         "cue-lockoff",
-        "cue-pause"
+        "cue-foot-cut"
       ],
       "frameCount": 35,
       "metricIds": [
@@ -47,7 +47,7 @@
       "analysisQualityScore": 100,
       "cueIds": [
         "cue-lockoff",
-        "cue-pause"
+        "cue-foot-cut"
       ],
       "frameCount": 35,
       "metricIds": [
@@ -69,7 +69,7 @@
     "height": 1920,
     "width": 1080
   },
-  "generatedAt": "2026-06-25T15:50:07.142Z",
+  "generatedAt": "2026-07-10T08:48:12.687Z",
   "limitations": [
     "Uses deterministic MoveNet-shaped fixture keypoints to verify app analysis integration.",
     "Does not replace physical-device validation with real climbing videos and coach-reviewed labels."

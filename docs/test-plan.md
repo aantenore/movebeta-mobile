@@ -141,6 +141,12 @@
   token-like value rejection before sharing.
 - Vitest provider readiness tests for configured web MoveNet path, native platform provider review state, reserved
   provider blocking, fallback provider availability, and privacy-safe output.
+- Vitest analyzer trust tests cover per-joint confidence gating, aspect-ratio and athlete-scale invariance, temporal
+  resolution blocking, event-localized cue timestamps, and measured versus insufficient metric propagation.
+- Vitest latest-run tests cover aborting stale analysis tickets and invalidating active work on screen teardown.
+- Vitest browser model-cache tests bind readiness to the configured model manifest and replace cached assets whose
+  SHA-256 digest is invalid.
+- Vitest local retention tests verify camera-cache deletion, imported-file ownership, and temporary export cleanup.
 - Vitest iOS toolchain doctor tests for Command Line Tools-only blocker detection, full-Xcode ready detection, and durable
   JSON/Markdown report writes.
 - Vitest iOS toolchain setup packet tests for blocked and ready packet generation, sanitized command/proof copy, negative
@@ -255,6 +261,9 @@
 - MoveNet readiness report with `npm run model:movenet:readiness`, which writes
   `docs/sdlc/movenet-readiness-report.json` from vendored same-origin static model assets when present and is included
   in `npm run release:check`.
+- Real-video browser inference with `MOVEBETA_TEST_VIDEO=<local-fixture> npm run web:smoke:report`, which imports a video
+  through the picker, runs the shipped MoveNet graph, verifies provider/model/cue-engine provenance and metric evidence,
+  and proves that the persisted report contains no video URI.
 - MoveNet static assets doctor with `npm run model:movenet:assets:check`, which verifies same-origin model graph and
   weight shards in `public` and exported `dist`, service-worker model cache coverage, app config URL alignment,
   JSON/Markdown evidence, and release-gate/freshness/handoff integration.
@@ -607,8 +616,13 @@ Command used for local smoke:
 
 ```bash
 node scripts/serve-web.mjs dist 8083
-MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 python3 scripts/smoke_web_video.py
+MOVEBETA_SMOKE_URL=http://127.0.0.1:8083 \
+MOVEBETA_TEST_VIDEO=/absolute/path/to/pose-test.mp4 \
+python3 scripts/smoke_web_video.py
 ```
+
+The real-video fixture must remain outside the repository. The smoke report records only derived runtime evidence and
+must fail when the configured clip is not decoded by the shipped MoveNet provider.
 
 Coach model download timing coverage:
 
@@ -640,6 +654,7 @@ Cue-validation worksheet preflight coverage:
 
 ## Native QA Before Store Submission
 
+- `npm run native:android:debug` builds every configured debug ABI and validates the merged production manifest.
 - Android custom dev build with `native-platform-pose`.
 - iOS simulator/device build after full Xcode installation.
 - iOS toolchain setup packet export before the iOS build blocker is assigned or handed off.

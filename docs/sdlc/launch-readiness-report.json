@@ -103,10 +103,10 @@
       "action": "Run npm run release:check and refresh the release readiness report.",
       "label": "Release gate",
       "owner": "engineering",
-      "configured": true,
-      "detected": true,
+      "configured": false,
+      "detected": false,
       "key": "releaseGate",
-      "status": "verified"
+      "status": "missing"
     },
     {
       "action": "Generate store listing copy and screenshots.",
@@ -127,11 +127,11 @@
       "status": "verified"
     }
   ],
-  "generatedAt": "2026-06-25T15:43:10.098Z",
+  "generatedAt": "2026-07-10T08:48:43.799Z",
   "schemaVersion": "movebeta.launch-readiness-report.v1",
   "summary": {
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
-    "readyTracks": 1,
+    "readyTracks": 0,
     "status": "blocked",
     "totalTracks": 3
   },
@@ -140,28 +140,28 @@
       "driftChecks": 0,
       "key": "demo",
       "label": "Stakeholder demo",
-      "missingChecks": 0,
+      "missingChecks": 1,
       "requiredChecks": 6,
-      "status": "ready",
-      "verifiedChecks": 6
+      "status": "blocked",
+      "verifiedChecks": 5
     },
     {
       "driftChecks": 0,
       "key": "internal",
       "label": "Internal native beta",
-      "missingChecks": 1,
+      "missingChecks": 2,
       "requiredChecks": 8,
       "status": "blocked",
-      "verifiedChecks": 7
+      "verifiedChecks": 6
     },
     {
       "driftChecks": 0,
       "key": "store",
       "label": "Store submission",
-      "missingChecks": 5,
+      "missingChecks": 6,
       "requiredChecks": 12,
       "status": "blocked",
-      "verifiedChecks": 7
+      "verifiedChecks": 6
     }
   ]
 }

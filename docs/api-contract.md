@@ -11,6 +11,7 @@ rejected at runtime until a real adapter is installed.
 
 ```ts
 type PoseEstimator = {
+  model?: string;
   provider:
     | 'local-fixture'
     | 'local-video-fallback'
@@ -19,7 +20,7 @@ type PoseEstimator = {
     | 'native-mediapipe'
     | 'native-coreml'
     | 'native-tflite';
-  estimate(video: VideoAsset): Promise<PoseFrame[]>;
+  estimate(video: VideoAsset, options?: { signal?: AbortSignal }): Promise<PoseFrame[]>;
   isAvailable(): Promise<boolean>;
 };
 ```
@@ -147,6 +148,11 @@ Reports contain:
 - Analysis quality score, frame coverage, landmark coverage, visibility, and warnings.
 - Analysis performance evidence: elapsed analysis time, budget status, and processed frame rate.
 - Privacy metadata confirming whether video left the device.
+- Separate pose-model and cue-engine versions.
+- Per-metric `measured` or `insufficient-data` status; missing confidence or timing evidence never becomes a clean score.
+
+Recorded/imported video orchestration accepts only real providers and is fail-closed. Fixture and synthetic providers are
+not valid substitutes for user video.
 
 ## Cue Trust
 

@@ -12,8 +12,7 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
-        "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
-        "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+        "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis."
       },
       "supportsTablet": true
     },
@@ -27,8 +26,15 @@
       },
       "package": "com.movebeta.mobile",
       "permissions": [
-        "CAMERA",
-        "READ_MEDIA_VIDEO"
+        "CAMERA"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
       ],
       "predictiveBackGestureEnabled": false
     },
@@ -65,23 +71,21 @@
         "android": {
           "package": "com.movebeta.mobile",
           "permissions": [
-            "CAMERA",
-            "READ_MEDIA_VIDEO"
+            "CAMERA"
           ]
         },
         "ios": {
           "bundleIdentifier": "com.movebeta.mobile",
           "infoPlist": {
             "NSCameraUsageDescription": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
-            "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis.",
-            "NSPhotoLibraryAddUsageDescription": "MoveBeta can save recorded attempts only when you choose to keep them."
+            "NSPhotoLibraryUsageDescription": "MoveBeta can import a climbing video you select for on-device movement analysis."
           }
         },
         "name": "MoveBeta",
         "version": "1.0.0"
       },
       "launchReadinessEvidence": {
-        "releaseGate": true,
+        "releaseGate": false,
         "webSmoke": true,
         "privacyManifest": true,
         "storeListing": true,
@@ -151,16 +155,6 @@
         {
           "photosPermission": "MoveBeta can import selected climbing videos for on-device analysis.",
           "microphonePermission": false
-        }
-      ],
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "MoveBeta can read selected climbing videos for local analysis.",
-          "savePhotosPermission": "MoveBeta can save recordings only when you choose to keep them.",
-          "granularPermissions": [
-            "video"
-          ]
         }
       ],
       "expo-image",

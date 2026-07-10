@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { LocalAnalysisReportSchema, PoseFrameSchema } from '../src/movement/contracts';
-import { createPoseEstimator } from '../src/movement/onDevicePipeline';
+import { createPoseEstimator, OnDeviceMovementPipeline } from '../src/movement/onDevicePipeline';
 import { analyzeVideoAttempt } from '../src/movement/repository';
 import { withVideoAnalysisWindow } from '../src/video/analysisWindow';
 import { assessVideoIntake } from '../src/video/videoIntake';
@@ -123,7 +123,7 @@ describe('video source workflow', () => {
     expect(assessVideoIntake(source.video).canAnalyze).toBe(false);
   });
 
-  it('generates deterministic on-device pose frames for local videos', async () => {
+  it('generates deterministic synthetic pose frames only when the test provider is selected explicitly', async () => {
     const source = createCameraVideoSource({
       capturedAt: '2026-06-19T10:00:00.000Z',
       durationMs: 9_000,
@@ -172,7 +172,7 @@ describe('video source workflow', () => {
     await expect(estimator.estimate(source.video)).rejects.toThrow('browser video runtime');
   });
 
-  it('analyzes imported videos without uploading the source asset', async () => {
+  it('fails closed instead of synthesizing coaching cues when the configured provider is unavailable', async () => {
     const source = createImportedVideoSource({
       duration: 12_500,
       fileName: 'vertical-repeat.mov',
@@ -182,14 +182,9 @@ describe('video source workflow', () => {
       width: 1080,
     });
 
-    const report = await analyzeVideoAttempt(source.video, source.session);
-
-    expect(LocalAnalysisReportSchema.parse(report)).toEqual(report);
-    expect(report.engine.provider).toBe('local-video-fallback');
-    expect(report.engine.runsOnDevice).toBe(true);
-    expect(report.engine.uploadsVideo).toBe(false);
-    expect(report.privacy.videoLeavesDevice).toBe(false);
-    expect(report.session.id).toBe(source.session.id);
+    await expect(analyzeVideoAttempt(source.video, source.session)).rejects.toThrow(
+      'The configured on-device pose provider (web-tfjs-movenet) is unavailable.',
+    );
   });
 
   it('uses the active analysis window for processing budget without changing session duration', async () => {
@@ -203,7 +198,8 @@ describe('video source workflow', () => {
     });
     const windowedVideo = withVideoAnalysisWindow(source.video, 'middle');
 
-    const report = await analyzeVideoAttempt(windowedVideo, source.session);
+    const pipeline = new OnDeviceMovementPipeline({ poseEstimator: createPoseEstimator('local-video-fallback') });
+    const report = await pipeline.analyze(windowedVideo, source.session);
 
     expect(report.session.durationMs).toBe(90_000);
     expect(report.engine.analysisWindow).toMatchObject({
@@ -212,6 +208,7 @@ describe('video source workflow', () => {
       sourceDurationMs: 90_000,
     });
     expect(report.analysisEvidence.steps.find((step) => step.id === 'analysis-window')?.detail).toContain('middle window');
+    expect(report.analysisQuality.frameCoverage).toBe(1);
     expect(report.performance.budgetMs).toBe(25_000);
     expect(report.engine.provider).toBe('local-video-fallback');
   });
@@ -229,8 +226,10 @@ describe('video source workflow', () => {
       uri: 'file:///library/volume-sequence.mov',
     });
 
-    const report = await analyzeVideoAttempt(source.video, source.session);
+    const pipeline = new OnDeviceMovementPipeline({ poseEstimator: createPoseEstimator('local-video-fallback') });
+    const report = await pipeline.analyze(source.video, source.session);
 
+    expect(LocalAnalysisReportSchema.parse(report)).toEqual(report);
     expect(report.session).toMatchObject({
       grade: '6b coordination',
       gym: 'Comp wall',

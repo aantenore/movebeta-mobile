@@ -304,6 +304,42 @@ describe('local data portability', () => {
     expect(formatLocalDataRestoreResult(result)).toContain('Integrity verified: legacy backup without checksum');
   });
 
+  it('rolls back every attempted write when a repository fails during restore', async () => {
+    const source = await createPortabilityFixture();
+    const backup = await createLocalDataBackup({
+      annotations: source.annotations,
+      consents: source.consents,
+      drillPractice: source.drillPractice,
+      reports: source.reports,
+    });
+    const destinationReports = new InMemoryReportRepository();
+    const destinationAnnotations = new InMemoryReportAnnotationRepository();
+    const destinationConsents = new InMemoryCoachConsentRepository();
+    const destinationDrillPractice = new InMemoryDrillPracticeRepository();
+    const failingConsents = {
+      deleteConsent: (reportId: string) => destinationConsents.deleteConsent(reportId),
+      getConsent: (reportId: string) => destinationConsents.getConsent(reportId),
+      listConsents: () => destinationConsents.listConsents(),
+      saveConsent: async () => {
+        throw new Error('Injected consent restore failure.');
+      },
+    };
+
+    await expect(
+      restoreLocalDataBackup(backup, {
+        annotations: destinationAnnotations,
+        consents: failingConsents,
+        drillPractice: destinationDrillPractice,
+        reports: destinationReports,
+      }),
+    ).rejects.toThrow('all attempted writes were rolled back');
+
+    expect(await destinationReports.listReports()).toEqual([]);
+    expect(await destinationAnnotations.listAnnotations()).toEqual([]);
+    expect(await destinationConsents.listConsents()).toEqual([]);
+    expect(await destinationDrillPractice.listRecords()).toEqual([]);
+  });
+
   it('rejects backups whose content no longer matches the integrity checksum', async () => {
     const source = await createPortabilityFixture();
     const backup = await createLocalDataBackup({

@@ -104,11 +104,11 @@ export type LocalDataRestorePreview = {
 };
 
 export type LocalDataPortabilityRepositories = {
-  annotations: Pick<ReportAnnotationRepository, 'getAnnotation' | 'listAnnotations' | 'saveAnnotation'>;
-  consents: Pick<CoachConsentRepository, 'getConsent' | 'listConsents' | 'saveConsent'>;
-  drillPractice: Pick<DrillPracticeRepository, 'getRecord' | 'listRecords' | 'saveRecord'>;
+  annotations: Pick<ReportAnnotationRepository, 'deleteAnnotation' | 'getAnnotation' | 'listAnnotations' | 'saveAnnotation'>;
+  consents: Pick<CoachConsentRepository, 'deleteConsent' | 'getConsent' | 'listConsents' | 'saveConsent'>;
+  drillPractice: Pick<DrillPracticeRepository, 'deleteRecord' | 'getRecord' | 'listRecords' | 'saveRecord'>;
   now?: () => string;
-  reports: Pick<ReportRepository, 'exportReport' | 'getReport' | 'listReports' | 'saveReport'>;
+  reports: Pick<ReportRepository, 'deleteReport' | 'exportReport' | 'getReport' | 'listReports' | 'saveReport'>;
 };
 
 const defaultRepositories: LocalDataPortabilityRepositories = {
@@ -210,7 +210,7 @@ export async function createLocalDataBackup(
     app: {
       activePlan: appConfig.activePlan,
       privacyMode: appConfig.privacyMode,
-      release: '1.0.0',
+      release: appConfig.appVersion,
     },
     annotations,
     consents,
@@ -322,11 +322,91 @@ export async function restoreLocalDataBackup(
   repositories: LocalDataPortabilityRepositories = defaultRepositories,
 ): Promise<LocalDataRestoreResult> {
   const { annotations, backup, consents, drillPractice } = parseLocalDataBackupPayload(payload);
+  const previous = {
+    annotations: new Map(
+      await Promise.all(
+        annotations.map(async (annotation) => [annotation.reportId, await repositories.annotations.getAnnotation(annotation.reportId)] as const),
+      ),
+    ),
+    consents: new Map(
+      await Promise.all(
+        consents.map(async (consent) => [consent.reportId, await repositories.consents.getConsent(consent.reportId)] as const),
+      ),
+    ),
+    drillPractice: new Map(
+      await Promise.all(
+        drillPractice.map(async (record) => [record.drillId, await repositories.drillPractice.getRecord(record.drillId)] as const),
+      ),
+    ),
+    reports: new Map(
+      await Promise.all(backup.reports.map(async (report) => [report.id, await repositories.reports.getReport(report.id)] as const)),
+    ),
+  };
+  const attempted = {
+    annotations: [] as typeof annotations,
+    consents: [] as typeof consents,
+    drillPractice: [] as typeof drillPractice,
+    reports: [] as typeof backup.reports,
+  };
 
-  await Promise.all(backup.reports.map((report) => repositories.reports.saveReport(report)));
-  await Promise.all(annotations.map((annotation) => repositories.annotations.saveAnnotation(annotation)));
-  await Promise.all(consents.map((consent) => repositories.consents.saveConsent(consent)));
-  await Promise.all(drillPractice.map((record) => repositories.drillPractice.saveRecord(record)));
+  try {
+    for (const report of backup.reports) {
+      attempted.reports.push(report);
+      await repositories.reports.saveReport(report);
+    }
+    for (const annotation of annotations) {
+      attempted.annotations.push(annotation);
+      await repositories.annotations.saveAnnotation(annotation);
+    }
+    for (const consent of consents) {
+      attempted.consents.push(consent);
+      await repositories.consents.saveConsent(consent);
+    }
+    for (const record of drillPractice) {
+      attempted.drillPractice.push(record);
+      await repositories.drillPractice.saveRecord(record);
+    }
+  } catch (error) {
+    const rollbackTasks: Array<() => Promise<unknown>> = [];
+    for (const record of [...attempted.drillPractice].reverse()) {
+      const before = previous.drillPractice.get(record.drillId);
+      rollbackTasks.push(() =>
+        before ? repositories.drillPractice.saveRecord(before) : repositories.drillPractice.deleteRecord(record.drillId),
+      );
+    }
+    for (const consent of [...attempted.consents].reverse()) {
+      const before = previous.consents.get(consent.reportId);
+      rollbackTasks.push(() =>
+        before ? repositories.consents.saveConsent(before) : repositories.consents.deleteConsent(consent.reportId),
+      );
+    }
+    for (const annotation of [...attempted.annotations].reverse()) {
+      const before = previous.annotations.get(annotation.reportId);
+      rollbackTasks.push(() =>
+        before ? repositories.annotations.saveAnnotation(before) : repositories.annotations.deleteAnnotation(annotation.reportId),
+      );
+    }
+    for (const report of [...attempted.reports].reverse()) {
+      const before = previous.reports.get(report.id);
+      rollbackTasks.push(() => (before ? repositories.reports.saveReport(before) : repositories.reports.deleteReport(report.id)));
+    }
+
+    const rollbackResults = [];
+    for (const rollback of rollbackTasks) {
+      try {
+        await rollback();
+        rollbackResults.push(true);
+      } catch {
+        rollbackResults.push(false);
+      }
+    }
+    const failedRollbackCount = rollbackResults.filter((result) => !result).length;
+    const cause = error instanceof Error ? error.message : 'Unknown repository failure.';
+    if (failedRollbackCount > 0) {
+      throw new Error(`Local data restore failed and ${failedRollbackCount} rollback operation(s) require manual recovery. Cause: ${cause}`);
+    }
+    throw new Error(`Local data restore failed and all attempted writes were rolled back. Cause: ${cause}`);
+  }
 
   return {
     annotationsRestored: annotations.length,

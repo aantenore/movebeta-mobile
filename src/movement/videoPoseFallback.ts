@@ -93,6 +93,7 @@ function generateFrame(video: VideoAsset, frameIndex: number, frameCount: number
 }
 
 export class LocalVideoFallbackPoseEstimator implements PoseEstimator {
+  model = 'synthetic-video-fallback-v1';
   provider: AnalysisProvider = 'local-video-fallback';
 
   async estimate(video: VideoAsset): Promise<PoseFrame[]> {
