@@ -6,6 +6,7 @@ export type NativePoseEstimatorInput = {
   durationMs: number;
   frameIntervalMs: number;
   height: number;
+  maxInferenceLongSidePx: number;
   maxFrames: number;
   minFrames: number;
   provider: string;

@@ -224,9 +224,18 @@ export function validateStoreReadinessManifest(manifest: StoreReadinessManifest)
   );
 
   checks.push(
-    manifest.androidPermissions.includes('CAMERA') && manifest.androidPermissions.includes('READ_MEDIA_VIDEO')
+    manifest.androidPermissions.includes('CAMERA') &&
+      !manifest.androidPermissions.some((permission) =>
+        ['READ_MEDIA_IMAGES', 'READ_MEDIA_VIDEO', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'SYSTEM_ALERT_WINDOW'].includes(
+          permission,
+        ),
+      )
       ? pass('android-permissions', 'Android video permissions', manifest.androidPermissions.join(', '))
-      : fail('android-permissions', 'Android video permissions', 'CAMERA and READ_MEDIA_VIDEO must match the capture/import workflow.'),
+      : fail(
+          'android-permissions',
+          'Android video permissions',
+          'Only CAMERA is required; selected video import must use the permissionless system picker.',
+        ),
   );
 
   checks.push(

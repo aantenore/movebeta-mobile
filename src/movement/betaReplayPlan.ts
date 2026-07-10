@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { LocalAnalysisReport, MovementCue, MovementMetric, TimelineEvent } from './contracts';
 import { resolveCoachLens, sortCuesForCoachLens } from './coachLens';
+import { measuredMovementMetrics } from './metricEvidence';
 
 export const BetaReplayStepSchema = z.object({
   action: z.string(),
@@ -24,7 +25,7 @@ export type BetaReplayStep = z.infer<typeof BetaReplayStepSchema>;
 export type BetaReplayPlan = z.infer<typeof BetaReplayPlanSchema>;
 
 function lowestMetric(metrics: MovementMetric[]) {
-  return [...metrics].sort((a, b) => a.score - b.score)[0];
+  return measuredMovementMetrics(metrics).sort((a, b) => a.score - b.score)[0];
 }
 
 function firstEvent(timeline: TimelineEvent[], type: TimelineEvent['type']) {

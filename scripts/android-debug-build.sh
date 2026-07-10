@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JAVA_HOME="${JAVA_HOME:-$ROOT_DIR/.tools/jdk/Contents/Home}"
 ANDROID_HOME="${ANDROID_HOME:-$ROOT_DIR/.tools/android-sdk}"
 ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+NODE_ENV="${NODE_ENV:-development}"
 
 if [[ ! -x "$JAVA_HOME/bin/java" ]]; then
   echo "Missing local JDK at $JAVA_HOME. Install Temurin 17 or set JAVA_HOME." >&2
@@ -16,11 +17,11 @@ if [[ ! -d "$ANDROID_HOME/platforms/android-36" ]]; then
   exit 1
 fi
 
-export JAVA_HOME ANDROID_HOME ANDROID_SDK_ROOT
+export JAVA_HOME ANDROID_HOME ANDROID_SDK_ROOT NODE_ENV
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
 
 cd "$ROOT_DIR/android"
-./gradlew :app:assembleDebug
+./gradlew :app:assembleDebug :app:processReleaseManifest
 
 cd "$ROOT_DIR"
 node scripts/check_android_manifest.mjs

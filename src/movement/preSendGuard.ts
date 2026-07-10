@@ -5,7 +5,12 @@ import { summarizeProgress } from './progressInsights';
 import { summarizeProjectQueue } from './projectQueue';
 import { summarizeRepeatOutcomes } from './repeatOutcomeInsights';
 import type { ReportAnnotation } from './reportAnnotationRepository';
-import { buildTechniqueReadinessPlan } from './techniqueReadiness';
+import {
+  applyTechniqueReadinessSafetyCap,
+  buildTechniqueReadinessPlan,
+  type TechniqueReadinessPlan,
+  type TechniqueReadinessSafetyCap,
+} from './techniqueReadiness';
 
 export type PreSendGuardStatus = 'baseline' | 'reset-first' | 'controlled-repeat' | 'hard-try-window';
 export type PreSendGuardLoadCap = 'baseline' | 'easy' | 'moderate' | 'hard';
@@ -37,6 +42,11 @@ export type PreSendGuardDecision = {
   score: number;
   signals: PreSendGuardSignal[];
   status: PreSendGuardStatus;
+};
+
+export type PreSendGuidance = {
+  guard: PreSendGuardDecision;
+  readiness: TechniqueReadinessPlan;
 };
 
 export const defaultPreSendGuardThresholds: PreSendGuardThresholds = {
@@ -259,5 +269,62 @@ export function buildPreSendGuard(
     score,
     signals: signals.slice(0, 6),
     status,
+  };
+}
+
+function readinessCapForGuard(guard: PreSendGuardDecision): TechniqueReadinessSafetyCap {
+  const limitingSignal = guard.signals.find((signal) => signal.severity === 'blocker') ??
+    guard.signals.find((signal) => signal.severity === 'watch');
+  const risk = limitingSignal
+    ? `Pre-send guard limit: ${limitingSignal.label}. ${limitingSignal.evidence}`
+    : `Pre-send guard caps the next attempt at ${guard.loadCap} intensity.`;
+
+  if (guard.status === 'baseline') {
+    return {
+      headline: guard.headline,
+      maxStatus: 'baseline',
+      nextAction: guard.action,
+      risk,
+    };
+  }
+
+  if (guard.status === 'reset-first') {
+    return {
+      headline: guard.headline,
+      maxStatus: 'recover',
+      nextAction: guard.action,
+      risk,
+    };
+  }
+
+  if (guard.status === 'controlled-repeat') {
+    return {
+      headline: guard.headline,
+      maxStatus: 'repeat',
+      nextAction: guard.action,
+      risk,
+    };
+  }
+
+  return {
+    headline: guard.headline,
+    maxStatus: 'ready',
+    nextAction: guard.action,
+    risk,
+  };
+}
+
+export function buildPreSendGuidance(
+  reports: LocalAnalysisReport[],
+  annotations: ReportAnnotation[],
+  drillPractice: DrillPracticeRecord[] = [],
+  thresholds: Partial<PreSendGuardThresholds> = {},
+): PreSendGuidance {
+  const guard = buildPreSendGuard(reports, annotations, drillPractice, thresholds);
+  const readiness = buildTechniqueReadinessPlan(reports, annotations);
+
+  return {
+    guard,
+    readiness: applyTechniqueReadinessSafetyCap(readiness, readinessCapForGuard(guard)),
   };
 }

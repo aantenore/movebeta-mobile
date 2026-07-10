@@ -5,19 +5,25 @@ import { createPoseEstimator } from '../src/movement/onDevicePipeline';
 import { samplePoseFrames, sampleSession, sampleVideoAsset } from '../src/movement/sampleSession';
 
 describe('on-device pipeline failure modes', () => {
-  it('fails clearly when a required landmark is missing', async () => {
+  it('marks affected metrics unavailable when required landmarks are repeatedly missing', async () => {
     const analyzer = new LocalMovementAnalyzer();
-    const brokenFrame = {
-      ...samplePoseFrames[0],
-      landmarks: samplePoseFrames[0].landmarks.filter((landmark) => landmark.name !== 'leftHip'),
-    };
+    const brokenFrames = samplePoseFrames.map((frame, index) =>
+      index < 25
+        ? {
+            ...frame,
+            landmarks: frame.landmarks.filter((landmark) => landmark.name !== 'leftHip'),
+          }
+        : frame,
+    );
 
-    await expect(
-      analyzer.analyze({
-        frames: [brokenFrame, ...samplePoseFrames.slice(1)],
-        session: sampleSession,
-      }),
-    ).rejects.toThrow('Missing pose landmark: leftHip');
+    const report = await analyzer.analyze({
+      frames: brokenFrames,
+      session: sampleSession,
+    });
+
+    expect(report.metrics.find((metric) => metric.id === 'flow')?.status).toBe('insufficient-data');
+    expect(report.metrics.find((metric) => metric.id === 'hip-drift')?.status).toBe('insufficient-data');
+    expect(report.analysisQuality.warnings.join(' ')).toContain('leftHip');
   });
 
   it('keeps native provider failures explicit until adapters are installed', async () => {

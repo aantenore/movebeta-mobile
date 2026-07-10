@@ -1,6 +1,6 @@
 # Native QA Evidence Starter Report
 
-Generated: 2026-06-25T15:50:07.833Z
+Generated: 2026-07-10T08:48:13.473Z
 
 - Status: needs-device-evidence
 - Source input provided: no

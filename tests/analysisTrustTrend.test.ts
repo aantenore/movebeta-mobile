@@ -114,6 +114,7 @@ describe('analysis trust trend', () => {
           label: 'Balanced',
           summary: 'General movement review across flow, feet, hips, and arm load.',
         },
+        cueEngineVersion: 'movebeta-cue-engine-v2.0.0',
         model: 'remote-review',
         processedFrames: samplePoseFrames.length,
         provider: 'local-fixture',

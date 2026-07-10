@@ -1,9 +1,9 @@
 # Dependency License Report
 
-Generated: 2026-06-25T15:50:30.867Z
+Generated: 2026-07-10T08:48:35.222Z
 
 - Status: review
-- Packages: 768
+- Packages: 782
 - Review packages: 13
 - Blocked packages: 0
 - Token values included: no
@@ -13,12 +13,12 @@ Generated: 2026-06-25T15:50:30.867Z
 
 | License | Count |
 | --- | ---: |
-| MIT | 646 |
+| MIT | 659 |
 | ISC | 41 |
 | Apache-2.0 | 25 |
+| BSD-3-Clause | 12 |
 | MPL-2.0 | 12 |
 | BSD-2-Clause | 11 |
-| BSD-3-Clause | 11 |
 | BlueOak-1.0.0 | 6 |
 | (MIT OR CC0-1.0) | 3 |
 | 0BSD | 3 |

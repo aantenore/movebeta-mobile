@@ -4,6 +4,7 @@ import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
 import { createReportAnnotation } from '../src/movement/reportAnnotationRepository';
 import { sampleAttempts } from '../src/movement/sampleSession';
 import {
+  applyTechniqueReadinessSafetyCap,
   buildTechniqueReadinessPacket,
   buildTechniqueReadinessPlan,
   formatTechniqueReadinessPacketSummary,
@@ -65,6 +66,27 @@ describe('technique readiness', () => {
     expect(plan.status).toBe('recover');
     expect(plan.risk).toContain('High effort');
     expect(plan.warmup).toContain('easy movement');
+  });
+
+  it('caps ready guidance when a stronger safety decision blocks progression', async () => {
+    const reports = await buildSampleReports();
+    const readyPlan = {
+      ...buildTechniqueReadinessPlan(reports, []),
+      headline: 'Ready to increase difficulty',
+      status: 'ready' as const,
+    };
+    const constrained = applyTechniqueReadinessSafetyCap(readyPlan, {
+      headline: 'Reset before another hard try',
+      maxStatus: 'recover',
+      nextAction: 'Use an easier variant and log the result.',
+      risk: 'Pre-send guard limit: analysis quality is below threshold.',
+    });
+
+    expect(constrained.status).toBe('recover');
+    expect(constrained.headline).toBe('Reset before another hard try');
+    expect(constrained.nextAction).toContain('easier variant');
+    expect(constrained.warmup).toContain('easy movement');
+    expect(constrained.headline).not.toContain('increase difficulty');
   });
 
   it('builds a share-safe technique readiness packet without report ids or private artifacts', async () => {

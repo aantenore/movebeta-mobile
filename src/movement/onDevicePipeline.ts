@@ -1,5 +1,5 @@
 import { appConfig } from '@/core/config';
-import { activeVideoAnalysisDurationMs, resolveVideoAnalysisWindow } from '@/video/analysisWindow';
+import { resolveVideoAnalysisSamplingPlan } from '@/video/analysisWindow';
 import { buildVideoAnalysisPerformance } from '@/video/performanceBudget';
 
 import {
@@ -13,6 +13,7 @@ import {
   type VideoAsset,
 } from './contracts';
 import { attachAnalysisEvidence } from './analysisEvidence';
+import { throwIfAnalysisAborted, type AnalysisRunOptions } from './analysisCancellation';
 import { localMovementAnalyzer } from './localAnalyzer';
 import { NativePlatformPoseEstimator } from './nativePlatformPoseEstimator';
 import { sampleAttempts, samplePoseFrames } from './sampleSession';
@@ -22,8 +23,9 @@ import { WebTfjsMoveNetPoseEstimator } from './webTfjsPoseEstimator';
 export type { AnalysisProvider };
 
 export type PoseEstimator = {
+  model?: string;
   provider: AnalysisProvider;
-  estimate(video: VideoAsset): Promise<PoseFrame[]>;
+  estimate(video: VideoAsset, options?: AnalysisRunOptions): Promise<PoseFrame[]>;
   isAvailable(): Promise<boolean>;
 };
 
@@ -34,9 +36,11 @@ export type OnDeviceMovementPipelineOptions = {
 };
 
 class LocalFixturePoseEstimator implements PoseEstimator {
+  model = 'fixture-pose-v1';
   provider: AnalysisProvider = 'local-fixture';
 
-  async estimate(video: VideoAsset): Promise<PoseFrame[]> {
+  async estimate(video: VideoAsset, options: AnalysisRunOptions = {}): Promise<PoseFrame[]> {
+    throwIfAnalysisAborted(options.signal);
     return sampleAttempts.find((attempt) => attempt.video.id === video.id)?.frames ?? samplePoseFrames;
   }
 
@@ -67,36 +71,52 @@ export class OnDeviceMovementPipeline {
     return this.poseEstimator.isAvailable();
   }
 
-  async analyze(video: VideoAsset, session: ClimbSession, options: { coachLens?: CoachLensKey } = {}): Promise<LocalAnalysisReport> {
+  async analyze(
+    video: VideoAsset,
+    session: ClimbSession,
+    options: AnalysisRunOptions & { coachLens?: CoachLensKey } = {},
+  ): Promise<LocalAnalysisReport> {
     const startedAt = Date.now();
-    const frames = await this.poseEstimator.estimate(video);
+    const samplingPlan = resolveVideoAnalysisSamplingPlan(video);
+    throwIfAnalysisAborted(options.signal);
+    const frames = await this.poseEstimator.estimate(video, options);
+    throwIfAnalysisAborted(options.signal);
     const report = await this.analyzer.analyze({
       frames,
       coachLens: options.coachLens ?? this.coachLens,
+      model: this.poseEstimator.model ?? this.poseEstimator.provider,
       privacyMode: appConfig.privacyMode,
       provider: this.poseEstimator.provider,
+      sample: {
+        durationMs: samplingPlan.durationMs,
+        expectedFrameCount: samplingPlan.expectedFrameCount,
+        referenceIntervalMs: samplingPlan.referenceIntervalMs,
+        samplingIntervalMs: samplingPlan.samplingIntervalMs,
+      },
       session,
+      video,
     });
+    throwIfAnalysisAborted(options.signal);
     const completedAt = Date.now();
 
     const finalReport = LocalAnalysisReportSchema.parse({
       ...report,
       engine: {
         ...report.engine,
-        analysisWindow: resolveVideoAnalysisWindow(video),
+        analysisWindow: samplingPlan.window,
         provider: this.poseEstimator.provider,
         runsOnDevice: true,
         uploadsVideo: false,
       },
       performance: buildVideoAnalysisPerformance({
         analysisMs: completedAt - startedAt,
-        durationMs: activeVideoAnalysisDurationMs(video),
+        durationMs: samplingPlan.durationMs,
         frameCount: frames.length,
         measuredAt: new Date(completedAt).toISOString(),
       }),
       privacy: {
         ...report.privacy,
-        retention: 'Video remains in the local media sandbox unless the user exports it.',
+        retention: 'The report stores pose evidence and metrics, not the selected video file.',
         videoLeavesDevice: false,
       },
     });

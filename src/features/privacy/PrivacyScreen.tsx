@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Cpu, Database, FileJson, ShieldCheck, Upload, WifiOff } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
+import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
+import { confirmDestructiveAction } from '@/core/confirmation';
 import {
   assertDiagnosticPacketIsPrivacySafe,
   buildDiagnosticSupportPacket,
@@ -71,17 +74,27 @@ export function PrivacyScreen() {
   const [restoreInput, setRestoreInput] = useState('');
   const [restoreMessage, setRestoreMessage] = useState('');
   const [restorePreviewMessage, setRestorePreviewMessage] = useState('');
+  const [restorePreviewReady, setRestorePreviewReady] = useState(false);
   const [diagnostics, setDiagnostics] = useState<DiagnosticSupportPacket | null>(null);
-  const [offlineReportCount, setOfflineReportCount] = useState(0);
-  const offlineReadiness = assessOfflineReadiness({
-    config: appConfig,
-    consent: defaultPrivacyConsent,
-    reportCount: offlineReportCount,
-  });
+  const [offlineReportCount, setOfflineReportCount] = useState<number | null>(null);
+  const [offlineCheckError, setOfflineCheckError] = useState('');
+  const offlineReadiness =
+    offlineReportCount === null
+      ? null
+      : assessOfflineReadiness({
+          config: appConfig,
+          consent: defaultPrivacyConsent,
+          reportCount: offlineReportCount,
+        });
 
   async function runOfflineCheck() {
-    const reports = await listReports();
-    setOfflineReportCount(reports.length);
+    setOfflineCheckError('');
+    try {
+      const reports = await listReports();
+      setOfflineReportCount(reports.length);
+    } catch (error) {
+      setOfflineCheckError(error instanceof Error ? error.message : 'Offline history could not be checked.');
+    }
   }
 
   async function prepareDiagnostics() {
@@ -101,12 +114,12 @@ export function PrivacyScreen() {
           },
           message: 'Privacy-safe diagnostics prepared locally.',
           name: 'diagnostics.prepared',
-          release: '1.0.0',
+          release: appConfig.appVersion,
         }),
       ],
       privacyMode: appConfig.privacyMode,
       rawVideoExport: canExportRawVideo(consent),
-      release: '1.0.0',
+      release: appConfig.appVersion,
       reportSnapshots: reports.map((report) => ({
         analysisMs: report.performance.analysisMs,
         budgetStatus: report.performance.budgetStatus,
@@ -130,6 +143,7 @@ export function PrivacyScreen() {
     setRestoreInput(JSON.stringify(nextBackup, null, 2));
     setRestorePreviewMessage('');
     setRestoreMessage('');
+    setRestorePreviewReady(false);
   }
 
   async function previewBackup() {
@@ -137,21 +151,37 @@ export function PrivacyScreen() {
       const preview: LocalDataRestorePreview = await previewLocalDataRestoreAgainstRepositories(restoreInput);
       setRestorePreviewMessage(formatLocalDataRestorePreview(preview));
       setRestoreMessage('');
+      setRestorePreviewReady(true);
     } catch (error) {
       setRestorePreviewMessage(error instanceof Error ? error.message : 'Backup preview failed.');
+      setRestorePreviewReady(false);
     }
   }
 
   async function restoreBackup() {
+    if (!restorePreviewReady) {
+      setRestoreMessage('Preview this exact backup before restoring it.');
+      return;
+    }
+    const confirmed = await confirmDestructiveAction(
+      'Restore local backup?',
+      'Validated backup records may replace existing local records with the same identifiers.',
+    );
+    if (!confirmed) return;
     try {
       const result: LocalDataRestoreResult = await restoreLocalDataBackup(restoreInput);
       setRestoreMessage(formatLocalDataRestoreResult(result));
+      setRestorePreviewReady(false);
     } catch (error) {
       setRestoreMessage(error instanceof Error ? error.message : 'Backup restore failed.');
     }
   }
 
   const backupSummary = backup ? summarizeLocalDataBackup(backup) : null;
+
+  useEffect(() => {
+    void runOfflineCheck();
+  }, []);
 
   return (
     <Screen>
@@ -182,11 +212,16 @@ export function PrivacyScreen() {
         title="Airplane-mode readiness"
         caption="Check whether the default workflow can run without a network connection."
         trailing={
-          <Pressable onPress={() => void runOfflineCheck()} style={styles.action}>
+          <Pressable accessibilityRole="button" onPress={() => void runOfflineCheck()} style={styles.action}>
             <Text style={styles.actionText}>Check</Text>
           </Pressable>
         }
       >
+        {!offlineReadiness && !offlineCheckError ? (
+          <StateView loading title="Checking offline history" message="Reading local reports without network access." />
+        ) : offlineCheckError ? (
+          <StateView title="Offline check unavailable" message={offlineCheckError} />
+        ) : offlineReadiness ? (
         <View style={styles.offlineCard}>
           <View style={styles.diagnosticsTop}>
             <WifiOff color={offlineReadiness.status === 'blocked' ? theme.colors.coral : theme.colors.success} size={18} />
@@ -216,13 +251,14 @@ export function PrivacyScreen() {
             ))}
           </View>
         </View>
+        ) : null}
       </Section>
 
       <Section
         title="Diagnostics"
         caption="Prepare a local support packet without raw video, video URI, key frames, or pose landmarks."
         trailing={
-          <Pressable onPress={() => void prepareDiagnostics()} style={styles.action}>
+          <Pressable accessibilityRole="button" onPress={() => void prepareDiagnostics()} style={styles.action}>
             <Text style={styles.actionText}>Prepare</Text>
           </Pressable>
         }
@@ -247,7 +283,7 @@ export function PrivacyScreen() {
         title="Data portability"
         caption="Export and restore local reports, training logs, drill practice, and consent records without raw video."
         trailing={
-          <Pressable onPress={() => void prepareBackup()} style={styles.action}>
+          <Pressable accessibilityRole="button" onPress={() => void prepareBackup()} style={styles.action}>
             <Text style={styles.actionText}>Backup</Text>
           </Pressable>
         }
@@ -305,6 +341,7 @@ export function PrivacyScreen() {
               setRestoreInput(value);
               setRestorePreviewMessage('');
               setRestoreMessage('');
+              setRestorePreviewReady(false);
             }}
             placeholder="Paste a MoveBeta local backup JSON payload."
             placeholderTextColor={theme.colors.muted}
@@ -312,10 +349,16 @@ export function PrivacyScreen() {
             value={restoreInput}
           />
           <View style={styles.restoreActions}>
-            <Pressable onPress={() => void previewBackup()} style={styles.restoreActionSecondary}>
+            <Pressable accessibilityRole="button" onPress={() => void previewBackup()} style={styles.restoreActionSecondary}>
               <Text style={styles.restoreActionText}>Preview restore</Text>
             </Pressable>
-            <Pressable onPress={() => void restoreBackup()} style={styles.restoreAction}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !restorePreviewReady }}
+              disabled={!restorePreviewReady}
+              onPress={() => void restoreBackup()}
+              style={[styles.restoreAction, !restorePreviewReady ? styles.disabled : null]}
+            >
               <Text style={styles.restoreActionText}>Restore backup</Text>
             </Pressable>
           </View>
@@ -336,6 +379,9 @@ export function PrivacyScreen() {
 }
 
 const styles = StyleSheet.create({
+  disabled: {
+    opacity: 0.45,
+  },
   item: {
     alignItems: 'center',
     backgroundColor: theme.colors.surface,

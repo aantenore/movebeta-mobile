@@ -1,0 +1,3 @@
+html body [aria-hidden='true']:has(h1) {
+  display: none !important;
+}

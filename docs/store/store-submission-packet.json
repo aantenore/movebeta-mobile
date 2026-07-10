@@ -43,7 +43,7 @@
       "purpose": "Verify physical-device evidence before claiming native release readiness."
     }
   ],
-  "generatedAt": "2026-06-25T15:50:13.176Z",
+  "generatedAt": "2026-07-10T08:48:19.937Z",
   "manifest": {
     "androidPackage": "com.movebeta.mobile",
     "androidPermissions": [
@@ -217,10 +217,10 @@
         "status": "pass"
       },
       {
-        "detail": "CAMERA, READ_MEDIA_VIDEO",
+        "detail": "Only CAMERA is required; selected video import must use the permissionless system picker.",
         "id": "android-permissions",
         "label": "Android video permissions",
-        "status": "pass"
+        "status": "fail"
       },
       {
         "detail": "MoveBeta uses the camera to analyze climbing attempts on-device when you choose to record.",
@@ -259,7 +259,7 @@
         "status": "pass"
       }
     ],
-    "ready": true
+    "ready": false
   },
   "safetyLanguage": {
     "blockerCount": 0,
@@ -274,13 +274,13 @@
   "schemaVersion": "movebeta.store-submission-packet.v1",
   "summary": {
     "androidPackage": "com.movebeta.mobile",
-    "blockerCount": 0,
+    "blockerCount": 1,
     "checkCount": 9,
-    "checksPassed": 9,
+    "checksPassed": 8,
     "copyIssueCount": 0,
     "iosBundleIdentifier": "com.movebeta.mobile",
-    "nextAction": "Store metadata packet is ready for account-bound credential and native QA gates.",
+    "nextAction": "Fix failing store metadata, permission, privacy, or screenshot checks before submission.",
     "screenshotCount": 12,
-    "status": "metadata-ready"
+    "status": "review-required"
   }
 }

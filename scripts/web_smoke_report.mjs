@@ -86,6 +86,38 @@ function safeUrl(value) {
   }
 }
 
+export function parseWebSmokeRuntimeEvidence(stdout = '') {
+  for (const line of String(stdout).trim().split('\n').reverse()) {
+    try {
+      const parsed = JSON.parse(line);
+      if (parsed?.desktop !== 'pass' || parsed?.mobile !== 'pass' || parsed?.pwaOffline !== 'pass') continue;
+      const realVideo = parsed.realVideo;
+      return {
+        desktop: 'pass',
+        mobile: 'pass',
+        pwaOffline: 'pass',
+        realVideo:
+          realVideo && typeof realVideo === 'object'
+            ? {
+                metricStatuses:
+                  realVideo.metricStatuses && typeof realVideo.metricStatuses === 'object'
+                    ? Object.fromEntries(
+                        Object.entries(realVideo.metricStatuses).filter(
+                          ([key, value]) => typeof key === 'string' && ['insufficient-data', 'measured'].includes(value),
+                        ),
+                      )
+                    : {},
+                processedFrames: Math.max(0, Number(realVideo.processedFrames) || 0),
+                qualityScore: Math.max(0, Math.min(100, Number(realVideo.qualityScore) || 0)),
+                status: 'pass',
+              }
+            : { status: 'not-requested' },
+      };
+    } catch {}
+  }
+  return undefined;
+}
+
 function relativePath(rootDir, targetPath) {
   const relative = path.relative(rootDir, targetPath);
   return relative.length > 0 && !relative.startsWith('..') ? relative : path.basename(targetPath);
@@ -181,6 +213,7 @@ export function buildWebSmokeReport({
   generatedAt = completedAt,
   mode = 'provided-url',
   rootDir = resolveProjectRoot(),
+  runtimeEvidence,
   smokeUrl = '',
   startedAt = completedAt,
   status = exitCode === 0 ? 'pass' : 'fail',
@@ -218,9 +251,9 @@ export function buildWebSmokeReport({
       status: safeStatus,
     },
     {
-      detail: 'Uses SDLC report-derived counts for launch, feature, model, and PWA expectations.',
-      key: 'report-derived-expectations',
-      label: 'Report-derived expectations',
+      detail: 'Verifies fail-closed video controls, transient demos, free-plan gates, and local history boundaries.',
+      key: 'product-contract-smoke',
+      label: 'Current product contracts',
       status: safeStatus,
     },
   ];
@@ -241,6 +274,7 @@ export function buildWebSmokeReport({
       rawVideoIncluded: false,
       tokenLikeValuesIncluded: false,
     },
+    runtimeEvidence,
     schemaVersion: WEB_SMOKE_REPORT_SCHEMA_VERSION,
     startedAt,
     status: safeStatus,
@@ -297,6 +331,11 @@ Generated: ${report.generatedAt}
 - Local paths included: no
 - Raw artifacts included: no
 - Raw video included: no
+- Real-video inference: ${report.runtimeEvidence?.realVideo?.status ?? 'not-recorded'}${
+    report.runtimeEvidence?.realVideo?.status === 'pass'
+      ? ` (${report.runtimeEvidence.realVideo.processedFrames} frames, quality ${report.runtimeEvidence.realVideo.qualityScore}/100)`
+      : ''
+  }
 
 | Check | Status | Detail |
 | --- | --- | --- |
@@ -438,6 +477,7 @@ export async function runWebSmokeReport({
     generatedAt: generatedAt ?? completedAt,
     mode,
     rootDir,
+    runtimeEvidence: parseWebSmokeRuntimeEvidence(result.stdout),
     smokeUrl: targetUrl ?? '',
     startedAt,
     status: result.status,

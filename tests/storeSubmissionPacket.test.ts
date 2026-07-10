@@ -11,7 +11,7 @@ import {
 const expoConfig: ExpoStoreConfig = {
   android: {
     package: 'com.movebeta.mobile',
-    permissions: ['CAMERA', 'READ_MEDIA_VIDEO'],
+    permissions: ['CAMERA'],
   },
   ios: {
     bundleIdentifier: 'com.movebeta.mobile',

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import { theme } from '@/core/theme';
 
@@ -10,12 +10,16 @@ type SectionProps = {
   children: ReactNode;
 };
 
+const webHeadingLevel = Platform.OS === 'web' ? ({ 'aria-level': 2 } as const) : {};
+
 export function Section({ title, caption, trailing, children }: SectionProps) {
   return (
     <View style={styles.section}>
       <View style={styles.header}>
         <View style={styles.copy}>
-          <Text style={styles.title}>{title}</Text>
+          <Text accessibilityRole="header" {...webHeadingLevel} style={styles.title}>
+            {title}
+          </Text>
           {caption ? <Text style={styles.caption}>{caption}</Text> : null}
         </View>
         {trailing}

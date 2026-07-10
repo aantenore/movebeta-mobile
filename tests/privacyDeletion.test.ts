@@ -133,4 +133,45 @@ describe('privacy deletion bundle', () => {
     expect(receipt).toContain('Raw video included: no');
     expect(receipt).toContain('Video left device: no');
   });
+
+  it('reports partial deletion and completes the remaining artifact on retry', async () => {
+    const { annotations, consents, drillPractice, report, reports } = await createDeletionFixture();
+    let failOnce = true;
+    const flakyAnnotations = {
+      deleteAnnotation: async (reportId: string) => {
+        if (failOnce) {
+          failOnce = false;
+          throw new Error('Injected annotation delete failure.');
+        }
+        return annotations.deleteAnnotation(reportId);
+      },
+      getAnnotation: (reportId: string) => annotations.getAnnotation(reportId),
+    };
+
+    const partial = await deleteAnalysisBundle(report.id, {
+      annotations: flakyAnnotations,
+      consents,
+      drillPractice,
+      reports,
+    });
+
+    expect(partial.status).toBe('partial');
+    expect(partial.artifacts.find((artifact) => artifact.id === 'training-log')).toMatchObject({
+      deleted: false,
+      error: 'Local deletion did not complete; retry this privacy action.',
+      wasPresent: true,
+    });
+    expect(formatAnalysisBundleDeletionReceipt(partial)).toContain('Private training log: retry required');
+    expect(await reports.getReport(report.id)).toBeNull();
+    expect(await annotations.getAnnotation(report.id)).not.toBeNull();
+
+    const retry = await deleteAnalysisBundle(report.id, {
+      annotations: flakyAnnotations,
+      consents,
+      drillPractice,
+      reports,
+    });
+    expect(retry.status).toBe('deleted');
+    expect(await annotations.getAnnotation(report.id)).toBeNull();
+  });
 });

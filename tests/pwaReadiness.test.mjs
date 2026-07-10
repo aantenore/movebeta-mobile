@@ -84,7 +84,10 @@ function makeReadyFixture() {
     modelUrl: '/models/movenet/singlepose/lightning/4/model.json',
     schemaVersion: 'movebeta.static-model-assets.v1',
   });
-  writeText(path.join(root, 'dist/index.html'), '<link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script>');
+  writeText(
+    path.join(root, 'dist/index.html'),
+    '<link rel="manifest" href="/manifest.json"><script defer src="/pwa-register.js" data-service-worker="/sw.js"></script>',
+  );
   writeText(path.join(root, 'dist/metadata.json'), '{}');
   writeText(path.join(root, 'dist/_expo/static/js/web/entry-test.js'), 'js');
   writeText(path.join(root, 'dist/assets/image-test.png'), 'png');
@@ -92,6 +95,7 @@ function makeReadyFixture() {
   writeText(path.join(root, 'dist/models/movenet/singlepose/lightning/4/group1-shard1of1.bin'), 'bin');
   writeText(path.join(root, 'dist/pwa/icon-192.png'), 'png');
   writeText(path.join(root, 'dist/pwa/icon-512.png'), 'png');
+  writeText(path.join(root, 'dist/pwa-register.js'), 'registration');
   writeText(
     path.join(root, 'dist/sw.js'),
     `const CACHE_VERSION = "${buildCacheVersion({ distDir: path.join(root, 'dist') })}"; const EXPORT_ASSETS = ["/_expo/static/js/web/entry-test.js", "/assets/image-test.png", "/metadata.json"]; const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json';`,

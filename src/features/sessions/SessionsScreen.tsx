@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Download, Eye, NotebookPen, RefreshCw, Save, Share2, ShieldCheck, Target, Trash2, UserCheck } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { AnalysisTrustPanel } from '@/components/AnalysisTrustPanel';
 import { MovementCueCard } from '@/components/MovementCueCard';
 import { MovementMetricRow } from '@/components/MovementMetricRow';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
+import { StateView } from '@/components/StateView';
+import { confirmDestructiveAction } from '@/core/confirmation';
+import { appConfig } from '@/core/config';
+import { hasCapability } from '@/core/entitlements';
 import {
   coachConsentRepository,
   consentRecordToPrivacyConsent,
@@ -841,7 +846,11 @@ function ValidationWorksheetPreflightPanel({
 }
 
 export function SessionsScreen() {
+  const coachPacketsIncluded = hasCapability(appConfig.activePlan, 'coach-packets');
+  const coachLibraryIncluded = hasCapability(appConfig.activePlan, 'coach-library');
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [coachConsentByReport, setCoachConsentByReport] = useState<Record<string, CoachReviewConsentRecord>>({});
   const [annotationByReport, setAnnotationByReport] = useState<Record<string, ReportAnnotation>>({});
   const [coachLibrary, setCoachLibrary] = useState<CoachLibrary>(() => buildCoachLibrary([], []));
@@ -852,34 +861,44 @@ export function SessionsScreen() {
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
   async function refresh() {
-    const [nextReports, consents, annotations, drillPractice] = await Promise.all([
-      listReports(),
-      coachConsentRepository.listConsents(),
-      reportAnnotationRepository.listAnnotations(),
-      drillPracticeRepository.listRecords(),
-    ]);
-    const reportIds = new Set(nextReports.map((report) => report.id));
-    const scopedAnnotations = annotations.filter((annotation) => reportIds.has(annotation.reportId));
-    setReports(nextReports);
-    setSelectedReportId((current) => (current && reportIds.has(current) ? current : nextReports[0]?.id ?? null));
-    setAnnotationByReport(
-      Object.fromEntries(
-        scopedAnnotations.map((annotation) => [annotation.reportId, annotation]),
-      ),
-    );
-    setCoachConsentByReport(
-      Object.fromEntries(
-        consents
-          .filter((consent) => reportIds.has(consent.reportId) && isCoachReviewConsentActive(consent))
-          .map((consent) => [consent.reportId, consent]),
-      ),
-    );
-    setCoachLibrary(buildCoachLibrary(nextReports, consents, scopedAnnotations, drillPractice));
-    setDrillPracticeRecords(drillPractice);
+    setLoading(true);
+    setLoadError('');
+    try {
+      const [nextReports, consents, annotations, drillPractice] = await Promise.all([
+        listReports(),
+        coachConsentRepository.listConsents(),
+        reportAnnotationRepository.listAnnotations(),
+        drillPracticeRepository.listRecords(),
+      ]);
+      const reportIds = new Set(nextReports.map((report) => report.id));
+      const scopedAnnotations = annotations.filter((annotation) => reportIds.has(annotation.reportId));
+      setReports(nextReports);
+      setSelectedReportId((current) => (current && reportIds.has(current) ? current : nextReports[0]?.id ?? null));
+      setAnnotationByReport(Object.fromEntries(scopedAnnotations.map((annotation) => [annotation.reportId, annotation])));
+      setCoachConsentByReport(
+        Object.fromEntries(
+          consents
+            .filter((consent) => reportIds.has(consent.reportId) && isCoachReviewConsentActive(consent))
+            .map((consent) => [consent.reportId, consent]),
+        ),
+      );
+      setCoachLibrary(buildCoachLibrary(nextReports, consents, scopedAnnotations, drillPractice));
+      setDrillPracticeRecords(drillPractice);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Local sessions could not be loaded.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function remove(reportId: string) {
     selectionFeedback();
+    const report = reports.find((item) => item.id === reportId);
+    const confirmed = await confirmDestructiveAction(
+      'Delete local analysis?',
+      `${report?.session.title ?? 'This analysis'} and its notes, consent, and practice records will be removed from this device.`,
+    );
+    if (!confirmed) return;
     const deletion = await deleteLocalAnalysisBundle(reportId);
     setPreparedExport({
       body: formatAnalysisBundleDeletionReceipt(deletion),
@@ -1182,16 +1201,20 @@ export function SessionsScreen() {
       <Header
         eyebrow="Sessions"
         title="Local attempts"
-        subtitle="Reports are stored as landmarks and metrics; the original video can stay on the device."
+        subtitle="Reports store pose evidence and metrics. Selected videos are not copied into report history."
         action={
-          <Pressable onPress={() => void refresh()} style={styles.action}>
+          <Pressable accessibilityRole="button" onPress={() => void refresh()} style={styles.action}>
             <RefreshCw color={theme.colors.brand} size={16} />
             <Text style={styles.actionText}>Refresh</Text>
           </Pressable>
         }
       />
 
-      {reports.length > 0 ? (
+      {loading && reports.length === 0 ? (
+        <StateView loading title="Loading local sessions" message="Reading reports and private training records." />
+      ) : loadError && reports.length === 0 ? (
+        <StateView title="Sessions unavailable" message={loadError} />
+      ) : reports.length > 0 ? (
         <>
           {reports.map((report) => (
             <View key={report.id} style={styles.session}>
@@ -1209,6 +1232,7 @@ export function SessionsScreen() {
               <Text style={styles.privacy}>{report.privacy.retention}</Text>
               <View style={styles.sessionActions}>
                 <Pressable
+                  accessibilityRole="button"
                   onPress={() => {
                     selectionFeedback();
                     setSelectedReportId(report.id);
@@ -1220,7 +1244,7 @@ export function SessionsScreen() {
                     Review
                   </Text>
                 </Pressable>
-                <Pressable onPress={() => void prepareExport(report.id)} style={styles.secondaryAction}>
+                <Pressable accessibilityRole="button" onPress={() => void prepareExport(report.id)} style={styles.secondaryAction}>
                   <Download color={theme.colors.brand} size={16} />
                   <Text style={styles.secondaryActionText}>Export</Text>
                 </Pressable>
@@ -1232,21 +1256,32 @@ export function SessionsScreen() {
                   <Target color={theme.colors.brand} size={16} />
                   <Text style={styles.secondaryActionText}>Trust</Text>
                 </Pressable>
-                <Pressable
-                  onPress={() => void toggleCoachConsent(report.id)}
-                  style={[styles.secondaryAction, coachConsentByReport[report.id] ? styles.consentSelected : null]}
-                >
-                  <UserCheck color={coachConsentByReport[report.id] ? '#FFFFFF' : theme.colors.brand} size={16} />
-                  <Text style={[styles.secondaryActionText, coachConsentByReport[report.id] ? styles.consentSelectedText : null]}>
-                    Consent
-                  </Text>
-                </Pressable>
-                <Pressable onPress={() => void prepareCoachPacket(report.id)} style={styles.secondaryAction}>
-                  <UserCheck color={theme.colors.brand} size={16} />
-                  <Text style={styles.secondaryActionText}>Coach packet</Text>
-                </Pressable>
+                {coachPacketsIncluded ? (
+                  <>
+                    <Pressable
+                      accessibilityLabel={
+                        coachConsentByReport[report.id]
+                          ? 'Revoke coach review and cue validation consent'
+                          : 'Allow coach review and cue validation for this report'
+                      }
+                      accessibilityRole="button"
+                      onPress={() => void toggleCoachConsent(report.id)}
+                      style={[styles.secondaryAction, coachConsentByReport[report.id] ? styles.consentSelected : null]}
+                    >
+                      <UserCheck color={coachConsentByReport[report.id] ? '#FFFFFF' : theme.colors.brand} size={16} />
+                      <Text style={[styles.secondaryActionText, coachConsentByReport[report.id] ? styles.consentSelectedText : null]}>
+                        {coachConsentByReport[report.id] ? 'Revoke coach use' : 'Allow coach use'}
+                      </Text>
+                    </Pressable>
+                    <Pressable onPress={() => void prepareCoachPacket(report.id)} style={styles.secondaryAction}>
+                      <UserCheck color={theme.colors.brand} size={16} />
+                      <Text style={styles.secondaryActionText}>Coach packet</Text>
+                    </Pressable>
+                  </>
+                ) : null}
                 <Pressable
                   accessibilityLabel={`Delete ${report.session.title}`}
+                  accessibilityRole="button"
                   onPress={() => void remove(report.id)}
                   style={styles.deleteAction}
                 >
@@ -1254,27 +1289,36 @@ export function SessionsScreen() {
                   <Text style={styles.deleteActionText}>Delete</Text>
                 </Pressable>
               </View>
+              {coachPacketsIncluded ? (
+                <Text style={styles.consentScopeCopy}>
+                  Coach use covers review and cue validation for this report only, and can be revoked at any time.
+                </Text>
+              ) : null}
             </View>
           ))}
 
-          <CoachLibraryPanel
-            library={coachLibrary}
-            onPrepareExport={prepareCoachLibraryExport}
-            onPrepareValidationClipManifest={() => void prepareCueValidationClipIntakeManifest()}
-            onPrepareValidationReviewerAssignment={() => void prepareCueValidationReviewerAssignmentPacket()}
-            onPrepareValidationReviewerOnboarding={() => void prepareCueValidationReviewerOnboardingPacket()}
-            onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
-            onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
-            onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}
-          />
+          {coachLibraryIncluded ? (
+            <>
+              <CoachLibraryPanel
+                library={coachLibrary}
+                onPrepareExport={prepareCoachLibraryExport}
+                onPrepareValidationClipManifest={() => void prepareCueValidationClipIntakeManifest()}
+                onPrepareValidationReviewerAssignment={() => void prepareCueValidationReviewerAssignmentPacket()}
+                onPrepareValidationReviewerOnboarding={() => void prepareCueValidationReviewerOnboardingPacket()}
+                onPrepareValidationSeed={() => void prepareCueValidationStudySeed()}
+                onPrepareValidationWorksheet={() => void prepareCueValidationReviewWorksheet()}
+                onPrepareValidationWorksheetCsv={() => void prepareCueValidationReviewWorksheetCsv()}
+              />
 
-          <ValidationCampaignPanel
-            onPrepareRunbook={prepareValidationCollectionRunbook}
-            onPrepareStatusExport={prepareValidationCampaignStatus}
-            workflow={coachValidationWorkflow}
-          />
+              <ValidationCampaignPanel
+                onPrepareRunbook={prepareValidationCollectionRunbook}
+                onPrepareStatusExport={prepareValidationCampaignStatus}
+                workflow={coachValidationWorkflow}
+              />
+            </>
+          ) : null}
 
-          {coachLibrary.entries.length > 0 ? (
+          {coachLibraryIncluded && coachLibrary.entries.length > 0 ? (
             <Section title="Validation dataset" caption="Completed worksheet CSV to gate-ready JSON.">
               <TextInput
                 accessibilityLabel="Completed cue validation worksheet CSV"
@@ -1405,6 +1449,11 @@ const styles = StyleSheet.create({
   },
   consentSelectedText: {
     color: '#FFFFFF',
+  },
+  consentScopeCopy: {
+    color: '#DCECF3',
+    fontSize: 12,
+    lineHeight: 17,
   },
   deleteAction: {
     alignItems: 'center',

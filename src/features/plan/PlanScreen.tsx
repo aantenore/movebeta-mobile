@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import Constants from 'expo-constants';
 import { ArrowUpRight, CheckCircle2, Circle, Download, Share2, ShieldCheck, TriangleAlert } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
 import { buildBillingReadinessSummary } from '@/core/billingReadiness';
@@ -995,8 +996,8 @@ function ProviderReadinessCard({ readiness }: { readiness: ReturnType<typeof bui
           <Text style={styles.qaKitMetricLabel}>primary</Text>
         </View>
         <View style={styles.qaKitMetric}>
-          <Text style={styles.providerMetricValue}>{readiness.fallbackProvider}</Text>
-          <Text style={styles.qaKitMetricLabel}>fallback</Text>
+          <Text style={styles.providerMetricValue}>{readiness.failurePolicy}</Text>
+          <Text style={styles.qaKitMetricLabel}>failure policy</Text>
         </View>
         <View style={styles.qaKitMetric}>
           <Text style={styles.providerMetricValue}>{readiness.nativeProvider ?? 'not-set'}</Text>
@@ -3152,7 +3153,7 @@ export function PlanScreen() {
   });
   const nativeQaKit = buildNativeQaEvidenceKit();
   const nativeQaComposerPreview = buildNativeQaEvidenceComposerPreview({
-    appVersion: '1.0.0',
+    appVersion: appConfig.appVersion,
     generatedAt: nativeQaComposerGeneratedAt,
     runs: nativeQaComposerRuns,
   });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { LocalAnalysisReport } from '../src/movement/contracts';
 import { createDrillPracticeRecord } from '../src/movement/drillPracticeRepository';
 import { localMovementAnalyzer } from '../src/movement/localAnalyzer';
-import { buildPreSendGuard } from '../src/movement/preSendGuard';
+import { buildPreSendGuard, buildPreSendGuidance } from '../src/movement/preSendGuard';
 import { sampleAttempts } from '../src/movement/sampleSession';
 
 async function buildSampleReports() {
@@ -84,6 +84,24 @@ describe('pre-send guard', () => {
     expect(guard.loadCap).toBe('easy');
     expect(guard.signals.some((signal) => signal.id === 'analysis-quality' && signal.severity === 'blocker')).toBe(true);
     expect(guard.signals.some((signal) => signal.id === 'video-signal' && signal.severity === 'watch')).toBe(true);
+  });
+
+  it('never pairs a reset blocker with guidance to increase difficulty', async () => {
+    const reports = updateLatestReport(clearLatestFixCues(await buildSampleReports()), (report) => ({
+      ...report,
+      analysisQuality: {
+        ...report.analysisQuality,
+        score: 54,
+        warnings: ['Low landmark confidence near the crux.'],
+      },
+    }));
+    const guidance = buildPreSendGuidance(reports, []);
+
+    expect(guidance.guard.status).toBe('reset-first');
+    expect(guidance.readiness.status).not.toBe('ready');
+    expect(guidance.readiness.headline).toBe(guidance.guard.headline);
+    expect(guidance.readiness.nextAction).toBe(guidance.guard.action);
+    expect(guidance.readiness.headline).not.toContain('increase difficulty');
   });
 
   it('resets first when private drill follow-through is blocked', async () => {
