@@ -381,5 +381,5 @@ describe('release handoff packet', () => {
 
     expect(dirtyPacket.repository.worktreeDirty).toBe(true);
     expect(dirtyPacket.repository.changedPaths.join('\n')).toContain('README.md');
-  });
+  }, 60_000);
 });

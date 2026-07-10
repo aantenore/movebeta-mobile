@@ -30,11 +30,11 @@ export type PlanEntitlement = z.infer<typeof PlanEntitlementSchema>;
 
 export const defaultEntitlements = PlanEntitlementSchema.array().parse([
   {
-    capabilities: ['local-analysis', 'recent-history', 'weekly-drills', 'report-export'],
+    capabilities: ['local-analysis', 'recent-history', 'attempt-comparison', 'weekly-drills', 'report-export'],
     historyLimit: 5,
     key: 'free',
     label: 'Free',
-    summary: 'Local analysis, recent report history, weekly drills, and privacy-safe exports.',
+    summary: 'Local analysis, recent report history, focused repeat comparison, weekly drills, and privacy-safe exports.',
   },
   {
     capabilities: [

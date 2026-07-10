@@ -36,11 +36,15 @@ function mapKeypoint(name: LandmarkName, keypoint: Keypoint | undefined, dimensi
     throw new Error(`MoveNet did not return the required ${name} keypoint.`);
   }
 
+  const normalizedX = keypoint.x / Math.max(dimensions.width, 1);
+  const normalizedY = keypoint.y / Math.max(dimensions.height, 1);
+
   return {
+    inFrame: normalizedX >= 0 && normalizedX <= 1 && normalizedY >= 0 && normalizedY <= 1,
     name,
     visibility: clamp(keypoint.score ?? 0),
-    x: clamp(keypoint.x / Math.max(dimensions.width, 1)),
-    y: clamp(keypoint.y / Math.max(dimensions.height, 1)),
+    x: clamp(normalizedX),
+    y: clamp(normalizedY),
     z: keypoint.z,
   };
 }

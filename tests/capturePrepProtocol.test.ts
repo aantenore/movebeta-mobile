@@ -42,7 +42,7 @@ describe('capture prep protocol', () => {
       .filter((cue) => cue.severity === 'fix')
       .sort((a, b) => a.timestampMs - b.timestampMs)[0];
     expect(protocol.focus).toBe(expectedPrimaryCue?.title);
-    expect(protocol.phases.find((phase) => phase.id === 'prep-evidence-warmup')?.evidence).toContain('Bent-arm load');
+    expect(protocol.phases.find((phase) => phase.id === 'prep-evidence-warmup')?.evidence).toContain('Elbow-flexion time');
     expect(protocol.phases.find((phase) => phase.id === 'prep-record')?.instruction).toContain(report.session.wallAngle);
     expect(protocol.totalMinutes).toBe(15);
   });

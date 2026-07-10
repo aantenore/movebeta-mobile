@@ -54,6 +54,7 @@
     "extra": {
       "analysisProvider": "local-fixture",
       "activePlan": "free",
+      "productExperience": "consumer",
       "videoAnalysisProvider": "web-tfjs-movenet",
       "nativeVideoAnalysisProvider": "native-platform-pose",
       "tfjsMoveNetModelUrl": "/models/movenet/singlepose/lightning/4/model.json",

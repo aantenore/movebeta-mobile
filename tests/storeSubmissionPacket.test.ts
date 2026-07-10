@@ -38,7 +38,7 @@ describe('store submission packet', () => {
       checksPassed: 9,
       copyIssueCount: 0,
       iosBundleIdentifier: 'com.movebeta.mobile',
-      screenshotCount: 12,
+      screenshotCount: 6,
       status: 'metadata-ready',
     });
     expect(packet.privacy).toEqual({

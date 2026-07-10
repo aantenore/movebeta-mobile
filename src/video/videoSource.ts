@@ -31,6 +31,8 @@ const sourceLabels: Record<VideoSourceInput['source'], string> = {
   import: 'Imported attempt',
 };
 
+let videoSourceSequence = 0;
+
 export const wallAngleOptions: WallAngle[] = ['slab', 'vertical', 'overhang'];
 
 function hashText(value: string) {
@@ -53,7 +55,8 @@ function normalizeDurationMs(value: number | null | undefined) {
 
 function buildVideoId(input: VideoSourceInput, capturedAt: string) {
   if (input.id) return input.id;
-  return `video-${input.source}-${hashText(`${input.uri}:${capturedAt}`)}`;
+  videoSourceSequence += 1;
+  return `video-${input.source}-${hashText(`${input.uri}:${capturedAt}:${videoSourceSequence}`)}`;
 }
 
 function buildSessionTitle(source: VideoSourceInput['source'], fileName?: string | null) {
@@ -118,7 +121,6 @@ export function createImportedVideoSource(asset: ImagePickerAsset) {
     durationMs: asset.duration,
     fileName: asset.fileName,
     height: asset.height,
-    id: asset.assetId ? `video-import-${asset.assetId}` : undefined,
     source: 'import',
     uri: asset.uri,
     width: asset.width,
@@ -130,7 +132,6 @@ export function createImportedVideoSourceWithSession(asset: ImagePickerAsset, se
     durationMs: asset.duration,
     fileName: asset.fileName,
     height: asset.height,
-    id: asset.assetId ? `video-import-${asset.assetId}` : undefined,
     session,
     source: 'import',
     uri: asset.uri,

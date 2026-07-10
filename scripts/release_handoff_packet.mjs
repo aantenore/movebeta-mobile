@@ -28,7 +28,13 @@ function exists(rootDir, relativePath) {
   return fs.existsSync(path.join(rootDir, relativePath));
 }
 
+function isGitRepository(rootDir) {
+  return fs.existsSync(path.join(rootDir, '.git'));
+}
+
 function gitValue(rootDir, args, fallback = 'unknown') {
+  if (!isGitRepository(rootDir)) return fallback;
+
   try {
     return execFileSync('git', args, { cwd: rootDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() || fallback;
   } catch {
@@ -87,6 +93,8 @@ export function buildReleaseHandoffPacket({
   const modelVerificationSuite = readJsonIfExists(path.join(rootDir, 'docs/sdlc/model-verification-suite-report.json')) ?? {};
   const moveNetReadiness = readJsonIfExists(path.join(rootDir, 'docs/sdlc/movenet-readiness-report.json')) ?? {};
   const storeManifest = readJsonIfExists(path.join(rootDir, 'docs/store/store-manifest.json')) ?? {};
+  const changedPaths = gitStatusLines(rootDir);
+  const resolvedCommitSha = commitSha ?? gitValue(rootDir, ['rev-parse', 'HEAD']);
   const expectedScreenshots = Array.isArray(storeManifest.screenshots) ? storeManifest.screenshots : [];
   const screenshots = expectedScreenshots.map((item) => {
     const fileName = item.fileName ?? '';
@@ -306,11 +314,11 @@ export function buildReleaseHandoffPacket({
     },
     repository: {
       branch: gitValue(rootDir, ['branch', '--show-current']),
-      baseCommitSha: commitSha ?? gitValue(rootDir, ['rev-parse', 'HEAD']),
-      changedPaths: gitStatusLines(rootDir),
-      commitSha: commitSha ?? gitValue(rootDir, ['rev-parse', 'HEAD']),
+      baseCommitSha: resolvedCommitSha,
+      changedPaths,
+      commitSha: resolvedCommitSha,
       remoteUrl: remoteUrl ?? gitValue(rootDir, ['config', '--get', 'remote.origin.url']),
-      worktreeDirty: gitStatusLines(rootDir).length > 0,
+      worktreeDirty: changedPaths.length > 0,
     },
     schemaVersion: RELEASE_HANDOFF_PACKET_SCHEMA_VERSION,
     screenshots,

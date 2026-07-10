@@ -54,6 +54,8 @@ describe('local movement analyzer', () => {
     expect(report.engine.coachLens.key).toBe('balanced');
     expect(report.privacy.videoLeavesDevice).toBe(false);
     expect(report.engine.processedFrames).toBe(samplePoseFrames.length);
+    expect(report.poseFrames).toEqual(samplePoseFrames);
+    expect(report.engine.capture?.orientation).toBe('portrait');
     expect(report.analysisQuality.score).toBeGreaterThanOrEqual(95);
     expect(report.analysisQuality.warnings).toEqual([]);
     expect(report.analysisEvidence.schemaVersion).toBe('movebeta.analysis-evidence.v1');
@@ -67,6 +69,8 @@ describe('local movement analyzer', () => {
       'foot-cuts',
     ]);
     expect(report.cues.length).toBeGreaterThan(0);
+    expect(report.keyFrame.timestampMs).toBe(report.cues[0].timestampMs);
+    expect(report.poseFrames.find((frame) => frame.timestampMs === report.keyFrame.timestampMs)).toEqual(report.keyFrame);
 
     const sortedTimestamps = [...report.timeline].sort((a, b) => a.timestampMs - b.timestampMs);
     expect(report.timeline).toEqual(sortedTimestamps);
@@ -174,6 +178,23 @@ describe('local movement analyzer', () => {
     expect(report.cues.map((cue) => cue.id)).not.toContain('cue-foot-cut');
     expect(report.analysisQuality.warnings.join(' ')).toContain('leftAnkle');
     expect(report.analysisQuality.score).toBeLessThan(95);
+  });
+
+  it('lowers framing quality when extremities are outside the image', async () => {
+    const croppedFrames = samplePoseFrames.map((frame) => ({
+      ...frame,
+      landmarks: frame.landmarks.map((landmark) =>
+        landmark.name === 'leftWrist' || landmark.name === 'rightAnkle'
+          ? { ...landmark, inFrame: false, x: landmark.name === 'leftWrist' ? 0 : 1 }
+          : landmark,
+      ),
+    }));
+
+    const report = await localMovementAnalyzer.analyze({ frames: croppedFrames, session: sampleSession });
+
+    expect(report.analysisQuality.extremityCoverage).toBeLessThan(0.65);
+    expect(report.analysisQuality.inFrameCoverage).toBeLessThan(0.9);
+    expect(report.analysisQuality.warnings.join(' ')).toContain('frame edge');
   });
 
   it('keeps geometry invariant across source aspect ratio and athlete scale', async () => {
