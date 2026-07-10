@@ -1,29 +1,25 @@
-# Store Listing
+# Store Listing Copy
 
-Source of truth: `docs/store/store-manifest.json`, generated with `npm run store:manifest`.
+## App Name
 
-## Listing
+MoveBeta
 
-| Field | Value |
-| --- | --- |
-| App name | MoveBeta |
-| Category | Sports |
-| Subtitle | Local climbing coach |
-| Short description | On-device climbing video coach for local technique review. |
-| Promotional text | Review climbing movement locally with pose-based cues, drills, and privacy-safe reports. |
+## Subtitle
+
+Private movement review
+
+## Short Description
+
+Private climbing movement review for your next attempt.
+
+## Promotional Text
+
+Review one local pose-based focus, film the same climb again, and compare what changed.
 
 ## Full Description
 
-MoveBeta helps indoor climbers review short attempts without sending raw video to a cloud service. Record or import a
-clip, run local pose analysis, review movement quality, and turn cues into drills. The app focuses on flow, pause time,
-bent-arm load, hip drift, and likely foot cuts while keeping reports, metrics, and diagnostics privacy-safe by default.
+MoveBeta helps indoor boulderers run one private movement experiment for the next attempt. Record or import a short clip, process it on the device, review one pose-based focus at the relevant video moment, then film the same climb again and compare compatible movement signals. The app measures low-movement time, elbow-flexion time, lateral torso offset, and rapid ankle movement without claiming to detect wall contact or a single correct beta. Raw video is not uploaded or stored in report history.
 
 ## Keywords
 
 climbing, bouldering, training, movement, technique, video, coach, on-device
-
-## Claims Guardrails
-
-- Do not claim injury prevention, route safety, medical diagnosis, or grade prediction.
-- Do not claim cloud AI review in the default product loop.
-- Keep copy focused on local technique review, training cues, privacy, and drill planning.

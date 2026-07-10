@@ -18,12 +18,16 @@ vi.mock('expo-router', () => {
 });
 
 vi.mock('lucide-react-native', () => ({
-  Activity: () => null,
   BadgeCheck: () => null,
   Dumbbell: () => null,
   History: () => null,
+  ScanLine: () => null,
   ShieldCheck: () => null,
   TrendingUp: () => null,
+}));
+
+vi.mock('../src/core/config', () => ({
+  appConfig: { productExperience: 'consumer' },
 }));
 
 import TabsLayout from '../src/app/(tabs)/_layout';
@@ -72,10 +76,14 @@ describe('shared UI accessibility', () => {
     expect(tabBarStyle.height).toBe(60);
 
     const screens = Children.toArray(tabs.props.children as ReactNode).filter(isValidElement) as TestElement[];
+    const visibleScreens = screens.filter(
+      (screen) => (screen.props.options as Record<string, unknown>).href !== null,
+    );
     expect(screens).toHaveLength(6);
+    expect(visibleScreens).toHaveLength(4);
     expect(
-      screens.map((screen) => (screen.props.options as Record<string, unknown>).tabBarAccessibilityLabel),
-    ).toEqual(['Analyze', 'Sessions', 'Drills', 'Progress', 'Plan', 'Privacy']);
+      visibleScreens.map((screen) => (screen.props.options as Record<string, unknown>).tabBarAccessibilityLabel),
+    ).toEqual(['Coach', 'Attempts', 'Progress', 'Settings']);
   });
 
   it('restores visible tab labels when enough width is available', () => {

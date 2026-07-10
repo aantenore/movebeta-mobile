@@ -10,7 +10,12 @@ import type { AnalysisProvider, PoseEstimator } from './onDevicePipeline';
 const implementedNativeProviders = new Set<AnalysisProvider>(['native-platform-pose']);
 
 export class NativePlatformPoseEstimator implements PoseEstimator {
-  model = 'native-platform-body-pose-v1';
+  model =
+    process.env.EXPO_OS === 'ios'
+      ? 'apple-vision-human-body-pose-v1'
+      : process.env.EXPO_OS === 'android'
+        ? 'ml-kit-accurate-pose-18.0.0-beta5'
+        : 'native-platform-body-pose-unavailable';
 
   constructor(public provider: Extract<AnalysisProvider, 'native-platform-pose' | 'native-mediapipe' | 'native-coreml' | 'native-tflite'>) {}
 

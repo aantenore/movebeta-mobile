@@ -12,8 +12,8 @@ describe('beta replay plan', () => {
     expect(plan.steps.map((step) => step.phase).sort()).toEqual(['crux', 'exit', 'setup']);
     expect(plan.steps).toHaveLength(3);
     expect(plan.focusCueIds.length).toBeGreaterThan(0);
-    expect(plan.primaryFocus).toBe('Reduce bent-arm time');
-    expect(plan.summary).toContain('reduce bent-arm time');
+    expect(plan.primaryFocus).toBe('Review sustained elbow flexion');
+    expect(plan.summary).toContain('review sustained elbow flexion');
   });
 
   it('keeps replay steps sorted by observed timestamps', async () => {
@@ -29,7 +29,7 @@ describe('beta replay plan', () => {
     const report = await analyzeSampleSession('footwork');
     const plan = buildBetaReplayPlan(report);
 
-    expect(plan.primaryFocus).toBe('Keep feet engaged after the reach');
+    expect(plan.primaryFocus).toBe('Check rapid foot movement');
     expect(plan.focusCueIds[0]).toBe('cue-foot-cut');
     expect(plan.summary).toContain('Prioritize quiet feet');
   });
@@ -43,8 +43,8 @@ describe('beta replay plan', () => {
     });
 
     expect(plan.focusCueIds).toEqual([]);
-    expect(plan.primaryFocus).toBe('Bent-arm load');
-    expect(plan.summary).toContain('bent-arm load');
+    expect(plan.primaryFocus).toBe('Elbow-flexion time');
+    expect(plan.summary).toContain('elbow-flexion time');
     expect(plan.steps.every((step) => step.evidence.length > 0)).toBe(true);
   });
 });

@@ -126,15 +126,22 @@ private final class AppleVisionPoseEstimator {
 
     for (name, joint) in requiredJoints {
       guard let point = points[joint], point.confidence > 0 else {
-        return nil
+        continue
       }
 
+      let normalizedX = Double(point.location.x)
+      let normalizedY = 1 - Double(point.location.y)
       landmarks.append([
+        "inFrame": normalizedX >= 0 && normalizedX <= 1 && normalizedY >= 0 && normalizedY <= 1,
         "name": name,
-        "x": clamp(Double(point.location.x)),
-        "y": clamp(1 - Double(point.location.y)),
+        "x": clamp(normalizedX),
+        "y": clamp(normalizedY),
         "visibility": clamp(Double(point.confidence))
       ])
+    }
+
+    guard !landmarks.isEmpty else {
+      return nil
     }
 
     return [

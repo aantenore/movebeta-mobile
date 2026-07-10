@@ -45,6 +45,9 @@ const requiredLandmarks: LandmarkName[] = [
   'rightAnkle',
 ];
 
+const extremityLandmarks: LandmarkName[] = ['leftWrist', 'rightWrist', 'leftAnkle', 'rightAnkle'];
+const frameEdgeMargin = 0.015;
+
 type Point = { x: number; y: number };
 
 type FrameGeometry = {
@@ -137,7 +140,41 @@ function buildAnalysisQuality(
     requiredLandmarks.map((name) => frame.landmarks.find((landmark) => landmark.name === name)?.visibility ?? 0),
   );
   const averageVisibility = average(visibilityValues);
-  const score = Math.round(frameCoverage * 40 + averageVisibility * 35 + landmarkCoverage * 25);
+  const extremityCoverage = average(
+    extremityLandmarks.map(
+      (name) =>
+        frames.filter((frame) => {
+          const landmark = frame.landmarks.find((item) => item.name === name);
+          return landmark !== undefined && landmark.visibility >= minVisibility && landmark.inFrame !== false;
+        }).length / Math.max(1, frames.length),
+    ),
+  );
+  const usableLandmarks = frames.flatMap((frame) =>
+    frame.landmarks.filter((landmark) => landmark.visibility >= minVisibility),
+  );
+  const inFrameCoverage =
+    usableLandmarks.filter(
+      (landmark) =>
+        landmark.inFrame !== false &&
+        landmark.x > frameEdgeMargin &&
+        landmark.x < 1 - frameEdgeMargin &&
+        landmark.y > frameEdgeMargin &&
+        landmark.y < 1 - frameEdgeMargin,
+    ).length / Math.max(1, usableLandmarks.length);
+  const subjectScale = median(
+    frames.flatMap((frame) => {
+      const visible = frame.landmarks.filter(
+        (landmark) => landmark.visibility >= minVisibility && landmark.inFrame !== false,
+      );
+      if (visible.length < 6) return [];
+      const xs = visible.map((landmark) => landmark.x);
+      const ys = visible.map((landmark) => landmark.y);
+      return [Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys))];
+    }),
+  );
+  const score = Math.round(
+    frameCoverage * 32 + averageVisibility * 28 + landmarkCoverage * 20 + extremityCoverage * 12 + inFrameCoverage * 8,
+  );
   const warnings: string[] = [];
 
   if (frames.length < 10) {
@@ -151,6 +188,15 @@ function buildAnalysisQuality(
   }
   if (averageVisibility < 0.65) {
     warnings.push('Pose visibility is low; improve lighting and avoid occluding hands or feet.');
+  }
+  if (extremityCoverage < 0.65) {
+    warnings.push('Hands or feet were missing too often; keep all four extremities visible for the repeat.');
+  }
+  if (inFrameCoverage < 0.9) {
+    warnings.push('Pose landmarks reached the frame edge; move the camera back and keep the climber centered.');
+  }
+  if (subjectScale > 0 && subjectScale < 0.25) {
+    warnings.push('The climber is too small in the frame for dependable movement signals.');
   }
 
   const unreliableNames = requiredLandmarks.filter((name) => {
@@ -166,9 +212,12 @@ function buildAnalysisQuality(
 
   return {
     averageVisibility: Number(averageVisibility.toFixed(2)),
+    extremityCoverage: Number(extremityCoverage.toFixed(2)),
     frameCoverage: Number(frameCoverage.toFixed(2)),
+    inFrameCoverage: Number(inFrameCoverage.toFixed(2)),
     landmarkCoverage: Number(landmarkCoverage.toFixed(2)),
     score: Math.max(0, Math.min(100, score)),
+    subjectScale: Number(subjectScale.toFixed(2)),
     warnings,
   };
 }
@@ -383,15 +432,15 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       pushWarning(
         analysisQuality,
         samplingSupportsTiming
-          ? 'Foot-cut cues were skipped because ankle confidence was insufficient.'
-          : 'Foot-cut cues were skipped because temporal sampling was too sparse.',
+          ? 'Rapid ankle movement signals were skipped because ankle confidence was insufficient.'
+          : 'Rapid ankle movement signals were skipped because temporal sampling was too sparse.',
       );
     }
     if (!armMeasured) {
       pushWarning(analysisQuality, 'Bent-arm cues were skipped because arm-joint confidence was insufficient.');
     }
     if (!hipMeasured) {
-      pushWarning(analysisQuality, 'Hip-drift cues were skipped because torso confidence was insufficient.');
+      pushWarning(analysisQuality, 'Torso offset signals were skipped because torso confidence was insufficient.');
     }
 
     const analysisStartMs = frames[0].timestampMs;
@@ -438,56 +487,56 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
     const metrics: MovementMetric[] = [
       buildMetric(
         'flow',
-        'Flow score',
+        'Movement continuity',
         flowScore,
         '/100',
         flowScore,
         flowMeasured
-          ? 'Combines pauses, path efficiency, and sudden foot movement.'
+          ? 'Combines low-movement time, hip-path efficiency, and rapid ankle movement.'
           : 'Unavailable until confident hip tracking and temporal coverage meet the analysis threshold.',
         flowMeasured,
       ),
       buildMetric(
         'pause-time',
-        'Crux pause',
+        'Low-movement time',
         pauseSeconds,
         's',
         scoreFromPenalty(pauseSeconds * 12),
         flowMeasured
-          ? 'Long pauses often mean the next foot sequence is not decided.'
+          ? 'Counts tracked time where hip-center movement stayed below the configured threshold.'
           : 'Unavailable until confident hip tracking and temporal coverage meet the analysis threshold.',
         flowMeasured,
       ),
       buildMetric(
         'lock-off',
-        'Bent-arm load',
+        'Elbow-flexion time',
         lockOffPercent,
         '%',
         scoreFromPenalty(lockOffPercent * 0.8),
         armMeasured
-          ? 'Lower is usually better for energy conservation on moderate terrain.'
+          ? 'Share of measured frames where either elbow angle stayed below the configured threshold.'
           : 'Unavailable until shoulder, elbow, and wrist confidence meet the analysis threshold.',
         armMeasured,
       ),
       buildMetric(
         'hip-drift',
-        'Hip drift',
+        'Torso lateral offset',
         hipDriftPercent,
         '%',
         scoreFromPenalty(hipDriftPercent * 0.9),
         hipMeasured
-          ? 'Body-scale-normalized proxy for hips moving away from the shoulder line.'
+          ? 'Share of tracked frames where hips and shoulders have a large lateral offset. This does not measure wall distance.'
           : 'Unavailable until shoulder and hip confidence meet the analysis threshold.',
         hipMeasured,
       ),
       buildMetric(
         'foot-cuts',
-        'Foot cuts',
+        'Rapid ankle movement',
         footCutCount,
         'events',
         scoreFromPenalty(footCutSeverity * 18),
         footMeasured
-          ? 'Body-scale-normalized ankle acceleration flags likely foot slips or cuts.'
+          ? 'Counts sudden body-scale-normalized ankle velocity. Pose alone cannot confirm foot contact or a foot cut.'
           : 'Unavailable until ankle confidence and temporal coverage meet the analysis threshold.',
         footMeasured,
       ),
@@ -500,12 +549,12 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
     const cues: MovementCue[] = [];
     if (flowMeasured && pauseSeconds > 0.7) {
       cues.push({
-        body: 'You stalled before the long reach. Rehearse the next two feet before pulling.',
-        drill: 'Silent-feet preview: climb once while naming the next foot before each hand move.',
+        body: 'The pose track contains a low-movement interval. Review this timestamp and test a more continuous sequence.',
+        drill: 'Continuity repeat: use the same beta and aim to move through this timestamp without an extra pause.',
         id: 'cue-pause',
         severity: 'watch',
         timestampMs: frames[pauseIndexes[0]?.index ?? 0]?.timestampMs ?? 0,
-        title: 'Plan feet before the crux',
+        title: 'Review the low-movement interval',
       });
     }
     if (armMeasured && lockOffPercent > 28) {
@@ -513,12 +562,12 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
         (a, b) => Number(a.angle.toFixed(6)) - Number(b.angle.toFixed(6)) || a.index - b.index,
       )[0];
       cues.push({
-        body: 'Several moves happen with a loaded bent arm. Try pushing through the feet before locking off.',
-        drill: 'Straight-arm hover: pause with straight arms for two seconds before each hand move.',
+        body: 'One or both elbows stay flexed across several measured frames. Review the replay before changing technique.',
+        drill: 'Elbow-angle repeat: use the same beta and test whether this section can be climbed with less sustained flexion.',
         id: 'cue-lockoff',
         severity: 'fix',
         timestampMs: frames[peak?.index ?? 0].timestampMs,
-        title: 'Reduce bent-arm time',
+        title: 'Review sustained elbow flexion',
       });
     }
     if (hipMeasured && hipDriftPercent > 20) {
@@ -526,22 +575,22 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
         (a, b) => Number(b.drift.toFixed(6)) - Number(a.drift.toFixed(6)) || a.index - b.index,
       )[0];
       cues.push({
-        body: 'Your hips drift away during the reach. Rotate the inside hip closer before moving the hand.',
-        drill: 'Hip-to-wall touches: before each reach, bring the inside hip toward the wall and reset.',
+        body: 'The hips and shoulders show a large lateral offset at this timestamp. Test a quieter torso position on the repeat.',
+        drill: 'Quiet-torso repeat: use the same beta and reduce side-to-side torso movement at this timestamp.',
         id: 'cue-hip',
         severity: 'fix',
         timestampMs: frames[peak?.index ?? 0].timestampMs,
-        title: 'Move from the hips',
+        title: 'Reduce torso offset',
       });
     }
     if (footMeasured && footCutCount > 0) {
       cues.push({
-        body: 'The ankles spike after the reach, which usually means the feet cut or skate.',
-        drill: 'No-cut repeat: repeat the climb and downclimb any move where a foot leaves unexpectedly.',
+        body: 'The ankles move rapidly after the reach. Check the video to confirm whether a foot moved intentionally or lost contact.',
+        drill: 'Controlled-feet repeat: keep the same beta and aim for a quieter foot transition at this timestamp.',
         id: 'cue-foot-cut',
         severity: 'watch',
         timestampMs: frames[footCutIndexes[0].index].timestampMs,
-        title: 'Keep feet engaged after the reach',
+        title: 'Check rapid foot movement',
       });
     }
 
@@ -554,7 +603,7 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       })),
       ...footCutIndexes.slice(0, 2).map((item, index) => ({
         id: `foot-cut-${index}`,
-        label: 'Likely foot cut',
+        label: 'Rapid ankle movement',
         timestampMs: frames[item.index].timestampMs,
         type: 'foot-cut' as const,
       })),
@@ -575,10 +624,30 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
       });
     }
 
+    const sortedCues = sortCuesForCoachLens(cues, coachLens.key);
+    const focusTimestampMs = sortedCues[0]?.timestampMs ?? timeline[0]?.timestampMs ?? frames[Math.round(frames.length / 2)].timestampMs;
+    const keyFrame = frames.reduce((closest, frame) =>
+      Math.abs(frame.timestampMs - focusTimestampMs) < Math.abs(closest.timestampMs - focusTimestampMs) ? frame : closest,
+    );
+
     const report = LocalAnalysisReportSchema.parse({
       analysisQuality,
-      cues: sortCuesForCoachLens(cues, coachLens.key),
+      cues: sortedCues,
       engine: {
+        ...(input.video
+          ? {
+              capture: {
+                height: input.video.height,
+                orientation:
+                  input.video.width === input.video.height
+                    ? 'square'
+                    : input.video.width > input.video.height
+                      ? 'landscape'
+                      : 'portrait',
+                width: input.video.width,
+              },
+            }
+          : {}),
         coachLens,
         cueEngineVersion: this.cueEngineVersion,
         model: input.model ?? this.model,
@@ -588,11 +657,12 @@ export class LocalMovementAnalyzer implements OnDeviceAnalyzer {
         uploadsVideo: false,
       },
       id: `analysis-${input.session.id}`,
-      keyFrame: frames[Math.round(frames.length * 0.62)],
+      keyFrame,
+      poseFrames: frames,
       metrics,
       privacy: {
         retention: 'Selected video is processed locally and is not retained by the analysis report.',
-        storedArtifacts: ['pose landmarks', 'movement metrics', 'coach cues'],
+        storedArtifacts: ['pose landmark timeline', 'movement metrics', 'pose-based focus cues'],
         videoLeavesDevice: false,
       },
       session: input.session,

@@ -17,7 +17,7 @@ async function buildSampleReports() {
 }
 
 describe('progress insights', () => {
-  it('summarizes local reports into best signal, focus metric, and metric trends', async () => {
+  it('summarizes local reports without inventing trends across unrelated climbs', async () => {
     const reports = await buildSampleReports();
     const summary = summarizeProgress(reports);
 
@@ -25,23 +25,31 @@ describe('progress insights', () => {
     expect(summary.averageQuality).toBeGreaterThan(90);
     expect(summary.latestReport?.session.id).toBe('session-slab-001');
     expect(summary.bestMetric?.score).toBeGreaterThanOrEqual(summary.focusMetric?.score ?? 0);
-    expect(summary.attemptComparison?.currentReport.session.id).toBe('session-slab-001');
-    expect(summary.attemptComparison?.baselineReport.session.id).toBe('session-vertical-001');
-    expect(summary.attemptComparison?.baselineMatch.strategy).toBe('smart-match');
+    expect(summary.attemptComparison).toBeNull();
     expect(summary.trends).toHaveLength(summary.latestReport?.metrics.length ?? 0);
-    expect(summary.trends.some((trend) => trend.delta !== null)).toBe(true);
+    expect(summary.trends.every((trend) => trend.delta === null)).toBe(true);
   });
 
   it('passes local annotations into smart repeat matching', async () => {
     const reports = await buildSampleReports();
-    const latest = reports.find((report) => report.session.id === 'session-slab-001');
-    const previous = reports.find((report) => report.session.id === 'session-vertical-001');
-    const summary = summarizeProgress(reports, [
-      createReportAnnotation(latest?.id ?? '', {
+    const template = reports.find((report) => report.session.id === 'session-slab-001');
+    if (!template) throw new Error('Missing slab fixture.');
+    const previous = {
+      ...template,
+      id: 'analysis-slab-baseline',
+      session: { ...template.session, createdAt: '2026-06-17T09:00:00+02:00', id: 'session-slab-baseline' },
+    };
+    const latest = {
+      ...template,
+      id: 'analysis-slab-repeat',
+      session: { ...template.session, createdAt: '2026-06-17T10:00:00+02:00', id: 'session-slab-repeat' },
+    };
+    const summary = summarizeProgress([previous, latest], [
+      createReportAnnotation(latest.id, {
         projectStatus: 'repeat',
         tags: ['slab'],
       }),
-      createReportAnnotation(previous?.id ?? '', {
+      createReportAnnotation(previous.id, {
         projectStatus: 'repeat',
         tags: ['slab'],
       }),

@@ -72,7 +72,7 @@ export const defaultStoreListing = {
   appName: 'MoveBeta',
   category: 'Sports',
   fullDescription:
-    'MoveBeta helps indoor climbers review short attempts without sending raw video to a cloud service. Record or import a clip, run local pose analysis, review movement quality, and turn cues into drills. The app focuses on flow, pause time, bent-arm load, hip drift, and likely foot cuts while keeping reports, metrics, and diagnostics privacy-safe by default.',
+    'MoveBeta helps indoor boulderers run one private movement experiment for the next attempt. Record or import a short clip, process it on the device, review one pose-based focus at the relevant video moment, then film the same climb again and compare compatible movement signals. The app measures low-movement time, elbow-flexion time, lateral torso offset, and rapid ankle movement without claiming to detect wall contact or a single correct beta. Raw video is not uploaded or stored in report history.',
   keywords: [
     'climbing',
     'bouldering',
@@ -83,9 +83,9 @@ export const defaultStoreListing = {
     'coach',
     'on-device',
   ],
-  promotionalText: 'Review climbing movement locally with pose-based cues, drills, and privacy-safe reports.',
-  shortDescription: 'On-device climbing video coach for local technique review.',
-  subtitle: 'Local climbing coach',
+  promotionalText: 'Review one local pose-based focus, film the same climb again, and compare what changed.',
+  shortDescription: 'Private climbing movement review for your next attempt.',
+  subtitle: 'Private movement review',
 } satisfies z.infer<typeof StoreListingSchema>;
 
 export const defaultStorePrivacy = {
@@ -99,74 +99,38 @@ export const defaultStorePrivacy = {
 
 export const defaultStoreScreenshots = [
   {
-    fileName: '01-analyze.png',
-    label: 'On-device video analysis and capture setup',
+    fileName: '01-coach.png',
+    label: 'Local video import and capture guidance',
     route: 'analyze',
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '02-drills.png',
-    label: 'Evidence-based drills',
-    route: 'drills',
+    fileName: '02-analysis.png',
+    label: 'Video-grounded pose analysis',
+    route: 'analyze',
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '03-progress.png',
-    label: 'Technique progress trends',
-    route: 'progress',
+    fileName: '03-repeat.png',
+    label: 'Explicit focused repeat comparison',
+    route: 'analyze',
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '04-sessions.png',
-    label: 'Local report history',
+    fileName: '04-attempts.png',
+    label: 'Local attempt history',
     route: 'sessions',
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '05-plan.png',
-    label: 'Freemium plan catalog',
-    route: 'plan',
+    fileName: '05-progress.png',
+    label: 'Compatible repeat signal summary',
+    route: 'progress',
     viewport: { height: 844, width: 390 },
   },
   {
-    fileName: '06-privacy.png',
-    label: 'Privacy and offline readiness',
-    route: 'privacy',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '07-release-unblock.png',
-    label: 'Release unblock checklist',
-    route: 'plan',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '09-release-critical-path.png',
-    label: 'Release critical path',
-    route: 'plan',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '10-release-evidence-scenarios.png',
-    label: 'Release evidence scenarios',
-    route: 'plan',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '11-release-freshness.png',
-    label: 'Release evidence freshness',
-    route: 'plan',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '12-model-delivery.png',
-    label: 'Model delivery lifecycle',
-    route: 'plan',
-    viewport: { height: 844, width: 390 },
-  },
-  {
-    fileName: '08-data-portability.png',
-    label: 'Checksum-aware local backup restore preview',
+    fileName: '06-settings.png',
+    label: 'Privacy and local data controls',
     route: 'privacy',
     viewport: { height: 844, width: 390 },
   },
@@ -277,9 +241,9 @@ export function validateStoreReadinessManifest(manifest: StoreReadinessManifest)
   );
 
   checks.push(
-    manifest.screenshots.length >= 5 && new Set(manifest.screenshots.map((item) => item.route)).size >= 5
-      ? pass('screenshots', 'Store screenshot plan', `${manifest.screenshots.length} screenshots across Analyze, Drills, Progress, Sessions, Plan, and Privacy.`)
-      : fail('screenshots', 'Store screenshot plan', 'Provide at least five screenshots across the core product tabs.'),
+    manifest.screenshots.length >= 5 && new Set(manifest.screenshots.map((item) => item.route)).size >= 4
+      ? pass('screenshots', 'Store screenshot plan', `${manifest.screenshots.length} screenshots across Coach, Attempts, Progress, and Settings.`)
+      : fail('screenshots', 'Store screenshot plan', 'Provide at least five screenshots across all four consumer product surfaces.'),
   );
 
   return {

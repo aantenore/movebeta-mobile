@@ -37,6 +37,7 @@ export const LandmarkNameSchema = z.enum([
 ]);
 
 export const PoseLandmarkSchema = z.object({
+  inFrame: z.boolean().optional(),
   name: LandmarkNameSchema,
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
@@ -71,7 +72,9 @@ export const VideoAssetSchema = z.object({
 });
 
 export const ClimbSessionSchema = z.object({
+  baselineReportId: z.string().min(1).optional(),
   id: z.string(),
+  projectId: z.string().min(1).optional(),
   title: z.string(),
   gym: z.string(),
   grade: z.string(),
@@ -79,6 +82,7 @@ export const ClimbSessionSchema = z.object({
   createdAt: z.string(),
   durationMs: z.number().positive(),
   source: z.enum(['camera', 'import', 'fixture']),
+  targetCueId: z.string().min(1).optional(),
 });
 
 export const MovementMetricSchema = z.object({
@@ -111,7 +115,10 @@ export const AnalysisQualitySchema = z.object({
   score: z.number().min(0).max(100),
   frameCoverage: z.number().min(0).max(1),
   averageVisibility: z.number().min(0).max(1),
+  extremityCoverage: z.number().min(0).max(1).optional(),
+  inFrameCoverage: z.number().min(0).max(1).optional(),
   landmarkCoverage: z.number().min(0).max(1),
+  subjectScale: z.number().min(0).max(1).optional(),
   warnings: z.array(z.string()),
 });
 
@@ -140,11 +147,18 @@ export const AnalysisEvidenceTimelineSchema = z.object({
   steps: z.array(AnalysisEvidenceStepSchema),
 });
 
+export const CaptureEvidenceSchema = z.object({
+  height: z.number().positive(),
+  orientation: z.enum(['landscape', 'portrait', 'square']),
+  width: z.number().positive(),
+});
+
 export const LocalAnalysisReportSchema = z.object({
   id: z.string(),
   session: ClimbSessionSchema,
   engine: z.object({
     analysisWindow: VideoAnalysisWindowSchema.optional(),
+    capture: CaptureEvidenceSchema.optional(),
     coachLens: CoachLensMetadataSchema.default({
       key: 'balanced',
       label: 'Balanced',
@@ -173,6 +187,7 @@ export const LocalAnalysisReportSchema = z.object({
   cues: z.array(MovementCueSchema),
   timeline: z.array(TimelineEventSchema),
   keyFrame: PoseFrameSchema,
+  poseFrames: z.array(PoseFrameSchema).default([]),
   analysisQuality: AnalysisQualitySchema,
   privacy: z.object({
     videoLeavesDevice: z.boolean(),
@@ -199,6 +214,7 @@ export type AnalysisQuality = z.infer<typeof AnalysisQualitySchema>;
 export type AnalysisPerformance = z.infer<typeof AnalysisPerformanceSchema>;
 export type AnalysisEvidenceStep = z.infer<typeof AnalysisEvidenceStepSchema>;
 export type AnalysisEvidenceTimeline = z.infer<typeof AnalysisEvidenceTimelineSchema>;
+export type CaptureEvidence = z.infer<typeof CaptureEvidenceSchema>;
 export type LocalAnalysisReport = z.infer<typeof LocalAnalysisReportSchema>;
 
 export type AnalyzerThresholds = {

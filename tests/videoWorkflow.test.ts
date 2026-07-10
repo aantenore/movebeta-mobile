@@ -40,9 +40,27 @@ describe('video source workflow', () => {
       width: 720,
     });
 
-    expect(source.video.id).toBe('video-import-library-123');
+    expect(source.video.id).toMatch(/^video-import-/);
     expect(source.session.title).toBe('board-project');
     expect(source.label).toContain('16.2s');
+  });
+
+  it('creates a distinct attempt when the same library asset is imported again', () => {
+    const asset = {
+      assetId: 'library-repeat',
+      duration: 12_000,
+      fileName: 'repeat.mp4',
+      height: 1920,
+      type: 'video' as const,
+      uri: 'ph://library-repeat',
+      width: 1080,
+    };
+
+    const first = createImportedVideoSource(asset);
+    const second = createImportedVideoSource(asset);
+
+    expect(second.video.id).not.toBe(first.video.id);
+    expect(second.session.id).not.toBe(first.session.id);
   });
 
   it('applies editable session metadata to recorded and imported videos', () => {

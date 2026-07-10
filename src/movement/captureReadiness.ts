@@ -6,8 +6,11 @@ export type CaptureCheckStatus = 'pass' | 'watch' | 'fail';
 export type CaptureReadinessThresholds = {
   readyScore: number;
   reviewScore: number;
+  minExtremityCoverage: number;
   minFrameCoverage: number;
+  minInFrameCoverage: number;
   minLandmarkCoverage: number;
+  minSubjectScale: number;
   minVisibility: number;
 };
 
@@ -28,9 +31,12 @@ export type CaptureReadiness = {
 };
 
 export const defaultCaptureReadinessThresholds: CaptureReadinessThresholds = {
+  minExtremityCoverage: 0.65,
   minFrameCoverage: 0.7,
+  minInFrameCoverage: 0.9,
   minLandmarkCoverage: 0.9,
-  minVisibility: 0.65,
+  minSubjectScale: 0.25,
+  minVisibility: 0.55,
   readyScore: 88,
   reviewScore: 72,
 };
@@ -46,10 +52,16 @@ function checkStatus(value: number, minimum: number): CaptureCheckStatus {
 }
 
 function summarizeStatus(quality: AnalysisQuality, thresholds: CaptureReadinessThresholds): CaptureReadinessStatus {
+  const extremityCoverage = quality.extremityCoverage ?? 1;
+  const inFrameCoverage = quality.inFrameCoverage ?? 1;
+  const subjectScale = quality.subjectScale ?? 0.5;
   const hasFailedCheck =
     quality.frameCoverage < thresholds.minFrameCoverage * 0.82 ||
     quality.landmarkCoverage < thresholds.minLandmarkCoverage * 0.82 ||
-    quality.averageVisibility < thresholds.minVisibility * 0.82;
+    quality.averageVisibility < thresholds.minVisibility * 0.82 ||
+    extremityCoverage < thresholds.minExtremityCoverage * 0.82 ||
+    inFrameCoverage < thresholds.minInFrameCoverage * 0.82 ||
+    subjectScale < thresholds.minSubjectScale * 0.82;
 
   if (quality.score >= thresholds.readyScore && !hasFailedCheck) return 'ready';
   if (quality.score >= thresholds.reviewScore && !hasFailedCheck) return 'review';
@@ -67,6 +79,15 @@ function buildAdvice(quality: AnalysisQuality, thresholds: CaptureReadinessThres
   }
   if (quality.averageVisibility < thresholds.minVisibility) {
     advice.push('Use brighter, even light and avoid clothing or wall features that hide joints.');
+  }
+  if ((quality.extremityCoverage ?? 1) < thresholds.minExtremityCoverage) {
+    advice.push('Move the camera back until both hands and both feet stay visible throughout the attempt.');
+  }
+  if ((quality.inFrameCoverage ?? 1) < thresholds.minInFrameCoverage) {
+    advice.push('Center the climber and leave clear space around every hand and foot.');
+  }
+  if ((quality.subjectScale ?? 0.5) < thresholds.minSubjectScale) {
+    advice.push('Move the camera closer while keeping the full body inside the frame.');
   }
   if (advice.length === 0) {
     advice.push('This clip is reliable enough for local cues; repeat the same camera angle for comparison.');
@@ -96,11 +117,32 @@ export function assessCaptureReadiness(
       valueLabel: percent(quality.landmarkCoverage),
     },
     {
-      detail: 'Pose confidence is high enough for technique cues.',
+      detail: 'Pose confidence is high enough to review measured movement signals.',
       id: 'visibility',
       label: 'Pose visibility',
       status: checkStatus(quality.averageVisibility, thresholds.minVisibility),
       valueLabel: percent(quality.averageVisibility),
+    },
+    {
+      detail: 'Both hands and both feet remain trackable across the attempt.',
+      id: 'extremity-coverage',
+      label: 'Hands and feet',
+      status: checkStatus(quality.extremityCoverage ?? 1, thresholds.minExtremityCoverage),
+      valueLabel: percent(quality.extremityCoverage ?? 1),
+    },
+    {
+      detail: 'Tracked joints remain clear of the image boundary.',
+      id: 'in-frame-coverage',
+      label: 'Frame clearance',
+      status: checkStatus(quality.inFrameCoverage ?? 1, thresholds.minInFrameCoverage),
+      valueLabel: percent(quality.inFrameCoverage ?? 1),
+    },
+    {
+      detail: 'The tracked body occupies enough of the frame for pose review.',
+      id: 'subject-scale',
+      label: 'Climber size',
+      status: checkStatus(quality.subjectScale ?? 0.5, thresholds.minSubjectScale),
+      valueLabel: percent(quality.subjectScale ?? 0.5),
     },
   ];
 
@@ -110,7 +152,7 @@ export function assessCaptureReadiness(
       advice: buildAdvice(quality, thresholds),
       checks,
       status,
-      title: 'Ready for coaching',
+      title: 'Ready for pose review',
     };
   }
 
@@ -125,7 +167,7 @@ export function assessCaptureReadiness(
   }
 
   return {
-    action: 'Retake before trusting technique cues.',
+    action: 'Retake before using movement focus cues.',
     advice: buildAdvice(quality, thresholds),
     checks,
     status,

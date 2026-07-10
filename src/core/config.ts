@@ -25,6 +25,8 @@ import {
   type ModelEvidenceConfig,
 } from './modelEvidence';
 
+export const ProductExperienceSchema = z.enum(['consumer', 'diagnostic']);
+
 const ConfigSchema = z.object({
   activePlan: PlanKeySchema,
   appVersion: z.string().min(1),
@@ -34,6 +36,7 @@ const ConfigSchema = z.object({
   tfjsMoveNetModelUrl: z.string().min(1).optional(),
   coachLens: CoachLensKeySchema,
   privacyMode: PrivacyModeSchema,
+  productExperience: ProductExperienceSchema,
   officialApiBaseUrl: z.string().url().optional(),
   releaseRepository: z.string().optional(),
   billingReadiness: BillingReadinessConfigSchema,
@@ -119,6 +122,10 @@ export const appConfig = ConfigSchema.parse({
     process.env.EXPO_PUBLIC_MOVEBETA_PRIVACY_MODE ??
     expoExtra.privacyMode ??
     'on-device',
+  productExperience:
+    process.env.EXPO_PUBLIC_MOVEBETA_PRODUCT_EXPERIENCE ??
+    expoExtra.productExperience ??
+    'consumer',
   officialApiBaseUrl: process.env.EXPO_PUBLIC_MOVEBETA_API_BASE_URL,
   releaseRepository:
     process.env.EXPO_PUBLIC_MOVEBETA_RELEASE_REPOSITORY ??

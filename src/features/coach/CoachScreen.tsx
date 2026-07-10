@@ -1,9 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEvent } from 'expo';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { Camera, Clock, Cpu, Download, Gauge, RotateCcw, ShieldCheck, Square, TriangleAlert, Upload, Video } from 'lucide-react-native';
+import { useFocusEffect } from 'expo-router';
+import {
+  Camera,
+  CheckCircle2,
+  Clock,
+  Cpu,
+  Download,
+  Gauge,
+  Repeat2,
+  RotateCcw,
+  ShieldCheck,
+  Sparkles,
+  Square,
+  Target,
+  TriangleAlert,
+  Upload,
+  Video,
+  X,
+} from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
 import { Pressable } from '@/components/Pressable';
@@ -41,13 +60,29 @@ import { buildPwaRuntimeReadiness, type PwaRuntimeProbe, type PwaRuntimeReadines
 import { theme } from '@/core/theme';
 import type { AnalysisWindowMode, CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
 import { isAnalysisAbortError, LatestAnalysisRunCoordinator } from '@/movement/analysisCancellation';
+import {
+  assessAttemptComparisonCompatibility,
+  compareAttempts,
+  type AttemptComparison,
+} from '@/movement/attemptComparison';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { buildCapturePrepProtocol, type CapturePrepProtocol } from '@/movement/capturePrepProtocol';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
 import { listCoachLenses } from '@/movement/coachLens';
 import { buildCueTrustReport, type CueTrustReport, type CueTrustSignal } from '@/movement/cueTrust';
 import { buildMovementPhaseBreakdown, type MovementPhaseBreakdown } from '@/movement/movementPhaseBreakdown';
-import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts } from '@/movement/repository';
+import {
+  clearActiveFocusedRepeat,
+  loadActiveFocusedRepeat,
+  saveActiveFocusedRepeat,
+} from '@/movement/focusedRepeatRepository';
+import { analyzeDemoAttempt, analyzeVideoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
+import {
+  createReportAnnotation,
+  reportAnnotationRepository,
+  updateCueFeedback,
+  type CueFeedback,
+} from '@/movement/reportAnnotationRepository';
 import {
   assessCaptureCalibration,
   captureCalibrationOptions,
@@ -66,7 +101,11 @@ import { buildClipTriagePlan } from '@/video/clipTriage';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
 import { buildLiveRecordingGuide, type LiveRecordingGuide } from '@/video/liveRecordingGuide';
-import { removeOwnedCameraVideo } from '@/video/localVideoRetention';
+import {
+  cleanupOwnedCameraVideos,
+  registerOwnedCameraVideo,
+  removeOwnedCameraVideo,
+} from '@/video/localVideoRetention';
 import { readLocalVideoMetadata } from '@/video/videoMetadata';
 import { formatAnalysisDuration, resolveVideoAnalysisBudgetMs } from '@/video/performanceBudget';
 import {
@@ -351,20 +390,80 @@ function LiveRecordingGuidePanel({ guide }: { guide: LiveRecordingGuide }) {
   );
 }
 
-function VideoPreview({ source }: { source: VideoSourceResult }) {
+function VideoPreview({
+  focusTimestampMs,
+  overlayFrame,
+  overlayFrames,
+  source,
+}: {
+  focusTimestampMs?: number;
+  overlayFrame?: LocalAnalysisReport['keyFrame'];
+  overlayFrames?: LocalAnalysisReport['poseFrames'];
+  source: VideoSourceResult;
+}) {
+  const [replayEndSeconds, setReplayEndSeconds] = useState<number | null>(null);
   const player = useVideoPlayer(source.video.uri, (instance) => {
     instance.loop = true;
     instance.muted = true;
+    instance.timeUpdateEventInterval = 0.08;
   });
+  const timeUpdate = useEvent(player, 'timeUpdate', {
+    bufferedPosition: 0,
+    currentLiveTimestamp: null,
+    currentOffsetFromLive: null,
+    currentTime: 0,
+  });
+
+  const overlayTimeline = overlayFrames?.length ? overlayFrames : overlayFrame ? [overlayFrame] : [];
+  const overlayTimestampMs =
+    timeUpdate.currentTime > 0 ? timeUpdate.currentTime * 1000 : (focusTimestampMs ?? overlayFrame?.timestampMs ?? 0);
+  const activeOverlayFrame = overlayTimeline.reduce<LocalAnalysisReport['keyFrame'] | undefined>(
+    (closest, frame) =>
+      !closest || Math.abs(frame.timestampMs - overlayTimestampMs) < Math.abs(closest.timestampMs - overlayTimestampMs)
+        ? frame
+        : closest,
+    undefined,
+  );
+
+  function seekToFocus() {
+    if (focusTimestampMs === undefined) return;
+    player.currentTime = focusTimestampMs / 1000;
+    player.pause();
+    setReplayEndSeconds(null);
+  }
+
+  function replayFocus() {
+    if (focusTimestampMs === undefined) return;
+    const focusSeconds = focusTimestampMs / 1000;
+    player.currentTime = Math.max(0, focusSeconds - 1);
+    setReplayEndSeconds(Math.min(source.video.durationMs / 1000, focusSeconds + 1.5));
+    player.play();
+  }
+
+  useEffect(() => {
+    seekToFocus();
+  }, [focusTimestampMs, player]);
+
+  useEffect(() => {
+    if (replayEndSeconds === null || timeUpdate.currentTime < replayEndSeconds) return;
+    player.pause();
+    setReplayEndSeconds(null);
+  }, [player, replayEndSeconds, timeUpdate.currentTime]);
 
   return (
     <View style={styles.previewShell}>
-      <VideoView
-        contentFit="contain"
-        nativeControls
-        player={player}
-        style={styles.videoPreview}
-      />
+      <View
+        style={[
+          styles.videoStage,
+          {
+            aspectRatio: source.video.width / source.video.height,
+            maxWidth: source.video.width / source.video.height < 0.8 ? 360 : 720,
+          },
+        ]}
+      >
+        <VideoView contentFit="contain" nativeControls player={player} style={styles.videoPreview} />
+        {activeOverlayFrame ? <PoseOverlay frame={activeOverlayFrame} overlay /> : null}
+      </View>
       <View style={styles.previewMeta}>
         <Video color={theme.colors.brand} size={18} />
         <View style={styles.previewCopy}>
@@ -373,6 +472,12 @@ function VideoPreview({ source }: { source: VideoSourceResult }) {
             {source.label} · {source.video.width}x{source.video.height}
           </Text>
         </View>
+        {focusTimestampMs !== undefined ? (
+          <Pressable accessibilityLabel="Replay the priority movement window" onPress={replayFocus} style={styles.previewAction}>
+            <Repeat2 color={theme.colors.brand} size={16} />
+            <Text style={styles.previewActionText}>Replay {formatVideoDuration(focusTimestampMs)}</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -1478,7 +1583,268 @@ function AnalysisRunLoadPanel({
   );
 }
 
+function ProductCaptureGuide() {
+  return (
+    <View style={styles.productGuide}>
+      {[
+        ['Full body visible', 'Keep hands and feet inside the frame from start to finish.'],
+        ['Side or diagonal view', 'Place the phone far enough away to see hips and foot movement.'],
+        ['Stable and private', 'Use a fixed support and ask permission before filming anyone else.'],
+      ].map(([title, detail]) => (
+        <View key={title} style={styles.productGuideRow}>
+          <CheckCircle2 color={theme.colors.success} size={18} />
+          <View style={styles.productGuideCopy}>
+            <Text style={styles.productGuideTitle}>{title}</Text>
+            <Text style={styles.productGuideDetail}>{detail}</Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function ProductSourceSummary({
+  disabled,
+  modelPreflight,
+  onAnalyze,
+  source,
+}: {
+  disabled: boolean;
+  modelPreflight: PwaAnalysisPreflight;
+  onAnalyze: () => void;
+  source: VideoSourceResult;
+}) {
+  const intake = assessVideoIntake(source.video);
+  const blocked = !intake.canAnalyze || !modelPreflight.canAnalyze;
+
+  return (
+    <View style={[styles.productSource, blocked ? styles.productSourceBlocked : null]}>
+      <View style={styles.productSourceHeader}>
+        <View style={styles.productSourceCopy}>
+          <Text style={styles.productKicker}>Selected attempt</Text>
+          <Text style={styles.productSourceTitle}>{source.session.title}</Text>
+          <Text style={styles.productSourceMeta}>
+            {formatVideoDuration(source.video.durationMs)} · {source.video.width}x{source.video.height} · {source.session.wallAngle}
+          </Text>
+        </View>
+        <Text style={[styles.productStatus, blocked ? styles.productStatusBlocked : null]}>
+          {blocked ? 'Check clip' : 'Ready'}
+        </Text>
+      </View>
+
+      <View style={styles.productModelLine}>
+        <ShieldCheck color={modelPreflight.canAnalyze ? theme.colors.success : theme.colors.coral} size={17} />
+        <Text style={styles.productModelText}>
+          {modelPreflight.canAnalyze
+            ? 'Analysis stays on this device. The video is not added to report history.'
+            : modelPreflight.action}
+        </Text>
+      </View>
+
+      {!intake.canAnalyze ? <Text style={styles.productErrorText}>{intake.action}</Text> : null}
+
+      <Pressable
+        accessibilityLabel="Analyze selected attempt on this device"
+        accessibilityState={{ disabled: disabled || blocked }}
+        disabled={disabled || blocked}
+        onPress={onAnalyze}
+        style={[styles.productPrimaryAction, disabled || blocked ? styles.disabled : null]}
+      >
+        <Sparkles color="#FFFFFF" size={19} />
+        <Text style={styles.productPrimaryActionText}>Analyze attempt</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function ProductComparison({ comparison }: { comparison: AttemptComparison }) {
+  const visibleDeltas = comparison.targetFocus
+    ? [comparison.targetFocus.metric]
+    : comparison.metrics.filter((metric) => metric.scoreDelta !== null).slice(0, 3);
+
+  return (
+    <Section title="Repeat result" caption="Compared with the baseline you chose before this attempt.">
+      <View style={styles.productComparison}>
+        <View style={styles.productComparisonHeader}>
+          <Repeat2 color={theme.colors.brand} size={21} />
+          <Text style={styles.productComparisonTitle}>{comparison.headline}</Text>
+        </View>
+        {visibleDeltas.length > 0 ? (
+          <View style={styles.productDeltaList}>
+            {visibleDeltas.map((metric) => (
+              <View key={metric.id} style={styles.productDeltaRow}>
+                <Text style={styles.productDeltaLabel}>{metric.label}</Text>
+                <Text
+                  style={[
+                    styles.productDeltaValue,
+                    metric.direction === 'improved' ? styles.productDeltaImproved : null,
+                    metric.direction === 'regressed' ? styles.productDeltaRegressed : null,
+                  ]}
+                >
+                  {comparison.targetFocus?.metric.id === metric.id
+                    ? comparison.targetFocus.status === 'cleared'
+                      ? 'Not detected'
+                      : comparison.targetFocus.status === 'regressed'
+                        ? 'Increased'
+                        : 'Still present'
+                    : metric.direction === 'flat'
+                    ? 'Stable'
+                    : `${metric.scoreDelta && metric.scoreDelta > 0 ? '+' : ''}${metric.scoreDelta ?? 0}`}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+        <Text style={styles.productComparisonRecommendation}>{comparison.recommendation}</Text>
+      </View>
+    </Section>
+  );
+}
+
+function ProductAnalysisResult({
+  comparison,
+  comparisonUnavailableReason,
+  feedbackRating,
+  onNewClimb,
+  onFeedback,
+  onRepeat,
+  onRetake,
+  report,
+}: {
+  comparison: AttemptComparison | null;
+  comparisonUnavailableReason: string | null;
+  feedbackRating: CueFeedback['rating'] | null;
+  onNewClimb: () => void;
+  onFeedback: (rating: CueFeedback['rating']) => void;
+  onRepeat: () => void;
+  onRetake: () => void;
+  report: LocalAnalysisReport;
+}) {
+  const readiness = assessCaptureReadiness(report.analysisQuality);
+  const retakeRequired = readiness.status === 'retake';
+  const primaryCue = retakeRequired ? null : (report.cues[0] ?? null);
+  const measuredMetrics = report.metrics.filter((metric) => metric.status === 'measured');
+
+  return (
+    <View style={styles.productResult}>
+      <View style={styles.productResultHero}>
+        <View style={styles.productResultCopy}>
+          <Text style={styles.productResultKicker}>Analysis complete</Text>
+          <Text style={styles.productResultTitle}>{report.session.title}</Text>
+          <Text style={styles.productResultMeta}>
+            {report.engine.processedFrames} frames · {formatAnalysisDuration(report.performance.analysisMs)} · local only
+          </Text>
+        </View>
+        <View style={styles.productQualityScore}>
+          <Text style={styles.productQualityValue}>{report.analysisQuality.score}</Text>
+          <Text style={styles.productQualityLabel}>Pose quality</Text>
+        </View>
+      </View>
+
+      {retakeRequired ? (
+        <View accessibilityRole="alert" style={styles.productRetake}>
+          <TriangleAlert color={theme.colors.coral} size={22} />
+          <View style={styles.productRetakeCopy}>
+            <Text style={styles.productRetakeTitle}>Retake before using coaching feedback</Text>
+            <Text style={styles.productRetakeBody}>{readiness.advice.join(' ')}</Text>
+          </View>
+        </View>
+      ) : comparison ? (
+        <ProductComparison comparison={comparison} />
+      ) : comparisonUnavailableReason ? (
+        <View accessibilityRole="alert" style={styles.productComparisonUnavailable}>
+          <TriangleAlert color={theme.colors.amber} size={20} />
+          <Text style={styles.productComparisonUnavailableText}>{comparisonUnavailableReason}</Text>
+        </View>
+      ) : null}
+
+      {!retakeRequired ? <Section title="Next repeat" caption="Review this pose-based signal in the video, change one thing, then film again.">
+        {primaryCue ? (
+          <View style={styles.productFocusCard}>
+            <View style={styles.productFocusHeader}>
+              <Target color={theme.colors.coral} size={22} />
+              <View style={styles.productFocusCopy}>
+                <Text style={styles.productFocusTime}>{formatVideoDuration(primaryCue.timestampMs)}</Text>
+                <Text style={styles.productFocusTitle}>{primaryCue.title}</Text>
+              </View>
+            </View>
+            <Text style={styles.productFocusBody}>{primaryCue.body}</Text>
+            <View style={styles.productDrill}>
+              <Text style={styles.productDrillLabel}>Try this</Text>
+              <Text style={styles.productDrillText}>{primaryCue.drill}</Text>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.productFocusCard}>
+            <Text style={styles.productFocusTitle}>
+              {retakeRequired ? 'Capture quality is too low' : 'No reliable correction from this clip'}
+            </Text>
+            <Text style={styles.productFocusBody}>
+              {retakeRequired ? readiness.action : 'Repeat the capture with the full body visible and a stable side view.'}
+            </Text>
+          </View>
+        )}
+        {primaryCue ? (
+          <View style={styles.productFeedback}>
+            <Text style={styles.productFeedbackLabel}>Did this pose-based focus match what happened?</Text>
+            <View style={styles.productFeedbackOptions}>
+              {[
+                ['useful', 'Useful'],
+                ['unclear', 'Unclear'],
+                ['not-useful', 'Not accurate'],
+              ].map(([rating, label]) => {
+                const selected = feedbackRating === rating;
+                return (
+                  <Pressable
+                    accessibilityLabel={`Mark movement focus as ${label.toLowerCase()}`}
+                    accessibilityState={{ selected }}
+                    key={rating}
+                    onPress={() => onFeedback(rating as CueFeedback['rating'])}
+                    style={[styles.productFeedbackOption, selected ? styles.productFeedbackOptionSelected : null]}
+                  >
+                    <Text style={[styles.productFeedbackText, selected ? styles.productFeedbackTextSelected : null]}>
+                      {label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {feedbackRating ? <Text style={styles.productFeedbackSaved}>Saved locally</Text> : null}
+          </View>
+        ) : null}
+      </Section> : null}
+
+      {!retakeRequired ? <Section title="Movement signals" caption="Only metrics with enough pose evidence are scored.">
+        {measuredMetrics.length > 0 ? (
+          measuredMetrics.map((metric) => <MovementMetricRow key={metric.id} metric={metric} />)
+        ) : (
+          <StateView title="Not enough pose evidence" message="Retake the clip with the climber fully visible." />
+        )}
+      </Section> : null}
+
+      <View style={styles.productResultActions}>
+        <Pressable
+          accessibilityLabel={retakeRequired ? 'Retake this climbing video' : 'Film a focused repeat'}
+          onPress={retakeRequired ? onRetake : onRepeat}
+          style={styles.productPrimaryAction}
+        >
+          <Repeat2 color="#FFFFFF" size={19} />
+          <Text style={styles.productPrimaryActionText}>
+            {retakeRequired ? 'Retake clip' : comparison ? 'Use as new baseline' : 'Film focused repeat'}
+          </Text>
+        </Pressable>
+        <Pressable accessibilityLabel="Start a different climb" onPress={onNewClimb} style={styles.productSecondaryAction}>
+          <X color={theme.colors.brand} size={18} />
+          <Text style={styles.productSecondaryActionText}>New climb</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export function CoachScreen() {
+  const consumerExperience = appConfig.productExperience === 'consumer';
+  const [isFocused, setIsFocused] = useState(true);
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
   const analysisRuns = useRef(new LatestAnalysisRunCoordinator());
@@ -1492,6 +1858,8 @@ export function CoachScreen() {
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [modelWarmupLoading, setModelWarmupLoading] = useState(false);
   const [analysisRunRecords, setAnalysisRunRecords] = useState<AnalysisRunLoadRecord[]>([]);
+  const [cueFeedbackRating, setCueFeedbackRating] = useState<CueFeedback['rating'] | null>(null);
+  const [repeatBaseline, setRepeatBaseline] = useState<LocalAnalysisReport | null>(null);
   const [selectedAttemptId, setSelectedAttemptId] = useState(attempts[0].session.id);
   const [selectedCoachLens, setSelectedCoachLens] = useState<CoachLensKey>(appConfig.coachLens);
   const [analysisWindowMode, setAnalysisWindowMode] = useState<AnalysisWindowMode>(videoAnalysisConfig.analysisWindow.defaultMode);
@@ -1558,6 +1926,12 @@ export function CoachScreen() {
   });
   const cueTrust = report ? buildCueTrustReport(report) : null;
   const cueTrustById = new Map(cueTrust?.signals.map((signal) => [signal.cueId, signal]) ?? []);
+  const repeatCompatibility =
+    repeatBaseline && report && repeatBaseline.id !== report.id
+      ? assessAttemptComparisonCompatibility(report, repeatBaseline)
+      : null;
+  const repeatComparison =
+    repeatBaseline && report && repeatCompatibility?.compatible ? compareAttempts(report, repeatBaseline) : null;
 
   function updateSessionMetadata(nextMetadata: typeof defaultEditableSession) {
     setSessionMetadata(nextMetadata);
@@ -1625,6 +1999,12 @@ export function CoachScreen() {
   ) {
     if (withFeedback) selectionFeedback();
 
+    if (consumerExperience && !nextSource) {
+      setReport(null);
+      setErrorMessage('Record or import a climbing video before starting analysis.');
+      return;
+    }
+
     const ticket = analysisRuns.current.start();
     const isCurrentRun = ticket.isCurrent;
     const stopWithError = (message: string) => {
@@ -1641,6 +2021,15 @@ export function CoachScreen() {
     const sourceForAnalysis = nextSource
       ? {
           ...nextSource,
+          session: {
+            ...nextSource.session,
+            baselineReportId: repeatBaseline?.id,
+            projectId:
+              repeatBaseline?.session.projectId ??
+              nextSource.session.projectId ??
+              `project-${repeatBaseline?.session.id ?? nextSource.session.id}`,
+            targetCueId: repeatBaseline?.cues[0]?.id,
+          },
           video: withVideoAnalysisWindow(nextSource.video, analysisWindowMode),
         }
       : null;
@@ -1693,6 +2082,8 @@ export function CoachScreen() {
         : await analyzeDemoAttempt(sessionId, coachLens, { signal: ticket.signal });
       if (!isCurrentRun()) return;
       setReport(nextReport);
+      if (repeatBaseline) clearActiveFocusedRepeat();
+      setCueFeedbackRating(null);
       setPreparedRunLoadPacket('');
       setAnalysisRunRecords((records) =>
         [
@@ -1796,12 +2187,16 @@ export function CoachScreen() {
         return;
       }
       recordedUri = recordingResult.uri;
+      registerOwnedCameraVideo(recordedUri);
 
       const durationMs = recordingStartedAt.current ? Date.now() - recordingStartedAt.current : undefined;
       const metadata = await readLocalVideoMetadata({
         durationMs,
         uri: recordingResult.uri,
       });
+      if (metadata.source === 'fallback') {
+        throw new Error('The recorded video dimensions could not be verified. Retake after restarting the camera.');
+      }
       const source = createCameraVideoSource({
         durationMs: metadata.durationMs,
         height: metadata.height,
@@ -1857,6 +2252,9 @@ export function CoachScreen() {
         uri: asset.uri,
         width: asset.width,
       });
+      if (metadata.source === 'fallback' && (!asset.duration || !asset.width || !asset.height)) {
+        throw new Error('The selected video metadata could not be verified. Choose a local MP4 or MOV file.');
+      }
       const source = createImportedVideoSourceWithSession(
         {
           ...asset,
@@ -1902,12 +2300,107 @@ export function CoachScreen() {
     void runAnalysis(activeSource, selectedAttemptId, false, coachLens);
   }
 
+  function startFocusedRepeat() {
+    if (!report) return;
+    selectionFeedback();
+    saveActiveFocusedRepeat(report);
+    setRepeatBaseline(report);
+    setActiveSource(null);
+    setReport(null);
+    setErrorMessage(null);
+    setCameraOpen(false);
+  }
+
+  function startNewClimb() {
+    selectionFeedback();
+    clearActiveFocusedRepeat();
+    setRepeatBaseline(null);
+    setActiveSource(null);
+    setReport(null);
+    setErrorMessage(null);
+    setCameraOpen(false);
+    setSessionMetadata(defaultEditableSession);
+    setCueFeedbackRating(null);
+  }
+
+  function retakeCurrentClip() {
+    selectionFeedback();
+    setActiveSource(null);
+    setReport(null);
+    setErrorMessage(null);
+    setCameraOpen(false);
+    setCueFeedbackRating(null);
+  }
+
+  function cancelFocusedRepeat() {
+    selectionFeedback();
+    clearActiveFocusedRepeat();
+    setRepeatBaseline(null);
+  }
+
+  function cancelAnalysis() {
+    selectionFeedback();
+    analysisRuns.current.cancel();
+    setLoading(false);
+    setModelWarmupLoading(false);
+    setErrorMessage('Analysis cancelled. The selected video remains on this device.');
+  }
+
+  async function savePrimaryCueFeedback(rating: CueFeedback['rating']) {
+    const primaryCue = report?.cues[0];
+    if (!report || !primaryCue) return;
+    selectionFeedback();
+    const annotation = (await reportAnnotationRepository.getAnnotation(report.id)) ?? createReportAnnotation(report.id);
+    await reportAnnotationRepository.saveAnnotation(updateCueFeedback(annotation, { cueId: primaryCue.id, rating }));
+    setCueFeedbackRating(rating);
+  }
+
   useEffect(() => {
-    void runAnalysis(null, selectedAttemptId, false);
+    void cleanupOwnedCameraVideos();
+    if (!consumerExperience) void runAnalysis(null, selectedAttemptId, false);
     return () => {
       analysisRuns.current.cancel();
     };
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsFocused(true);
+      return () => setIsFocused(false);
+    }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!consumerExperience) return undefined;
+      const activeRepeat = loadActiveFocusedRepeat();
+      if (!activeRepeat || repeatBaseline?.id === activeRepeat.baselineReportId) return undefined;
+
+      let mounted = true;
+      void listReports().then((reports) => {
+        if (!mounted) return;
+        const baseline = reports.find((candidate) => candidate.id === activeRepeat.baselineReportId);
+        if (!baseline) {
+          clearActiveFocusedRepeat();
+          return;
+        }
+        setRepeatBaseline(baseline);
+        setActiveSource(null);
+        setReport(null);
+        setErrorMessage(null);
+        setSessionMetadata({
+          grade: baseline.session.grade,
+          gym: baseline.session.gym,
+          title: baseline.session.title,
+          wallAngle: baseline.session.wallAngle,
+        });
+      });
+
+      return () => {
+        mounted = false;
+      };
+    }, [consumerExperience, repeatBaseline?.id]),
+  );
 
   useEffect(() => {
     const selectedVideo = activeSource?.video;
@@ -1928,6 +2421,204 @@ export function CoachScreen() {
 
     return () => clearInterval(timer);
   }, [recording]);
+
+  if (consumerExperience) {
+    return (
+      <Screen>
+        <Header
+          eyebrow="MoveBeta"
+          title="Analyze a climb"
+          subtitle="Review one measured movement focus, film the repeat, and check what changed."
+        />
+
+        {repeatBaseline && !report ? (
+          <View style={styles.productRepeatBanner}>
+            <Target color={theme.colors.brand} size={21} />
+            <View style={styles.productRepeatBannerCopy}>
+              <Text style={styles.productKicker}>Focused repeat</Text>
+              <Text style={styles.productRepeatBannerTitle}>
+                {repeatBaseline.cues[0]?.title ?? 'Repeat the same climb with the same camera angle'}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityLabel="Cancel focused repeat"
+              onPress={cancelFocusedRepeat}
+              style={styles.productIconAction}
+            >
+              <X color={theme.colors.muted} size={18} />
+            </Pressable>
+          </View>
+        ) : null}
+
+        {!report ? (
+          <>
+            <View style={styles.productCapture}>
+              <View style={styles.productCaptureHeader}>
+                <View style={styles.captureIcon}>
+                  <Camera color={theme.colors.brand} size={24} />
+                </View>
+                <View style={styles.productCaptureCopy}>
+                  <Text style={styles.productCaptureTitle}>{repeatBaseline ? 'Film the repeat' : 'Add an attempt'}</Text>
+                  <Text style={styles.productCaptureText}>
+                    {repeatBaseline
+                      ? 'Use the same climb and camera position so the comparison is meaningful.'
+                      : 'Use a short climbing clip with one person fully visible.'}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.productCaptureActions}>
+                {Platform.OS !== 'web' ? (
+                  <Pressable
+                    accessibilityLabel="Record a climbing attempt"
+                    disabled={workflow.captureDisabled}
+                    onPress={() => void openRecorder()}
+                    style={[styles.productCaptureAction, workflow.captureDisabled ? styles.disabled : null]}
+                  >
+                    <Camera color={theme.colors.brand} size={18} />
+                    <Text style={styles.productCaptureActionText}>Record</Text>
+                  </Pressable>
+                ) : null}
+                <Pressable
+                  accessibilityLabel="Import a climbing video"
+                  disabled={workflow.captureDisabled}
+                  onPress={() => void importVideo()}
+                  style={[styles.productCaptureAction, workflow.captureDisabled ? styles.disabled : null]}
+                >
+                  <Upload color={theme.colors.brand} size={18} />
+                  <Text style={styles.productCaptureActionText}>Import video</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {!activeSource && !cameraOpen ? <ProductCaptureGuide /> : null}
+
+            {errorMessage ? (
+              <View accessibilityLiveRegion="assertive" accessibilityRole="alert" style={styles.error}>
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              </View>
+            ) : null}
+
+            {cameraOpen ? (
+              <Section title="Recorder" caption="Keep the full body visible and the phone stable.">
+                <View style={styles.recorderShell}>
+                  <CameraView
+                    facing="back"
+                    mode="video"
+                    mute
+                    onCameraReady={() => setCameraReady(true)}
+                    onMountError={(event) => {
+                      setCameraReady(false);
+                      setErrorMessage(event.message || 'The camera could not start on this device.');
+                    }}
+                    ref={cameraRef}
+                    style={styles.cameraView}
+                    videoBitrate={videoAnalysisConfig.recordingVideoBitrate}
+                    videoQuality={videoAnalysisConfig.recordingVideoQuality}
+                  />
+                  <View style={styles.recorderTop}>
+                    <View style={styles.recorderTimer}>
+                      <Clock color="#FFFFFF" size={15} />
+                      <Text style={styles.recorderTimerText}>
+                        {formatVideoDuration(recordingElapsedMs)} /{' '}
+                        {formatVideoDuration(videoAnalysisConfig.maxRecordingDurationSeconds * 1000)}
+                      </Text>
+                    </View>
+                    <Text style={styles.recorderHint}>
+                      Minimum {(videoAnalysisConfig.minimumDurationMs / 1000).toFixed(1)}s
+                    </Text>
+                  </View>
+                  <View style={styles.recorderOverlay}>
+                    <Pressable
+                      accessibilityLabel="Close recorder"
+                      disabled={recording}
+                      onPress={() => {
+                        setCameraReady(false);
+                        setCameraOpen(false);
+                      }}
+                      style={styles.recorderGhost}
+                    >
+                      <X color="#FFFFFF" size={18} />
+                      <Text style={styles.recorderGhostText}>Close</Text>
+                    </Pressable>
+                    {recording ? (
+                      <Pressable accessibilityLabel="Stop recording" onPress={stopRecording} style={styles.recorderStop}>
+                        <Square color="#FFFFFF" fill="#FFFFFF" size={16} />
+                        <Text style={styles.recorderActionText}>Stop</Text>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        accessibilityLabel="Start recording"
+                        disabled={!cameraReady}
+                        onPress={() => void startRecording()}
+                        style={[styles.recorderRecord, !cameraReady ? styles.disabled : null]}
+                      >
+                        <Video color="#FFFFFF" size={18} />
+                        <Text style={styles.recorderActionText}>Start</Text>
+                      </Pressable>
+                    )}
+                  </View>
+                </View>
+              </Section>
+            ) : null}
+
+            {activeSource ? (
+              <>
+                {isFocused ? <VideoPreview source={activeSource} /> : null}
+                <SessionMetadataEditor
+                  disabled={workflow.captureDisabled}
+                  metadata={sessionMetadata}
+                  onChange={updateSessionMetadata}
+                />
+                {workflow.stateTitle ? (
+                  <View style={styles.productLoadingState}>
+                    <StateView loading title={workflow.stateTitle} message="Processing sampled frames on this device." />
+                    {loading ? (
+                      <Pressable accessibilityLabel="Cancel local analysis" onPress={cancelAnalysis} style={styles.productSecondaryAction}>
+                        <X color={theme.colors.brand} size={18} />
+                        <Text style={styles.productSecondaryActionText}>Cancel analysis</Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
+                ) : (
+                  <ProductSourceSummary
+                    disabled={workflow.actionDisabled}
+                    modelPreflight={modelPreflight}
+                    onAnalyze={() => void runAnalysis()}
+                    source={activeSource}
+                  />
+                )}
+              </>
+            ) : workflow.stateTitle ? (
+              <StateView loading title={workflow.stateTitle} message="Preparing the local analysis model." />
+            ) : null}
+          </>
+        ) : (
+          <>
+            {activeSource && isFocused ? (
+              <VideoPreview
+                focusTimestampMs={report.cues[0]?.timestampMs}
+                overlayFrame={report.keyFrame}
+                overlayFrames={report.poseFrames}
+                source={activeSource}
+              />
+            ) : null}
+            <ProductAnalysisResult
+              comparison={repeatComparison}
+              comparisonUnavailableReason={
+                repeatCompatibility && !repeatCompatibility.compatible ? repeatCompatibility.reasons[0] : null
+              }
+              feedbackRating={cueFeedbackRating}
+              onNewClimb={startNewClimb}
+              onFeedback={(rating) => void savePrimaryCueFeedback(rating)}
+              onRepeat={startFocusedRepeat}
+              onRetake={retakeCurrentClip}
+              report={report}
+            />
+          </>
+        )}
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -2285,6 +2976,467 @@ export function CoachScreen() {
 }
 
 const styles = StyleSheet.create({
+  productCapture: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  productCaptureAction: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+    minWidth: 136,
+    paddingHorizontal: 14,
+  },
+  productCaptureActionText: {
+    color: theme.colors.brand,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  productCaptureActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  productCaptureCopy: {
+    flex: 1,
+    gap: 3,
+  },
+  productCaptureHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  productCaptureText: {
+    color: theme.colors.muted,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  productCaptureTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  productComparison: {
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.md,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  productComparisonHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  productComparisonRecommendation: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  productComparisonTitle: {
+    color: theme.colors.ink,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 21,
+  },
+  productComparisonUnavailable: {
+    alignItems: 'flex-start',
+    backgroundColor: '#FFF7E5',
+    borderColor: '#E7C56F',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  productComparisonUnavailableText: {
+    color: theme.colors.text,
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  productDeltaImproved: {
+    color: theme.colors.success,
+  },
+  productDeltaLabel: {
+    color: theme.colors.text,
+    flex: 1,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  productDeltaList: {
+    gap: 7,
+  },
+  productDeltaRegressed: {
+    color: theme.colors.coral,
+  },
+  productDeltaRow: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    minHeight: 38,
+    paddingHorizontal: theme.spacing.sm,
+  },
+  productDeltaValue: {
+    color: theme.colors.muted,
+    fontSize: 14,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  productDrill: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.sm,
+    gap: 3,
+    padding: theme.spacing.sm,
+  },
+  productDrillLabel: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  productDrillText: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  productErrorText: {
+    color: theme.colors.coral,
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
+  },
+  productFocusBody: {
+    color: theme.colors.text,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  productFocusCard: {
+    backgroundColor: theme.colors.surface,
+    borderColor: '#E9C7BF',
+    borderLeftColor: theme.colors.coral,
+    borderLeftWidth: 4,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  productFocusCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  productFocusHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  productFocusTime: {
+    color: theme.colors.coral,
+    fontSize: 12,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  productFocusTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+    lineHeight: 22,
+  },
+  productFeedback: {
+    gap: 8,
+  },
+  productFeedbackLabel: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  productFeedbackOption: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 40,
+    minWidth: 92,
+    paddingHorizontal: 10,
+  },
+  productFeedbackOptionSelected: {
+    backgroundColor: theme.colors.brandDark,
+    borderColor: theme.colors.brandDark,
+  },
+  productFeedbackOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 7,
+  },
+  productFeedbackSaved: {
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  productFeedbackText: {
+    color: theme.colors.brand,
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  productFeedbackTextSelected: {
+    color: '#FFFFFF',
+  },
+  productGuide: {
+    gap: 8,
+  },
+  productGuideCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  productGuideDetail: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  productGuideRow: {
+    alignItems: 'flex-start',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+  },
+  productGuideTitle: {
+    color: theme.colors.ink,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  productIconAction: {
+    alignItems: 'center',
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  productKicker: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  productModelLine: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  productModelText: {
+    color: theme.colors.muted,
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  productPrimaryAction: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brand,
+    borderRadius: theme.radius.sm,
+    flex: 1,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+    minWidth: 168,
+    paddingHorizontal: 16,
+  },
+  productPrimaryActionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  productQualityLabel: {
+    color: theme.colors.muted,
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  productQualityScore: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
+    justifyContent: 'center',
+    minHeight: 72,
+    minWidth: 72,
+    padding: theme.spacing.sm,
+  },
+  productQualityValue: {
+    color: theme.colors.brand,
+    fontSize: 27,
+    fontVariant: ['tabular-nums'],
+    fontWeight: '900',
+  },
+  productRepeatBanner: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.md,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  productRepeatBannerCopy: {
+    flex: 1,
+    gap: 2,
+  },
+  productRepeatBannerTitle: {
+    color: theme.colors.ink,
+    fontSize: 14,
+    fontWeight: '900',
+    lineHeight: 19,
+  },
+  productRetake: {
+    alignItems: 'flex-start',
+    backgroundColor: '#FBEDEA',
+    borderColor: '#E9C7BF',
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    padding: theme.spacing.md,
+  },
+  productRetakeBody: {
+    color: theme.colors.text,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  productRetakeCopy: {
+    flex: 1,
+    gap: 4,
+  },
+  productRetakeTitle: {
+    color: theme.colors.coral,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  productResult: {
+    gap: theme.spacing.lg,
+  },
+  productResultActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  productResultCopy: {
+    flex: 1,
+    gap: 4,
+    minWidth: 180,
+  },
+  productResultHero: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandDark,
+    borderRadius: theme.radius.lg,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.md,
+    justifyContent: 'space-between',
+    padding: theme.spacing.lg,
+  },
+  productResultKicker: {
+    color: '#B8D8C8',
+    fontSize: 11,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  productResultMeta: {
+    color: '#DCECF3',
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  productResultTitle: {
+    color: '#FFFFFF',
+    fontSize: 23,
+    fontWeight: '900',
+    lineHeight: 28,
+  },
+  productLoadingState: {
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+  },
+  productSecondaryAction: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+    minHeight: 48,
+    minWidth: 130,
+    paddingHorizontal: 16,
+  },
+  productSecondaryActionText: {
+    color: theme.colors.brand,
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  productSource: {
+    backgroundColor: theme.colors.surface,
+    borderColor: '#B8D8C8',
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    gap: theme.spacing.md,
+    padding: theme.spacing.md,
+  },
+  productSourceBlocked: {
+    borderColor: '#E9C7BF',
+  },
+  productSourceCopy: {
+    flex: 1,
+    gap: 3,
+    minWidth: 180,
+  },
+  productSourceHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+    justifyContent: 'space-between',
+  },
+  productSourceMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
+    textTransform: 'capitalize',
+  },
+  productSourceTitle: {
+    color: theme.colors.ink,
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  productStatus: {
+    backgroundColor: '#E8F4EE',
+    borderRadius: theme.radius.sm,
+    color: theme.colors.success,
+    fontSize: 11,
+    fontWeight: '900',
+    overflow: 'hidden',
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    textTransform: 'uppercase',
+  },
+  productStatusBlocked: {
+    backgroundColor: '#FBEDEA',
+    color: theme.colors.coral,
+  },
   action: {
     alignItems: 'center',
     backgroundColor: theme.colors.brand,
@@ -2855,6 +4007,21 @@ const styles = StyleSheet.create({
   previewCopy: {
     flex: 1,
     gap: 2,
+    minWidth: 150,
+  },
+  previewAction: {
+    alignItems: 'center',
+    backgroundColor: theme.colors.brandSoft,
+    borderRadius: theme.radius.sm,
+    flexDirection: 'row',
+    gap: 6,
+    minHeight: 38,
+    paddingHorizontal: 10,
+  },
+  previewActionText: {
+    color: theme.colors.brand,
+    fontSize: 11,
+    fontWeight: '900',
   },
   previewMeta: {
     alignItems: 'center',
@@ -2862,6 +4029,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.line,
     borderTopWidth: 1,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
     padding: theme.spacing.md,
   },
@@ -3978,8 +5146,20 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   videoPreview: {
-    aspectRatio: 9 / 12,
     backgroundColor: '#111111',
+    bottom: 0,
+    height: '100%',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: '100%',
+  },
+  videoStage: {
+    alignSelf: 'center',
+    backgroundColor: '#111111',
+    overflow: 'hidden',
+    position: 'relative',
     width: '100%',
   },
 });

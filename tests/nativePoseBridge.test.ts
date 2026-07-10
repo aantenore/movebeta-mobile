@@ -60,7 +60,9 @@ describe('native pose bridge contract', () => {
       'PHImageManager.default().requestAVAsset',
       'options.isNetworkAccessAllowed = false',
       'Apple Vision did not return enough pose frames.',
-      'clamp(1 - Double(point.location.y))',
+      'let normalizedY = 1 - Double(point.location.y)',
+      '"inFrame": normalizedX >= 0',
+      '"y": clamp(normalizedY)',
     ]);
 
     for (const landmark of requiredLandmarks) {
@@ -82,11 +84,23 @@ describe('native pose bridge contract', () => {
       'retriever.getFrameAtTime',
       'InputImage.fromBitmap',
       'landmark.inFrameLikelihood',
+      '"inFrame" to (normalizedX >= 0',
+      'return@mapNotNull null',
       'ML Kit did not return enough pose frames.',
     ]);
 
     for (const landmark of requiredLandmarks) {
       expect(source).toContain(`"${landmark}"`);
     }
+  });
+
+  it('retains partially visible poses so the analyzer can report capture quality', () => {
+    const iosSource = readProjectFile('modules/movebeta-pose/ios/MoveBetaPoseModule.swift');
+    const androidSource = readProjectFile('modules/movebeta-pose/android/src/main/java/com/movebeta/pose/MoveBetaPoseModule.kt');
+
+    expect(iosSource).toContain('continue');
+    expect(iosSource).toContain('guard !landmarks.isEmpty');
+    expect(androidSource).toContain('return@mapNotNull null');
+    expect(androidSource).toContain('if (landmarks.isEmpty()) return null');
   });
 });
