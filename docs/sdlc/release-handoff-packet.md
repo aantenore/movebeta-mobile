@@ -1,23 +1,23 @@
 # MoveBeta Release Handoff Packet
 
-Generated: 2026-06-25T15:50:56.444Z
+Generated: 2026-07-10T08:48:55.020Z
 
 ## Build
 
 - Product: MoveBeta 1.0.0
 - Repository: https://github.com/aantenore/movebeta-mobile.git
 - Branch: main
-- Base commit at generation: 0de603e43c094158c629078111a8f7e4775f698a
-- Worktree dirty at generation: no
+- Base commit at generation: d96b4dca6a3f8c8cad4e0197a8ff03da437b7768
+- Worktree dirty at generation: yes
 
 ## Summary
 
-- Release gate: pass
-- Launch readiness: blocked (1/3 tracks ready)
-- MoveNet readiness: ready; load 14ms; average inference 318ms
+- Release gate: blocked
+- Launch readiness: blocked (0/3 tracks ready)
+- MoveNet readiness: ready; load 14ms; average inference 366ms
 - Model verification suite: technical-ready
 - Screenshots: 12/12
-- Blockers: 5
+- Blockers: 6
 - Next action: Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.
 
 ## External Blockers
@@ -27,6 +27,7 @@ Generated: 2026-06-25T15:50:56.444Z
 - EAS project binding (release, store): Run npx eas-cli@latest init and store extra.eas.projectId in app.json.
 - iOS build verification (engineering, store): Install full Xcode and verify an iOS simulator or device build.
 - Native device QA evidence (qa, internal, store): Capture docs/sdlc/native-qa-evidence.json from physical iOS and Android runs.
+- Release gate (engineering, demo, internal, store): Run npm run release:check and refresh the release readiness report.
 
 ## Verification Commands
 

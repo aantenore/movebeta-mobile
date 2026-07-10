@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { validateCueValidationDataset } from './cue_validation_dataset_checks.mjs';
 import { validateNativeQaEvidence } from './native_qa_evidence_checks.mjs';
+import { isReleaseGateReportReady } from './release_check.mjs';
 
 export const CHECK_DEFINITIONS = {
   androidDebugBuild: {
@@ -214,18 +215,7 @@ export function detectLaunchReadinessEvidence(rootDir, env = process.env) {
     nativeDeviceQa: validatedJsonFile(rootDir, 'docs/sdlc/native-qa-evidence.json', validateNativeQaEvidence),
     nativeQaRunbook: nativeQaRunbook.schemaVersion === 'movebeta.native-qa-runbook.v1',
     privacyManifest: exists(rootDir, 'docs/store/privacy-declarations.md') && exists(rootDir, 'docs/store/store-manifest.json'),
-    releaseGate:
-      releaseGateReport.schemaVersion === 'movebeta.release-gate-report.v1' &&
-      releaseGateReport.status === 'pass' &&
-      Array.isArray(releaseGateReport.steps) &&
-      releaseGateReport.steps.length >= 10 &&
-      releaseGateReport.steps.some((step) => step.key === 'modelAnalysisReplay') &&
-      releaseGateReport.steps.some((step) => step.key === 'iosToolchainDoctor') &&
-      releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetDoctor') &&
-      releaseGateReport.steps.some((step) => step.key === 'cueValidationDatasetComposition') &&
-      releaseGateReport.steps.some((step) => step.key === 'storeCredentialsDoctor') &&
-      releaseGateReport.steps.some((step) => step.key === 'webSmokeReport') &&
-      releaseGateReport.steps.every((step) => step.status === 'pass'),
+    releaseGate: isReleaseGateReportReady(releaseGateReport),
     storeListing: exists(rootDir, 'docs/store/store-listing.md') && hasAllScreenshots(rootDir),
     webSmoke:
       exists(rootDir, 'dist/index.html') &&

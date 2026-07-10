@@ -22,6 +22,7 @@ export type PreparedExportShareResult = {
 
 export type PreparedExportShareDependencies = {
   cacheDirectory?: string | null;
+  deleteFile: (uri: string, options: { idempotent: boolean }) => Promise<void>;
   isFileSharingAvailable: () => Promise<boolean>;
   shareFile: (uri: string, options: { dialogTitle: string; mimeType: string; UTI: string }) => Promise<void>;
   shareText: (payload: { message: string; title: string }) => Promise<void>;
@@ -80,6 +81,7 @@ async function defaultDependencies(): Promise<PreparedExportShareDependencies> {
 
   return {
     cacheDirectory: fileSystem.cacheDirectory,
+    deleteFile: fileSystem.deleteAsync,
     isFileSharingAvailable: sharing.isAvailableAsync,
     shareFile: sharing.shareAsync,
     shareText: async (payload) => {
@@ -105,17 +107,19 @@ export async function sharePreparedExport(
     return { method: 'text' };
   }
 
+  const uri = `${deps.cacheDirectory}${plan.fileName}`;
   try {
-    const uri = `${deps.cacheDirectory}${plan.fileName}`;
     await deps.writeFile(uri, plan.body, { encoding: 'utf8' });
     await deps.shareFile(uri, {
       UTI: plan.uti,
       dialogTitle: plan.title,
       mimeType: plan.mimeType,
     });
-    return { fileName: plan.fileName, method: 'file', uri };
+    return { fileName: plan.fileName, method: 'file' };
   } catch {
     await deps.shareText(textPayload);
     return { method: 'text' };
+  } finally {
+    await deps.deleteFile(uri, { idempotent: true }).catch(() => undefined);
   }
 }

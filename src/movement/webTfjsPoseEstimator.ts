@@ -1,8 +1,9 @@
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { appConfig } from '@/core/config';
-import { resolveVideoAnalysisWindow } from '@/video/analysisWindow';
+import { resolveVideoAnalysisSamplingPlan } from '@/video/analysisWindow';
 
 import type { PoseFrame, VideoAsset } from './contracts';
+import { throwIfAnalysisAborted, type AnalysisRunOptions } from './analysisCancellation';
 import { tryMapMoveNetPoseToFrame } from './movenetPoseMapper';
 import type { AnalysisProvider, PoseEstimator } from './onDevicePipeline';
 
@@ -13,12 +14,48 @@ const detectorLoadTimeoutMs = 25_000;
 const videoEventTimeoutMs = 12_000;
 let detectorPromise: Promise<PoseDetector> | null = null;
 
+export function createRetryableLoader<T>() {
+  let current: Promise<T> | null = null;
+
+  return {
+    load(factory: () => Promise<T>) {
+      if (!current) {
+        let guarded: Promise<T>;
+        guarded = factory().catch((error) => {
+          if (current === guarded) current = null;
+          throw error;
+        });
+        current = guarded;
+      }
+      return current;
+    },
+    reset(dispose?: (value: T) => void) {
+      const pending = current;
+      current = null;
+      if (pending && dispose) pending.then(dispose).catch(() => undefined);
+    },
+  };
+}
+
+const detectorLoader = createRetryableLoader<PoseDetector>();
+
 function hasBrowserVideoRuntime() {
   return typeof document !== 'undefined' && typeof HTMLVideoElement !== 'undefined';
 }
 
-function waitForVideoEvent(element: HTMLVideoElement, eventName: string, timeoutMs = videoEventTimeoutMs) {
+function waitForVideoEvent(
+  element: HTMLVideoElement,
+  eventName: string,
+  timeoutMs = videoEventTimeoutMs,
+  signal?: AbortSignal,
+) {
   return new Promise<void>((resolve, reject) => {
+    try {
+      throwIfAnalysisAborted(signal);
+    } catch (error) {
+      reject(error);
+      return;
+    }
     const timeout = window.setTimeout(() => {
       cleanup();
       reject(new Error(`Timed out waiting for video ${eventName}.`));
@@ -32,14 +69,24 @@ function waitForVideoEvent(element: HTMLVideoElement, eventName: string, timeout
       cleanup();
       reject(new Error(`Video failed while waiting for ${eventName}.`));
     };
+    const onAbort = () => {
+      cleanup();
+      try {
+        throwIfAnalysisAborted(signal);
+      } catch (error) {
+        reject(error);
+      }
+    };
     const cleanup = () => {
       window.clearTimeout(timeout);
       element.removeEventListener(eventName, onReady);
       element.removeEventListener('error', onError);
+      signal?.removeEventListener('abort', onAbort);
     };
 
     element.addEventListener(eventName, onReady, { once: true });
     element.addEventListener('error', onError, { once: true });
+    signal?.addEventListener('abort', onAbort, { once: true });
   });
 }
 
@@ -78,11 +125,19 @@ async function createDetector() {
 }
 
 async function getDetector() {
-  detectorPromise ??= withTimeout(createDetector(), 'MoveNet model loading timed out.');
+  detectorPromise = detectorLoader.load(async () => {
+    const creation = createDetector();
+    try {
+      return await withTimeout(creation, 'MoveNet model loading timed out.');
+    } catch (error) {
+      creation.then((detector) => detector.dispose()).catch(() => undefined);
+      throw error;
+    }
+  });
   return detectorPromise;
 }
 
-async function prepareVideoElement(video: VideoAsset) {
+async function prepareVideoElement(video: VideoAsset, signal?: AbortSignal) {
   const element = document.createElement('video');
   element.crossOrigin = 'anonymous';
   element.muted = true;
@@ -91,16 +146,21 @@ async function prepareVideoElement(video: VideoAsset) {
   element.src = video.uri;
   element.width = video.width;
   element.height = video.height;
-  element.load();
-
-  if (element.readyState < HTMLMediaElement.HAVE_METADATA) {
-    await waitForVideoEvent(element, 'loadedmetadata');
+  try {
+    element.load();
+    if (element.readyState < HTMLMediaElement.HAVE_METADATA) {
+      await waitForVideoEvent(element, 'loadedmetadata', videoEventTimeoutMs, signal);
+    }
+    throwIfAnalysisAborted(signal);
+    return element;
+  } catch (error) {
+    cleanupVideoElement(element);
+    throw error;
   }
-
-  return element;
 }
 
-async function seekVideo(element: HTMLVideoElement, timestampMs: number) {
+async function seekVideo(element: HTMLVideoElement, timestampMs: number, signal?: AbortSignal) {
+  throwIfAnalysisAborted(signal);
   const durationSeconds = Number.isFinite(element.duration) && element.duration > 0 ? element.duration : timestampMs / 1000;
   const targetSeconds = Math.max(0, Math.min(timestampMs / 1000, Math.max(durationSeconds - 0.05, 0)));
 
@@ -109,7 +169,7 @@ async function seekVideo(element: HTMLVideoElement, timestampMs: number) {
   }
 
   element.currentTime = targetSeconds;
-  await waitForVideoEvent(element, 'seeked');
+  await waitForVideoEvent(element, 'seeked', videoEventTimeoutMs, signal);
 }
 
 function getVideoDimensions(element: HTMLVideoElement) {
@@ -119,11 +179,7 @@ function getVideoDimensions(element: HTMLVideoElement) {
 }
 
 function getFrameTimestamps(video: VideoAsset) {
-  const window = resolveVideoAnalysisWindow(video);
-  const frameCount = Math.max(
-    videoAnalysisConfig.minTfjsFrames,
-    Math.min(videoAnalysisConfig.maxTfjsFrames, Math.ceil(window.durationMs / videoAnalysisConfig.tfjsFrameIntervalMs)),
-  );
+  const { expectedFrameCount: frameCount, window } = resolveVideoAnalysisSamplingPlan(video);
 
   return Array.from({ length: frameCount }, (_, index) =>
     Math.round(window.startMs + (window.durationMs * index) / Math.max(frameCount - 1, 1)),
@@ -138,24 +194,32 @@ function cleanupVideoElement(element: HTMLVideoElement) {
 }
 
 export class WebTfjsMoveNetPoseEstimator implements PoseEstimator {
+  model = 'movenet-singlepose-lightning-v4';
   provider: AnalysisProvider = 'web-tfjs-movenet';
 
-  async estimate(video: VideoAsset): Promise<PoseFrame[]> {
+  async estimate(video: VideoAsset, options: AnalysisRunOptions = {}): Promise<PoseFrame[]> {
+    throwIfAnalysisAborted(options.signal);
     if (!(await this.isAvailable())) {
       throw new Error('TensorFlow.js MoveNet requires a browser video runtime.');
     }
 
     const detector = await getDetector();
-    const element = await prepareVideoElement(video);
+    throwIfAnalysisAborted(options.signal);
+    const element = await prepareVideoElement(video, options.signal);
 
     try {
       const frames: PoseFrame[] = [];
       for (const timestampMs of getFrameTimestamps(video)) {
-        await seekVideo(element, timestampMs);
-        const poses = await detector.estimatePoses(element, { maxPoses: 1 }, timestampMs);
+        throwIfAnalysisAborted(options.signal);
+        await seekVideo(element, timestampMs, options.signal);
+        const decodedTimestampMs = Math.round(element.currentTime * 1000);
+        const poses = await detector.estimatePoses(element, { maxPoses: 1 }, decodedTimestampMs);
+        throwIfAnalysisAborted(options.signal);
         if (poses[0]) {
-          const frame = tryMapMoveNetPoseToFrame(poses[0], getVideoDimensions(element), timestampMs);
-          if (frame) frames.push(frame);
+          const frame = tryMapMoveNetPoseToFrame(poses[0], getVideoDimensions(element), decodedTimestampMs);
+          if (frame && (frames.length === 0 || frame.timestampMs > frames[frames.length - 1].timestampMs)) {
+            frames.push(frame);
+          }
         }
       }
 
@@ -175,6 +239,6 @@ export class WebTfjsMoveNetPoseEstimator implements PoseEstimator {
 }
 
 export function resetWebTfjsMoveNetForTests() {
-  detectorPromise?.then((detector) => detector.dispose()).catch(() => undefined);
+  detectorLoader.reset((detector) => detector.dispose());
   detectorPromise = null;
 }

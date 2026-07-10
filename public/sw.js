@@ -8,6 +8,7 @@ const APP_SHELL = [
   '/favicon.ico',
   '/pwa/icon-192.png',
   '/pwa/icon-512.png',
+  '/pwa.css',
   '/model-delivery-policy.json',
 ];
 const EXPORT_ASSETS = [];
@@ -100,7 +101,7 @@ async function cacheFirst(request) {
   const response = await fetch(request);
   if (response.ok) {
     const cache = await caches.open(CACHE_NAME);
-    cache.put(request, response.clone());
+    await cache.put(request, response.clone());
   }
   return response;
 }
@@ -110,7 +111,7 @@ async function networkFirstNavigation(request) {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put('/index.html', response.clone());
+      await cache.put('/index.html', response.clone());
     }
     return response;
   } catch {

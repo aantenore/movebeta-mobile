@@ -88,6 +88,7 @@ export const MovementMetricSchema = z.object({
   unit: z.string(),
   score: z.number().min(0).max(100),
   helper: z.string(),
+  status: z.enum(['measured', 'insufficient-data']).default('measured'),
 });
 
 export const MovementCueSchema = z.object({
@@ -149,6 +150,7 @@ export const LocalAnalysisReportSchema = z.object({
       label: 'Balanced',
       summary: 'General movement review across flow, feet, hips, and arm load.',
     }),
+    cueEngineVersion: z.string().default('movebeta-cue-engine-v1'),
     provider: AnalysisProviderSchema,
     model: z.string(),
     runsOnDevice: z.boolean(),
@@ -204,6 +206,16 @@ export type AnalyzerThresholds = {
   lockOffAngle: number;
   footCutVelocity: number;
   hipDrift: number;
+  maxTemporalIntervalMs: number;
+  minLandmarkVisibility: number;
+  minMetricCoverage: number;
+};
+
+export type AnalysisSampleSet = {
+  durationMs: number;
+  expectedFrameCount: number;
+  referenceIntervalMs: number;
+  samplingIntervalMs: number;
 };
 
 export type LocalAnalyzerInput = {
@@ -213,7 +225,9 @@ export type LocalAnalyzerInput = {
   model?: string;
   privacyMode?: PrivacyMode;
   provider?: AnalysisProvider;
+  sample?: AnalysisSampleSet;
   thresholds?: Partial<AnalyzerThresholds>;
+  video?: Pick<VideoAsset, 'height' | 'width'>;
 };
 
 export type OnDeviceAnalyzer = {

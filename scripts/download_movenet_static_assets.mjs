@@ -12,7 +12,24 @@ export const movenetStaticAssetConfig = {
   publicModelDir: 'public/models/movenet/singlepose/lightning/4',
   sourceBaseUrl: 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/',
   sourceModelUrl: 'https://tfhub.dev/google/tfjs-model/movenet/singlepose/lightning/4/model.json?tfjs-format=file',
+  trustedFiles: {
+    '/models/movenet/singlepose/lightning/4/group1-shard1of2.bin': {
+      bytes: 4194304,
+      sha256: 'b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2',
+    },
+    '/models/movenet/singlepose/lightning/4/group1-shard2of2.bin': {
+      bytes: 455912,
+      sha256: '8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc',
+    },
+    '/models/movenet/singlepose/lightning/4/model.json': {
+      bytes: 313126,
+      sha256: '99a7389bb5fdf9bdba119efaca4cfdec254663143c35debc2477d75a8f480204',
+    },
+  },
 };
+
+const trustedModelHosts = new Set(['tfhub.dev', 'storage.googleapis.com']);
+const maxModelAssetBytes = 12 * 1024 * 1024;
 
 export function resolveProjectRoot() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -34,6 +51,13 @@ function isHtmlPayload(buffer) {
     buffer.subarray(0, 256).toString('utf8').trimStart().toLowerCase().startsWith('<html');
 }
 
+function assertTrustedRemoteUrl(value) {
+  const url = new URL(value);
+  if (url.protocol !== 'https:' || !trustedModelHosts.has(url.hostname)) {
+    throw new Error(`Untrusted model asset URL: ${value}`);
+  }
+}
+
 function withTfhubFormatFile(url) {
   if (!url.startsWith('https://tfhub.dev/')) return url;
   const parsed = new URL(url);
@@ -42,13 +66,19 @@ function withTfhubFormatFile(url) {
 }
 
 async function fetchBuffer(url, { allowTfhubFormatRetry = false } = {}) {
+  assertTrustedRemoteUrl(url);
   const response = await fetch(url);
   if (response.ok) {
+    if (response.url) assertTrustedRemoteUrl(response.url);
     const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.byteLength > maxModelAssetBytes) throw new Error(`Model asset exceeds size limit: ${url}`);
     if (allowTfhubFormatRetry && url.startsWith('https://tfhub.dev/') && !url.includes('tfjs-format=file') && isHtmlPayload(buffer)) {
       const retryResponse = await fetch(withTfhubFormatFile(url));
       if (retryResponse.ok) {
-        return Buffer.from(await retryResponse.arrayBuffer());
+        if (retryResponse.url) assertTrustedRemoteUrl(retryResponse.url);
+        const retryBuffer = Buffer.from(await retryResponse.arrayBuffer());
+        if (retryBuffer.byteLength > maxModelAssetBytes) throw new Error(`Model asset exceeds size limit: ${url}`);
+        return retryBuffer;
       }
     }
     return buffer;
@@ -58,11 +88,31 @@ async function fetchBuffer(url, { allowTfhubFormatRetry = false } = {}) {
     const retryUrl = withTfhubFormatFile(url);
     const retryResponse = await fetch(retryUrl);
     if (retryResponse.ok) {
-      return Buffer.from(await retryResponse.arrayBuffer());
+      if (retryResponse.url) assertTrustedRemoteUrl(retryResponse.url);
+      const retryBuffer = Buffer.from(await retryResponse.arrayBuffer());
+      if (retryBuffer.byteLength > maxModelAssetBytes) throw new Error(`Model asset exceeds size limit: ${retryUrl}`);
+      return retryBuffer;
     }
   }
 
   throw new Error(`Failed to download ${url}: ${response.status} ${response.statusText}`);
+}
+
+function assertTrustedDownloads(downloads, trustedFiles) {
+  if (!trustedFiles) return;
+  const expectedPaths = Object.keys(trustedFiles).sort();
+  const actualPaths = downloads.map((download) => download.publicPath).sort();
+  if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
+    throw new Error('Downloaded MoveNet asset inventory does not match the reviewed trust manifest.');
+  }
+
+  for (const download of downloads) {
+    const expected = trustedFiles[download.publicPath];
+    const actualSha256 = sha256(download.buffer);
+    if (download.buffer.byteLength !== expected.bytes || actualSha256 !== expected.sha256) {
+      throw new Error(`Downloaded MoveNet asset failed trusted digest verification: ${download.publicPath}`);
+    }
+  }
 }
 
 function writeBuffer(filePath, buffer) {
@@ -125,6 +175,7 @@ function normalizeModelJson(modelJson) {
 export async function downloadMoveNetStaticAssets({
   generatedAt = new Date().toISOString(),
   rootDir = resolveProjectRoot(),
+  trustedFiles = movenetStaticAssetConfig.trustedFiles,
 } = {}) {
   const modelDir = path.join(rootDir, movenetStaticAssetConfig.publicModelDir);
   const publicManifestPath = path.join(rootDir, movenetStaticAssetConfig.publicManifestPath);
@@ -136,23 +187,32 @@ export async function downloadMoveNetStaticAssets({
     throw new Error('Downloaded MoveNet model.json does not include weight shard paths.');
   }
 
-  const files = [];
-  const modelFile = writeBuffer(path.join(modelDir, 'model.json'), modelBuffer);
-  files.push({
-    bytes: modelFile.bytes,
-    path: movenetStaticAssetConfig.modelUrl,
-    sha256: modelFile.sha256,
-  });
+  const downloads = [
+    {
+      buffer: modelBuffer,
+      publicPath: movenetStaticAssetConfig.modelUrl,
+      targetPath: path.join(modelDir, 'model.json'),
+    },
+  ];
 
   for (const asset of weightFiles) {
     const buffer = await fetchBuffer(asset.sourceUrl, { allowTfhubFormatRetry: true });
-    const target = writeBuffer(path.join(modelDir, asset.localPath), buffer);
-    files.push({
-      bytes: target.bytes,
-      path: `/models/movenet/singlepose/lightning/4/${asset.localPath}`,
-      sha256: target.sha256,
+    downloads.push({
+      buffer,
+      publicPath: `/models/movenet/singlepose/lightning/4/${asset.localPath}`,
+      targetPath: path.join(modelDir, asset.localPath),
     });
   }
+
+  assertTrustedDownloads(downloads, trustedFiles);
+  const files = downloads.map((download) => {
+    const target = writeBuffer(download.targetPath, download.buffer);
+    return {
+      bytes: target.bytes,
+      path: download.publicPath,
+      sha256: target.sha256,
+    };
+  });
 
   const manifest = {
     assets: files.map((file) => file.path),

@@ -1,16 +1,16 @@
 # Store Submission Packet
 
-Generated: 2026-06-25T15:50:13.176Z
+Generated: 2026-07-10T08:48:19.937Z
 
 ## Summary
 
-- Status: metadata-ready
+- Status: review-required
 - iOS bundle: com.movebeta.mobile
 - Android package: com.movebeta.mobile
-- Store checks: 9/9
+- Store checks: 8/9
 - Screenshots: 12
 - Copy issues: 0
-- Next action: Store metadata packet is ready for account-bound credential and native QA gates.
+- Next action: Fix failing store metadata, permission, privacy, or screenshot checks before submission.
 
 ## Privacy
 
@@ -30,7 +30,7 @@ Generated: 2026-06-25T15:50:13.176Z
 
 ## Failing Checks
 
-- None
+- Android video permissions: Only CAMERA is required; selected video import must use the permissionless system picker.
 
 ## Copy Issues
 

@@ -33,12 +33,13 @@ flowchart LR
   G --> H["Local report storage"]
 ```
 
-The app now supports `camera` and `import` video sources in the UI. Web builds try `web-tfjs-movenet`, which loads
+The app supports `camera` and `import` video sources in the UI. Web builds use `web-tfjs-movenet`, which loads
 TensorFlow.js MoveNet in the browser and extracts normalized landmarks from local video frames. Native builds can use
 `native-platform-pose`, the local Expo module backed by Apple Vision on iOS and ML Kit Pose Detection on Android.
-Unsupported runtimes or decode failures fall back to `local-video-fallback`, which keeps the workflow runnable without
-uploading video. Production native builds keep the same `PoseEstimator` interface and replace only the provider
-implementation.
+Recorded and imported video analysis is fail-closed: unavailable models, decode failures, cancellation, or insufficient
+pose frames stop the run without saving a report or generating synthetic coaching cues. `local-video-fallback` remains a
+test-only adapter and is rejected for user video. Production native builds keep the same `PoseEstimator` interface and
+replace only the provider implementation.
 During recording, `src/video/liveRecordingGuide.ts` provides deterministic local filming prompts from capture
 calibration, coach lens, elapsed time, minimum duration, and recording limit. This improves capture quality without
 claiming real-time pose analysis or sending frames to a backend before the local analysis pipeline runs.
@@ -134,7 +135,9 @@ stop analysis before provider execution; warnings remain visible so users can st
 score penalties, reasons, processing budget labels, target length, and privacy-safe output for the Coach intake panel.
 `src/video/analysisWindow.ts` adds source-relative full, early, middle, and late sampling windows for long clips. The
 window is stored as optional metadata on `VideoAsset`, does not alter the raw URI or source file, and is respected by the
-browser MoveNet provider, native platform provider, and deterministic fallback provider before frames reach the analyzer.
+browser MoveNet provider and native platform provider before frames reach the analyzer. Sampling plans expose both the
+calibration interval and effective interval; timing-sensitive metrics are marked unavailable when temporal coverage is
+too sparse.
 The movement pipeline persists the effective window into `LocalAnalysisReport.engine.analysisWindow`, and
 `src/movement/analysisEvidence.ts` adds a share-safe Analysis window evidence step so exported evidence can show what was
 processed without raw media references, landmarks, or key frames.
@@ -144,8 +147,7 @@ budget status, and frame rate into every pipeline report using the active analys
 ## Provider Strategy
 
 - `local-fixture`: deterministic provider for bundled demos, tests, and design validation.
-- `local-video-fallback`: deterministic provider for recorded/imported video workflows when native frame processors are
-  unavailable.
+- `local-video-fallback`: deterministic test adapter; production repository orchestration rejects it for user video.
 - `web-tfjs-movenet`: browser provider backed by TensorFlow.js MoveNet SinglePose Lightning.
 - `native-platform-pose`: first-party Expo module backed by Apple Vision and Android ML Kit.
 - `native-mediapipe`: reserved adapter slot for MediaPipe Pose Landmarker; rejected clearly until implemented.
@@ -168,9 +170,13 @@ flowchart LR
 ```
 
 Providers must run on-device, return normalized landmarks, avoid raw video uploads, skip incomplete per-frame detections,
-and fail clearly when the bridge or browser runtime is unavailable. Repository orchestration attempts the configured
-video provider for real videos and falls back to `local-video-fallback` when the preferred provider reports unavailable
-or cannot extract enough complete frames.
+and fail clearly when the bridge or browser runtime is unavailable. Repository orchestration uses exactly the configured
+real-video provider and fails closed when it is unavailable or cannot extract enough trustworthy frames.
+
+`src/movement/localAnalyzer.ts` gates every metric by the confidence of its required joints, corrects geometry for source
+aspect ratio, and normalizes spatial distances against a robust torso scale. Reports distinguish measured metrics from
+insufficient data, include a separate cue-engine version, and localize cue timestamps to detected events. A latest-run
+coordinator aborts older analyses and guards state/persistence commits when the user starts a newer run or leaves Coach.
 
 The native platform adapter lives in `modules/movebeta-pose` so native dependencies remain isolated from product screens.
 Expo prebuild autolinks it into generated iOS/Android projects. The adapter also exposes local video metadata for
@@ -192,7 +198,8 @@ scores, report IDs, raw worksheet rows, or media references.
 The default persistence layer stores reports rather than raw video. React Native runtimes use `SQLiteReportRepository`
 backed by Expo SQLite; web previews use `LocalReportRepository` with `localStorage`, and tests or unsupported runtimes
 fall back to the same repository contract without blocking startup. A production sync layer can add encrypted cloud
-replication later, but raw clips remain local unless the user explicitly exports or shares them.
+replication later. Imported files stay under user/platform ownership; camera-owned cache files are removed when replaced
+or when Coach closes. Temporary export files are deleted after the share sheet completes.
 Coach review consent follows the same storage strategy through `coachConsentRepository`, so the Sessions workflow can
 grant, revoke, restore, and delete per-report consent records without uploading media or landmarks.
 

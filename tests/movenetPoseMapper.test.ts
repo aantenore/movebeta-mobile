@@ -50,6 +50,17 @@ describe('MoveNet pose mapper', () => {
     expect(() => mapMoveNetPoseToFrame(incompletePose, dimensions, 0)).toThrow('required leftHip keypoint');
   });
 
+  it('treats a missing keypoint score as unknown instead of fully visible', () => {
+    const pose = moveNetPoseFromFrame(samplePoseFrames[0]);
+    const rightAnkle = pose.keypoints.find((keypoint) => keypoint.name === moveNetRequiredKeypoints.rightAnkle);
+    if (!rightAnkle) throw new Error('Missing test keypoint.');
+    delete rightAnkle.score;
+
+    const frame = mapMoveNetPoseToFrame(pose, dimensions, 0);
+
+    expect(frame.landmarks.find((landmark) => landmark.name === 'rightAnkle')?.visibility).toBe(0);
+  });
+
   it('feeds mapped MoveNet frames into the local movement analyzer report contract', async () => {
     const mappedFrames = samplePoseFrames.map((frame) =>
       mapMoveNetPoseToFrame(moveNetPoseFromFrame(frame), dimensions, frame.timestampMs),

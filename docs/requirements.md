@@ -22,9 +22,15 @@
 - Persist the effective analysis window inside local reports, evidence timelines, and evidence-only exports without raw
   video URI, local path, landmark, or key-frame payloads.
 - Analyze a short climbing attempt locally from camera, import, or fixture input in this runnable MVP.
+- Require explicit Analyze after record/import so editable session metadata is finalized before persistence.
+- Fail closed for recorded/imported video when the configured real pose provider is unavailable, cancelled, cannot decode
+  the source, or returns insufficient evidence; never substitute synthetic landmarks or coaching cues.
+- Keep bundled demo analysis transient so fixtures never appear in local user history.
 - Keep camera capture, video import, fixture input, and native pose providers behind replaceable contracts.
 - Let users choose between multiple bundled local attempts as a fallback/demo path.
 - Produce pose-derived metrics: flow, pause time, bent-arm load, hip drift, and likely foot cuts.
+- Mark a metric as insufficient data when its required joints or temporal sampling do not meet configured confidence and
+  coverage thresholds; do not treat missing evidence as clean movement.
 - Generate coaching cues with timestamp, severity, explanation, and drill.
 - Score coach cue validation reviews with a repeatable rubric for consented clip evaluation.
 - Validate consented cue-review datasets with configurable thresholds for clip count, wall-angle coverage, reviewer
@@ -83,11 +89,11 @@
 - Share prepared Sessions exports as local `.json`, `.csv`, or `.txt` files when native file sharing is available, with a
   text-share fallback for web or unsupported runtimes.
 - Delete a local analysis bundle as one privacy action, covering the report, private training log, drill practice log, and
-  coach consent record while confirming that raw video was not included or uploaded.
+  coach consent record while confirming the destructive action and that raw video was not included or uploaded.
 - Export and restore a versioned local backup JSON containing reports, private training logs, drill practice logs, and
   coach consent records without raw video, video URI, audio, account identifiers, or secrets, including an offline
   content checksum for integrity checks.
-- Preview a local backup restore before writing data and show a restore receipt after writing, including report,
+- Require a successful preview and explicit confirmation before restoring a local backup, then show a restore receipt including report,
   training-log, drill-practice, consent, new, existing, skipped orphan, integrity, and checksum evidence.
 - Show a selectable session review for local reports with quality, performance, focus metric, primary cue, timeline, and
   privacy evidence.

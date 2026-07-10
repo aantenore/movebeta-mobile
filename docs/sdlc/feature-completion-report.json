@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T15:50:10.676Z",
+  "generatedAt": "2026-07-10T08:48:16.954Z",
   "launchReadiness": {
     "nextAction": "Create docs/validation/cue-validation-dataset.json from real consented coach reviews and run the validation gate.",
     "openChecks": [

@@ -1,16 +1,6 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
-const serviceWorkerRegistration = `
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js').catch(function () {
-      // Registration failure should not block the local analysis app.
-    });
-  });
-}
-`;
-
 export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">
@@ -23,7 +13,8 @@ export default function Root({ children }: PropsWithChildren) {
         <link href="/manifest.json" rel="manifest" />
         <link href="/favicon.ico" rel="icon" />
         <link href="/pwa/icon-192.png" rel="apple-touch-icon" />
-        <script dangerouslySetInnerHTML={{ __html: serviceWorkerRegistration }} />
+        <link href="/pwa.css" rel="stylesheet" />
+        <script data-service-worker="/sw.js" defer src="/pwa-register.js" />
         <ScrollViewStyleReset />
       </head>
       <body>{children}</body>

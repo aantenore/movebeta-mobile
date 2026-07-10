@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Camera, Clock, Cpu, Download, Gauge, RotateCcw, ShieldCheck, Square, TriangleAlert, Upload, Video } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { AnalysisTrustPanel } from '@/components/AnalysisTrustPanel';
 import { MovementCueCard } from '@/components/MovementCueCard';
 import { MovementMetricRow } from '@/components/MovementMetricRow';
@@ -39,6 +40,7 @@ import {
 import { buildPwaRuntimeReadiness, type PwaRuntimeProbe, type PwaRuntimeReadiness } from '@/core/pwaRuntimeReadiness';
 import { theme } from '@/core/theme';
 import type { AnalysisWindowMode, CoachLensKey, LocalAnalysisReport } from '@/movement/contracts';
+import { isAnalysisAbortError, LatestAnalysisRunCoordinator } from '@/movement/analysisCancellation';
 import { buildBetaReplayPlan, type BetaReplayPlan } from '@/movement/betaReplayPlan';
 import { buildCapturePrepProtocol, type CapturePrepProtocol } from '@/movement/capturePrepProtocol';
 import { assessCaptureReadiness } from '@/movement/captureReadiness';
@@ -64,6 +66,7 @@ import { buildClipTriagePlan } from '@/video/clipTriage';
 import { videoAnalysisConfig } from '@/video/videoConfig';
 import { assessVideoIntake, formatVideoDuration } from '@/video/videoIntake';
 import { buildLiveRecordingGuide, type LiveRecordingGuide } from '@/video/liveRecordingGuide';
+import { removeOwnedCameraVideo } from '@/video/localVideoRetention';
 import { readLocalVideoMetadata } from '@/video/videoMetadata';
 import { formatAnalysisDuration, resolveVideoAnalysisBudgetMs } from '@/video/performanceBudget';
 import {
@@ -1478,11 +1481,13 @@ function AnalysisRunLoadPanel({
 export function CoachScreen() {
   const cameraRef = useRef<CameraView | null>(null);
   const recordingStartedAt = useRef<number | null>(null);
+  const analysisRuns = useRef(new LatestAnalysisRunCoordinator());
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [report, setReport] = useState<LocalAnalysisReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [modelWarmupLoading, setModelWarmupLoading] = useState(false);
@@ -1620,6 +1625,19 @@ export function CoachScreen() {
   ) {
     if (withFeedback) selectionFeedback();
 
+    const ticket = analysisRuns.current.start();
+    const isCurrentRun = ticket.isCurrent;
+    const stopWithError = (message: string) => {
+      if (!isCurrentRun()) return;
+      setLoading(false);
+      setReport(null);
+      setErrorMessage(message);
+    };
+
+    setLoading(true);
+    setReport(null);
+    setErrorMessage(null);
+
     const sourceForAnalysis = nextSource
       ? {
           ...nextSource,
@@ -1630,9 +1648,7 @@ export function CoachScreen() {
     if (sourceForAnalysis) {
       const intake = assessVideoIntake(sourceForAnalysis.video);
       if (!intake.canAnalyze) {
-        setLoading(false);
-        setReport(null);
-        setErrorMessage(intake.action);
+        stopWithError(intake.action);
         return;
       }
 
@@ -1642,44 +1658,40 @@ export function CoachScreen() {
         readiness: pwaPreflight.readiness,
       });
       if (!runtimePreflight.canAnalyze) {
-        setLoading(false);
-        setReport(null);
-        setErrorMessage(runtimePreflight.action);
+        stopWithError(runtimePreflight.action);
         return;
       }
 
       if (runtimePreflight.shouldWarmBeforeAnalysis) {
-        setModelWarmupLoading(true);
+        if (isCurrentRun()) setModelWarmupLoading(true);
         try {
           const warmup = await pwaPreflight.warmModelCache();
+          if (!isCurrentRun()) return;
           setPreparedModelDownloadPacket('');
           setPreparedFieldReadinessPacket('');
           setPreparedSessionLaunchPacket('');
           if (warmup.summary.status !== 'ready' && !warmup.summary.online) {
-            setLoading(false);
-            setReport(null);
-            setErrorMessage(warmup.summary.nextAction);
+            stopWithError(warmup.summary.nextAction);
             return;
           }
         } catch (error) {
+          if (!isCurrentRun()) return;
           const message = error instanceof Error ? error.message : 'Model cache warmup failed before analysis.';
-          setLoading(false);
-          setReport(null);
-          setErrorMessage(message);
+          stopWithError(message);
           return;
         } finally {
-          setModelWarmupLoading(false);
+          if (isCurrentRun()) setModelWarmupLoading(false);
         }
       }
     }
 
-    setLoading(true);
-    setErrorMessage(null);
-
     try {
       const nextReport = sourceForAnalysis
-        ? await analyzeVideoAttempt(sourceForAnalysis.video, sourceForAnalysis.session, coachLens)
-        : await analyzeDemoAttempt(sessionId, coachLens);
+        ? await analyzeVideoAttempt(sourceForAnalysis.video, sourceForAnalysis.session, coachLens, {
+            signal: ticket.signal,
+          })
+        : await analyzeDemoAttempt(sessionId, coachLens, { signal: ticket.signal });
+      if (!isCurrentRun()) return;
       setReport(nextReport);
       setPreparedRunLoadPacket('');
       setAnalysisRunRecords((records) =>
@@ -1695,11 +1707,13 @@ export function CoachScreen() {
         ].slice(-videoAnalysisConfig.analysisRunLoad.maxRecords),
       );
     } catch (error) {
+      if (!isCurrentRun() || isAnalysisAbortError(error)) return;
       const message = error instanceof Error ? error.message : 'The local analysis pipeline failed.';
+      setReport(null);
       setErrorMessage(message);
     } finally {
-      setLoading(false);
-      if (sourceForAnalysis) {
+      if (isCurrentRun()) setLoading(false);
+      if (sourceForAnalysis && isCurrentRun()) {
         void pwaPreflight.refreshModelCache();
       }
     }
@@ -1730,6 +1744,11 @@ export function CoachScreen() {
     selectionFeedback();
     setErrorMessage(null);
 
+    if (Platform.OS === 'web') {
+      setErrorMessage('Web recording is unavailable. Import a local video instead.');
+      return;
+    }
+
     const setup = assessCaptureCalibration(captureCalibration);
     if (!setup.canRecord) {
       setErrorMessage(setup.action);
@@ -1744,11 +1763,16 @@ export function CoachScreen() {
       }
     }
 
+    setCameraReady(false);
     setCameraOpen(true);
   }
 
   async function startRecording() {
-    if (!cameraRef.current || recording) return;
+    if (recording) return;
+    if (!cameraRef.current || !cameraReady) {
+      setErrorMessage('The camera is still starting. Wait a moment and try again.');
+      return;
+    }
 
     const setup = assessCaptureCalibration(captureCalibration);
     if (!setup.canRecord) {
@@ -1759,6 +1783,7 @@ export function CoachScreen() {
     setErrorMessage(null);
     setRecording(true);
     recordingStartedAt.current = Date.now();
+    let recordedUri: string | undefined;
 
     try {
       const recordingResult = await cameraRef.current.recordAsync({
@@ -1770,6 +1795,7 @@ export function CoachScreen() {
         setErrorMessage('Recording did not return a local video file.');
         return;
       }
+      recordedUri = recordingResult.uri;
 
       const durationMs = recordingStartedAt.current ? Date.now() - recordingStartedAt.current : undefined;
       const metadata = await readLocalVideoMetadata({
@@ -1792,9 +1818,10 @@ export function CoachScreen() {
       setPreparedSessionLaunchPacket('');
       setPreparedRunLoadPacket('');
       setActiveSource(source);
+      setReport(null);
       setCameraOpen(false);
-      await runAnalysis(source, selectedAttemptId, false);
     } catch (error) {
+      if (recordedUri) void removeOwnedCameraVideo(recordedUri);
       const message = error instanceof Error ? error.message : 'Recording failed on this device.';
       setErrorMessage(message);
     } finally {
@@ -1812,48 +1839,47 @@ export function CoachScreen() {
     selectionFeedback();
     setErrorMessage(null);
 
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      setErrorMessage('Media library permission is required to import a climbing video.');
-      return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: false,
+        allowsMultipleSelection: false,
+        mediaTypes: ['videos'],
+        quality: 1,
+        videoMaxDuration: 120,
+      });
+
+      if (result.canceled || !result.assets[0]) return;
+
+      const asset = result.assets[0];
+      const metadata = await readLocalVideoMetadata({
+        durationMs: asset.duration,
+        height: asset.height,
+        uri: asset.uri,
+        width: asset.width,
+      });
+      const source = createImportedVideoSourceWithSession(
+        {
+          ...asset,
+          duration: metadata.durationMs,
+          height: metadata.height,
+          width: metadata.width,
+        },
+        sessionMetadata,
+      );
+      setPreparedResourcePacket('');
+      setPreparedExecutionPacket('');
+      setPreparedDevicePacket('');
+      setPreparedModelDownloadPacket('');
+      setPreparedFieldReadinessPacket('');
+      setPreparedSessionLaunchPacket('');
+      setPreparedRunLoadPacket('');
+      setActiveSource(source);
+      setReport(null);
+      setCameraOpen(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Video import failed on this device.';
+      setErrorMessage(message);
     }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: false,
-      allowsMultipleSelection: false,
-      mediaTypes: ['videos'],
-      quality: 1,
-      videoMaxDuration: 120,
-    });
-
-    if (result.canceled || !result.assets[0]) return;
-
-    const asset = result.assets[0];
-    const metadata = await readLocalVideoMetadata({
-      durationMs: asset.duration,
-      height: asset.height,
-      uri: asset.uri,
-      width: asset.width,
-    });
-    const source = createImportedVideoSourceWithSession(
-      {
-        ...asset,
-        duration: metadata.durationMs,
-        height: metadata.height,
-        width: metadata.width,
-      },
-      sessionMetadata,
-    );
-    setPreparedResourcePacket('');
-    setPreparedExecutionPacket('');
-    setPreparedDevicePacket('');
-    setPreparedModelDownloadPacket('');
-    setPreparedFieldReadinessPacket('');
-    setPreparedSessionLaunchPacket('');
-    setPreparedRunLoadPacket('');
-    setActiveSource(source);
-    setCameraOpen(false);
-    await runAnalysis(source, selectedAttemptId, false);
   }
 
   function selectDemoAttempt(sessionId: string) {
@@ -1878,7 +1904,17 @@ export function CoachScreen() {
 
   useEffect(() => {
     void runAnalysis(null, selectedAttemptId, false);
+    return () => {
+      analysisRuns.current.cancel();
+    };
   }, []);
+
+  useEffect(() => {
+    const selectedVideo = activeSource?.video;
+    return () => {
+      if (selectedVideo?.source === 'camera') void removeOwnedCameraVideo(selectedVideo);
+    };
+  }, [activeSource?.video.uri]);
 
   useEffect(() => {
     if (!recording) {
@@ -1918,20 +1954,23 @@ export function CoachScreen() {
         <View style={styles.captureCopy}>
           <Text style={styles.captureTitle}>Capture a climbing attempt</Text>
           <Text style={styles.captureText}>
-            The video workflow runs locally. Web builds try TensorFlow.js MoveNet first, then fall back locally when a
-            browser cannot decode the source. Native builds can swap in MediaPipe, Core ML, or TFLite behind the same
-            provider contract.
+            The video workflow runs locally. Web builds use TensorFlow.js MoveNet; native builds use the linked platform
+            pose module. If the configured model is unavailable, analysis stops without generating coaching cues.
           </Text>
           <View style={styles.captureActions}>
+            {Platform.OS !== 'web' ? (
+              <Pressable
+                accessibilityRole="button"
+                disabled={workflow.captureDisabled}
+                onPress={() => void openRecorder()}
+                style={[styles.secondaryAction, workflow.captureDisabled ? styles.disabled : null]}
+              >
+                <Camera color={theme.colors.brand} size={16} />
+                <Text style={styles.secondaryActionText}>Record</Text>
+              </Pressable>
+            ) : null}
             <Pressable
-              disabled={workflow.captureDisabled}
-              onPress={() => void openRecorder()}
-              style={[styles.secondaryAction, workflow.captureDisabled ? styles.disabled : null]}
-            >
-              <Camera color={theme.colors.brand} size={16} />
-              <Text style={styles.secondaryActionText}>Record</Text>
-            </Pressable>
-            <Pressable
+              accessibilityRole="button"
               disabled={workflow.captureDisabled}
               onPress={() => void importVideo()}
               style={[styles.secondaryAction, workflow.captureDisabled ? styles.disabled : null]}
@@ -1942,6 +1981,12 @@ export function CoachScreen() {
           </View>
         </View>
       </View>
+
+      {errorMessage ? (
+        <View accessibilityLiveRegion="assertive" accessibilityRole="alert" style={styles.error}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      ) : null}
 
       <PwaModelPreflightPanel
         disabled={workflow.captureDisabled}
@@ -1995,6 +2040,11 @@ export function CoachScreen() {
               facing="back"
               mode="video"
               mute
+              onCameraReady={() => setCameraReady(true)}
+              onMountError={(event) => {
+                setCameraReady(false);
+                setErrorMessage(event.message || 'The camera could not start on this device.');
+              }}
               ref={cameraRef}
               style={styles.cameraView}
               videoBitrate={videoAnalysisConfig.recordingVideoBitrate}
@@ -2011,17 +2061,30 @@ export function CoachScreen() {
             </View>
             <LiveRecordingGuidePanel guide={liveRecordingGuide} />
             <View style={styles.recorderOverlay}>
-              <Pressable disabled={recording} onPress={() => setCameraOpen(false)} style={styles.recorderGhost}>
+              <Pressable
+                accessibilityRole="button"
+                disabled={recording}
+                onPress={() => {
+                  setCameraReady(false);
+                  setCameraOpen(false);
+                }}
+                style={styles.recorderGhost}
+              >
                 <RotateCcw color="#FFFFFF" size={18} />
                 <Text style={styles.recorderGhostText}>Close</Text>
               </Pressable>
               {recording ? (
-                <Pressable onPress={stopRecording} style={styles.recorderStop}>
+                <Pressable accessibilityRole="button" onPress={stopRecording} style={styles.recorderStop}>
                   <Square color="#FFFFFF" fill="#FFFFFF" size={16} />
                   <Text style={styles.recorderActionText}>Stop</Text>
                 </Pressable>
               ) : (
-                <Pressable onPress={() => void startRecording()} style={styles.recorderRecord}>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={!cameraReady}
+                  onPress={() => void startRecording()}
+                  style={[styles.recorderRecord, !cameraReady ? styles.disabled : null]}
+                >
                   <Video color="#FFFFFF" size={18} />
                   <Text style={styles.recorderActionText}>Start</Text>
                 </Pressable>
@@ -2139,18 +2202,15 @@ export function CoachScreen() {
         </View>
       ) : null}
 
-      {errorMessage ? (
-        <View style={styles.error}>
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        </View>
-      ) : null}
-
       <Section title="Demo sources" caption="Use these only when no local video is selected.">
         <View style={styles.attempts}>
           {attempts.map((attempt) => {
             const selected = !activeSource && attempt.session.id === selectedAttemptId;
             return (
               <Pressable
+                accessibilityRole="button"
+                accessibilityState={{ disabled: workflow.actionDisabled, selected }}
+                disabled={workflow.actionDisabled}
                 key={attempt.session.id}
                 onPress={() => selectDemoAttempt(attempt.session.id)}
                 style={[styles.attempt, selected ? styles.attemptSelected : null]}

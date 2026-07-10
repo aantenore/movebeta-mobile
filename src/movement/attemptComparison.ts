@@ -5,6 +5,7 @@ import {
   findBestRepeatMatch,
   type RepeatMatchSummary,
 } from './repeatMatcher';
+import { measuredMovementMetrics } from './metricEvidence';
 
 export type ComparisonDirection = 'improved' | 'regressed' | 'flat' | 'new';
 
@@ -56,7 +57,7 @@ function directionFromDelta(delta: number | null): ComparisonDirection {
 }
 
 function metricById(metrics: MovementMetric[]) {
-  return new Map(metrics.map((metric) => [metric.id, metric]));
+  return new Map(measuredMovementMetrics(metrics).map((metric) => [metric.id, metric]));
 }
 
 function cueById(cues: MovementCue[]) {
@@ -132,7 +133,8 @@ export function compareAttempts(
   baselineMatch: RepeatMatchSummary = buildManualRepeatMatch(currentReport, baselineReport),
 ): AttemptComparison {
   const baselineMetrics = metricById(baselineReport.metrics);
-  const metrics = currentReport.metrics.map((metric) => {
+  const currentMetrics = measuredMovementMetrics(currentReport.metrics);
+  const metrics = currentMetrics.map((metric) => {
     const baselineMetric = baselineMetrics.get(metric.id);
     const scoreDelta = baselineMetric ? metric.score - baselineMetric.score : null;
 
@@ -148,8 +150,10 @@ export function compareAttempts(
       unit: metric.unit,
     };
   });
-  const currentOverall = Math.round(average(currentReport.metrics.map((metric) => metric.score)));
-  const baselineOverall = Math.round(average(baselineReport.metrics.map((metric) => metric.score)));
+  const currentOverall = Math.round(average(currentMetrics.map((metric) => metric.score)));
+  const baselineOverall = Math.round(
+    average(measuredMovementMetrics(baselineReport.metrics).map((metric) => metric.score)),
+  );
   const overallScoreDelta = currentOverall - baselineOverall;
   const cueComparison = buildCueComparison(currentReport, baselineReport);
 

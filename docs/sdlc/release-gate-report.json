@@ -1,438 +1,584 @@
 {
-  "completedAt": "2026-06-25T15:50:32.043Z",
+  "completedAt": "2026-07-10T08:48:36.831Z",
+  "evidence": {
+    "ci": {
+      "blockedStepKeys": [
+        "githubWorkflowDoctor"
+      ],
+      "failedStepKeys": [],
+      "label": "Active CI workflow evidence",
+      "missingStepKeys": [],
+      "requiredStepKeys": [
+        "githubWorkflowDoctor"
+      ],
+      "status": "blocked"
+    },
+    "native": {
+      "blockedStepKeys": [
+        "nativeQaEvidenceValidation",
+        "iosToolchainDoctor"
+      ],
+      "failedStepKeys": [],
+      "label": "Native build and physical-device QA evidence",
+      "missingStepKeys": [],
+      "requiredStepKeys": [
+        "nativeQaEvidenceValidation",
+        "iosToolchainDoctor"
+      ],
+      "status": "blocked"
+    }
+  },
+  "releaseReady": false,
   "schemaVersion": "movebeta.release-gate-report.v1",
-  "startedAt": "2026-06-25T15:49:58.313Z",
-  "status": "pass",
+  "startedAt": "2026-07-10T08:48:02.295Z",
+  "status": "blocked",
   "steps": [
     {
       "command": "npm run quality",
-      "completedAt": "2026-06-25T15:50:05.293Z",
-      "durationMs": 6979,
+      "completedAt": "2026-07-10T08:48:10.508Z",
+      "durationMs": 8212,
       "exitCode": 0,
       "key": "quality",
       "label": "TypeScript and Vitest quality gate",
-      "startedAt": "2026-06-25T15:49:58.314Z",
+      "startedAt": "2026-07-10T08:48:02.296Z",
       "status": "pass"
     },
     {
       "command": "npm run model:movenet:readiness",
-      "completedAt": "2026-06-25T15:50:06.841Z",
-      "durationMs": 1548,
+      "completedAt": "2026-07-10T08:48:12.357Z",
+      "durationMs": 1849,
       "exitCode": 0,
       "key": "modelReadiness",
       "label": "MoveNet readiness report",
-      "startedAt": "2026-06-25T15:50:05.293Z",
+      "startedAt": "2026-07-10T08:48:10.508Z",
+      "evidence": {
+        "path": "docs/sdlc/movenet-readiness-report.json",
+        "schemaVersion": "movebeta.movenet-readiness-report.v1",
+        "status": "ready",
+        "statusPath": "status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run model:analysis:replay",
-      "completedAt": "2026-06-25T15:50:07.162Z",
-      "durationMs": 321,
+      "completedAt": "2026-07-10T08:48:12.711Z",
+      "durationMs": 354,
       "exitCode": 0,
       "key": "modelAnalysisReplay",
       "label": "Model-shaped analysis replay",
-      "startedAt": "2026-06-25T15:50:06.841Z",
+      "startedAt": "2026-07-10T08:48:12.357Z",
+      "evidence": {
+        "path": "docs/sdlc/model-analysis-replay-report.json",
+        "schemaVersion": "movebeta.model-analysis-replay-report.v1",
+        "status": "pass",
+        "statusPath": "status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run model:verification:suite",
-      "completedAt": "2026-06-25T15:50:07.430Z",
-      "durationMs": 268,
+      "completedAt": "2026-07-10T08:48:12.984Z",
+      "durationMs": 273,
       "exitCode": 0,
       "key": "modelVerificationSuite",
       "label": "Model verification suite",
-      "startedAt": "2026-06-25T15:50:07.162Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:12.711Z",
+      "detail": "Authoritative report status is technical-ready.",
+      "evidence": {
+        "path": "docs/sdlc/model-verification-suite-report.json",
+        "schemaVersion": "movebeta.model-verification-suite-report.v1",
+        "status": "technical-ready",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run native:qa:runbook",
-      "completedAt": "2026-06-25T15:50:07.576Z",
-      "durationMs": 146,
+      "completedAt": "2026-07-10T08:48:13.132Z",
+      "durationMs": 148,
       "exitCode": 0,
       "key": "nativeQaRunbook",
       "label": "Native QA runbook generation",
-      "startedAt": "2026-06-25T15:50:07.430Z",
+      "startedAt": "2026-07-10T08:48:12.984Z",
       "status": "pass"
     },
     {
       "command": "npm run native:qa:starter",
-      "completedAt": "2026-06-25T15:50:07.846Z",
-      "durationMs": 270,
+      "completedAt": "2026-07-10T08:48:13.494Z",
+      "durationMs": 362,
       "exitCode": 0,
       "key": "nativeQaEvidenceStarter",
       "label": "Native QA evidence starter",
-      "startedAt": "2026-06-25T15:50:07.576Z",
+      "startedAt": "2026-07-10T08:48:13.132Z",
       "status": "pass"
+    },
+    {
+      "command": "npm run native:qa:validate",
+      "completedAt": "2026-07-10T08:48:13.634Z",
+      "durationMs": 140,
+      "exitCode": 1,
+      "key": "nativeQaEvidenceValidation",
+      "label": "Physical-device native QA evidence validation",
+      "startedAt": "2026-07-10T08:48:13.494Z",
+      "detail": "Command exited with code 1.",
+      "status": "blocked"
     },
     {
       "command": "npm run native:ios:doctor",
-      "completedAt": "2026-06-25T15:50:08.015Z",
-      "durationMs": 169,
+      "completedAt": "2026-07-10T08:48:13.797Z",
+      "durationMs": 163,
       "exitCode": 0,
       "key": "iosToolchainDoctor",
       "label": "iOS toolchain doctor",
-      "startedAt": "2026-06-25T15:50:07.846Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:13.634Z",
+      "detail": "Authoritative report status is blocked.",
+      "evidence": {
+        "path": "docs/sdlc/ios-toolchain-report.json",
+        "schemaVersion": "movebeta.ios-toolchain-report.v1",
+        "status": "blocked",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run native:ios:setup",
-      "completedAt": "2026-06-25T15:50:08.274Z",
-      "durationMs": 259,
+      "completedAt": "2026-07-10T08:48:14.116Z",
+      "durationMs": 319,
       "exitCode": 0,
       "key": "iosToolchainSetupPacket",
       "label": "iOS toolchain setup packet",
-      "startedAt": "2026-06-25T15:50:08.015Z",
+      "startedAt": "2026-07-10T08:48:13.797Z",
       "status": "pass"
     },
     {
       "command": "npm run validation:cue:starter",
-      "completedAt": "2026-06-25T15:50:08.555Z",
-      "durationMs": 282,
+      "completedAt": "2026-07-10T08:48:14.456Z",
+      "durationMs": 339,
       "exitCode": 0,
       "key": "cueValidationStarterKit",
       "label": "Cue validation starter kit",
-      "startedAt": "2026-06-25T15:50:08.274Z",
+      "startedAt": "2026-07-10T08:48:14.117Z",
       "status": "pass"
     },
     {
       "command": "npm run validation:cue:doctor",
-      "completedAt": "2026-06-25T15:50:08.707Z",
-      "durationMs": 152,
+      "completedAt": "2026-07-10T08:48:14.596Z",
+      "durationMs": 141,
       "exitCode": 0,
       "key": "cueValidationDatasetDoctor",
       "label": "Cue validation dataset doctor",
-      "startedAt": "2026-06-25T15:50:08.555Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:14.456Z",
+      "detail": "Authoritative report status is blocked.",
+      "evidence": {
+        "path": "docs/sdlc/cue-validation-dataset-report.json",
+        "schemaVersion": "movebeta.cue-validation-dataset-report.v1",
+        "status": "blocked",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run validation:cue:composition",
-      "completedAt": "2026-06-25T15:50:08.984Z",
-      "durationMs": 277,
+      "completedAt": "2026-07-10T08:48:15.005Z",
+      "durationMs": 409,
       "exitCode": 0,
       "key": "cueValidationDatasetComposition",
       "label": "Cue validation dataset composition packet",
-      "startedAt": "2026-06-25T15:50:08.707Z",
+      "startedAt": "2026-07-10T08:48:14.596Z",
       "status": "pass"
     },
     {
       "command": "npm run release:env:doctor",
-      "completedAt": "2026-06-25T15:50:09.131Z",
-      "durationMs": 147,
+      "completedAt": "2026-07-10T08:48:15.137Z",
+      "durationMs": 132,
       "exitCode": 0,
       "key": "envTemplateDoctor",
       "label": "Environment template doctor",
-      "startedAt": "2026-06-25T15:50:08.984Z",
+      "startedAt": "2026-07-10T08:48:15.005Z",
+      "evidence": {
+        "path": "docs/sdlc/env-template-report.json",
+        "schemaVersion": "movebeta.env-template-report.v1",
+        "status": "ready",
+        "statusPath": "status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run release:credentials:starter",
-      "completedAt": "2026-06-25T15:50:09.382Z",
-      "durationMs": 251,
+      "completedAt": "2026-07-10T08:48:15.430Z",
+      "durationMs": 293,
       "exitCode": 0,
       "key": "storeCredentialsStarter",
       "label": "Store credentials starter",
-      "startedAt": "2026-06-25T15:50:09.131Z",
+      "startedAt": "2026-07-10T08:48:15.137Z",
       "status": "pass"
     },
     {
       "command": "npm run release:credentials:doctor",
-      "completedAt": "2026-06-25T15:50:09.523Z",
-      "durationMs": 141,
+      "completedAt": "2026-07-10T08:48:15.567Z",
+      "durationMs": 137,
       "exitCode": 0,
       "key": "storeCredentialsDoctor",
       "label": "Store credentials doctor",
-      "startedAt": "2026-06-25T15:50:09.382Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:15.431Z",
+      "detail": "Authoritative report status is blocked.",
+      "evidence": {
+        "path": "docs/sdlc/store-credentials-report.json",
+        "schemaVersion": "movebeta.store-credentials-report.v1",
+        "status": "blocked",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run release:store-account:runbook",
-      "completedAt": "2026-06-25T15:50:09.787Z",
-      "durationMs": 264,
+      "completedAt": "2026-07-10T08:48:15.871Z",
+      "durationMs": 303,
       "exitCode": 0,
       "key": "storeReleaseAccountRunbook",
       "label": "Store release account runbook",
-      "startedAt": "2026-06-25T15:50:09.523Z",
+      "startedAt": "2026-07-10T08:48:15.567Z",
       "status": "pass"
     },
     {
       "command": "npm run release:github:doctor",
-      "completedAt": "2026-06-25T15:50:10.513Z",
-      "durationMs": 726,
+      "completedAt": "2026-07-10T08:48:16.815Z",
+      "durationMs": 944,
       "exitCode": 0,
       "key": "githubWorkflowDoctor",
       "label": "GitHub workflow doctor",
-      "startedAt": "2026-06-25T15:50:09.787Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:15.871Z",
+      "detail": "Authoritative report status is blocked.",
+      "evidence": {
+        "path": "docs/sdlc/github-workflow-report.json",
+        "schemaVersion": "movebeta.github-workflow-report.v1",
+        "status": "blocked",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run feature:doctor",
-      "completedAt": "2026-06-25T15:50:10.686Z",
-      "durationMs": 173,
+      "completedAt": "2026-07-10T08:48:16.966Z",
+      "durationMs": 151,
       "exitCode": 0,
       "key": "featureCompletionDoctor",
       "label": "Feature completion doctor",
-      "startedAt": "2026-06-25T15:50:10.514Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:16.815Z",
+      "detail": "Authoritative report status is external-blocked.",
+      "evidence": {
+        "path": "docs/sdlc/feature-completion-report.json",
+        "schemaVersion": "movebeta.feature-completion-report.v1",
+        "status": "external-blocked",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run release:blocker-issues",
-      "completedAt": "2026-06-25T15:50:11.003Z",
-      "durationMs": 317,
+      "completedAt": "2026-07-10T08:48:17.310Z",
+      "durationMs": 344,
       "exitCode": 0,
       "key": "releaseBlockerIssues",
       "label": "Release blocker issue report",
-      "startedAt": "2026-06-25T15:50:10.686Z",
+      "startedAt": "2026-07-10T08:48:16.966Z",
       "status": "pass"
     },
     {
       "command": "npm run release:blocker-progress",
-      "completedAt": "2026-06-25T15:50:11.307Z",
-      "durationMs": 304,
+      "completedAt": "2026-07-10T08:48:17.611Z",
+      "durationMs": 302,
       "exitCode": 0,
       "key": "releaseBlockerProgress",
       "label": "Release blocker progress tracker",
-      "startedAt": "2026-06-25T15:50:11.003Z",
+      "startedAt": "2026-07-10T08:48:17.310Z",
       "status": "pass"
     },
     {
       "command": "npm run release:blocker-issues:file",
-      "completedAt": "2026-06-25T15:50:11.580Z",
-      "durationMs": 273,
+      "completedAt": "2026-07-10T08:48:17.960Z",
+      "durationMs": 348,
       "exitCode": 0,
       "key": "releaseBlockerIssueFiling",
       "label": "Release blocker issue filing plan",
-      "startedAt": "2026-06-25T15:50:11.307Z",
+      "startedAt": "2026-07-10T08:48:17.611Z",
       "status": "pass"
     },
     {
       "command": "npm run release:blocker-issues:links",
-      "completedAt": "2026-06-25T15:50:11.857Z",
-      "durationMs": 277,
+      "completedAt": "2026-07-10T08:48:18.338Z",
+      "durationMs": 378,
       "exitCode": 0,
       "key": "releaseBlockerIssueLinks",
       "label": "Release blocker issue web links",
-      "startedAt": "2026-06-25T15:50:11.580Z",
+      "startedAt": "2026-07-10T08:48:17.960Z",
       "status": "pass"
     },
     {
       "command": "npm run release:evidence:intake",
-      "completedAt": "2026-06-25T15:50:12.118Z",
-      "durationMs": 262,
+      "completedAt": "2026-07-10T08:48:18.709Z",
+      "durationMs": 371,
       "exitCode": 0,
       "key": "externalEvidenceIntake",
       "label": "External evidence intake",
-      "startedAt": "2026-06-25T15:50:11.857Z",
+      "startedAt": "2026-07-10T08:48:18.338Z",
       "status": "pass"
     },
     {
       "command": "npm run release:evidence:validate",
-      "completedAt": "2026-06-25T15:50:12.380Z",
-      "durationMs": 262,
+      "completedAt": "2026-07-10T08:48:19.044Z",
+      "durationMs": 335,
       "exitCode": 0,
       "key": "externalEvidenceValidation",
       "label": "External evidence validation",
-      "startedAt": "2026-06-25T15:50:12.118Z",
+      "startedAt": "2026-07-10T08:48:18.709Z",
       "status": "pass"
     },
     {
       "command": "npm run release:evidence:promote",
-      "completedAt": "2026-06-25T15:50:12.660Z",
-      "durationMs": 280,
+      "completedAt": "2026-07-10T08:48:19.337Z",
+      "durationMs": 293,
       "exitCode": 0,
       "key": "externalEvidencePromotion",
       "label": "External evidence promotion candidate",
-      "startedAt": "2026-06-25T15:50:12.380Z",
+      "startedAt": "2026-07-10T08:48:19.044Z",
       "status": "pass"
     },
     {
       "command": "npm run release:evidence:apply",
-      "completedAt": "2026-06-25T15:50:12.929Z",
-      "durationMs": 269,
+      "completedAt": "2026-07-10T08:48:19.658Z",
+      "durationMs": 321,
       "exitCode": 0,
       "key": "externalEvidenceApply",
       "label": "External evidence apply guard",
-      "startedAt": "2026-06-25T15:50:12.660Z",
+      "startedAt": "2026-07-10T08:48:19.337Z",
       "status": "pass"
     },
     {
       "command": "npm run store:submission",
-      "completedAt": "2026-06-25T15:50:13.190Z",
-      "durationMs": 261,
+      "completedAt": "2026-07-10T08:48:19.952Z",
+      "durationMs": 295,
       "exitCode": 0,
       "key": "storeSubmissionPacket",
       "label": "Store submission packet",
-      "startedAt": "2026-06-25T15:50:12.929Z",
+      "startedAt": "2026-07-10T08:48:19.658Z",
       "status": "pass"
     },
     {
       "command": "npm run export:web",
-      "completedAt": "2026-06-25T15:50:15.510Z",
-      "durationMs": 2320,
+      "completedAt": "2026-07-10T08:48:23.162Z",
+      "durationMs": 3210,
       "exitCode": 0,
       "key": "webExport",
       "label": "Expo web export",
-      "startedAt": "2026-06-25T15:50:13.190Z",
+      "startedAt": "2026-07-10T08:48:19.953Z",
       "status": "pass"
     },
     {
       "command": "npm run model:movenet:assets:check",
-      "completedAt": "2026-06-25T15:50:15.678Z",
-      "durationMs": 168,
+      "completedAt": "2026-07-10T08:48:23.341Z",
+      "durationMs": 179,
       "exitCode": 0,
       "key": "moveNetStaticAssets",
       "label": "MoveNet static model assets doctor",
-      "startedAt": "2026-06-25T15:50:15.510Z",
+      "startedAt": "2026-07-10T08:48:23.162Z",
+      "evidence": {
+        "path": "docs/sdlc/movenet-static-assets-report.json",
+        "schemaVersion": "movebeta.movenet-static-assets-report.v1",
+        "status": "ready",
+        "statusPath": "summary.status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run model:assets:provenance",
-      "completedAt": "2026-06-25T15:50:15.831Z",
-      "durationMs": 154,
+      "completedAt": "2026-07-10T08:48:23.502Z",
+      "durationMs": 161,
       "exitCode": 0,
       "key": "modelAssetProvenance",
       "label": "Model asset provenance doctor",
-      "startedAt": "2026-06-25T15:50:15.678Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:23.341Z",
+      "detail": "Authoritative report status is review.",
+      "evidence": {
+        "path": "docs/sdlc/model-asset-provenance-report.json",
+        "schemaVersion": "movebeta.model-asset-provenance-report.v1",
+        "status": "review",
+        "statusPath": "summary.status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run model:delivery:lifecycle",
-      "completedAt": "2026-06-25T15:50:16.124Z",
-      "durationMs": 292,
+      "completedAt": "2026-07-10T08:48:23.851Z",
+      "durationMs": 349,
       "exitCode": 0,
       "key": "modelDeliveryLifecycle",
       "label": "Model delivery lifecycle report",
-      "startedAt": "2026-06-25T15:50:15.831Z",
+      "startedAt": "2026-07-10T08:48:23.502Z",
       "status": "pass"
     },
     {
       "command": "npm run model:download:plan",
-      "completedAt": "2026-06-25T15:50:16.384Z",
-      "durationMs": 260,
+      "completedAt": "2026-07-10T08:48:24.199Z",
+      "durationMs": 348,
       "exitCode": 0,
       "key": "modelDownloadPlan",
       "label": "Model download plan report",
-      "startedAt": "2026-06-25T15:50:16.124Z",
+      "startedAt": "2026-07-10T08:48:23.851Z",
       "status": "pass"
     },
     {
       "command": "npm run web:pwa:check",
-      "completedAt": "2026-06-25T15:50:16.546Z",
-      "durationMs": 162,
+      "completedAt": "2026-07-10T08:48:24.392Z",
+      "durationMs": 193,
       "exitCode": 0,
       "key": "pwaReadiness",
       "label": "PWA static readiness doctor",
-      "startedAt": "2026-06-25T15:50:16.384Z",
+      "startedAt": "2026-07-10T08:48:24.199Z",
+      "evidence": {
+        "path": "docs/sdlc/pwa-readiness-report.json",
+        "schemaVersion": "movebeta.pwa-readiness.v1",
+        "status": "ready",
+        "statusPath": "summary.status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run web:smoke:report",
-      "completedAt": "2026-06-25T15:50:29.046Z",
-      "durationMs": 12500,
+      "completedAt": "2026-07-10T08:48:33.005Z",
+      "durationMs": 8613,
       "exitCode": 0,
       "key": "webSmokeReport",
       "label": "Exported web smoke report",
-      "startedAt": "2026-06-25T15:50:16.546Z",
+      "startedAt": "2026-07-10T08:48:24.392Z",
+      "evidence": {
+        "path": "docs/sdlc/web-smoke-report.json",
+        "schemaVersion": "movebeta.web-smoke-report.v1",
+        "status": "pass",
+        "statusPath": "status"
+      },
       "status": "pass"
     },
     {
       "command": "npm run web:vercel:check",
-      "completedAt": "2026-06-25T15:50:29.203Z",
-      "durationMs": 158,
+      "completedAt": "2026-07-10T08:48:33.144Z",
+      "durationMs": 139,
       "exitCode": 0,
       "key": "vercelDeploymentReadiness",
       "label": "Vercel deployment readiness doctor",
-      "startedAt": "2026-06-25T15:50:29.046Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:33.005Z",
+      "detail": "Authoritative report status is static-ready.",
+      "evidence": {
+        "path": "docs/sdlc/vercel-deployment-report.json",
+        "schemaVersion": "movebeta.vercel-deployment-readiness.v1",
+        "status": "static-ready",
+        "statusPath": "summary.status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run web:vercel:workflow",
-      "completedAt": "2026-06-25T15:50:29.349Z",
-      "durationMs": 146,
+      "completedAt": "2026-07-10T08:48:33.297Z",
+      "durationMs": 153,
       "exitCode": 0,
       "key": "vercelWorkflowReadiness",
       "label": "Vercel workflow readiness doctor",
-      "startedAt": "2026-06-25T15:50:29.203Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:33.144Z",
+      "detail": "Authoritative report status is template-ready.",
+      "evidence": {
+        "path": "docs/sdlc/vercel-workflow-report.json",
+        "schemaVersion": "movebeta.vercel-workflow-readiness.v1",
+        "status": "template-ready",
+        "statusPath": "summary.status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run web:vercel:handoff",
-      "completedAt": "2026-06-25T15:50:29.603Z",
-      "durationMs": 254,
+      "completedAt": "2026-07-10T08:48:33.691Z",
+      "durationMs": 394,
       "exitCode": 0,
       "key": "vercelDeploymentHandoff",
       "label": "Vercel deployment handoff packet",
-      "startedAt": "2026-06-25T15:50:29.349Z",
+      "startedAt": "2026-07-10T08:48:33.297Z",
       "status": "pass"
     },
     {
-      "command": "npm run release:eas:check",
-      "completedAt": "2026-06-25T15:50:29.747Z",
-      "durationMs": 144,
-      "exitCode": 0,
+      "command": "npm run release:eas:strict",
+      "completedAt": "2026-07-10T08:48:33.862Z",
+      "durationMs": 170,
+      "exitCode": 1,
       "key": "easStandard",
-      "label": "EAS standard release check",
-      "startedAt": "2026-06-25T15:50:29.603Z",
-      "status": "pass"
+      "label": "EAS strict release check",
+      "startedAt": "2026-07-10T08:48:33.691Z",
+      "detail": "Command exited with code 1.",
+      "status": "blocked"
     },
     {
       "command": "npm run security:audit",
-      "completedAt": "2026-06-25T15:50:30.731Z",
-      "durationMs": 984,
+      "completedAt": "2026-07-10T08:48:34.924Z",
+      "durationMs": 1062,
       "exitCode": 0,
       "key": "securityAudit",
       "label": "Moderate-or-higher dependency audit",
-      "startedAt": "2026-06-25T15:50:29.747Z",
+      "startedAt": "2026-07-10T08:48:33.862Z",
       "status": "pass"
     },
     {
       "command": "npm run security:licenses",
-      "completedAt": "2026-06-25T15:50:30.883Z",
-      "durationMs": 152,
+      "completedAt": "2026-07-10T08:48:35.251Z",
+      "durationMs": 327,
       "exitCode": 0,
       "key": "dependencyLicenses",
       "label": "Dependency license report",
-      "startedAt": "2026-06-25T15:50:30.731Z",
-      "status": "pass"
+      "startedAt": "2026-07-10T08:48:34.924Z",
+      "detail": "Authoritative report status is review.",
+      "evidence": {
+        "path": "docs/sdlc/dependency-license-report.json",
+        "schemaVersion": "movebeta.dependency-license-report.v1",
+        "status": "review",
+        "statusPath": "status"
+      },
+      "status": "blocked"
     },
     {
       "command": "npm run release:license-review",
-      "completedAt": "2026-06-25T15:50:31.167Z",
-      "durationMs": 283,
+      "completedAt": "2026-07-10T08:48:35.768Z",
+      "durationMs": 517,
       "exitCode": 0,
       "key": "licenseReviewPacket",
       "label": "License review packet",
-      "startedAt": "2026-06-25T15:50:30.883Z",
+      "startedAt": "2026-07-10T08:48:35.251Z",
       "status": "pass"
     },
     {
       "command": "npm run release:acquisition",
-      "completedAt": "2026-06-25T15:50:31.461Z",
-      "durationMs": 294,
+      "completedAt": "2026-07-10T08:48:36.314Z",
+      "durationMs": 546,
       "exitCode": 0,
       "key": "acquisitionReadinessPacket",
       "label": "Acquisition readiness packet",
-      "startedAt": "2026-06-25T15:50:31.167Z",
+      "startedAt": "2026-07-10T08:48:35.768Z",
       "status": "pass"
     },
     {
       "command": "npm run release:data-room",
-      "completedAt": "2026-06-25T15:50:31.763Z",
-      "durationMs": 302,
+      "completedAt": "2026-07-10T08:48:36.831Z",
+      "durationMs": 517,
       "exitCode": 0,
       "key": "dataRoomIndex",
       "label": "Data-room index",
-      "startedAt": "2026-06-25T15:50:31.461Z",
-      "status": "pass"
-    },
-    {
-      "command": "npm run release:freshness:doctor",
-      "completedAt": "2026-06-25T15:50:32.043Z",
-      "durationMs": 280,
-      "exitCode": 0,
-      "key": "releaseFreshnessDoctor",
-      "label": "Release evidence freshness doctor",
-      "startedAt": "2026-06-25T15:50:31.763Z",
+      "startedAt": "2026-07-10T08:48:36.314Z",
       "status": "pass"
     }
-  ]
+  ],
+  "summary": {
+    "blockedStepCount": 12,
+    "executedStepCount": 43,
+    "expectedStepCount": 43,
+    "failedStepCount": 0,
+    "missingStepKeys": [],
+    "passedStepCount": 31,
+    "releaseReady": false
+  }
 }

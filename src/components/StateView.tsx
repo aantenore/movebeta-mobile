@@ -10,7 +10,12 @@ type StateViewProps = {
 
 export function StateView({ title, message, loading = false }: StateViewProps) {
   return (
-    <View style={styles.wrap}>
+    <View
+      accessibilityLiveRegion="polite"
+      accessibilityState={{ busy: loading }}
+      role="status"
+      style={styles.wrap}
+    >
       {loading ? <ActivityIndicator color={theme.colors.brand} size="large" /> : null}
       <Text style={styles.title}>{title}</Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}

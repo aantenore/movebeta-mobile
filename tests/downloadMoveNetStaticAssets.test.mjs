@@ -68,6 +68,7 @@ describe('MoveNet static asset downloader', () => {
     const manifest = await downloadMoveNetStaticAssets({
       generatedAt: '2026-06-22T22:00:00.000Z',
       rootDir,
+      trustedFiles: null,
     });
 
     expect(fetchCalls).toContain(movenetStaticAssetConfig.sourceModelUrl);
@@ -99,6 +100,29 @@ describe('MoveNet static asset downloader', () => {
     const rootDir = makeRoot();
     globalThis.fetch = async () => response(JSON.stringify({ weightsManifest: [] }));
 
-    await expect(downloadMoveNetStaticAssets({ rootDir })).rejects.toThrow('does not include weight shard paths');
+    await expect(downloadMoveNetStaticAssets({ rootDir, trustedFiles: null })).rejects.toThrow('does not include weight shard paths');
+  });
+
+  it('rejects changed upstream bytes before writing repository assets', async () => {
+    const rootDir = makeRoot();
+    const modelJson = {
+      weightsManifest: [{ paths: ['group1-shard1of1.bin'], weights: [] }],
+    };
+    globalThis.fetch = async (url) =>
+      String(url) === movenetStaticAssetConfig.sourceModelUrl
+        ? response(JSON.stringify(modelJson))
+        : response(Buffer.from([1, 2, 3]));
+
+    await expect(
+      downloadMoveNetStaticAssets({
+        rootDir,
+        trustedFiles: {
+          '/models/movenet/singlepose/lightning/4/group1-shard1of1.bin': { bytes: 3, sha256: '0'.repeat(64) },
+          '/models/movenet/singlepose/lightning/4/model.json': { bytes: 1, sha256: '0'.repeat(64) },
+        },
+      }),
+    ).rejects.toThrow('trusted digest verification');
+    expect(fs.existsSync(path.join(rootDir, 'public/model-assets.json'))).toBe(false);
+    expect(fs.existsSync(path.join(rootDir, 'public/models/movenet/singlepose/lightning/4/model.json'))).toBe(false);
   });
 });

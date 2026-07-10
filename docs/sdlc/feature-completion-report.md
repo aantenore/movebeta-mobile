@@ -1,6 +1,6 @@
 # Feature Completion Report
 
-Generated: 2026-06-25T15:50:10.676Z
+Generated: 2026-07-10T08:48:16.954Z
 
 - Status: external-blocked
 - Tasks done: 217/220

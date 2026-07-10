@@ -2,7 +2,12 @@ import Constants from 'expo-constants';
 import { z } from 'zod';
 
 import appJson from '../../app.json';
-import { AnalysisProviderSchema, CoachLensKeySchema, PrivacyModeSchema } from '@/movement/contracts';
+import {
+  AnalysisProviderSchema,
+  CoachLensKeySchema,
+  PrivacyModeSchema,
+  type AnalysisProvider,
+} from '@/movement/contracts';
 import { resolveCoachLensKey } from '@/movement/coachLens';
 
 import {
@@ -22,9 +27,10 @@ import {
 
 const ConfigSchema = z.object({
   activePlan: PlanKeySchema,
+  appVersion: z.string().min(1),
   analysisProvider: AnalysisProviderSchema,
   videoAnalysisProvider: AnalysisProviderSchema,
-  nativeVideoAnalysisProvider: AnalysisProviderSchema.optional(),
+  nativeVideoAnalysisProvider: z.literal('native-platform-pose').optional(),
   tfjsMoveNetModelUrl: z.string().min(1).optional(),
   coachLens: CoachLensKeySchema,
   privacyMode: PrivacyModeSchema,
@@ -50,8 +56,26 @@ export function resolveExpoExtra(runtimeExtra: unknown, bundledExtra: unknown = 
 
 const expoExtra = resolveExpoExtra(Constants.expoConfig?.extra);
 const isNativeRuntime = typeof navigator !== 'undefined' && navigator.product === 'ReactNative';
-const configuredVideoProvider =
-  isNativeRuntime ? expoExtra.nativeVideoAnalysisProvider ?? expoExtra.videoAnalysisProvider : expoExtra.videoAnalysisProvider;
+
+export function resolveRuntimeVideoAnalysisProvider({
+  nativeProvider,
+  nativeRuntime,
+  webProvider,
+}: {
+  nativeProvider?: unknown;
+  nativeRuntime: boolean;
+  webProvider?: unknown;
+}): AnalysisProvider {
+  if (nativeRuntime) {
+    return z.literal('native-platform-pose').parse(nativeProvider ?? 'native-platform-pose');
+  }
+  return z.literal('web-tfjs-movenet').parse(webProvider ?? 'web-tfjs-movenet');
+}
+
+const configuredWebVideoProvider =
+  process.env.EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER ?? expoExtra.videoAnalysisProvider;
+const configuredNativeVideoProvider =
+  process.env.EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER ?? expoExtra.nativeVideoAnalysisProvider;
 
 export function resolveLaunchReadinessEvidence(value: unknown): LaunchReadinessEvidence | undefined {
   if (value === undefined || value === null || value === '') return undefined;
@@ -76,18 +100,17 @@ export const appConfig = ConfigSchema.parse({
     process.env.EXPO_PUBLIC_MOVEBETA_ACTIVE_PLAN ??
     expoExtra.activePlan ??
     'free',
+  appVersion: appJson.expo.version,
   analysisProvider:
     process.env.EXPO_PUBLIC_MOVEBETA_ANALYSIS_PROVIDER ??
     expoExtra.analysisProvider ??
     'local-fixture',
-  videoAnalysisProvider:
-    process.env.EXPO_PUBLIC_MOVEBETA_VIDEO_ANALYSIS_PROVIDER ??
-    configuredVideoProvider ??
-    'web-tfjs-movenet',
-  nativeVideoAnalysisProvider:
-    process.env.EXPO_PUBLIC_MOVEBETA_NATIVE_VIDEO_ANALYSIS_PROVIDER ??
-    expoExtra.nativeVideoAnalysisProvider ??
-    'native-platform-pose',
+  videoAnalysisProvider: resolveRuntimeVideoAnalysisProvider({
+    nativeProvider: configuredNativeVideoProvider,
+    nativeRuntime: isNativeRuntime,
+    webProvider: configuredWebVideoProvider,
+  }),
+  nativeVideoAnalysisProvider: configuredNativeVideoProvider ?? 'native-platform-pose',
   tfjsMoveNetModelUrl:
     process.env.EXPO_PUBLIC_MOVEBETA_TFJS_MOVENET_MODEL_URL ??
     (typeof expoExtra.tfjsMoveNetModelUrl === 'string' ? expoExtra.tfjsMoveNetModelUrl : undefined),

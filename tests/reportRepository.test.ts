@@ -97,14 +97,52 @@ describe('report repository contract', () => {
     expect(await restoredRepository.listReports()).toHaveLength(0);
   });
 
-  it('ignores corrupted local storage instead of blocking the app', async () => {
-    installLocalStorage({
+  it('quarantines malformed local storage before resetting the active collection', async () => {
+    const store = installLocalStorage({
       'test.movebeta.reports': '{bad-json',
     });
 
     const repository = new LocalReportRepository('test.movebeta.reports');
 
     expect(await repository.listReports()).toEqual([]);
+    expect(store.get('test.movebeta.reports.quarantine')).toContain('{bad-json');
+    expect(JSON.parse(store.get('test.movebeta.reports') ?? '{}')).toMatchObject({
+      reports: [],
+      schemaVersion: 'movebeta.reports.v2',
+    });
+  });
+
+  it('restores valid reports while quarantining only incompatible records', async () => {
+    const report = await localMovementAnalyzer.analyze({
+      frames: samplePoseFrames,
+      session: sampleSession,
+    });
+    const corrupted = { id: 'corrupted-report', session: { createdAt: '2026-06-19T11:00:00.000Z' } };
+    const store = installLocalStorage({
+      'test.movebeta.reports': JSON.stringify([report, corrupted]),
+    });
+    const repository = new LocalReportRepository('test.movebeta.reports');
+
+    expect(await repository.listReports()).toEqual([report]);
+    expect(store.get('test.movebeta.reports.quarantine')).toContain('corrupted-report');
+    expect(await repository.deleteReport('corrupted-report')).toBe(true);
+    expect(store.get('test.movebeta.reports.quarantine')).not.toContain('corrupted-report');
+  });
+
+  it('removes legacy bundled demo reports from browser history during migration', async () => {
+    const legacyDemo = await localMovementAnalyzer.analyze({
+      frames: samplePoseFrames,
+      model: 'sample-pose-rules-v1',
+      session: sampleSession,
+    });
+    const store = installLocalStorage({
+      'test.movebeta.reports': JSON.stringify([legacyDemo]),
+    });
+
+    const repository = new LocalReportRepository('test.movebeta.reports');
+
+    expect(await repository.listReports()).toEqual([]);
+    expect(store.get('test.movebeta.reports')).not.toContain(legacyDemo.id);
   });
 
   it('stores native reports in SQLite and keeps export privacy-safe', async () => {
@@ -136,5 +174,25 @@ describe('report repository contract', () => {
 
     expect(await repository.getReport('bad-row')).toBeNull();
     expect(await repository.listReports()).toEqual([]);
+    expect(await repository.deleteReport('bad-row')).toBe(true);
+  });
+
+  it('removes legacy bundled demo reports from SQLite history during migration', async () => {
+    const legacyDemo = await localMovementAnalyzer.analyze({
+      frames: samplePoseFrames,
+      model: 'sample-pose-rules-v1',
+      session: sampleSession,
+    });
+    const fakeDb = createFakeSQLiteDatabase([
+      {
+        created_at: legacyDemo.session.createdAt,
+        id: legacyDemo.id,
+        payload: JSON.stringify(legacyDemo),
+      },
+    ]);
+    const repository = new SQLiteReportRepository('test.db', async () => fakeDb);
+
+    expect(await repository.listReports()).toEqual([]);
+    expect(await repository.getReport(legacyDemo.id)).toBeNull();
   });
 });

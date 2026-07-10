@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { PlanStatusCard } from '@/components/PlanStatusCard';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
+import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
 import { limitHistoryForPlan } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
@@ -27,7 +29,7 @@ import { summarizeCuePatterns } from '@/movement/cuePatterns';
 import { summarizeDrillPracticeInsights } from '@/movement/drillPracticeInsights';
 import { drillPracticeRepository, type DrillPracticeRecord } from '@/movement/drillPracticeRepository';
 import { formatBenchmarkDelta, summarizePersonalBenchmarks } from '@/movement/personalBenchmarks';
-import { buildPreSendGuard } from '@/movement/preSendGuard';
+import { buildPreSendGuidance } from '@/movement/preSendGuard';
 import {
   activeProgressFilterCount,
   defaultProgressFilters,
@@ -35,7 +37,7 @@ import {
   filterProgressReports,
   type ProgressFilters,
 } from '@/movement/progressFilters';
-import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
+import { listReports } from '@/movement/repository';
 import { summarizeProgress } from '@/movement/progressInsights';
 import { summarizeProjectQueue } from '@/movement/projectQueue';
 import { summarizeRepeatOutcomes } from '@/movement/repeatOutcomeInsights';
@@ -45,7 +47,6 @@ import { buildSessionAgenda, buildSessionAgendaPacket, formatSessionAgendaPacket
 import { buildSessionPlan } from '@/movement/sessionPlan';
 import {
   buildTechniqueReadinessPacket,
-  buildTechniqueReadinessPlan,
   formatTechniqueReadinessPacketSummary,
 } from '@/movement/techniqueReadiness';
 import { buildTrainingLoadPacket, formatTrainingLoadPacketSummary, summarizeTrainingLoad } from '@/movement/trainingLoad';
@@ -56,6 +57,22 @@ type FilterChipProps = {
   onPress: () => void;
   selected: boolean;
 };
+
+type ActiveRestTimer = {
+  deadlineMs: number;
+  label: string;
+  remainingSeconds: number;
+  sourceStepId: string;
+};
+
+function remainingRestSeconds(deadlineMs: number, nowMs = Date.now()) {
+  return Math.max(0, Math.ceil((deadlineMs - nowMs) / 1000));
+}
+
+function reconcileRestTimer(timer: ActiveRestTimer, nowMs = Date.now()): ActiveRestTimer {
+  const remainingSeconds = remainingRestSeconds(timer.deadlineMs, nowMs);
+  return remainingSeconds === timer.remainingSeconds ? timer : { ...timer, remainingSeconds };
+}
 
 function FilterChip({ label, onPress, selected }: FilterChipProps) {
   return (
@@ -95,20 +112,27 @@ export function ProgressScreen() {
   const [annotations, setAnnotations] = useState<ReportAnnotation[]>([]);
   const [drillPractice, setDrillPractice] = useState<DrillPracticeRecord[]>([]);
   const [filters, setFilters] = useState<ProgressFilters>(defaultProgressFilters);
-  const [activeRestTimer, setActiveRestTimer] = useState<{ label: string; remainingSeconds: number; sourceStepId: string } | null>(null);
+  const [activeRestTimer, setActiveRestTimer] = useState<ActiveRestTimer | null>(null);
   const [preparedAgendaPacket, setPreparedAgendaPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedPacingPacket, setPreparedPacingPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedReadinessPacket, setPreparedReadinessPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedTrainingLoadPacket, setPreparedTrainingLoadPacket] = useState<{ body: string; title: string } | null>(null);
   const [preparedTrustTrendPacket, setPreparedTrustTrendPacket] = useState<{ body: string; title: string } | null>(null);
   const [reports, setReports] = useState<LocalAnalysisReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const visibleReports = useMemo(() => limitHistoryForPlan(reports, appConfig.activePlan), [reports]);
   const filterOptions = useMemo(() => deriveProgressFilterOptions(visibleReports), [visibleReports]);
   const filteredReports = useMemo(() => filterProgressReports(visibleReports, filters), [visibleReports, filters]);
   const summary = useMemo(() => summarizeProgress(filteredReports, annotations), [annotations, filteredReports]);
   const analysisTrustTrend = useMemo(() => summarizeAnalysisTrustTrend(filteredReports), [filteredReports]);
   const projectQueue = useMemo(() => summarizeProjectQueue(filteredReports, annotations), [annotations, filteredReports]);
-  const readiness = useMemo(() => buildTechniqueReadinessPlan(filteredReports, annotations), [annotations, filteredReports]);
+  const preSendGuidance = useMemo(
+    () => buildPreSendGuidance(filteredReports, annotations, drillPractice),
+    [annotations, drillPractice, filteredReports],
+  );
+  const readiness = preSendGuidance.readiness;
+  const preSendGuard = preSendGuidance.guard;
   const personalBenchmarks = useMemo(() => summarizePersonalBenchmarks(filteredReports), [filteredReports]);
   const sessionPlan = useMemo(
     () => buildSessionPlan(filteredReports, annotations, drillPractice),
@@ -129,10 +153,6 @@ export function ProgressScreen() {
   const trainingLoad = useMemo(
     () => summarizeTrainingLoad({ annotations, drillPractice }),
     [annotations, drillPractice],
-  );
-  const preSendGuard = useMemo(
-    () => buildPreSendGuard(filteredReports, annotations, drillPractice),
-    [annotations, drillPractice, filteredReports],
   );
   const cuePatterns = useMemo(() => summarizeCuePatterns(filteredReports), [filteredReports]);
   const cueFeedbackInsights = useMemo(() => summarizeCueFeedbackInsights(filteredReports, annotations), [annotations, filteredReports]);
@@ -192,56 +212,66 @@ export function ProgressScreen() {
 
   function startRestTimer(stepId: string, label: string, seconds: number) {
     selectionFeedback();
+    const durationSeconds = Number.isFinite(seconds) ? Math.max(0, Math.ceil(seconds)) : 0;
+    const nowMs = Date.now();
     setActiveRestTimer({
+      deadlineMs: nowMs + durationSeconds * 1000,
       label,
-      remainingSeconds: seconds,
+      remainingSeconds: durationSeconds,
       sourceStepId: stepId,
     });
   }
 
   async function refresh() {
-    let nextReports = await listReports();
+    setLoading(true);
+    setLoadError('');
+    try {
+      const nextReports = await listReports();
+      const [nextAnnotations, nextDrillPractice] = await Promise.all([
+        reportAnnotationRepository.listAnnotations(),
+        drillPracticeRepository.listRecords(),
+      ]);
 
-    if (nextReports.length === 0) {
-      await Promise.all(listDemoAttempts().map((attempt) => analyzeDemoAttempt(attempt.session.id)));
-      nextReports = await listReports();
+      setReports(nextReports);
+      setAnnotations(nextAnnotations);
+      setDrillPractice(nextDrillPractice);
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Local progress evidence could not be loaded.');
+    } finally {
+      setLoading(false);
     }
-
-    const [nextAnnotations, nextDrillPractice] = await Promise.all([
-      reportAnnotationRepository.listAnnotations(),
-      drillPracticeRepository.listRecords(),
-    ]);
-
-    setReports(nextReports);
-    setAnnotations(nextAnnotations);
-    setDrillPractice(nextDrillPractice);
   }
 
   useFocusEffect(
     useCallback(() => {
-      void refresh().catch(() => {
-        setAnnotations([]);
-        setDrillPractice([]);
-        setReports([]);
-      });
+      void refresh();
     }, []),
   );
 
+  const restTimerDeadlineMs = activeRestTimer?.deadlineMs ?? null;
+  const restTimerIsRunning = (activeRestTimer?.remainingSeconds ?? 0) > 0;
+
   useEffect(() => {
-    if (!activeRestTimer || activeRestTimer.remainingSeconds <= 0) return undefined;
+    if (restTimerDeadlineMs === null || !restTimerIsRunning) return undefined;
 
-    const timer = setInterval(() => {
+    const reconcile = () => {
       setActiveRestTimer((current) => {
-        if (!current) return current;
-        if (current.remainingSeconds <= 1) {
-          return { ...current, remainingSeconds: 0 };
-        }
-        return { ...current, remainingSeconds: current.remainingSeconds - 1 };
+        if (!current || current.deadlineMs !== restTimerDeadlineMs) return current;
+        return reconcileRestTimer(current);
       });
-    }, 1000);
+    };
+    const timer = setInterval(reconcile, 1000);
+    const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') reconcile();
+    });
 
-    return () => clearInterval(timer);
-  }, [activeRestTimer]);
+    reconcile();
+
+    return () => {
+      clearInterval(timer);
+      appStateSubscription.remove();
+    };
+  }, [restTimerDeadlineMs, restTimerIsRunning]);
 
   return (
     <Screen>
@@ -250,6 +280,12 @@ export function ProgressScreen() {
         title="Technique trends"
         subtitle="Track movement quality over attempts: flow, pause time, foot cuts, hip drift, and bent-arm load."
       />
+
+      {loading && reports.length === 0 ? (
+        <StateView loading title="Loading technique trends" message="Reading local reports and practice evidence." />
+      ) : loadError ? (
+        <StateView title="Progress unavailable" message={loadError} />
+      ) : null}
 
       <View style={styles.summaryGrid}>
         <View style={styles.summaryCard}>

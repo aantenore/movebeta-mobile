@@ -63,4 +63,19 @@ describe('progress insights', () => {
     expect(summary.attemptComparison).toBeNull();
     expect(summary.trends).toEqual([]);
   });
+
+  it('excludes unavailable metrics from best, focus, and trend claims', async () => {
+    const [report] = await buildSampleReports();
+    const unavailableMetric = { ...report.metrics[0], score: 0, status: 'insufficient-data' as const, value: 0 };
+    const summary = summarizeProgress([
+      {
+        ...report,
+        metrics: [unavailableMetric, ...report.metrics.slice(1)],
+      },
+    ]);
+
+    expect(summary.bestMetric?.id).not.toBe(unavailableMetric.id);
+    expect(summary.focusMetric?.id).not.toBe(unavailableMetric.id);
+    expect(summary.trends.map((trend) => trend.id)).not.toContain(unavailableMetric.id);
+  });
 });

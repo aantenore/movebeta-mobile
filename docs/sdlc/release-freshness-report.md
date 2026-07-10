@@ -1,13 +1,13 @@
 # Release Evidence Freshness Report
 
-Generated: 2026-06-25T15:50:32.024Z
+Generated: 2026-07-10T08:48:47.405Z
 
 - Status: ready
 - Fresh artifacts: 38/38
 - Stale artifacts: 0
 - Missing timestamps: 0
 - Invalid timestamps: 0
-- Oldest artifact: launch-readiness-report
+- Oldest artifact: feature-completion-report
 - Next action: All tracked release evidence artifacts are fresh.
 - Credential values included: no
 - Local paths included: no
@@ -16,7 +16,7 @@ Generated: 2026-06-25T15:50:32.024Z
 
 | Artifact | Status | Age | Window | Refresh |
 | --- | --- | ---: | ---: | --- |
-| Launch readiness report | fresh | 0.12h | 24h | `npm run release:readiness` |
+| Launch readiness report | fresh | 0h | 24h | `npm run release:readiness` |
 | Feature completion report | fresh | 0.01h | 24h | `npm run feature:doctor` |
 | Release blocker issues report | fresh | 0.01h | 24h | `npm run release:blocker-issues` |
 | Release blocker progress | fresh | 0.01h | 24h | `npm run release:blocker-progress` |
@@ -28,10 +28,10 @@ Generated: 2026-06-25T15:50:32.024Z
 | External evidence apply report | fresh | 0.01h | 24h | `npm run release:evidence:apply` |
 | MoveNet readiness report | fresh | 0.01h | 24h | `npm run model:movenet:readiness` |
 | Model-analysis replay report | fresh | 0.01h | 24h | `npm run model:analysis:replay` |
-| MoveNet static assets report | fresh | 0h | 168h | `npm run model:movenet:assets:check` |
-| Model asset provenance report | fresh | 0h | 168h | `npm run model:assets:provenance` |
-| Model delivery lifecycle report | fresh | 0h | 168h | `npm run model:delivery:lifecycle` |
-| Model download plan report | fresh | 0h | 168h | `npm run model:download:plan` |
+| MoveNet static assets report | fresh | 0.01h | 168h | `npm run model:movenet:assets:check` |
+| Model asset provenance report | fresh | 0.01h | 168h | `npm run model:assets:provenance` |
+| Model delivery lifecycle report | fresh | 0.01h | 168h | `npm run model:delivery:lifecycle` |
+| Model download plan report | fresh | 0.01h | 168h | `npm run model:download:plan` |
 | Model verification suite report | fresh | 0.01h | 24h | `npm run model:verification:suite` |
 | iOS toolchain report | fresh | 0.01h | 24h | `npm run native:ios:doctor` |
 | iOS toolchain setup packet | fresh | 0.01h | 24h | `npm run native:ios:setup` |
@@ -49,7 +49,7 @@ Generated: 2026-06-25T15:50:32.024Z
 | Store submission packet | fresh | 0.01h | 72h | `npm run store:submission` |
 | Acquisition readiness packet | fresh | 0h | 72h | `npm run release:acquisition` |
 | Data-room index | fresh | 0h | 72h | `npm run release:data-room` |
-| PWA readiness report | fresh | 0h | 72h | `npm run export:web && npm run web:pwa:check` |
+| PWA readiness report | fresh | 0.01h | 72h | `npm run export:web && npm run web:pwa:check` |
 | Web smoke report | fresh | 0h | 24h | `npm run web:smoke:report` |
 | Vercel deployment report | fresh | 0h | 72h | `npm run web:vercel:check` |
 | Vercel deployment handoff | fresh | 0h | 72h | `npm run web:vercel:handoff` |

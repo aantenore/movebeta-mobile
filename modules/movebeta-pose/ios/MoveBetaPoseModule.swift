@@ -74,20 +74,27 @@ private final class AppleVisionPoseEstimator {
     let durationMs = positiveDouble(input["durationMs"], fallback: max(asset.duration.seconds * 1000, 1500))
     let frameIntervalMs = positiveDouble(input["frameIntervalMs"], fallback: 350)
     let minFrames = positiveInt(input["minFrames"], fallback: 10)
-    let maxFrames = positiveInt(input["maxFrames"], fallback: 48)
+    let maxFrames = positiveInt(input["maxFrames"], fallback: 96)
+    let maxInferenceLongSidePx = positiveDouble(input["maxInferenceLongSidePx"], fallback: 960)
     let analysisStartMs = analysisStartMs(input["analysisStartMs"], durationMs: durationMs)
     let analysisEndMs = analysisEndMs(input["analysisEndMs"], durationMs: durationMs, startMs: analysisStartMs)
     let timestamps = frameTimestamps(startMs: analysisStartMs, endMs: analysisEndMs, frameIntervalMs: frameIntervalMs, minFrames: minFrames, maxFrames: maxFrames)
     let generator = AVAssetImageGenerator(asset: asset)
     generator.appliesPreferredTrackTransform = true
+    generator.maximumSize = CGSize(width: maxInferenceLongSidePx, height: maxInferenceLongSidePx)
     generator.requestedTimeToleranceBefore = CMTime(seconds: 0.05, preferredTimescale: 600)
     generator.requestedTimeToleranceAfter = CMTime(seconds: 0.05, preferredTimescale: 600)
 
     var frames: [[String: Any]] = []
     for timestampMs in timestamps {
       let time = CMTime(seconds: timestampMs / 1000, preferredTimescale: 600)
-      let image = try generator.copyCGImage(at: time, actualTime: nil)
-      if let frame = estimateFrame(image: image, timestampMs: timestampMs) {
+      var actualTime = CMTime.invalid
+      let image = try generator.copyCGImage(at: time, actualTime: &actualTime)
+      let decodedTimestampMs = actualTime.isValid && actualTime.seconds.isFinite ? actualTime.seconds * 1000 : timestampMs
+      if let previous = frames.last?["timestampMs"] as? Double, decodedTimestampMs <= previous {
+        continue
+      }
+      if let frame = estimateFrame(image: image, timestampMs: decodedTimestampMs) {
         frames.append(frame)
       }
     }

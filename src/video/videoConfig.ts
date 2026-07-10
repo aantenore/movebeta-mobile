@@ -8,9 +8,10 @@ export const videoAnalysisConfig = {
   },
   defaultWidth: 1080,
   maxImportDurationSeconds: 120,
+  maxInferenceLongSidePx: 960,
   maxRecordingFileSizeBytes: 350_000_000,
   maxRecordingDurationSeconds: 45,
-  maxTfjsFrames: 48,
+  maxTfjsFrames: 96,
   resourcePlan: {
     bytesPerDecodedPixel: 4,
     highDecodeSurfaceBytes: 12_500_000,

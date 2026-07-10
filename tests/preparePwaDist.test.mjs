@@ -7,6 +7,7 @@ import {
   buildCacheVersion,
   buildCacheVersionDeclaration,
   buildExportAssetsDeclaration,
+  buildPwaHeadMarkup,
   discoverCacheVersionAssetPaths,
   discoverOfflineExportAssets,
   preparePwaDist,
@@ -26,6 +27,8 @@ function makeDist(html = '<html><head><title>MoveBeta</title></head><body><div i
   fs.writeFileSync(path.join(distDir, 'metadata.json'), '{}');
   fs.writeFileSync(path.join(distDir, '_expo/static/js/web/entry-test.js'), 'js');
   fs.writeFileSync(path.join(distDir, 'assets/image-test.png'), 'png');
+  fs.writeFileSync(path.join(distDir, 'pwa-register.js'), 'registration');
+  fs.writeFileSync(path.join(distDir, 'pwa.css'), 'html body [aria-hidden="true"]:has(h1){display:none!important}');
   fs.writeFileSync(path.join(distDir, 'model-delivery-policy.json'), JSON.stringify({
     native: {
       deliveryMode: 'platform-provider-bundled',
@@ -55,15 +58,19 @@ afterEach(() => {
 });
 
 describe('prepare PWA dist', () => {
-  it('injects manifest and service worker registration into exported HTML', () => {
+  it('injects manifest and an external service worker registration into exported HTML', () => {
     const distDir = makeDist();
 
     expect(preparePwaDist({ distDir })).toBe(true);
     const html = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
 
     expect(html).toContain('href="/manifest.json"');
-    expect(html).toContain("navigator.serviceWorker.register('/sw.js')");
+    expect(html).toContain('src="/pwa-register.js"');
+    expect(html).toContain('href="/pwa.css"');
+    expect(html).toContain('data-service-worker="/sw.js"');
+    expect(html).not.toContain('navigator.serviceWorker.register');
     expect(html).toContain('name="theme-color"');
+    expect(buildPwaHeadMarkup()).not.toContain('<script>');
     const serviceWorker = fs.readFileSync(path.join(distDir, 'sw.js'), 'utf8');
     expect(serviceWorker).toContain('/_expo/static/js/web/entry-test.js');
     expect(serviceWorker).toMatch(/const CACHE_VERSION = 'v-[a-f0-9]{16}';/);
@@ -82,6 +89,19 @@ describe('prepare PWA dist', () => {
     expect(preparePwaDist({ distDir })).toBe(false);
   });
 
+  it('replaces the legacy inline registration without duplicating manifest metadata', () => {
+    const distDir = makeDist(
+      '<html><head><link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script></head><body></body></html>',
+    );
+
+    expect(preparePwaDist({ distDir })).toBe(true);
+    const html = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
+
+    expect(html).toContain('src="/pwa-register.js"');
+    expect(html).not.toContain('navigator.serviceWorker.register');
+    expect(html.match(/href="\/manifest\.json"/g)).toHaveLength(1);
+  });
+
   it('discovers and injects offline export assets into the service worker', () => {
     const distDir = makeDist('<html><head><link rel="manifest" href="/manifest.json"><script>navigator.serviceWorker.register("/sw.js")</script></head><body></body></html>');
 
@@ -91,6 +111,8 @@ describe('prepare PWA dist', () => {
       '/metadata.json',
     ]);
     expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/model-delivery-policy.json');
+    expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/pwa-register.js');
+    expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/pwa.css');
     expect(discoverCacheVersionAssetPaths({ distDir })).toContain('/models/movenet/singlepose/lightning/4/model.json');
     expect(buildExportAssetsDeclaration(['/metadata.json'])).toContain('"/metadata.json"');
     expect(buildCacheVersionDeclaration('v-1234567890abcdef')).toBe("const CACHE_VERSION = 'v-1234567890abcdef';");
@@ -108,5 +130,14 @@ describe('prepare PWA dist', () => {
     expect(firstVersion).toMatch(/^v-[a-f0-9]{16}$/);
     expect(nextVersion).toMatch(/^v-[a-f0-9]{16}$/);
     expect(nextVersion).not.toBe(firstVersion);
+  });
+
+  it('changes the cache version when the registration asset changes', () => {
+    const distDir = makeDist();
+    const firstVersion = buildCacheVersion({ distDir });
+
+    fs.writeFileSync(path.join(distDir, 'pwa-register.js'), 'changed-registration');
+
+    expect(buildCacheVersion({ distDir })).not.toBe(firstVersion);
   });
 });

@@ -1,6 +1,7 @@
 import type { ClimbSession, LocalAnalysisReport, MovementCue, MovementMetric } from './contracts';
 import { assessCaptureReadiness, type CaptureReadiness } from './captureReadiness';
 import type { CaptureCalibrationAssessment } from '@/video/captureCalibration';
+import { measuredMovementMetrics } from './metricEvidence';
 
 export type CapturePrepProtocolStatus = 'ready' | 'review' | 'blocked';
 export type CapturePrepPhaseKind = 'setup' | 'warmup' | 'record' | 'verify';
@@ -48,7 +49,7 @@ function primaryCue(report: LocalAnalysisReport | null | undefined) {
 
 function weakestMetric(report: LocalAnalysisReport | null | undefined): MovementMetric | null {
   if (!report || report.metrics.length === 0) return null;
-  return [...report.metrics].sort((a, b) => a.score - b.score || a.label.localeCompare(b.label))[0];
+  return measuredMovementMetrics(report.metrics).sort((a, b) => a.score - b.score || a.label.localeCompare(b.label))[0] ?? null;
 }
 
 function setupPhase(calibration: CaptureCalibrationAssessment): CapturePrepPhase {

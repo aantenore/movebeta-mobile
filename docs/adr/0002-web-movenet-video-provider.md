@@ -4,7 +4,7 @@ Date: 2026-06-19
 
 ## Status
 
-Accepted
+Accepted, superseded in part by ADR 0004
 
 ## Context
 
@@ -22,14 +22,13 @@ The MoveNet keypoint-to-`PoseFrame` mapping lives in a reusable movement module 
 Contract tests replay MoveNet-shaped keypoints through this mapper and then into the local analyzer, so future providers
 must preserve the same normalized landmark boundary before producing coaching output.
 
-If the browser runtime, video decoder, or model inference is unavailable, the repository falls back to
-`local-video-fallback` so the product remains usable and testable.
+Failure behavior for real user video is defined by ADR 0004. The deterministic fallback remains available only to tests
+and fixtures.
 
 ## Consequences
 
 - The web build now has a real local pose-estimation path for supported video sources.
 - Raw video still stays on the device/browser and is not uploaded by the app.
-- The native mobile release still needs a custom Expo build with MediaPipe, Core ML, or TFLite for production mobile
-  inference.
+- Native mobile inference uses the custom `movebeta-pose` Expo module backed by Apple Vision and Android ML Kit.
 - TensorFlow.js increases bundle size, so native providers should remain separately configurable rather than forcing the
   browser provider into every runtime.

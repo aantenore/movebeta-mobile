@@ -13,11 +13,11 @@ describe('provider readiness summary', () => {
     expect(summary.status).toBe('review');
     expect(summary.title).toBe('Provider path needs device proof');
     expect(summary.primaryProvider).toBe('web-tfjs-movenet');
-    expect(summary.fallbackProvider).toBe('local-video-fallback');
+    expect(summary.failurePolicy).toBe('fail-closed');
     expect(summary.nativeProvider).toBe('native-platform-pose');
     expect(summary.checks.map((check) => [check.id, check.status])).toEqual([
       ['primary-provider', 'ready'],
-      ['fallback-provider', 'ready'],
+      ['failure-policy', 'ready'],
       ['privacy-boundary', 'ready'],
       ['native-provider', 'review'],
     ]);

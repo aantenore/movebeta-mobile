@@ -10,29 +10,45 @@ const APP_SHELL = [
   '/favicon.ico',
   '/pwa/icon-192.png',
   '/pwa/icon-512.png',
+  '/pwa-register.js',
+  '/pwa.css',
   '/model-delivery-policy.json',
 ];
 const MODEL_ASSET_MANIFEST = '/model-assets.json';
 const MODEL_DELIVERY_POLICY = '/model-delivery-policy.json';
+const SERVICE_WORKER_REGISTRATION_ASSET = '/pwa-register.js';
+const PWA_STYLE_ASSET = '/pwa.css';
+const SERVICE_WORKER_URL = '/sw.js';
+const LEGACY_INLINE_REGISTRATION_PATTERN =
+  /<script(?:\s[^>]*)?>(?:(?!<\/script>)[\s\S])*navigator\.serviceWorker\.register\((['"])\/sw\.js\1\)(?:(?!<\/script>)[\s\S])*<\/script>/gi;
 
 export function resolveProjectRoot() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 }
 
-export function buildPwaHeadMarkup() {
-  return [
-    '<meta name="theme-color" content="#0F766E" />',
-    '<meta name="description" content="MoveBeta keeps climbing video analysis local-first and installable on supported browsers." />',
-    '<link rel="manifest" href="/manifest.json" />',
-    '<link rel="apple-touch-icon" href="/pwa/icon-192.png" />',
-    '<script>',
-    "if ('serviceWorker' in navigator) {",
-    "  window.addEventListener('load', function () {",
-    "    navigator.serviceWorker.register('/sw.js').catch(function () {});",
-    '  });',
-    '}',
-    '</script>',
-  ].join('\n');
+export function buildPwaHeadMarkup({ includeMetadata = true, includeRegistration = true, includeStyle = true } = {}) {
+  const markup = [];
+
+  if (includeMetadata) {
+    markup.push(
+      '<meta name="theme-color" content="#0F766E" />',
+      '<meta name="description" content="MoveBeta keeps climbing video analysis local-first and installable on supported browsers." />',
+      '<link rel="manifest" href="/manifest.json" />',
+      '<link rel="apple-touch-icon" href="/pwa/icon-192.png" />',
+    );
+  }
+
+  if (includeStyle) {
+    markup.push(`<link rel="stylesheet" href="${PWA_STYLE_ASSET}" />`);
+  }
+
+  if (includeRegistration) {
+    markup.push(
+      `<script defer src="${SERVICE_WORKER_REGISTRATION_ASSET}" data-service-worker="${SERVICE_WORKER_URL}"></script>`,
+    );
+  }
+
+  return markup.join('\n');
 }
 
 function walkFiles(dir) {
@@ -133,15 +149,24 @@ export function preparePwaDist({
   distDir = path.join(resolveProjectRoot(), 'dist'),
 } = {}) {
   const indexPath = path.join(distDir, 'index.html');
-  const html = fs.readFileSync(indexPath, 'utf8');
+  const originalHtml = fs.readFileSync(indexPath, 'utf8');
+  const html = originalHtml.replace(LEGACY_INLINE_REGISTRATION_PATTERN, '');
   const needsManifest = !html.includes('href="/manifest.json"');
-  const needsServiceWorker = !html.includes("register('/sw.js')") && !html.includes('register("/sw.js")');
+  const needsServiceWorker = !html.includes(`src="${SERVICE_WORKER_REGISTRATION_ASSET}"`);
+  const needsStyle = !html.includes(`href="${PWA_STYLE_ASSET}"`);
 
-  let htmlChanged = false;
-  if (needsManifest || needsServiceWorker) {
-    const injected = html.replace('</head>', `${buildPwaHeadMarkup()}\n</head>`);
+  let htmlChanged = html !== originalHtml;
+  if (needsManifest || needsServiceWorker || needsStyle) {
+    const headMarkup = buildPwaHeadMarkup({
+      includeMetadata: needsManifest,
+      includeRegistration: needsServiceWorker,
+      includeStyle: needsStyle,
+    });
+    const injected = html.replace('</head>', `${headMarkup}\n</head>`);
     fs.writeFileSync(indexPath, injected);
     htmlChanged = true;
+  } else if (htmlChanged) {
+    fs.writeFileSync(indexPath, html);
   }
 
   const serviceWorkerChanged = preparePwaServiceWorker({ distDir });

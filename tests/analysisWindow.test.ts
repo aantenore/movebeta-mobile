@@ -4,6 +4,7 @@ import {
   activeVideoAnalysisDurationMs,
   buildVideoAnalysisWindow,
   formatVideoAnalysisWindow,
+  resolveVideoAnalysisSamplingPlan,
   withVideoAnalysisWindow,
 } from '../src/video/analysisWindow';
 
@@ -68,5 +69,14 @@ describe('analysis window', () => {
 
     expect(windowed.analysisWindow).toBeUndefined();
     expect(activeVideoAnalysisDurationMs(windowed)).toBe(80_000);
+  });
+
+  it('caps the expected sample count for long analysis windows', () => {
+    expect(resolveVideoAnalysisSamplingPlan(withVideoAnalysisWindow(baseVideo, 'middle'))).toMatchObject({
+      durationMs: 45_000,
+      expectedFrameCount: 96,
+      referenceIntervalMs: 350,
+      samplingIntervalMs: 45_000 / 95,
+    });
   });
 });

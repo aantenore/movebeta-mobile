@@ -1,12 +1,14 @@
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Target } from 'lucide-react-native';
 
 import { Header } from '@/components/Header';
+import { Pressable } from '@/components/Pressable';
 import { PlanStatusCard } from '@/components/PlanStatusCard';
 import { Screen } from '@/components/Screen';
 import { Section } from '@/components/Section';
+import { StateView } from '@/components/StateView';
 import { appConfig } from '@/core/config';
 import { hasCapability } from '@/core/entitlements';
 import { selectionFeedback } from '@/core/haptics';
@@ -19,7 +21,7 @@ import {
   type DrillPracticeRecord,
 } from '@/movement/drillPracticeRepository';
 import { reportAnnotationRepository } from '@/movement/reportAnnotationRepository';
-import { analyzeDemoAttempt, listDemoAttempts, listReports } from '@/movement/repository';
+import { listReports } from '@/movement/repository';
 
 function emptyPlan(): DrillPlan {
   return {
@@ -40,20 +42,24 @@ export function DrillsScreen() {
   const [plan, setPlan] = useState<DrillPlan>(emptyPlan);
   const [advancedPack, setAdvancedPack] = useState<AdvancedDrillPack>(emptyAdvancedPack);
   const [practiceByDrill, setPracticeByDrill] = useState<Record<string, DrillPracticeRecord>>({});
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   async function refresh() {
-    let reports = await listReports();
-
-    if (reports.length === 0) {
-      await Promise.all(listDemoAttempts().map((attempt) => analyzeDemoAttempt(attempt.session.id)));
-      reports = await listReports();
+    setLoading(true);
+    setLoadError('');
+    try {
+      const reports = await listReports();
+      const nextAnnotations = await reportAnnotationRepository.listAnnotations();
+      const nextPractice = await drillPracticeRepository.listRecords();
+      setPracticeByDrill(Object.fromEntries(nextPractice.map((record) => [record.drillId, record])));
+      setPlan(buildDrillPlan(reports, nextAnnotations));
+      setAdvancedPack(buildAdvancedDrillPack(reports, nextAnnotations, nextPractice));
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Local drill evidence could not be loaded.');
+    } finally {
+      setLoading(false);
     }
-
-    const nextAnnotations = await reportAnnotationRepository.listAnnotations();
-    const nextPractice = await drillPracticeRepository.listRecords();
-    setPracticeByDrill(Object.fromEntries(nextPractice.map((record) => [record.drillId, record])));
-    setPlan(buildDrillPlan(reports, nextAnnotations));
-    setAdvancedPack(buildAdvancedDrillPack(reports, nextAnnotations, nextPractice));
   }
 
   async function savePractice(item: DrillPlanItem, status: DrillPracticeRecord['status']) {
@@ -74,11 +80,7 @@ export function DrillsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      void refresh().catch(() => {
-        setAdvancedPack(emptyAdvancedPack());
-        setPracticeByDrill({});
-        setPlan(emptyPlan());
-      });
+      void refresh();
     }, []),
   );
 
@@ -98,6 +100,12 @@ export function DrillsScreen() {
           <Text style={styles.summaryMeta}>{plan.sourceReportCount} local reports scanned</Text>
         </View>
       </View>
+
+      {loading && plan.sourceReportCount === 0 ? (
+        <StateView loading title="Loading drill evidence" message="Reading local cues and practice records." />
+      ) : loadError ? (
+        <StateView title="Drills unavailable" message={loadError} />
+      ) : null}
 
       <Section title="Weekly drill plan">
         {plan.items.length > 0 ? (
@@ -209,7 +217,7 @@ export function DrillsScreen() {
           </View>
         </View>
 
-        {advancedPack.blocks.length > 0 ? (
+        {advancedPackIncluded && advancedPack.blocks.length > 0 ? (
           advancedPack.blocks.map((block) => (
             <View key={block.id} style={styles.packBlock}>
               <View style={styles.packBlockTop}>
@@ -238,8 +246,12 @@ export function DrillsScreen() {
           ))
         ) : (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>No advanced pack yet</Text>
-            <Text style={styles.emptyText}>Run an analysis that produces coach cues, then return here.</Text>
+            <Text style={styles.emptyTitle}>{advancedPackIncluded ? 'No advanced pack yet' : 'Advanced pack locked'}</Text>
+            <Text style={styles.emptyText}>
+              {advancedPackIncluded
+                ? 'Run an analysis that produces coach cues, then return here.'
+                : 'Weekly drills remain available on Free. Advanced progression blocks require Pro.'}
+            </Text>
           </View>
         )}
       </Section>

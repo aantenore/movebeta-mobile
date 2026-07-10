@@ -1,4 +1,5 @@
 import type { LocalAnalysisReport, MovementCue, MovementMetric, TimelineEvent } from './contracts';
+import { measuredMovementMetrics } from './metricEvidence';
 
 export type SessionReviewStatus = 'strong' | 'review' | 'risk';
 
@@ -45,8 +46,9 @@ function percent(value: number) {
 }
 
 function metricByScore(reports: MovementMetric[], direction: 'best' | 'focus') {
-  if (reports.length === 0) return null;
-  return [...reports].sort((a, b) => (direction === 'best' ? b.score - a.score : a.score - b.score))[0];
+  const measured = measuredMovementMetrics(reports);
+  if (measured.length === 0) return null;
+  return measured.sort((a, b) => (direction === 'best' ? b.score - a.score : a.score - b.score))[0];
 }
 
 function cuePriority(cue: MovementCue) {

@@ -45,6 +45,25 @@ export function resolveVideoAnalysisWindow(video: VideoAsset) {
   return video.analysisWindow ?? buildVideoAnalysisWindow(video, 'full');
 }
 
+export function resolveVideoAnalysisSamplingPlan(video: VideoAsset) {
+  const window = resolveVideoAnalysisWindow(video);
+  const expectedFrameCount = Math.max(
+    videoAnalysisConfig.minTfjsFrames,
+    Math.min(
+      videoAnalysisConfig.maxTfjsFrames,
+      Math.ceil(window.durationMs / videoAnalysisConfig.tfjsFrameIntervalMs),
+    ),
+  );
+
+  return {
+    durationMs: window.durationMs,
+    expectedFrameCount,
+    referenceIntervalMs: videoAnalysisConfig.tfjsFrameIntervalMs,
+    samplingIntervalMs: window.durationMs / Math.max(expectedFrameCount - 1, 1),
+    window,
+  };
+}
+
 export function withVideoAnalysisWindow(video: VideoAsset, mode: AnalysisWindowMode): VideoAsset {
   const analysisWindow = buildVideoAnalysisWindow(video, mode);
   return VideoAssetSchema.parse({

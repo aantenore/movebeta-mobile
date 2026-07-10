@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-import type { AppConfig } from './config';
-import type { AnalysisProvider } from '@/movement/contracts';
+import type { AnalysisProvider, PrivacyMode } from '@/movement/contracts';
 
 export const ProviderReadinessStatusSchema = z.enum(['ready', 'review', 'blocked']);
 export type ProviderReadinessStatus = z.infer<typeof ProviderReadinessStatusSchema>;
@@ -18,7 +17,7 @@ export type ProviderReadinessCheck = {
 
 export type ProviderReadinessSummary = {
   action: string;
-  fallbackProvider: AnalysisProvider;
+  failurePolicy: 'fail-closed';
   primaryProvider: AnalysisProvider;
   nativeProvider?: AnalysisProvider;
   checks: ProviderReadinessCheck[];
@@ -28,10 +27,16 @@ export type ProviderReadinessSummary = {
 };
 
 type ProviderCapability = {
-  availability: 'always' | 'runtime' | 'custom-native-build' | 'reserved';
+  availability: 'always' | 'runtime' | 'custom-native-build' | 'reserved' | 'test-only';
   detail: string;
   label: string;
   local: boolean;
+};
+
+type ProviderReadinessConfig = {
+  nativeVideoAnalysisProvider?: AnalysisProvider;
+  privacyMode: PrivacyMode;
+  videoAnalysisProvider: AnalysisProvider;
 };
 
 const providerCapabilities: Record<AnalysisProvider, ProviderCapability> = {
@@ -42,9 +47,9 @@ const providerCapabilities: Record<AnalysisProvider, ProviderCapability> = {
     local: true,
   },
   'local-video-fallback': {
-    availability: 'always',
-    detail: 'Deterministic local fallback keeps recorded or imported video workflows runnable without a native bridge.',
-    label: 'Local video fallback',
+    availability: 'test-only',
+    detail: 'Synthetic pose frames for deterministic tests only; never valid evidence for recorded or imported video.',
+    label: 'Synthetic video fixture',
     local: true,
   },
   'web-tfjs-movenet': {
@@ -94,6 +99,7 @@ function runtimeLabel(runtime: ProviderReadinessRuntime) {
 function availabilityStatus(provider: AnalysisProvider, runtime: ProviderReadinessRuntime): ProviderReadinessStatus {
   const capability = providerCapabilities[provider];
   if (capability.availability === 'always') return 'ready';
+  if (capability.availability === 'test-only') return runtime === 'test' ? 'ready' : 'blocked';
   if (capability.availability === 'reserved') return 'blocked';
   if (capability.availability === 'custom-native-build') return runtime === 'native' ? 'review' : 'review';
   if (provider === 'web-tfjs-movenet') return runtime === 'web' ? 'ready' : 'review';
@@ -106,6 +112,8 @@ function providerCheck(id: string, label: string, provider: AnalysisProvider, ru
   const availabilityCopy =
     capability.availability === 'reserved'
       ? 'Reserved providers must not be selected until an adapter is installed.'
+      : capability.availability === 'test-only'
+        ? 'Synthetic providers are allowed only in tests and bundled demos.'
       : capability.availability === 'custom-native-build'
         ? 'Requires a custom Expo development or release build with MoveBetaPose linked.'
         : capability.availability === 'runtime'
@@ -120,7 +128,7 @@ function providerCheck(id: string, label: string, provider: AnalysisProvider, ru
   };
 }
 
-function privacyCheck(config: Pick<AppConfig, 'privacyMode' | 'videoAnalysisProvider'>): ProviderReadinessCheck {
+function privacyCheck(config: Pick<ProviderReadinessConfig, 'privacyMode' | 'videoAnalysisProvider'>): ProviderReadinessCheck {
   const localProvider = providerCapabilities[config.videoAnalysisProvider]?.local === true;
   return {
     detail:
@@ -133,12 +141,11 @@ function privacyCheck(config: Pick<AppConfig, 'privacyMode' | 'videoAnalysisProv
   };
 }
 
-function fallbackCheck(): ProviderReadinessCheck {
-  const fallback = providerCapabilities['local-video-fallback'];
+function failurePolicyCheck(): ProviderReadinessCheck {
   return {
-    detail: `local-video-fallback: ${fallback.detail}`,
-    id: 'fallback-provider',
-    label: 'Fallback provider',
+    detail: 'Recorded and imported video failures stop without generating synthetic landmarks or coaching cues.',
+    id: 'failure-policy',
+    label: 'Failure policy',
     status: 'ready',
   };
 }
@@ -150,18 +157,18 @@ function titleForStatus(status: ProviderReadinessStatus) {
 }
 
 function actionForStatus(status: ProviderReadinessStatus) {
-  if (status === 'ready') return 'Primary analysis, fallback, and privacy boundary are aligned for local review.';
+  if (status === 'ready') return 'Primary analysis, fail-closed behavior, and the privacy boundary are aligned for local review.';
   if (status === 'review') return 'Run the native QA packet on physical devices before claiming production mobile readiness.';
   return 'Switch away from reserved providers or install the required adapter before release validation.';
 }
 
 export function buildProviderReadinessSummary(
-  config: Pick<AppConfig, 'privacyMode' | 'videoAnalysisProvider' | 'nativeVideoAnalysisProvider'>,
+  config: ProviderReadinessConfig,
   runtime: ProviderReadinessRuntime = 'web',
 ): ProviderReadinessSummary {
   const checks = [
     providerCheck('primary-provider', 'Primary video provider', config.videoAnalysisProvider, runtime),
-    fallbackCheck(),
+    failurePolicyCheck(),
     privacyCheck(config),
   ];
 
@@ -174,7 +181,7 @@ export function buildProviderReadinessSummary(
   return {
     action: actionForStatus(status),
     checks,
-    fallbackProvider: 'local-video-fallback',
+    failurePolicy: 'fail-closed',
     nativeProvider: config.nativeVideoAnalysisProvider,
     primaryProvider: config.videoAnalysisProvider,
     runtime,

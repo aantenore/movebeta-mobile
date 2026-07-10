@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 
+import { appConfig } from './config';
 import { buildPwaModelCacheWarmupResult, type PwaModelCacheWarmupResult } from './pwaModelCacheWarmup';
 import type { PwaRuntimeProbe } from './pwaRuntimeReadiness';
 import { buildPwaUpdateActivationResult, type PwaUpdateActivationResult } from './pwaUpdateActivation';
@@ -107,13 +108,21 @@ function digestToHex(buffer: ArrayBuffer) {
 }
 
 async function readBrowserModelAssetManifest() {
-  const cached = await window.caches?.match?.('/model-assets.json');
-  if (cached?.ok) return cached.json().catch(() => undefined);
+  const matchesConfiguredModel = (manifest: unknown) =>
+    (manifest as { modelUrl?: unknown } | undefined)?.modelUrl === appConfig.tfjsMoveNetModelUrl;
 
-  if (navigator.onLine === false) return undefined;
-  const response = await fetch('/model-assets.json').catch(() => undefined);
-  if (!response?.ok) return undefined;
-  return response.json().catch(() => undefined);
+  if (navigator.onLine !== false) {
+    const response = await fetch('/model-assets.json', { cache: 'no-store' }).catch(() => undefined);
+    if (response?.ok) {
+      const manifest = await response.json().catch(() => undefined);
+      if (matchesConfiguredModel(manifest)) return manifest;
+    }
+  }
+
+  const cached = await window.caches?.match?.('/model-assets.json');
+  if (!cached?.ok) return undefined;
+  const manifest = await cached.json().catch(() => undefined);
+  return matchesConfiguredModel(manifest) ? manifest : undefined;
 }
 
 export async function resolveBrowserModelCacheState(): Promise<BrowserModelCacheState> {
@@ -133,7 +142,7 @@ export async function resolveBrowserModelCacheState(): Promise<BrowserModelCache
     expectedCount: modelAssets.length,
     integritySupported: verification.integritySupported,
     integrityVerified: verification.integritySupported && modelAssets.length > 0 && verification.assetsVerified >= modelAssets.length,
-    manifestCached: Boolean(cachedManifest),
+    manifestCached: Boolean(cachedManifest && manifest),
     verifiedCount: verification.assetsVerified,
   };
 }
@@ -150,23 +159,40 @@ async function verifyCachedBrowserModelAssets(manifest: unknown): Promise<Browse
 
   await Promise.all(
     modelFiles.map(async (file) => {
-      const cached = await window.caches.match(file.path);
-      if (!cached?.ok) return;
-
-      const buffer = await cached.arrayBuffer().catch(() => undefined);
-      if (!buffer) return;
-      bytesCached += buffer.byteLength;
-
-      if (!integritySupported || !file.sha256) return;
-      const digest = await window.crypto.subtle.digest('SHA-256', buffer);
-      const byteCountMatches = typeof file.bytes === 'number' ? buffer.byteLength === file.bytes : true;
-      if (byteCountMatches && digestToHex(digest) === file.sha256) {
-        assetsVerified += 1;
-      }
+      const result = await verifyCachedBrowserModelAsset(file, integritySupported);
+      bytesCached += result.bytes;
+      if (result.verified) assetsVerified += 1;
     }),
   );
 
   return { assetsVerified, bytesCached, integritySupported };
+}
+
+async function verifyCachedBrowserModelAsset(file: BrowserModelAssetFile, integritySupported: boolean) {
+  const cached = await window.caches.match(file.path);
+  if (!cached?.ok) return { bytes: 0, verified: false };
+
+  const buffer = await cached.arrayBuffer().catch(() => undefined);
+  if (!buffer) return { bytes: 0, verified: false };
+  if (!integritySupported || !file.sha256) return { bytes: buffer.byteLength, verified: false };
+
+  const digest = await window.crypto.subtle.digest('SHA-256', buffer);
+  const byteCountMatches = typeof file.bytes === 'number' ? buffer.byteLength === file.bytes : true;
+  return {
+    bytes: buffer.byteLength,
+    verified: byteCountMatches && digestToHex(digest) === file.sha256,
+  };
+}
+
+async function deleteBrowserAssetFromEveryCache(asset: string) {
+  if (typeof window.caches.keys !== 'function') return;
+  const cacheNames = await window.caches.keys().catch(() => [] as string[]);
+  await Promise.all(
+    cacheNames.map(async (cacheName) => {
+      const cache = await window.caches.open(cacheName);
+      await cache.delete(asset).catch(() => false);
+    }),
+  );
 }
 
 export async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupResult> {
@@ -192,10 +218,19 @@ export async function warmBrowserPwaModelCache(): Promise<PwaModelCacheWarmupRes
   }
 
   const modelAssets = sameOriginModelAssets(manifest);
+  const modelFiles = new Map(sameOriginModelAssetFiles(manifest).map((file) => [file.path, file]));
+  const integritySupported = typeof window.crypto?.subtle?.digest === 'function';
   await Promise.all(
     modelAssets.map(async (asset) => {
       const cached = await window.caches.match(asset);
-      if (cached) return;
+      const expectedFile = modelFiles.get(asset);
+      if (cached && expectedFile) {
+        const verification = await verifyCachedBrowserModelAsset(expectedFile, integritySupported);
+        if (verification.verified) return;
+        await deleteBrowserAssetFromEveryCache(asset);
+      } else if (cached) {
+        return;
+      }
       const response = await fetch(asset, { cache: 'no-store' }).catch(() => undefined);
       if (response?.ok) {
         await cache.put(asset, response.clone());

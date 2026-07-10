@@ -14,6 +14,15 @@ type KeyValueStorage = {
   setItem(key: string, value: string): void;
 };
 
+type QuarantinedReportEntry = {
+  payload: unknown;
+  quarantinedAt: string;
+  reason: string;
+};
+
+const reportStoreSchemaVersion = 'movebeta.reports.v2';
+const reportQuarantineSchemaVersion = 'movebeta.report-quarantine.v1';
+
 export type SQLiteDatabaseLike = {
   execAsync(sql: string): Promise<void>;
   getAllAsync<T>(sql: string, ...params: unknown[]): Promise<T[]>;
@@ -31,6 +40,14 @@ function sanitizeExport(report: LocalAnalysisReport) {
       videoLeavesDevice: false,
     },
   });
+}
+
+function isBundledDemoReport(report: LocalAnalysisReport) {
+  return (
+    report.session.source === 'fixture' &&
+    report.engine.provider === 'local-fixture' &&
+    ['fixture-pose-v1', 'sample-pose-rules-v1'].includes(report.engine.model)
+  );
 }
 
 export class InMemoryReportRepository implements ReportRepository {
@@ -64,6 +81,22 @@ export class InMemoryReportRepository implements ReportRepository {
 
 const storageKey = 'movebeta.reports.v1';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+function storedReportCandidates(value: unknown): unknown[] | null {
+  if (Array.isArray(value)) return value;
+  if (isRecord(value) && value.schemaVersion === reportStoreSchemaVersion && Array.isArray(value.reports)) {
+    return value.reports;
+  }
+  return null;
+}
+
+function reportIdFromUnknown(value: unknown) {
+  return isRecord(value) && typeof value.id === 'string' ? value.id : null;
+}
+
 function getLocalStorage(): KeyValueStorage | null {
   try {
     return typeof globalThis.localStorage === 'undefined' ? null : globalThis.localStorage;
@@ -94,19 +127,33 @@ export class LocalReportRepository extends InMemoryReportRepository {
     try {
       storedReports = JSON.parse(raw);
     } catch {
+      this.quarantine(storage, [raw], 'Stored report collection is not valid JSON.');
+      this.saveSnapshot(storage);
       this.restored = true;
       return;
     }
 
-    const reports = LocalAnalysisReportSchema.array().safeParse(storedReports);
-    if (!reports.success) {
+    const candidates = storedReportCandidates(storedReports);
+    if (!candidates) {
+      this.quarantine(storage, [storedReports], 'Stored report collection has an unsupported root schema.');
+      this.saveSnapshot(storage);
       this.restored = true;
       return;
     }
 
-    for (const report of reports.data) {
-      this.reports.set(report.id, report);
+    const quarantined: unknown[] = [];
+    for (const candidate of candidates) {
+      const report = LocalAnalysisReportSchema.safeParse(candidate);
+      if (report.success && !isBundledDemoReport(report.data)) {
+        this.reports.set(report.data.id, report.data);
+      } else if (!report.success) {
+        quarantined.push(candidate);
+      }
     }
+    if (quarantined.length > 0) {
+      this.quarantine(storage, quarantined, 'Stored report does not match the current report schema.');
+    }
+    this.saveSnapshot(storage);
     this.restored = true;
   }
 
@@ -119,7 +166,63 @@ export class LocalReportRepository extends InMemoryReportRepository {
   }
 
   private saveSnapshot(storage: KeyValueStorage) {
-    storage.setItem(this.key, JSON.stringify(this.snapshot()));
+    storage.setItem(
+      this.key,
+      JSON.stringify({
+        reports: this.snapshot(),
+        schemaVersion: reportStoreSchemaVersion,
+      }),
+    );
+  }
+
+  private quarantineKey() {
+    return `${this.key}.quarantine`;
+  }
+
+  private readQuarantine(storage: KeyValueStorage): QuarantinedReportEntry[] {
+    const raw = storage.getItem(this.quarantineKey());
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      if (!isRecord(parsed) || parsed.schemaVersion !== reportQuarantineSchemaVersion || !Array.isArray(parsed.entries)) {
+        return [];
+      }
+      return parsed.entries.filter(
+        (entry): entry is QuarantinedReportEntry =>
+          isRecord(entry) &&
+          typeof entry.quarantinedAt === 'string' &&
+          typeof entry.reason === 'string' &&
+          'payload' in entry,
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  private writeQuarantine(storage: KeyValueStorage, entries: QuarantinedReportEntry[]) {
+    storage.setItem(
+      this.quarantineKey(),
+      JSON.stringify({
+        entries,
+        schemaVersion: reportQuarantineSchemaVersion,
+      }),
+    );
+  }
+
+  private quarantine(storage: KeyValueStorage, payloads: unknown[], reason: string) {
+    const quarantinedAt = new Date().toISOString();
+    this.writeQuarantine(storage, [
+      ...this.readQuarantine(storage),
+      ...payloads.map((payload) => ({ payload, quarantinedAt, reason })),
+    ]);
+  }
+
+  private deleteQuarantinedReport(storage: KeyValueStorage, id: string) {
+    const entries = this.readQuarantine(storage);
+    const retained = entries.filter((entry) => reportIdFromUnknown(entry.payload) !== id);
+    if (retained.length === entries.length) return false;
+    this.writeQuarantine(storage, retained);
+    return true;
   }
 
   private async persist() {
@@ -141,15 +244,21 @@ export class LocalReportRepository extends InMemoryReportRepository {
   async saveReport(report: LocalAnalysisReport) {
     this.ensureRestored();
     const saved = await super.saveReport(report);
-    await this.persist();
+    const storage = getLocalStorage();
+    if (storage) {
+      this.deleteQuarantinedReport(storage, saved.id);
+      this.saveSnapshot(storage);
+    }
     return saved;
   }
 
   async deleteReport(id: string) {
     this.ensureRestored();
     const deleted = await super.deleteReport(id);
+    const storage = getLocalStorage();
+    const quarantinedDeleted = storage ? this.deleteQuarantinedReport(storage, id) : false;
     await this.persist();
-    return deleted;
+    return deleted || quarantinedDeleted;
   }
 }
 
@@ -193,7 +302,12 @@ export class SQLiteReportRepository implements ReportRepository {
 
     try {
       const report = LocalAnalysisReportSchema.safeParse(JSON.parse(row.payload));
-      return report.success ? report.data : null;
+      if (!report.success) return null;
+      if (isBundledDemoReport(report.data)) {
+        await db.runAsync('DELETE FROM reports WHERE id = ?;', report.data.id);
+        return null;
+      }
+      return report.data;
     } catch {
       return null;
     }
@@ -203,14 +317,23 @@ export class SQLiteReportRepository implements ReportRepository {
     const db = await this.getDb();
     const rows = await db.getAllAsync<{ payload: string }>('SELECT payload FROM reports ORDER BY created_at DESC;');
 
-    return rows.flatMap((row) => {
+    const reports: LocalAnalysisReport[] = [];
+    const demoIds: string[] = [];
+    for (const row of rows) {
       try {
         const report = LocalAnalysisReportSchema.safeParse(JSON.parse(row.payload));
-        return report.success ? [report.data] : [];
+        if (!report.success) continue;
+        if (isBundledDemoReport(report.data)) {
+          demoIds.push(report.data.id);
+        } else {
+          reports.push(report.data);
+        }
       } catch {
-        return [];
+        continue;
       }
-    });
+    }
+    await Promise.all(demoIds.map((id) => db.runAsync('DELETE FROM reports WHERE id = ?;', id)));
+    return reports;
   }
 
   async exportReport(id: string) {
@@ -219,12 +342,9 @@ export class SQLiteReportRepository implements ReportRepository {
   }
 
   async deleteReport(id: string) {
-    const existing = await this.getReport(id);
-    if (!existing) return false;
-
     const db = await this.getDb();
-    await db.runAsync('DELETE FROM reports WHERE id = ?;', id);
-    return true;
+    const result = await db.runAsync('DELETE FROM reports WHERE id = ?;', id);
+    return (result.changes ?? 0) > 0;
   }
 }
 
