@@ -1,10 +1,10 @@
 # Git Handoff
 
-This deliverable is connected to a private GitHub repository:
+This deliverable is connected to a public GitHub repository:
 
 - Remote: `https://github.com/aantenore/movebeta-mobile.git`
 - Default branch: `main`
-- Visibility: private
+- Visibility: public
 
 ## Check Handoff State
 
@@ -15,7 +15,14 @@ npm run handoff:git
 The command prints the current branch and `origin`, and fails clearly when the folder has no Git repository, no `origin`,
 or a detached branch.
 
-## CI Workflow Template
+## Active Supply-Chain Baseline
+
+`.github/workflows/ci.yml` installs the lockfile with lifecycle scripts disabled, runs TypeScript and Vitest quality
+checks, and blocks high or critical dependency advisories. `.github/workflows/codeql.yml` runs extended
+JavaScript and TypeScript CodeQL queries. Third-party actions are pinned to full commit SHAs and receive only the
+permissions required by each workflow.
+
+## Release CI Workflow Template
 
 The quality workflow is stored as a template at:
 
