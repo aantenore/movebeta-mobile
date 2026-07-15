@@ -4,6 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 const templateWorkflowPath = 'docs/sdlc/ci-templates/github-actions-quality.yml';
 const workflow = readFileSync(templateWorkflowPath, 'utf8');
+const activeCiWorkflowPath = '.github/workflows/ci.yml';
+const activeCiWorkflow = readFileSync(activeCiWorkflowPath, 'utf8');
+const codeqlWorkflowPath = '.github/workflows/codeql.yml';
+const codeqlWorkflow = readFileSync(codeqlWorkflowPath, 'utf8');
 const vercelWorkflowPath = 'docs/sdlc/ci-templates/vercel-static-deploy.yml';
 const vercelWorkflow = readFileSync(vercelWorkflowPath, 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
@@ -12,10 +16,43 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
 };
 
 describe('GitHub Actions CI template', () => {
-  it('keeps the active workflow out of the repo until GitHub workflow scope is available', () => {
-    expect(existsSync('.github/workflows/ci.yml')).toBe(false);
+  it('activates a minimal CI baseline while keeping release and deploy workflows deferred', () => {
+    expect(existsSync(activeCiWorkflowPath)).toBe(true);
+    expect(existsSync(codeqlWorkflowPath)).toBe(true);
     expect(existsSync('.github/workflows/quality.yml')).toBe(false);
     expect(existsSync('.github/workflows/vercel-static-deploy.yml')).toBe(false);
+  });
+
+  it('runs the lockfile-reproducible quality and dependency audit baseline', () => {
+    expect(activeCiWorkflow).toContain('push:');
+    expect(activeCiWorkflow).toContain('branches: [main]');
+    expect(activeCiWorkflow).toContain('pull_request:');
+    expect(activeCiWorkflow).toContain(
+      'uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2',
+    );
+    expect(activeCiWorkflow).toContain(
+      'uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0',
+    );
+    expect(activeCiWorkflow).toContain('node-version-file: package.json');
+    expect(activeCiWorkflow).toContain('run: npm ci --ignore-scripts');
+    expect(activeCiWorkflow).toContain('run: npm run quality');
+    expect(activeCiWorkflow).toContain('run: npm audit --audit-level=high');
+  });
+
+  it('runs pinned JavaScript and TypeScript CodeQL analysis', () => {
+    expect(codeqlWorkflow).toContain('security-events: write');
+    expect(codeqlWorkflow).toContain('languages: javascript-typescript');
+    expect(codeqlWorkflow).toContain('build-mode: none');
+    expect(codeqlWorkflow).toContain('queries: security-extended');
+    expect(codeqlWorkflow).toContain(
+      'uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0',
+    );
+    expect(codeqlWorkflow).toContain(
+      'uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0',
+    );
+    expect(codeqlWorkflow).toContain(
+      'uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2',
+    );
   });
 
   it('runs the shared local release gate on pushes and pull requests when activated', () => {
