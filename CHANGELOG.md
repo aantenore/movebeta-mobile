@@ -24,7 +24,7 @@
 - Cue validation scoring harness for pass, needs-review, and insufficient-data review outcomes.
 - Capability-based Free, Pro, and Coach entitlements with active plan configuration and history limits.
 - Capture-readiness guidance that tells users when a clip is ready, borderline, or should be retaken.
-- Verified dependency hygiene with Dependabot, CI gates, and `npm ci` from the lockfile.
+- Verified dependency hygiene with CI gates and `npm ci` from the lockfile.
 - Privacy-safe diagnostics support packet with aggregate report quality, provider, consent, and sanitized event data.
 - Airplane-mode readiness self-check for local workflow, storage, sync, raw export, and report history.
 - Video intake readiness with local-source validation, short-clip blocking, duration/resolution warnings, sampled-frame
