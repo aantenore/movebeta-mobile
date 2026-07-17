@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-17T09:52:47.070Z",
+  "generatedAt": "2026-07-17T10:03:10.783Z",
   "licenseSummary": [
     {
       "count": 660,
@@ -2194,7 +2194,7 @@
       "path": "node_modules/@tanstack/query-core",
       "reason": "At least one permissive license option is available.",
       "status": "pass",
-      "version": "5.101.0"
+      "version": "5.101.2"
     },
     {
       "direct": true,
@@ -2204,7 +2204,7 @@
       "path": "node_modules/@tanstack/react-query",
       "reason": "At least one permissive license option is available.",
       "status": "pass",
-      "version": "5.101.0"
+      "version": "5.101.2"
     },
     {
       "direct": true,

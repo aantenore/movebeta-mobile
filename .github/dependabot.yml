@@ -5,6 +5,9 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Expo owns native dependency compatibility. Let Dependabot refresh only
+    # versions already admitted by the checked-in manifest ranges.
+    versioning-strategy: lockfile-only
     groups:
       expo-stack:
         patterns:
