@@ -28,10 +28,10 @@ describe('GitHub Actions CI template', () => {
     expect(activeCiWorkflow).toContain('branches: [main]');
     expect(activeCiWorkflow).toContain('pull_request:');
     expect(activeCiWorkflow).toContain(
-      'uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2',
+      'uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0',
     );
     expect(activeCiWorkflow).toContain(
-      'uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0',
+      'uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0',
     );
     expect(activeCiWorkflow).toContain('node-version-file: package.json');
     expect(activeCiWorkflow).toContain('run: npm ci --ignore-scripts');
@@ -45,13 +45,13 @@ describe('GitHub Actions CI template', () => {
     expect(codeqlWorkflow).toContain('build-mode: none');
     expect(codeqlWorkflow).toContain('queries: security-extended');
     expect(codeqlWorkflow).toContain(
-      'uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0',
+      'uses: github/codeql-action/init@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1',
     );
     expect(codeqlWorkflow).toContain(
-      'uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0',
+      'uses: github/codeql-action/analyze@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1',
     );
     expect(codeqlWorkflow).toContain(
-      'uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2',
+      'uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0',
     );
   });
 

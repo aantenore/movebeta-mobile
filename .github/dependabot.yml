@@ -10,6 +10,7 @@ updates:
         patterns:
           - expo
           - expo-*
+          - "@expo/metro-runtime"
           - react-native
           - react-native-*
       test-tooling:
@@ -17,7 +18,18 @@ updates:
           - vitest
           - typescript
           - "@types/*"
+    ignore:
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+      - dependency-name: "@types/node"
+        update-types:
+          - version-update:semver-major
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -1,9 +1,9 @@
 # Dependency License Report
 
-Generated: 2026-07-10T08:48:35.222Z
+Generated: 2026-07-17T09:52:47.070Z
 
 - Status: review
-- Packages: 782
+- Packages: 783
 - Review packages: 13
 - Blocked packages: 0
 - Token values included: no
@@ -13,7 +13,7 @@ Generated: 2026-07-10T08:48:35.222Z
 
 | License | Count |
 | --- | ---: |
-| MIT | 659 |
+| MIT | 660 |
 | ISC | 41 |
 | Apache-2.0 | 25 |
 | BSD-3-Clause | 12 |
