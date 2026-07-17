@@ -129,11 +129,40 @@ export function buildCacheVersionDeclaration(cacheVersion) {
   return `const CACHE_VERSION = '${cacheVersion}';`;
 }
 
+function atomicWriteTextFile(filePath, contents) {
+  const temporaryPath = path.join(
+    path.dirname(filePath),
+    `.${path.basename(filePath)}.${process.pid}.${crypto.randomUUID()}.tmp`,
+  );
+  const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | (fs.constants.O_NOFOLLOW ?? 0);
+  let descriptor;
+
+  try {
+    descriptor = fs.openSync(temporaryPath, flags, 0o644);
+    fs.writeFileSync(descriptor, contents, 'utf8');
+    fs.fsyncSync(descriptor);
+    fs.closeSync(descriptor);
+    descriptor = undefined;
+    fs.renameSync(temporaryPath, filePath);
+  } finally {
+    if (descriptor !== undefined) fs.closeSync(descriptor);
+    try {
+      fs.unlinkSync(temporaryPath);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+  }
+}
+
 export function preparePwaServiceWorker({ distDir = path.join(resolveProjectRoot(), 'dist') } = {}) {
   const serviceWorkerPath = path.join(distDir, 'sw.js');
-  if (!fs.existsSync(serviceWorkerPath)) return false;
-
-  const serviceWorker = fs.readFileSync(serviceWorkerPath, 'utf8');
+  let serviceWorker;
+  try {
+    serviceWorker = fs.readFileSync(serviceWorkerPath, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
   const offlineAssetsDeclaration = buildExportAssetsDeclaration(discoverOfflineExportAssets({ distDir }));
   const cacheVersionDeclaration = buildCacheVersionDeclaration(buildCacheVersion({ distDir }));
   const nextServiceWorker = serviceWorker
@@ -141,7 +170,7 @@ export function preparePwaServiceWorker({ distDir = path.join(resolveProjectRoot
     .replace(/const EXPORT_ASSETS = \[[\s\S]*?\];/, offlineAssetsDeclaration);
   if (nextServiceWorker === serviceWorker) return false;
 
-  fs.writeFileSync(serviceWorkerPath, nextServiceWorker);
+  atomicWriteTextFile(serviceWorkerPath, nextServiceWorker);
   return true;
 }
 
@@ -163,10 +192,10 @@ export function preparePwaDist({
       includeStyle: needsStyle,
     });
     const injected = html.replace('</head>', `${headMarkup}\n</head>`);
-    fs.writeFileSync(indexPath, injected);
+    atomicWriteTextFile(indexPath, injected);
     htmlChanged = true;
   } else if (htmlChanged) {
-    fs.writeFileSync(indexPath, html);
+    atomicWriteTextFile(indexPath, html);
   }
 
   const serviceWorkerChanged = preparePwaServiceWorker({ distDir });

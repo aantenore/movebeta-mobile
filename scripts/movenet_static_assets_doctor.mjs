@@ -35,27 +35,25 @@ function readJsonIfExists(filePath) {
   return JSON.parse(text);
 }
 
-function existsAndNonEmpty(filePath) {
-  return fs.existsSync(filePath) && fs.statSync(filePath).size > 0;
-}
-
-function looksLikeHtml(filePath) {
-  if (!fs.existsSync(filePath)) return false;
-  const descriptor = fs.openSync(filePath, 'r');
+function validStaticAsset(filePath, publicAssetPath) {
+  const flags = fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0);
+  let descriptor;
   try {
+    descriptor = fs.openSync(filePath, flags);
+    const stats = fs.fstatSync(descriptor);
+    if (!stats.isFile() || stats.size === 0) return false;
+    if (!publicAssetPath.endsWith('.bin')) return true;
+
     const buffer = Buffer.alloc(256);
     const bytesRead = fs.readSync(descriptor, buffer, 0, buffer.length, 0);
     const prefix = buffer.subarray(0, bytesRead).toString('utf8').trimStart().toLowerCase();
-    return prefix.startsWith('<!doctype html') || prefix.startsWith('<html');
+    return !prefix.startsWith('<!doctype html') && !prefix.startsWith('<html');
+  } catch (error) {
+    if (error?.code === 'ENOENT' || error?.code === 'ELOOP') return false;
+    throw error;
   } finally {
-    fs.closeSync(descriptor);
+    if (descriptor !== undefined) fs.closeSync(descriptor);
   }
-}
-
-function validStaticAsset(filePath, publicAssetPath) {
-  if (!existsAndNonEmpty(filePath)) return false;
-  if (publicAssetPath.endsWith('.bin') && looksLikeHtml(filePath)) return false;
-  return true;
 }
 
 function check({ action, detail, key, label, status }) {
