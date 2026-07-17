@@ -75,6 +75,8 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('message', (event) => {
+  if (event.origin !== self.location.origin) return;
+
   if (event.data?.type === 'MOVEBETA_SKIP_WAITING') {
     event.waitUntil(self.skipWaiting());
   }

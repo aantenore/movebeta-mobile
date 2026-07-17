@@ -81,6 +81,7 @@ describe('prepare PWA dist', () => {
 
     expect(serviceWorker).toContain('MOVEBETA_SKIP_WAITING');
     expect(serviceWorker).toContain('self.skipWaiting()');
+    expect(serviceWorker).toContain('event.origin !== self.location.origin');
   });
 
   it('is idempotent after PWA metadata is present', () => {
