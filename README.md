@@ -1,5 +1,21 @@
 # MoveBeta
 
+## In plain English
+
+MoveBeta helps indoor boulderers learn from a repeated attempt without uploading their video to an AI service. It analyzes a short clip on the device, points to one measurable movement to review, and lets the climber film the same problem again against a clear baseline.
+
+**Example:** a climber repeatedly loses control on the same move. MoveBeta can highlight a measured signal such as lateral torso movement at the relevant moment, preserve that focus for the next attempt, and compare only compatible recordings of the same climb. It does not claim to know the one correct technique or replace a coach.
+
+| Feature | What it means for a climber |
+| --- | --- |
+| On-device pose analysis | The selected video stays on the device instead of being sent to a remote inference service. |
+| One synchronized movement focus | The feedback is tied to the relevant video moment rather than delivered as a vague score. |
+| Attempt–focus–repeat loop | A climber can act on one observation and check the next attempt against the same baseline. |
+| Compatibility checks | The app avoids presenting misleading comparisons between unrelated climbs or analysis providers. |
+| Feedback, export, and deletion | People can challenge a cue and keep control of the derived history stored on their device. |
+
+## Product scope
+
 MoveBeta is a local-first climbing movement review app for indoor boulderers. A climber imports or records a short
 attempt, reviews one pose-based movement focus at the relevant video moment, films the same climb again, and compares the
 repeat against an explicit baseline.
